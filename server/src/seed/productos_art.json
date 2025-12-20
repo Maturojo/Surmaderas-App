@@ -1,0 +1,9537 @@
+[
+  {
+    "codigo": "AC1",
+    "nombre": "ACRILICO 50CC. (TODOS LOS COLORES)",
+    "precio": 1871.5
+  },
+  {
+    "codigo": "BA1",
+    "nombre": "BASES ACRILICAS 200CC.",
+    "precio": 4164.2
+  },
+  {
+    "codigo": "BP1",
+    "nombre": "BARNICES PASTEL AL AGUA 375CC.",
+    "precio": 7423.4
+  },
+  {
+    "codigo": "LB1",
+    "nombre": "LACAS BRILLANTES AL AGUA 375CC.",
+    "precio": 9645.9
+  },
+  {
+    "codigo": "BD1",
+    "nombre": "BARNIZ DIMENSIONAL 100CC.",
+    "precio": 4705.8
+  },
+  {
+    "codigo": "CRA1",
+    "nombre": "CRAQUELADOR 50CC.",
+    "precio": 2136.1
+  },
+  {
+    "codigo": "MP1",
+    "nombre": "MOD PODGE100CC.",
+    "precio": 3045.4
+  },
+  {
+    "codigo": "VL1",
+    "nombre": "VIDRIO LIQUIDO (2 COMPONENTES)",
+    "precio": 18462.4
+  },
+  {
+    "codigo": "DT1",
+    "nombre": "DECOUPAGE TEXTIL 200 CC.",
+    "precio": 5474.1
+  },
+  {
+    "codigo": "BV1",
+    "nombre": "BARNIZ VITRIFICABLE 50CC.",
+    "precio": 2561.5
+  },
+  {
+    "codigo": "BJA1",
+    "nombre": "BETUN DE JUDEA AL AGUA 375CC.",
+    "precio": 4273.9
+  },
+  {
+    "codigo": "BJS1",
+    "nombre": "BETUN DE JUDEA AL SOLVENTE 375CC.",
+    "precio": 8129.7
+  },
+  {
+    "codigo": "BJP200",
+    "nombre": "BETUN EN PASTA 200CC.",
+    "precio": 5244.1
+  },
+  {
+    "codigo": "CV250",
+    "nombre": "COLA VINILICA   250GS.",
+    "precio": 2947.6
+  },
+  {
+    "codigo": "CV500",
+    "nombre": "COLA VINILICA   500GS.",
+    "precio": 5082.0
+  },
+  {
+    "codigo": "CC200",
+    "nombre": "CEMENTO DE CONTACTO  200GS.",
+    "precio": 6225.5
+  },
+  {
+    "codigo": "CC400",
+    "nombre": "CEMENTO DE CONTACTO  400CC.",
+    "precio": 12450.9
+  },
+  {
+    "codigo": "PQ88025",
+    "nombre": "PINCELETA QUALITY Nº25 (SINTETICA)",
+    "precio": 9815.3
+  },
+  {
+    "codigo": "PQ88035",
+    "nombre": "PINCELETA QUALITY Nº35 (SINTETICA)",
+    "precio": 14486.6
+  },
+  {
+    "codigo": "Z1010",
+    "nombre": "CAJA ZAPATO 10 X 10 X 6",
+    "precio": 4155.8
+  },
+  {
+    "codigo": "Z1015",
+    "nombre": "CAJA ZAPATO 10 X 15 X 6",
+    "precio": 4510.6
+  },
+  {
+    "codigo": "Z1515",
+    "nombre": "CAJA ZAPATO 15 X 15 X 8",
+    "precio": 5321.5
+  },
+  {
+    "codigo": "Z1520",
+    "nombre": "CAJA ZAPATO 15 X 20 X 8",
+    "precio": 6738.4
+  },
+  {
+    "codigo": "Z2020",
+    "nombre": "CAJA ZAPATO 20 X 20 X 9",
+    "precio": 7851.5
+  },
+  {
+    "codigo": "Z2025",
+    "nombre": "CAJA ZAPATO 20 X 25 X 10",
+    "precio": 8320.4
+  },
+  {
+    "codigo": "Z2030",
+    "nombre": "CAJA ZAPATO 20 X 30 X 11",
+    "precio": 11230.6
+  },
+  {
+    "codigo": "Z2535",
+    "nombre": "CAJA ZAPATO 25 X 35 X 12",
+    "precio": 13945.5
+  },
+  {
+    "codigo": "Z3545",
+    "nombre": "CAJA ZAPATO 35 X 45 X 15",
+    "precio": 10845.7
+  },
+  {
+    "codigo": "C7",
+    "nombre": "CAJA CUBO  7 CM.",
+    "precio": 4726.7
+  },
+  {
+    "codigo": "C10",
+    "nombre": "CAJA CUBO 10 CM.",
+    "precio": 6250.1
+  },
+  {
+    "codigo": "C15",
+    "nombre": "CAJA CUBO 15 CM.",
+    "precio": 8769.7
+  },
+  {
+    "codigo": "C20",
+    "nombre": "CAJA CUBO 20 CM.",
+    "precio": 12500.1
+  },
+  {
+    "codigo": "C25",
+    "nombre": "CAJA CUBO 25 CM.",
+    "precio": 16015.8
+  },
+  {
+    "codigo": "C30",
+    "nombre": "CAJA CUBO 30 CM.",
+    "precio": 21289.3
+  },
+  {
+    "codigo": "S712",
+    "nombre": "CAJA STANDAR  7 X 12",
+    "precio": 2484.8
+  },
+  {
+    "codigo": "S1318",
+    "nombre": "CAJA STANDAR 13 X 18",
+    "precio": 3174.7
+  },
+  {
+    "codigo": "S1823",
+    "nombre": "CAJA STANDAR 18 X 23",
+    "precio": 3832.9
+  },
+  {
+    "codigo": "LS",
+    "nombre": "LIBRO SOUVENIR",
+    "precio": 2299.4
+  },
+  {
+    "codigo": "LM",
+    "nombre": "LIBRO MINI",
+    "precio": 3060.7
+  },
+  {
+    "codigo": "L1",
+    "nombre": "LIBRO 1 9 X 15 X 3",
+    "precio": 3336.1
+  },
+  {
+    "codigo": "L2",
+    "nombre": "LIBRO 2 14 X 20 X 5",
+    "precio": 3656.5
+  },
+  {
+    "codigo": "L3",
+    "nombre": "LIBRO 3 20 X 25 X 6",
+    "precio": 4208.7
+  },
+  {
+    "codigo": "OG",
+    "nombre": "CAJA OCTOGONAL GRANDE",
+    "precio": 5683.9
+  },
+  {
+    "codigo": "OM",
+    "nombre": "CAJA OCTOGONAL MEDIANA",
+    "precio": 4761.1
+  },
+  {
+    "codigo": "OC",
+    "nombre": "CAJA OCTOGONAL CHICA",
+    "precio": 3493.4
+  },
+  {
+    "codigo": "TEV4",
+    "nombre": "CAJA DE TE X 4 VIDRIO/PINO",
+    "precio": 15669.5
+  },
+  {
+    "codigo": "TEV12",
+    "nombre": "CAJA DE TE X12 VIDRIO/PINO",
+    "precio": 23504.3
+  },
+  {
+    "codigo": "TEV6",
+    "nombre": "CAJA DE TE X 6 VIDRIO/PINO",
+    "precio": 19027.3
+  },
+  {
+    "codigo": "TE49",
+    "nombre": "CAJA TE X 4  TAPA CIEGA FF9",
+    "precio": 6948.5
+  },
+  {
+    "codigo": "TE69",
+    "nombre": "CAJA TE X 6  TAPA CIEGA FF9",
+    "precio": 7461.8
+  },
+  {
+    "codigo": "CC",
+    "nombre": "CAJA CORAZON CHICO",
+    "precio": 1562.5
+  },
+  {
+    "codigo": "CG",
+    "nombre": "CAJA CORAZON GRANDE",
+    "precio": 2711.3
+  },
+  {
+    "codigo": "P20307",
+    "nombre": "CAJA PINO C/BROCHE 20 X 30 X 7",
+    "precio": 17908.0
+  },
+  {
+    "codigo": "CPP",
+    "nombre": "CAJA PINO C/BROCHE PINCEL GRANDE",
+    "precio": 11977.2
+  },
+  {
+    "codigo": "CCG",
+    "nombre": "CAJA CANOPLA GRANDE",
+    "precio": 13431.0
+  },
+  {
+    "codigo": "BF",
+    "nombre": "BANDEJA 30 X 45  FF9",
+    "precio": 14973.8
+  },
+  {
+    "codigo": "BFP",
+    "nombre": "BANDEJA 30 X 45 C/PATAS",
+    "precio": 17851.2
+  },
+  {
+    "codigo": "P1",
+    "nombre": "PERCHERO X 1 GANCHO RECTO",
+    "precio": 5392.7
+  },
+  {
+    "codigo": "P2",
+    "nombre": "PERCHERO X 2 GANCHOS RECTO",
+    "precio": 6157.9
+  },
+  {
+    "codigo": "P4",
+    "nombre": "PERCHERO X 4 GANCHOS RECTO",
+    "precio": 11860.0
+  },
+  {
+    "codigo": "P5",
+    "nombre": "PERCHERO X 5 GANCHOS RECTO",
+    "precio": 14786.4
+  },
+  {
+    "codigo": "P6",
+    "nombre": "PERCHERO X 6 GANCHOS RECTO",
+    "precio": 17716.0
+  },
+  {
+    "codigo": "P2F",
+    "nombre": "PERCHERO  2 GANCHOS FIBRO",
+    "precio": 3495.8
+  },
+  {
+    "codigo": "P3F",
+    "nombre": "PERCHERO  3 GANCHOS FIBRO",
+    "precio": 4427.7
+  },
+  {
+    "codigo": "P4F",
+    "nombre": "PERCHERO  4 GANCHOS FIBRO",
+    "precio": 5127.0
+  },
+  {
+    "codigo": "PP",
+    "nombre": "PERCHERO DE PIE 1,65 ALTURA´",
+    "precio": 50017.9
+  },
+  {
+    "codigo": "PPG",
+    "nombre": "PERCHERO DE PIE C/G. EN EL MEDIO",
+    "precio": 57618.5
+  },
+  {
+    "codigo": "A300",
+    "nombre": "ATRIL DE PIE GRANDE",
+    "precio": 37454.3
+  },
+  {
+    "codigo": "A301",
+    "nombre": "ATRIL DE PIE  MEDIANO",
+    "precio": 32619.8
+  },
+  {
+    "codigo": "A307",
+    "nombre": "ATRIL TRIANGULAR DE MESA CHICO",
+    "precio": 11983.3
+  },
+  {
+    "codigo": "A306",
+    "nombre": "ATRIL TRIANGULAR DE MESA GRANDE",
+    "precio": 14981.2
+  },
+  {
+    "codigo": "A203",
+    "nombre": "ATRIL SOUVENIR",
+    "precio": 3065.9
+  },
+  {
+    "codigo": "REV",
+    "nombre": "REVISTERO FFACIL",
+    "precio": 44524.2
+  },
+  {
+    "codigo": "M10",
+    "nombre": "MENSULA CLASICA /NORDICA 10 CM.",
+    "precio": 3750.1
+  },
+  {
+    "codigo": "M15",
+    "nombre": "MENSULA CLASICA/NORDICA 15 CM.",
+    "precio": 4966.9
+  },
+  {
+    "codigo": "M20",
+    "nombre": "MENSULA CLASICA/NORDICA 20 CM.",
+    "precio": 5170.9
+  },
+  {
+    "codigo": "M25",
+    "nombre": "MENSULA CLASICA / NORDICA 25 CM.",
+    "precio": 5939.6
+  },
+  {
+    "codigo": "M30",
+    "nombre": "MENSULA CLASICA/NORDICA 30 CM.",
+    "precio": 6556.6
+  },
+  {
+    "codigo": "BO10",
+    "nombre": "BODEGA BARRIL DE 10 BOTELLAS",
+    "precio": 49462.2
+  },
+  {
+    "codigo": "POO",
+    "nombre": "PORTARROLLO OCTOGONAL",
+    "precio": 3182.1
+  },
+  {
+    "codigo": "PRP",
+    "nombre": "PORTARROLLO/ DE PARED PINO",
+    "precio": 15971.9
+  },
+  {
+    "codigo": "BC10",
+    "nombre": "BASE CUADRADA 10 CM./ RECT. 10 X 12",
+    "precio": 850.9
+  },
+  {
+    "codigo": "BC15",
+    "nombre": "BASE CUADRADA 15 CM./ RECT. 10 X 15",
+    "precio": 1700.0
+  },
+  {
+    "codigo": "BC20",
+    "nombre": "BASE CUADRADA 20 CM./ RECT. 15 X 20",
+    "precio": 2400.0
+  },
+  {
+    "codigo": "BC25",
+    "nombre": "BASE CUADRADA 25 CM./ RECT. 20 X 25",
+    "precio": 3073.4
+  },
+  {
+    "codigo": "BC30",
+    "nombre": "BASE CUADRADA 30 CM./ RECT. 20 X 30",
+    "precio": 4356.0
+  },
+  {
+    "codigo": "SM",
+    "nombre": "SERVILLETERO DE MESA",
+    "precio": 3056.9
+  },
+  {
+    "codigo": "PANP",
+    "nombre": "PANERA PERSIANA PINO",
+    "precio": 38090.0
+  },
+  {
+    "codigo": "PL",
+    "nombre": "PORTA LAPICES",
+    "precio": 2420.0
+  },
+  {
+    "codigo": "AL1",
+    "nombre": "ALAJERO 1 CAJON",
+    "precio": 10073.5
+  },
+  {
+    "codigo": "AL2",
+    "nombre": "ALAJERO 2 CAJONES",
+    "precio": 9735.0
+  },
+  {
+    "codigo": "AL3",
+    "nombre": "ALAJERO 3 CAJONES",
+    "precio": 14015.3
+  },
+  {
+    "codigo": "AL4",
+    "nombre": "ALAJERO 4 CAJONES",
+    "precio": 16862.2
+  },
+  {
+    "codigo": "YA",
+    "nombre": "YERBERA AZUCARERA",
+    "precio": 3773.7
+  },
+  {
+    "codigo": "BI30",
+    "nombre": "BIBLIOTECA 30 X 30 X 1,83",
+    "precio": 74782.5
+  },
+  {
+    "codigo": "BI40",
+    "nombre": "BIBLIOTECA 40 X 30 X 1,83",
+    "precio": 85528.9
+  },
+  {
+    "codigo": "BI50",
+    "nombre": "BIBLIOTECA 50 X 30 X 1,83",
+    "precio": 96413.7
+  },
+  {
+    "codigo": "BI60",
+    "nombre": "BIBLIOTECA 60 X 30 X 1,83",
+    "precio": 107315.6
+  },
+  {
+    "codigo": "LCH",
+    "nombre": "LETRAS Y NUMEROS CHICOS",
+    "precio": 85.6
+  },
+  {
+    "codigo": "LGDE",
+    "nombre": "LETRAS Y NUMEROS GRANDES",
+    "precio": 136.1
+  },
+  {
+    "codigo": "MB1",
+    "nombre": "MESA DE COMPUTACION  PARA BARBIE",
+    "precio": 6542.4
+  },
+  {
+    "codigo": "MB14",
+    "nombre": "REPOSERA",
+    "precio": 826.5
+  },
+  {
+    "codigo": "MB4",
+    "nombre": "MESA DE LUZ  PARA BARBIE",
+    "precio": 1929.1
+  },
+  {
+    "codigo": "BF60",
+    "nombre": "BAUL FIBRO  60 X 40 X 40 CM.",
+    "precio": 50913.7
+  },
+  {
+    "codigo": "BF80",
+    "nombre": "BAUL FIBRO  80 X 40 X 40 CM.",
+    "precio": 67884.9
+  },
+  {
+    "codigo": "BF100",
+    "nombre": "BAUL FIBRO 100 X 40 X 40 CM.",
+    "precio": 80447.1
+  },
+  {
+    "codigo": "PPCH",
+    "nombre": "PERCHERO DE PIE PARA CHICOS",
+    "precio": 46030.6
+  },
+  {
+    "codigo": "MCH",
+    "nombre": "MESITA PARA CHICOS 60 X 60 X 45 CM.",
+    "precio": 21069.7
+  },
+  {
+    "codigo": "MRCH",
+    "nombre": "MESITA PARA CHICOS REDONDA 60 CM.",
+    "precio": 21069.7
+  },
+  {
+    "codigo": "SCH",
+    "nombre": "SILLITA PARA CHICOS",
+    "precio": 14113.3
+  },
+  {
+    "codigo": "SCH1",
+    "nombre": "SILLON PARA CHICOS",
+    "precio": 18145.9
+  },
+  {
+    "codigo": "ECCH",
+    "nombre": "ESCRITORIO C/ ESP. CORONA C/ BANQ.",
+    "precio": 89610.8
+  },
+  {
+    "codigo": "TTT",
+    "nombre": "TA-TE-TI  CON FICHAS  18X18",
+    "precio": 4192.7
+  },
+  {
+    "codigo": "PAÑ",
+    "nombre": "PAÑALERO EN FF",
+    "precio": 35156.2
+  },
+  {
+    "codigo": "CAJ3CH",
+    "nombre": "CAJONERA C/CALADOS 3 CAJ.",
+    "precio": 136720.2
+  },
+  {
+    "codigo": "P315",
+    "nombre": "PORTARRETRATO 10 X 15 CM.",
+    "precio": 4573.8
+  },
+  {
+    "codigo": "P318",
+    "nombre": "PORTARRETRATO 13 X 18 CM.",
+    "precio": 5336.1
+  },
+  {
+    "codigo": "P321",
+    "nombre": "PORTARRETRATO 15 X 21 CM.",
+    "precio": 5971.4
+  },
+  {
+    "codigo": "P330",
+    "nombre": "PORTARRETRATO 20 X 30 CM.",
+    "precio": 8603.8
+  },
+  {
+    "codigo": "PSCH",
+    "nombre": "PORTARRETRATO 7 X 10  PINO",
+    "precio": 2922.2
+  },
+  {
+    "codigo": "MF93040",
+    "nombre": "MARCO FF9 CM 30 X 40 CM.",
+    "precio": 8434.5
+  },
+  {
+    "codigo": "MF94050",
+    "nombre": "MARCO FF9 CM 40 X 50 CM.",
+    "precio": 9365.3
+  },
+  {
+    "codigo": "MF94060",
+    "nombre": "MARCO FF9 CM 40 X 60 CM.",
+    "precio": 10242.1
+  },
+  {
+    "codigo": "MF95060",
+    "nombre": "MARCO FF9 CM 50 X 60 CM.",
+    "precio": 10712.7
+  },
+  {
+    "codigo": "MF95070",
+    "nombre": "MARCO FF9 CM 50 X 70 CM.",
+    "precio": 11588.8
+  },
+  {
+    "codigo": "MF63040",
+    "nombre": "MARCO FF6 CM 30 X 40 CM.",
+    "precio": 6950.4
+  },
+  {
+    "codigo": "MF64050",
+    "nombre": "MARCO FF6 CM 40 X 50 CM.",
+    "precio": 7718.6
+  },
+  {
+    "codigo": "MF64060",
+    "nombre": "MARCO FF6 CM 40 X 60 CM.",
+    "precio": 8523.4
+  },
+  {
+    "codigo": "MF65060",
+    "nombre": "MARCO FF6 CM 50 X 60 CM.",
+    "precio": 8902.7
+  },
+  {
+    "codigo": "MF65070",
+    "nombre": "MARCO FF6 CM 50 X 70 CM.",
+    "precio": 9702.6
+  },
+  {
+    "codigo": "1147",
+    "nombre": "BAJADA ESPECIAL DE 45 MM KIRI",
+    "precio": 9171.8
+  },
+  {
+    "codigo": "1148",
+    "nombre": "BAJADA ESPECIAL 64 MM. KIRI",
+    "precio": 16997.8
+  },
+  {
+    "codigo": "1149",
+    "nombre": "BAJADA ESPECIAL 90 MM. KIRI",
+    "precio": 28376.9
+  },
+  {
+    "codigo": "1156",
+    "nombre": "AFRICANA 45 MM. KIRI",
+    "precio": 13149.0
+  },
+  {
+    "codigo": "1157",
+    "nombre": "AFRICANA 65 MM. KIRI",
+    "precio": 21417.2
+  },
+  {
+    "codigo": "1194",
+    "nombre": "CASITA 93 MM. KIRI",
+    "precio": 29844.1
+  },
+  {
+    "codigo": "1197",
+    "nombre": "CASITA 70 MM. KIRI",
+    "precio": 16292.5
+  },
+  {
+    "codigo": "1332",
+    "nombre": "CUADRADA 20 X 20 KIRI",
+    "precio": 5294.9
+  },
+  {
+    "codigo": "1333",
+    "nombre": "CUADRADA  29 X 29 KIRI",
+    "precio": 9435.3
+  },
+  {
+    "codigo": "1334",
+    "nombre": "CUADRADA 35 X 35 KIRI",
+    "precio": 13529.8
+  },
+  {
+    "codigo": "1472",
+    "nombre": "SUBIDA 80 MM. KIRI",
+    "precio": 20715.0
+  },
+  {
+    "codigo": "1474",
+    "nombre": "BAJADA 45 MM. KIRI",
+    "precio": 9080.1
+  },
+  {
+    "codigo": "1475",
+    "nombre": "BAJADA 60 MM. KIRI",
+    "precio": 11868.8
+  },
+  {
+    "codigo": "1476",
+    "nombre": "BAJADA 80 MM. KIRI",
+    "precio": 20715.0
+  },
+  {
+    "codigo": "1543",
+    "nombre": "BATEA ECO 28 MM. KIRI",
+    "precio": 5855.6
+  },
+  {
+    "codigo": "1544",
+    "nombre": "BATEA ECO 50 MM. KIRI",
+    "precio": 11554.5
+  },
+  {
+    "codigo": "1563",
+    "nombre": "CHANFLE 29 MM. KIRI",
+    "precio": 5494.4
+  },
+  {
+    "codigo": "1564",
+    "nombre": "CHANFLE 46 MM. KIRI",
+    "precio": 8558.2
+  },
+  {
+    "codigo": "1565",
+    "nombre": "CHANFLE 57 MM. KIRI",
+    "precio": 10569.1
+  },
+  {
+    "codigo": "2590",
+    "nombre": "CHANFLE GRAB/ TELA 30 MM.PINO",
+    "precio": 7165.8
+  },
+  {
+    "codigo": "2591",
+    "nombre": "CHANFLE GRAB/ TELA 45 MM. PINO",
+    "precio": 9523.0
+  },
+  {
+    "codigo": "2632",
+    "nombre": "ETNICA 20 MM",
+    "precio": 5566.4
+  },
+  {
+    "codigo": "1651",
+    "nombre": "IMIT. ENCHAPADO 20 MM. KIRI",
+    "precio": 4991.7
+  },
+  {
+    "codigo": "1652",
+    "nombre": "IMIT. ENCHAPADO DE 30 MM. KIRI",
+    "precio": 6723.1
+  },
+  {
+    "codigo": "1653",
+    "nombre": "IMIT. ENCHAPADO 45 MM. KIRI",
+    "precio": 10061.6
+  },
+  {
+    "codigo": "1654",
+    "nombre": "IMIT. ENCHAPADO 58 MM. KIRI",
+    "precio": 14492.5
+  },
+  {
+    "codigo": "1658",
+    "nombre": "ASERRADA 20 MM. KIRI",
+    "precio": 5110.2
+  },
+  {
+    "codigo": "1659",
+    "nombre": "ASERRADA 30 MM. KIRI",
+    "precio": 6742.6
+  },
+  {
+    "codigo": "1660",
+    "nombre": "ASERRADA 45 MM. KIRI",
+    "precio": 10061.6
+  },
+  {
+    "codigo": "1661",
+    "nombre": "ASERRADA 58 MM. KIRI",
+    "precio": 13027.6
+  },
+  {
+    "codigo": "2667",
+    "nombre": "ETNICA 45 MM. PINO",
+    "precio": 10459.2
+  },
+  {
+    "codigo": "2668",
+    "nombre": "ETNICA 60 MM. PINO",
+    "precio": 13260.3
+  },
+  {
+    "codigo": "1712",
+    "nombre": "PARABOLA 28 MM. KIRI",
+    "precio": 7006.5
+  },
+  {
+    "codigo": "1713",
+    "nombre": "PARABOLA 45 MM. KIRI",
+    "precio": 9754.7
+  },
+  {
+    "codigo": "1714",
+    "nombre": "PARABOLA 60 MM. KIRI",
+    "precio": 14187.3
+  },
+  {
+    "codigo": "1926",
+    "nombre": "ELE RECTA 30X45 MM. KIRI",
+    "precio": 16067.4
+  },
+  {
+    "codigo": "1927",
+    "nombre": "ELE RECTA 20X59 MM. KIRI",
+    "precio": 12626.8
+  },
+  {
+    "codigo": "1928",
+    "nombre": "ELE RECTA 35X59 MM. KIRI",
+    "precio": 20300.1
+  },
+  {
+    "codigo": "1168",
+    "nombre": "ALFIL 45 MM. KIRI",
+    "precio": 13991.9
+  },
+  {
+    "codigo": "1232",
+    "nombre": "KIRI 322 BAJA MADERA",
+    "precio": 6378.4
+  },
+  {
+    "codigo": "1546",
+    "nombre": "ITALIANA 2 CM. KIRI",
+    "precio": 4500.4
+  },
+  {
+    "codigo": "1547",
+    "nombre": "ITALIANA KIRI DE 3 CM.",
+    "precio": 7033.6
+  },
+  {
+    "codigo": "1548",
+    "nombre": "ITALIANA KIRI 4 CM.",
+    "precio": 9467.0
+  },
+  {
+    "codigo": "1549",
+    "nombre": "ITALIANA KIRI 6 CM.",
+    "precio": 19440.9
+  },
+  {
+    "codigo": "1410",
+    "nombre": "BOMBE 1 CM.",
+    "precio": 2904.1
+  },
+  {
+    "codigo": "1531",
+    "nombre": "BOMBE 1,5 CM. KIRI",
+    "precio": 3822.4
+  },
+  {
+    "codigo": "1532",
+    "nombre": "BOMBE 2 CM. KIRI",
+    "precio": 4603.3
+  },
+  {
+    "codigo": "1533",
+    "nombre": "BOMBE 3 CM. KIRI",
+    "precio": 7033.6
+  },
+  {
+    "codigo": "1567",
+    "nombre": "BOMBE 4 CM. KIRI",
+    "precio": 9364.5
+  },
+  {
+    "codigo": "1568",
+    "nombre": "BOMBE 6 CM. KIRI",
+    "precio": 11859.2
+  },
+  {
+    "codigo": "1215",
+    "nombre": "BOMBE ELE 15X53 (BASTI.) KIRI",
+    "precio": 7099.0
+  },
+  {
+    "codigo": "1411",
+    "nombre": "CHATA 11X13 C/2 ESC. KIRI",
+    "precio": 3142.4
+  },
+  {
+    "codigo": "1310",
+    "nombre": "CHATA 10X10",
+    "precio": 2904.1
+  },
+  {
+    "codigo": "1330",
+    "nombre": "CHATA 10X30",
+    "precio": 5110.2
+  },
+  {
+    "codigo": "1350",
+    "nombre": "CHATA 15X45 KIRI",
+    "precio": 8643.1
+  },
+  {
+    "codigo": "1160",
+    "nombre": "CHATA 20X60 KIRI",
+    "precio": 11868.8
+  },
+  {
+    "codigo": "1581",
+    "nombre": "CHATA 27X97 KIRI",
+    "precio": 22736.2
+  },
+  {
+    "codigo": "1301",
+    "nombre": "CHATA PETRIFICADA 10X30 KIRI",
+    "precio": 6742.6
+  },
+  {
+    "codigo": "1303",
+    "nombre": "CHATA PETRIFICADA 15X45 KIRI",
+    "precio": 10096.0
+  },
+  {
+    "codigo": "1304",
+    "nombre": "CHATA PETRIFICADA 20X60 KIRI",
+    "precio": 14492.5
+  },
+  {
+    "codigo": "2237",
+    "nombre": "CHATA P/ CAJON 2 REBAJES 20X42 PINO",
+    "precio": 6988.4
+  },
+  {
+    "codigo": "1905",
+    "nombre": "ONDULADA 20X70 KIRI",
+    "precio": 14187.3
+  },
+  {
+    "codigo": "1205",
+    "nombre": "GRABADA HOJAS 20X30 KIRI",
+    "precio": 9844.2
+  },
+  {
+    "codigo": "1206",
+    "nombre": "GRABADA FLORES 40X26 KIRI",
+    "precio": 13984.9
+  },
+  {
+    "codigo": "1275",
+    "nombre": "RUSTICA 225 KIRI",
+    "precio": 10113.6
+  },
+  {
+    "codigo": "1277",
+    "nombre": "RUSTICA 227 KIRI",
+    "precio": 7920.5
+  },
+  {
+    "codigo": "2922",
+    "nombre": "C/ ORNATO 43X15 PINO",
+    "precio": 8774.2
+  },
+  {
+    "codigo": "2180",
+    "nombre": "ITALIANA 2 CM. SOGA PINO",
+    "precio": 6332.0
+  },
+  {
+    "codigo": "2181",
+    "nombre": "ITALIANA 2 CM. FLOR PINO",
+    "precio": 6332.0
+  },
+  {
+    "codigo": "2183",
+    "nombre": "ITALIANA 3 CM. OJOS PINO",
+    "precio": 8338.6
+  },
+  {
+    "codigo": "2184",
+    "nombre": "ITALIANA 4,5 CM. SOGA PINO",
+    "precio": 10790.6
+  },
+  {
+    "codigo": "2185",
+    "nombre": "ONDA GRABADA 65 MM. BALUSTRE PINO",
+    "precio": 16486.1
+  },
+  {
+    "codigo": "1359",
+    "nombre": "PECHITO DE PALOMA CON GALON KIRI",
+    "precio": 11307.3
+  },
+  {
+    "codigo": "1710",
+    "nombre": "CHATA CON BORLAS 15 X 46",
+    "precio": 11314.9
+  },
+  {
+    "codigo": "1785",
+    "nombre": "CHATA C/GARGANTA FRISA CENTRAL 45",
+    "precio": 15232.4
+  },
+  {
+    "codigo": "4364",
+    "nombre": "BATEA FRANCESA 9 CM. TIZA",
+    "precio": 44279.9
+  },
+  {
+    "codigo": "4363",
+    "nombre": "BATEA FRANCESA 5 CM. TIZA",
+    "precio": 28979.8
+  },
+  {
+    "codigo": "4867",
+    "nombre": "BATEA 65 X 41 TIZA",
+    "precio": 40882.4
+  },
+  {
+    "codigo": "2182",
+    "nombre": "ITALIANA 3D SOGA PINO",
+    "precio": 12120.8
+  },
+  {
+    "codigo": "1411/370",
+    "nombre": "CH. 11 C/ESCALON H. PATINADA JASP.",
+    "precio": 5696.7
+  },
+  {
+    "codigo": "1411/384",
+    "nombre": "CH. 11 C/ESCALON JASPEADA BRONCE",
+    "precio": 6469.2
+  },
+  {
+    "codigo": "1411/440",
+    "nombre": "CH. 11 C/ESCALON ROBLE",
+    "precio": 4819.4
+  },
+  {
+    "codigo": "1411/443",
+    "nombre": "CH. 11 C/ESCALON ALGARROBO",
+    "precio": 4817.9
+  },
+  {
+    "codigo": "1411/446",
+    "nombre": "CH. 11 C/ ESCALON ROBLE PATINADA",
+    "precio": 5696.7
+  },
+  {
+    "codigo": "1531/440",
+    "nombre": "BOMBE 1,5 ROBLE",
+    "precio": 5491.1
+  },
+  {
+    "codigo": "1531/443",
+    "nombre": "BOMBE 1,5 ALGARROBO",
+    "precio": 5590.9
+  },
+  {
+    "codigo": "1532/440",
+    "nombre": "BOMBE 2 ROBLE",
+    "precio": 6394.2
+  },
+  {
+    "codigo": "1532/443",
+    "nombre": "BOMBE 2 ALGARROBO",
+    "precio": 6394.2
+  },
+  {
+    "codigo": "1533/440",
+    "nombre": "BOMBE 2 ROBLE",
+    "precio": 9562.4
+  },
+  {
+    "codigo": "1533/443",
+    "nombre": "BOMBE 3 ALGARROBO",
+    "precio": 9567.2
+  },
+  {
+    "codigo": "1543/443",
+    "nombre": "BATEA ECO 30 ALGARROBO",
+    "precio": 7518.3
+  },
+  {
+    "codigo": "1546/423",
+    "nombre": "ITALIANA 2 ROBLE PATINADA",
+    "precio": 7529.7
+  },
+  {
+    "codigo": "1546/440",
+    "nombre": "ITALIANA 2 ROBLE",
+    "precio": 6945.4
+  },
+  {
+    "codigo": "1546/441",
+    "nombre": "ITALIANA 2 ROBLE BH",
+    "precio": 7529.7
+  },
+  {
+    "codigo": "1546/443",
+    "nombre": "ITALIANA 2 ALGARROBO",
+    "precio": 6364.6
+  },
+  {
+    "codigo": "1546/445",
+    "nombre": "ITALIANA 2 ALGARROBO BH",
+    "precio": 6907.2
+  },
+  {
+    "codigo": "1546/446",
+    "nombre": "ITALIANA 2 ROBLE PATINADA",
+    "precio": 7529.7
+  },
+  {
+    "codigo": "1547/423",
+    "nombre": "ITALIANA 3 ROBLE PATINADA FH",
+    "precio": 10404.2
+  },
+  {
+    "codigo": "1547/440",
+    "nombre": "ITALIANA 3 ROBLE",
+    "precio": 9950.4
+  },
+  {
+    "codigo": "1547/441",
+    "nombre": "ITALIANA 3 ROBLE BH",
+    "precio": 12521.8
+  },
+  {
+    "codigo": "1547/443",
+    "nombre": "ITALIANA 3 ALGARROBO",
+    "precio": 9950.4
+  },
+  {
+    "codigo": "1547/445",
+    "nombre": "ITALIANA 3 ALGARROBO BITER DORADO",
+    "precio": 10404.2
+  },
+  {
+    "codigo": "1547/446",
+    "nombre": "ITALIANA 3 ROBLE PATINADA",
+    "precio": 10404.2
+  },
+  {
+    "codigo": "1548/440",
+    "nombre": "ITALIANA 4 ROBLE",
+    "precio": 13277.1
+  },
+  {
+    "codigo": "1548/441",
+    "nombre": "ITALIANA 4 ROBLE BH",
+    "precio": 13331.5
+  },
+  {
+    "codigo": "1548/443",
+    "nombre": "ITALIANA 4 ALGARROBO",
+    "precio": 13277.1
+  },
+  {
+    "codigo": "1548/445",
+    "nombre": "ITALIANA 4 ALGARROBO BH",
+    "precio": 13331.5
+  },
+  {
+    "codigo": "1548/446",
+    "nombre": "ITALIANA 4 ROBLE PATINADA",
+    "precio": 13331.5
+  },
+  {
+    "codigo": "1549/423",
+    "nombre": "ITALIANA 6 ROBLE PATINADA FH",
+    "precio": 24293.8
+  },
+  {
+    "codigo": "1549/440",
+    "nombre": "ITALIANA 6 ROBLE",
+    "precio": 23298.1
+  },
+  {
+    "codigo": "1549/441",
+    "nombre": "ITALIANA 6 ROBLE BH",
+    "precio": 24293.8
+  },
+  {
+    "codigo": "1549/443",
+    "nombre": "ITALIANA 6 ALGARROBO",
+    "precio": 23160.0
+  },
+  {
+    "codigo": "1549/445",
+    "nombre": "ITALIANA 6 ALBARROBO BH",
+    "precio": 30432.0
+  },
+  {
+    "codigo": "1549/446",
+    "nombre": "ITALIANA 6 ROBLE PATINADA",
+    "precio": 24293.8
+  },
+  {
+    "codigo": "1546/370",
+    "nombre": "ITALIANA 2 ST. HOJA PATINADA JASPEADA",
+    "precio": 7529.7
+  },
+  {
+    "codigo": "1547/370",
+    "nombre": "ITALIANA 3 CM JASPEADA DORADA PATINADA",
+    "precio": 10404.2
+  },
+  {
+    "codigo": "1548/370",
+    "nombre": "ITALIANA 4 ST. HOJA PATINADA JASPEADA",
+    "precio": 13331.5
+  },
+  {
+    "codigo": "1549/370",
+    "nombre": "ITALIANA 6 ST. H. PATINADA JASP.",
+    "precio": 24302.5
+  },
+  {
+    "codigo": "1546/108",
+    "nombre": "ITALIANA 2 DORADO PATINADO",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/108",
+    "nombre": "ITALIANA 3 DORADO PATINADO",
+    "precio": 13066.7
+  },
+  {
+    "codigo": "1548/108",
+    "nombre": "ITALIANA 4 DORADO PATINADO",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1546/372",
+    "nombre": "ITALIANA 2 ST. HOJA NAT. JASPEADA PH",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/372",
+    "nombre": "ITALIANA 3 ST. HOJA NAT. JASPEADA PH",
+    "precio": 14511.6
+  },
+  {
+    "codigo": "1548/372",
+    "nombre": "ITALIANA 4 ST. HOJA NAT. JASPEADA PH",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1549/372",
+    "nombre": "ITALIANA 6 ST. HOJA NAT. JASPEADA PH",
+    "precio": 30432.0
+  },
+  {
+    "codigo": "1546/376",
+    "nombre": "ITALIANA 2 ST. HOJA CAOBA JASPEADO",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/376",
+    "nombre": "ITALIANA 3 ST. HOJA CAOBA JASP. PH",
+    "precio": 12212.9
+  },
+  {
+    "codigo": "1548/376",
+    "nombre": "ITALIANA 4 ST. HOJA CAOBA JASPEADO",
+    "precio": 18293.3
+  },
+  {
+    "codigo": "1546/377",
+    "nombre": "ITALIANA 2 ST. HOJA CAOBA JASP.",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/377",
+    "nombre": "ITALIANA 3 ST. HOJA CAOBA JASP.",
+    "precio": 13066.7
+  },
+  {
+    "codigo": "1548/377",
+    "nombre": "ITALIANA 4 ST. HOJA CAOBA JASPEADA",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1546/378",
+    "nombre": "ITAL. 2 ST. HOJA NATURAL JASP.",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/378",
+    "nombre": "ITALIANA 3 ST. H. NATURAL JASP.",
+    "precio": 13066.7
+  },
+  {
+    "codigo": "1548/378",
+    "nombre": "ITALIANA 4 ST. H. NATURAL JASP.",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1546/379",
+    "nombre": "ITALIANA 2 ST. HOJA ROBLE JASPEADO",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/379",
+    "nombre": "ITALIANA 3 ST. HOJA ROBLE JASP.",
+    "precio": 13066.7
+  },
+  {
+    "codigo": "1548/379",
+    "nombre": "ITALIANA 4 ST. H. ROBLE JASP. BH",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1546/380",
+    "nombre": "ITALIANA 2 ST. HOJA ROBLE JASPEADA",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "1547/380",
+    "nombre": "ITALIANA 3 ST. HOJA ROBLE JAP.",
+    "precio": 13066.7
+  },
+  {
+    "codigo": "1548/380",
+    "nombre": "ITALIANA 4 ST. H. ROBLE JASP.",
+    "precio": 19961.8
+  },
+  {
+    "codigo": "1590/201",
+    "nombre": "CHATA 3 GRAB. TELA IMIT. MARFIL",
+    "precio": 9343.7
+  },
+  {
+    "codigo": "1591/201",
+    "nombre": "CHATA 4 GRAB. TELA IMIT. MARFIL",
+    "precio": 11858.0
+  },
+  {
+    "codigo": "1905/440",
+    "nombre": "ONDULADA 7 ROBLE",
+    "precio": 19358.2
+  },
+  {
+    "codigo": "1960/423",
+    "nombre": "C/SUP TELA 5 ROBLE PAT. FH",
+    "precio": 20529.3
+  },
+  {
+    "codigo": "1960/442",
+    "nombre": "C/SUPLEMENTO TELA 5 ROBLE FH",
+    "precio": 18817.2
+  },
+  {
+    "codigo": "4410/010",
+    "nombre": "BOMBE 1 DORADO A LA HOJA",
+    "precio": 8947.6
+  },
+  {
+    "codigo": "4410/120",
+    "nombre": "BOMBE 1 NEGRO",
+    "precio": 6883.6
+  },
+  {
+    "codigo": "4532/120",
+    "nombre": "BOMBE 2 NEGRO",
+    "precio": 10293.5
+  },
+  {
+    "codigo": "4546/010",
+    "nombre": "ITALIANA 2 COLOR ORO",
+    "precio": 13025.7
+  },
+  {
+    "codigo": "4547/010",
+    "nombre": "ITALIANA 3 COLOR ORO",
+    "precio": 18327.6
+  },
+  {
+    "codigo": "4548/010",
+    "nombre": "ITALIANA 4 COLOR ORO",
+    "precio": 24709.7
+  },
+  {
+    "codigo": "4109",
+    "nombre": "FRANCESITA 1,1 TIZA",
+    "precio": 5433.7
+  },
+  {
+    "codigo": "4103",
+    "nombre": "FRANCESITA 2,5 TIZA",
+    "precio": 8213.0
+  },
+  {
+    "codigo": "4410",
+    "nombre": "BOMBE 1 TIZA",
+    "precio": 4502.9
+  },
+  {
+    "codigo": "4415",
+    "nombre": "BOMBE 1,5 TIZA",
+    "precio": 5858.1
+  },
+  {
+    "codigo": "4532",
+    "nombre": "BOMBE 2 TIZA",
+    "precio": 7347.5
+  },
+  {
+    "codigo": "4533",
+    "nombre": "BOMBE 3 TIZA",
+    "precio": 10364.0
+  },
+  {
+    "codigo": "4410/594",
+    "nombre": "BOMBE 1 ORO CHAMPAGNE",
+    "precio": 6596.3
+  },
+  {
+    "codigo": "4315/021",
+    "nombre": "CHATA 1,5 DORADO",
+    "precio": 8895.4
+  },
+  {
+    "codigo": "4330/010",
+    "nombre": "CHATA 3 DORADO",
+    "precio": 13300.1
+  },
+  {
+    "codigo": "BT33",
+    "nombre": "BARRAL TEÑIDO 33 MM.",
+    "precio": 8198.9
+  },
+  {
+    "codigo": "BT22",
+    "nombre": "BARRAL TEÑIDO 22 MM.",
+    "precio": 4203.2
+  },
+  {
+    "codigo": "BT14",
+    "nombre": "BARRAL TEÑIDO 14 MM.",
+    "precio": 3187.9
+  },
+  {
+    "codigo": "STT33",
+    "nombre": "SOPORTE TORNEADO TEÑIDO 33 MM.",
+    "precio": 3797.0
+  },
+  {
+    "codigo": "STT22",
+    "nombre": "SOPORTE TORNEADO TEÑIDO 22 MM.",
+    "precio": 2450.4
+  },
+  {
+    "codigo": "STT14",
+    "nombre": "SOPORTE TORNEADO TEÑIDO 14 MM",
+    "precio": 1769.5
+  },
+  {
+    "codigo": "SCT33",
+    "nombre": "SOPORTE COMUN TEÑIDO 33",
+    "precio": 2557.1
+  },
+  {
+    "codigo": "SCT22",
+    "nombre": "SOPORTE COMUN TEÑIDO 22 MM.",
+    "precio": 1304.6
+  },
+  {
+    "codigo": "SCT14",
+    "nombre": "SOPORTE COMUN TEÑIDO 14 MM.",
+    "precio": 1117.3
+  },
+  {
+    "codigo": "SLT33",
+    "nombre": "SOPORTE LATERAL TEÑIDO 33 MM.",
+    "precio": 2528.6
+  },
+  {
+    "codigo": "SLT22",
+    "nombre": "SOPORTE LATERAL TEÑIDO 22 MM.",
+    "precio": 2278.9
+  },
+  {
+    "codigo": "SLT14",
+    "nombre": "SOPORTE LATERAL TEÑIDO 14 MM.",
+    "precio": 2077.4
+  },
+  {
+    "codigo": "AT33",
+    "nombre": "ARGOLLA TEÑIDA 33 MM.",
+    "precio": 558.7
+  },
+  {
+    "codigo": "AT22",
+    "nombre": "ARGOLLA TEÑIDA 22 MM.",
+    "precio": 400.4
+  },
+  {
+    "codigo": "AT14",
+    "nombre": "ARGOLLA TEÑIDA 14 MM.",
+    "precio": 315.7
+  },
+  {
+    "codigo": "TT33",
+    "nombre": "TERMINAL TEÑIDO 33 MM.",
+    "precio": 1650.6
+  },
+  {
+    "codigo": "TT22",
+    "nombre": "TERMINAL TEÑIDO 22 MM.",
+    "precio": 1015.8
+  },
+  {
+    "codigo": "TT14",
+    "nombre": "TERMINAL TEÑIDO 14 MM.",
+    "precio": 431.4
+  },
+  {
+    "codigo": "BN33",
+    "nombre": "BARRAL NATURAL 33 MM.",
+    "precio": 6322.9
+  },
+  {
+    "codigo": "BN22",
+    "nombre": "BARRAL NATURAL 22 MM.",
+    "precio": 3238.3
+  },
+  {
+    "codigo": "BN14",
+    "nombre": "BARRAL NATURAL 14 MM.",
+    "precio": 2430.7
+  },
+  {
+    "codigo": "STN33",
+    "nombre": "SOPORTE TORNEADO NATURAL 33 MM.",
+    "precio": 2938.2
+  },
+  {
+    "codigo": "STN22",
+    "nombre": "SOPORTE TORNEADO NATURAL 22 MM.",
+    "precio": 1900.0
+  },
+  {
+    "codigo": "SCN33",
+    "nombre": "SOPORTE COMUN NATURAL 33 MM.",
+    "precio": 2048.9
+  },
+  {
+    "codigo": "SCN22",
+    "nombre": "SOPORTE COMUN NATURAL 22 MM.",
+    "precio": 1023.3
+  },
+  {
+    "codigo": "SCN14",
+    "nombre": "SOPORTE COMUN NATURAL 14 MM.",
+    "precio": 851.8
+  },
+  {
+    "codigo": "SLN33",
+    "nombre": "SOPORTE LATERAL NATURAL 33 MM.",
+    "precio": 1946.8
+  },
+  {
+    "codigo": "SLN22",
+    "nombre": "SOPORTE LATERAL NATURAL 22 MM.",
+    "precio": 1881.9
+  },
+  {
+    "codigo": "SLN14",
+    "nombre": "SOPORTE LATERAL NATURAL 14 MM.",
+    "precio": 1696.3
+  },
+  {
+    "codigo": "SDTB",
+    "nombre": "SOPORTE DOBLE TEÑIDO C/BASE",
+    "precio": 7267.1
+  },
+  {
+    "codigo": "AN33",
+    "nombre": "ARGOLLA NATURAL 33 MM.",
+    "precio": 431.4
+  },
+  {
+    "codigo": "TN33",
+    "nombre": "TERMINAL NATURAL 33 MM.",
+    "precio": 1270.1
+  },
+  {
+    "codigo": "SDNB",
+    "nombre": "SOPORTE DOBLE NATURAL  C/BASE",
+    "precio": 6326.1
+  },
+  {
+    "codigo": "AN22",
+    "nombre": "ARGOLLA NATURAL 22 MM.",
+    "precio": 286.8
+  },
+  {
+    "codigo": "TN22",
+    "nombre": "TERMINAL NATURAL 22 MM.",
+    "precio": 759.7
+  },
+  {
+    "codigo": "AN14",
+    "nombre": "ARGOLLA NATURAL 14 MM.",
+    "precio": 214.6
+  },
+  {
+    "codigo": "TN14",
+    "nombre": "TERMINAL NATURAL 14 MM.",
+    "precio": 333.3
+  },
+  {
+    "codigo": "SPN33",
+    "nombre": "SOPORTE PLACARD NATURAL 22/33 MM.",
+    "precio": 5000.0
+  },
+  {
+    "codigo": "B08",
+    "nombre": "BOLITA  8 MM.",
+    "precio": 56.7
+  },
+  {
+    "codigo": "B10",
+    "nombre": "BOLITA 10 MM.",
+    "precio": 79.1
+  },
+  {
+    "codigo": "B13",
+    "nombre": "BOLITA 13 MM.",
+    "precio": 82.2
+  },
+  {
+    "codigo": "B16",
+    "nombre": "BOLITA 16 MM.",
+    "precio": 101.7
+  },
+  {
+    "codigo": "B19",
+    "nombre": "BOLITA 19 MM.",
+    "precio": 162.1
+  },
+  {
+    "codigo": "B23",
+    "nombre": "BOLITA 23 MM.",
+    "precio": 220.9
+  },
+  {
+    "codigo": "B26",
+    "nombre": "BOLITA 26 MM.",
+    "precio": 320.8
+  },
+  {
+    "codigo": "B29",
+    "nombre": "BOLITA 29 MM.",
+    "precio": 338.8
+  },
+  {
+    "codigo": "B35",
+    "nombre": "BOLITA 35 MM.",
+    "precio": 531.4
+  },
+  {
+    "codigo": "B45",
+    "nombre": "BOLITA 45 MM.",
+    "precio": 1067.3
+  },
+  {
+    "codigo": "T1",
+    "nombre": "TIRADOR 1 PALO BLANCO",
+    "precio": 129.2
+  },
+  {
+    "codigo": "MO200",
+    "nombre": "CONTRAMARCO LISO 1/2 X 2",
+    "precio": 893.6
+  },
+  {
+    "codigo": "MO201",
+    "nombre": "CONTRAMARCO LISO 1/2 X 2 1/2",
+    "precio": 1133.9
+  },
+  {
+    "codigo": "MO202",
+    "nombre": "CONTRAMARCO LISO 1/2 X 3",
+    "precio": 1337.3
+  },
+  {
+    "codigo": "6210",
+    "nombre": "CONTRAMARCO 1/2 X 2 MOLDURADO",
+    "precio": 2120.3
+  },
+  {
+    "codigo": "MO212",
+    "nombre": "CONTRAMARCO 1/2 X 3  MOLDURADO",
+    "precio": 1540.8
+  },
+  {
+    "codigo": "MO110",
+    "nombre": "ZOCALO 3/4 X 3 LISO",
+    "precio": 2026.0
+  },
+  {
+    "codigo": "MO112",
+    "nombre": "ZOCALO 3/4 X 4 LISO",
+    "precio": 2815.5
+  },
+  {
+    "codigo": "MO102",
+    "nombre": "ZOCALO 1/2 X 3 LISO",
+    "precio": 1601.5
+  },
+  {
+    "codigo": "MO105",
+    "nombre": "ZOCALO 3/4 X 4 MOLDURADO",
+    "precio": 2786.7
+  },
+  {
+    "codigo": "MO108",
+    "nombre": "ZOCALO 3/4 X 3 MOLDURADO",
+    "precio": 2086.3
+  },
+  {
+    "codigo": "MO308",
+    "nombre": "RINCONERO 3/4 X 3/4",
+    "precio": 797.5
+  },
+  {
+    "codigo": "MO312",
+    "nombre": "RICONERO MOLDURADO 1 X 1",
+    "precio": 973.6
+  },
+  {
+    "codigo": "MO306",
+    "nombre": "RINCONERO 1 1/2 X 1 1/2",
+    "precio": 2190.6
+  },
+  {
+    "codigo": "MO607",
+    "nombre": "CONTRAVIDRIO 1/2 X 1/2",
+    "precio": 662.6
+  },
+  {
+    "codigo": "MO602",
+    "nombre": "CONTRAVIDRIO 3/4 X 3/4",
+    "precio": 832.4
+  },
+  {
+    "codigo": "MO600",
+    "nombre": "CONTRAVIDRIO MOLDURADO 1/2 X 3/4",
+    "precio": 668.9
+  },
+  {
+    "codigo": "MO608",
+    "nombre": "CONTRAVIDRIO 1 X 1",
+    "precio": 1038.7
+  },
+  {
+    "codigo": "MO407",
+    "nombre": "ESQUINERO 3/4 X 3/4",
+    "precio": 964.9
+  },
+  {
+    "codigo": "MO400",
+    "nombre": "ESQUINERO 1 X1",
+    "precio": 1014.6
+  },
+  {
+    "codigo": "MO402",
+    "nombre": "ESQUINERO 1 1/2 X 1 1/2",
+    "precio": 2150.4
+  },
+  {
+    "codigo": "MO501",
+    "nombre": "TAPAJUNTA 1/2 X 1",
+    "precio": 848.3
+  },
+  {
+    "codigo": "MO503",
+    "nombre": "TAPAJUNTA 1/2 X 1 1/2",
+    "precio": 1012.2
+  },
+  {
+    "codigo": "MO512",
+    "nombre": "TAPAJUNTA 1/2 X 1 MOLDURADO",
+    "precio": 724.7
+  },
+  {
+    "codigo": "MO502",
+    "nombre": "TAPAJUNTA 1/2 X 1 1/2 MOLDURADO",
+    "precio": 850.0
+  },
+  {
+    "codigo": "6045",
+    "nombre": "GUARDASILLA TIZADO 1/2 X 4",
+    "precio": 5172.2
+  },
+  {
+    "codigo": "MO650",
+    "nombre": "GUARDASILLA 3/4 X 4",
+    "precio": 3163.2
+  },
+  {
+    "codigo": "MO802",
+    "nombre": "TAPACINTA 1 X 4 LISO",
+    "precio": 4548.3
+  },
+  {
+    "codigo": "MO801",
+    "nombre": "TAPACINTA 1 X 4 MOLDURADO",
+    "precio": 4547.7
+  },
+  {
+    "codigo": "MO453",
+    "nombre": "ANTEPECHO 1 1/2 X 3",
+    "precio": 5351.5
+  },
+  {
+    "codigo": "30105",
+    "nombre": "LISTON 1/2 X 1/2",
+    "precio": 326.8
+  },
+  {
+    "codigo": "30106",
+    "nombre": "LISTON 1/2 X 3/4",
+    "precio": 478.2
+  },
+  {
+    "codigo": "30107",
+    "nombre": "LISTON 1/2 X 1",
+    "precio": 540.3
+  },
+  {
+    "codigo": "30108",
+    "nombre": "LISTON 1/2 X 1 1/2",
+    "precio": 820.7
+  },
+  {
+    "codigo": "30110",
+    "nombre": "LISTON 1/2 X 3",
+    "precio": 1556.5
+  },
+  {
+    "codigo": "30122",
+    "nombre": "LISTON 3/4 X 3/4",
+    "precio": 631.1
+  },
+  {
+    "codigo": "30123",
+    "nombre": "LISTON 3/4 X 1",
+    "precio": 755.9
+  },
+  {
+    "codigo": "30124",
+    "nombre": "LISTON 3/4 X 1 1/2",
+    "precio": 1170.3
+  },
+  {
+    "codigo": "30125",
+    "nombre": "LISTON 3/4 X 2",
+    "precio": 1560.5
+  },
+  {
+    "codigo": "30138",
+    "nombre": "LISTON 1 X 1",
+    "precio": 953.2
+  },
+  {
+    "codigo": "30139",
+    "nombre": "LISTON 1 X 1 1/2",
+    "precio": 1399.9
+  },
+  {
+    "codigo": "30140",
+    "nombre": "LISTON 1 X 2",
+    "precio": 1868.2
+  },
+  {
+    "codigo": "30153",
+    "nombre": "LISTON 1 1/2 X 1 1/2",
+    "precio": 2328.7
+  },
+  {
+    "codigo": "30154",
+    "nombre": "LISTON 1 1/2 X 2",
+    "precio": 3109.0
+  },
+  {
+    "codigo": "30170",
+    "nombre": "LISTON 2 X2",
+    "precio": 4241.0
+  },
+  {
+    "codigo": "MO552",
+    "nombre": "PASAMANO 2 X 2",
+    "precio": 5270.6
+  },
+  {
+    "codigo": "AL2H",
+    "nombre": "ALAJERO 2 CAJONES HORIZONTAL",
+    "precio": 11825.4
+  },
+  {
+    "codigo": "FEC",
+    "nombre": "FIGURAS ETNICAS CHICAS",
+    "precio": 96.2
+  },
+  {
+    "codigo": "FEG",
+    "nombre": "FIGURA ETNICA GRANDE",
+    "precio": 152.3
+  },
+  {
+    "codigo": "S",
+    "nombre": "CALADOS  LASER",
+    "precio": 330.3
+  },
+  {
+    "codigo": "RM1",
+    "nombre": "CUADRANTE MEDIANO",
+    "precio": 514.5
+  },
+  {
+    "codigo": "RG1",
+    "nombre": "CUADRANTE RELOJ GDE (20CM)",
+    "precio": 739.5
+  },
+  {
+    "codigo": "SAC",
+    "nombre": "SILLA DE COMER PARA CHICOS",
+    "precio": 39961.2
+  },
+  {
+    "codigo": "CM",
+    "nombre": "CAJA CORAZON MEDIANA",
+    "precio": 1649.1
+  },
+  {
+    "codigo": "2811",
+    "nombre": "ITALIANA 2 CM.",
+    "precio": 927.9
+  },
+  {
+    "codigo": "2547",
+    "nombre": "ITALIANA 3 CM.",
+    "precio": 1812.7
+  },
+  {
+    "codigo": "2548",
+    "nombre": "ITALIANA 4 CM.",
+    "precio": 2343.7
+  },
+  {
+    "codigo": "2549",
+    "nombre": "ITALIANA 6 CM.",
+    "precio": 5572.0
+  },
+  {
+    "codigo": "2908",
+    "nombre": "ITALIANA C/SUPLEMENTO 22 X 70",
+    "precio": 9936.9
+  },
+  {
+    "codigo": "MC909",
+    "nombre": "BOMBE 1.5",
+    "precio": 752.2
+  },
+  {
+    "codigo": "2532",
+    "nombre": "BOMBE 2",
+    "precio": 929.1
+  },
+  {
+    "codigo": "2533",
+    "nombre": "BOMBE 3",
+    "precio": 1748.8
+  },
+  {
+    "codigo": "2567",
+    "nombre": "BOMBE 4",
+    "precio": 2262.5
+  },
+  {
+    "codigo": "2229",
+    "nombre": "BOMBE C/GARGANTA 16 X 20",
+    "precio": 932.1
+  },
+  {
+    "codigo": "MC934",
+    "nombre": "CHANFLE 3.5",
+    "precio": 1217.6
+  },
+  {
+    "codigo": "2564",
+    "nombre": "CHANFLE 4.5",
+    "precio": 1813.0
+  },
+  {
+    "codigo": "2565",
+    "nombre": "CHANFLE 5.5",
+    "precio": 1927.7
+  },
+  {
+    "codigo": "MC903",
+    "nombre": "CHANFLE 7",
+    "precio": 2697.3
+  },
+  {
+    "codigo": "2331",
+    "nombre": "CHATA 10 X 30",
+    "precio": 978.4
+  },
+  {
+    "codigo": "MC927",
+    "nombre": "CHATA 15 X 30",
+    "precio": 1326.5
+  },
+  {
+    "codigo": "2350",
+    "nombre": "CHATA 15 X 45",
+    "precio": 1717.7
+  },
+  {
+    "codigo": "2365",
+    "nombre": "CHATA 20 X 60",
+    "precio": 9936.9
+  },
+  {
+    "codigo": "2309",
+    "nombre": "CHATA 20 X 95",
+    "precio": 14894.9
+  },
+  {
+    "codigo": "2300",
+    "nombre": "CHATA PETRIVICADA 23 X 30",
+    "precio": 5361.3
+  },
+  {
+    "codigo": "2303",
+    "nombre": "CHATA PETRIFICADA 15 X 45",
+    "precio": 7167.3
+  },
+  {
+    "codigo": "2304",
+    "nombre": "CHATA PETRIFICADA 20 X 60",
+    "precio": 10665.4
+  },
+  {
+    "codigo": "2355",
+    "nombre": "CHATA PETRIFICADA 20 X 90",
+    "precio": 16974.7
+  },
+  {
+    "codigo": "MC910",
+    "nombre": "BATEA 21 X 45",
+    "precio": 2385.9
+  },
+  {
+    "codigo": "2909",
+    "nombre": "BATEA C/ SUPLEMENTO 21 X 44",
+    "precio": 6993.4
+  },
+  {
+    "codigo": "2101",
+    "nombre": "BATEA 20 X 27",
+    "precio": 1503.4
+  },
+  {
+    "codigo": "2814",
+    "nombre": "BATEA AMERICANA 21 X 45",
+    "precio": 5441.0
+  },
+  {
+    "codigo": "MC922",
+    "nombre": "ONDULADA 14 X 45",
+    "precio": 1813.9
+  },
+  {
+    "codigo": "2905",
+    "nombre": "ONDULADA 20 X 70",
+    "precio": 9936.9
+  },
+  {
+    "codigo": "MC914",
+    "nombre": "ONDULADA 14 X 32",
+    "precio": 1326.5
+  },
+  {
+    "codigo": "2901",
+    "nombre": "MOLDURON 22 X 71",
+    "precio": 9936.9
+  },
+  {
+    "codigo": "MC918",
+    "nombre": "MOLDURON ESPECIAL 32 X 58",
+    "precio": 4689.2
+  },
+  {
+    "codigo": "MC919",
+    "nombre": "MOLDURON 21 X 69 ESPECIAL",
+    "precio": 4367.3
+  },
+  {
+    "codigo": "MC01",
+    "nombre": "CHATA 9 EN FF 12",
+    "precio": 2993.8
+  },
+  {
+    "codigo": "MC02",
+    "nombre": "CHATA 6 EN FF12",
+    "precio": 2455.0
+  },
+  {
+    "codigo": "2633",
+    "nombre": "ETNICA 30 MM",
+    "precio": 8627.7
+  },
+  {
+    "codigo": "PE280",
+    "nombre": "PORCELANA NICRON EVA   280 GS.",
+    "precio": 8531.5
+  },
+  {
+    "codigo": "PE500",
+    "nombre": "PORCELANA NICRON  500 GS.",
+    "precio": 8509.4
+  },
+  {
+    "codigo": "FF3",
+    "nombre": "FIBRO FACIL 3 MM",
+    "precio": 9713.1
+  },
+  {
+    "codigo": "FF5",
+    "nombre": "FIBRO FACIL 5.5 MM.",
+    "precio": 12881.9
+  },
+  {
+    "codigo": "FF9",
+    "nombre": "FIBRO FACIL 9 MM.",
+    "precio": 17950.0
+  },
+  {
+    "codigo": "FF12",
+    "nombre": "FIBRO FACIL 12 MM.",
+    "precio": 22403.6
+  },
+  {
+    "codigo": "FF15",
+    "nombre": "FIBRO FACIL 15 MM.",
+    "precio": 27575.6
+  },
+  {
+    "codigo": "CHB",
+    "nombre": "FIBRO PLUS BLANCO/NEGRO",
+    "precio": 14972.0
+  },
+  {
+    "codigo": "CHPN",
+    "nombre": "PIZARRON NEGRO",
+    "precio": 34217.8
+  },
+  {
+    "codigo": "TB15",
+    "nombre": "TABLERO PINO 15 MM.",
+    "precio": 51259.5
+  },
+  {
+    "codigo": "TB18",
+    "nombre": "TABLERO PINO 18 MM.",
+    "precio": 64186.7
+  },
+  {
+    "codigo": "R1001",
+    "nombre": "CABEZA REDONDA 33 ROBLE/MARA",
+    "precio": 113.5
+  },
+  {
+    "codigo": "P1001",
+    "nombre": "CABEZA REDONDA 33 PALO BLANCO",
+    "precio": 75.8
+  },
+  {
+    "codigo": "R1002",
+    "nombre": "CABEZA REDONDA 27 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1002",
+    "nombre": "CABEZA REDONDA 27 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1003",
+    "nombre": "CABEZA REDONDA 20 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1003",
+    "nombre": "CABEZA REDONDA 20 PALO BLANCO",
+    "precio": 75.8
+  },
+  {
+    "codigo": "R1011",
+    "nombre": "MADRIN 40 ROBLE/MARA",
+    "precio": 165.4
+  },
+  {
+    "codigo": "P1011",
+    "nombre": "MADRIN 40 PALO BLANCO",
+    "precio": 112.6
+  },
+  {
+    "codigo": "R1014",
+    "nombre": "FILETE 33 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "R1015",
+    "nombre": "FILETE 30 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1015",
+    "nombre": "FILETE 30 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1016",
+    "nombre": "LIMAY 34 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1016",
+    "nombre": "LIMAY 34 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1017",
+    "nombre": "LIMAY 30 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1017",
+    "nombre": "LIMAY 30 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1018",
+    "nombre": "LIMAY 21 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1018",
+    "nombre": "LIMAY 21 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1019",
+    "nombre": "FITZ ROY 40 ROBLE/MARA",
+    "precio": 165.4
+  },
+  {
+    "codigo": "P1019",
+    "nombre": "FITZ ROY 40 PALO BLANCO",
+    "precio": 112.9
+  },
+  {
+    "codigo": "R1020",
+    "nombre": "FITZ ROY 34 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1020",
+    "nombre": "FITZ ROY 34 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1022",
+    "nombre": "AMEGHINO 30 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "R1026",
+    "nombre": "BEAGLE 32 ROBLE/MARA",
+    "precio": 112.6
+  },
+  {
+    "codigo": "P1026",
+    "nombre": "BEAGLE 32 PALO BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "R1028",
+    "nombre": "FRAGNANO 43 ROBLE/MARA",
+    "precio": 165.4
+  },
+  {
+    "codigo": "P1028",
+    "nombre": "FRAGNANO 43 PALO BLANCO",
+    "precio": 112.6
+  },
+  {
+    "codigo": "2003",
+    "nombre": "MJA. TRONADOR 80",
+    "precio": 191.4
+  },
+  {
+    "codigo": "2004",
+    "nombre": "MJA. TRONADOR 108",
+    "precio": 191.4
+  },
+  {
+    "codigo": "2013",
+    "nombre": "MJA. TUNUYAN 108",
+    "precio": 191.4
+  },
+  {
+    "codigo": "2024",
+    "nombre": "CUBETA PAIMUN 114",
+    "precio": 191.4
+  },
+  {
+    "codigo": "2025",
+    "nombre": "CUB. NAHUEL HUAPI 77",
+    "precio": 191.4
+  },
+  {
+    "codigo": "T2",
+    "nombre": "TIRADOR 2 PALO BLANCO",
+    "precio": 190.3
+  },
+  {
+    "codigo": "B40",
+    "nombre": "BOLITA 40 MM.",
+    "precio": 948.0
+  },
+  {
+    "codigo": "30109",
+    "nombre": "LISTON 1/2 X 2",
+    "precio": 1041.6
+  },
+  {
+    "codigo": "30111",
+    "nombre": "LISTON 1/2 X 4",
+    "precio": 2068.5
+  },
+  {
+    "codigo": "30112",
+    "nombre": "LISTON 1/2 X 5",
+    "precio": 2588.6
+  },
+  {
+    "codigo": "30113",
+    "nombre": "LISTON 1/2 X 6",
+    "precio": 3100.1
+  },
+  {
+    "codigo": "30126",
+    "nombre": "LISTON 3/4 X 3",
+    "precio": 2327.8
+  },
+  {
+    "codigo": "30127",
+    "nombre": "LISTON 3/4 X 4",
+    "precio": 3103.8
+  },
+  {
+    "codigo": "30128",
+    "nombre": "LISTON 3/4 X 5",
+    "precio": 3897.8
+  },
+  {
+    "codigo": "30129",
+    "nombre": "LISTON 3/4 X 6",
+    "precio": 3791.4
+  },
+  {
+    "codigo": "30141",
+    "nombre": "LISTON 1 X 3",
+    "precio": 2814.5
+  },
+  {
+    "codigo": "30142",
+    "nombre": "LISTON 1 X 4",
+    "precio": 3742.7
+  },
+  {
+    "codigo": "30143",
+    "nombre": "LISTON 1 X 5",
+    "precio": 4674.2
+  },
+  {
+    "codigo": "30144",
+    "nombre": "LISTON 1 X 6",
+    "precio": 5627.9
+  },
+  {
+    "codigo": "30171",
+    "nombre": "LISTON 2 X 3",
+    "precio": 6406.9
+  },
+  {
+    "codigo": "30172",
+    "nombre": "LISTON 2 X 4",
+    "precio": 8483.7
+  },
+  {
+    "codigo": "T3",
+    "nombre": "TIRADOR 3 PALO BLANCO",
+    "precio": 388.0
+  },
+  {
+    "codigo": "PT",
+    "nombre": "PATAS TIJERA",
+    "precio": 25440.5
+  },
+  {
+    "codigo": "TE99",
+    "nombre": "CAJA TE X 9 TAPA CIEGA FF9",
+    "precio": 9444.8
+  },
+  {
+    "codigo": "TIG",
+    "nombre": "PINCELES VARIAS MEDIDAS",
+    "precio": 1735.7
+  },
+  {
+    "codigo": "PI5",
+    "nombre": "PINCELETA Nº 5 Y N° 6",
+    "precio": 2060.7
+  },
+  {
+    "codigo": "P0",
+    "nombre": "PINCEL Nº0",
+    "precio": 1085.9
+  },
+  {
+    "codigo": "TA3",
+    "nombre": "TARUGO PALO BLANCO  3 MM.",
+    "precio": 784.2
+  },
+  {
+    "codigo": "TA5",
+    "nombre": "TARUGO PALO BLANCO  5 MM.",
+    "precio": 700.3
+  },
+  {
+    "codigo": "TA6",
+    "nombre": "TARUGO PALO BLANCO  6 MM.",
+    "precio": 700.3
+  },
+  {
+    "codigo": "TA7",
+    "nombre": "TARUGO PALO BLANCO  7 MM.",
+    "precio": 803.0
+  },
+  {
+    "codigo": "TA8",
+    "nombre": "TARUGO PALO BLANCO  8 MM.",
+    "precio": 803.0
+  },
+  {
+    "codigo": "TA10",
+    "nombre": "TARUGO PALO BLANCO 10 MM.",
+    "precio": 948.8
+  },
+  {
+    "codigo": "TA12",
+    "nombre": "TARUGO PALO BLANCO 12 MM.",
+    "precio": 1095.3
+  },
+  {
+    "codigo": "TA14",
+    "nombre": "TARUGO PALO BLANCO 14 MM.",
+    "precio": 1460.1
+  },
+  {
+    "codigo": "TA16",
+    "nombre": "TARUGO PALO BLANCO 16 MM.",
+    "precio": 1605.5
+  },
+  {
+    "codigo": "TA18",
+    "nombre": "TARUGO PALO BLANCO 18 MM.",
+    "precio": 1999.7
+  },
+  {
+    "codigo": "TA20",
+    "nombre": "TARUGO PALO BLANCO 20 MM.",
+    "precio": 2475.5
+  },
+  {
+    "codigo": "TA22",
+    "nombre": "TARUGO PALO BLANCO 22 MM.",
+    "precio": 2839.5
+  },
+  {
+    "codigo": "TA25",
+    "nombre": "TARUGO PALO BLANCO 25 MM.",
+    "precio": 3307.5
+  },
+  {
+    "codigo": "TAE8",
+    "nombre": "TARUGO ESTRIADO P. BLANCO  8 MM.",
+    "precio": 948.8
+  },
+  {
+    "codigo": "TAE10",
+    "nombre": "TARUGO ESTRIADO P. BLANCO 10 MM.",
+    "precio": 1095.3
+  },
+  {
+    "codigo": "TAE12",
+    "nombre": "TARUGO ESTRIADO P. BLANCO 12 MM.",
+    "precio": 1241.3
+  },
+  {
+    "codigo": "TAC8",
+    "nombre": "TARUGO CEDRO  8 MM.",
+    "precio": 1546.4
+  },
+  {
+    "codigo": "TAC10",
+    "nombre": "TARUGO CEDRO 10 MM.",
+    "precio": 1750.7
+  },
+  {
+    "codigo": "TAC12",
+    "nombre": "TARUGO CEDRO 12 MM.",
+    "precio": 2043.2
+  },
+  {
+    "codigo": "TAC14",
+    "nombre": "TARUGO CEDRO 14 MM.",
+    "precio": 2772.9
+  },
+  {
+    "codigo": "TAC16",
+    "nombre": "TARUGO CEDRO 16 MM.",
+    "precio": 2912.3
+  },
+  {
+    "codigo": "OF",
+    "nombre": "OFERTA",
+    "precio": 1702.2
+  },
+  {
+    "codigo": "TP",
+    "nombre": "TABLA PARA PIZZA",
+    "precio": 12563.0
+  },
+  {
+    "codigo": "MR",
+    "nombre": "MAQUINA DE RELOJ",
+    "precio": 4389.0
+  },
+  {
+    "codigo": "BBM",
+    "nombre": "BANDEJA BATEA  MEDIANA",
+    "precio": 8954.1
+  },
+  {
+    "codigo": "BBG",
+    "nombre": "BANDEJA BATEA GRANDE",
+    "precio": 11192.6
+  },
+  {
+    "codigo": "L4",
+    "nombre": "LIBRO 4 25 X 30 X 8",
+    "precio": 5357.0
+  },
+  {
+    "codigo": "P3",
+    "nombre": "PERCHERO X 3 GANCHOS RECTO",
+    "precio": 8789.3
+  },
+  {
+    "codigo": "BPC",
+    "nombre": "BANDEJA PINO CHICA 20 X 30",
+    "precio": 13975.5
+  },
+  {
+    "codigo": "STN14",
+    "nombre": "SOPORTE TORNEADO NATURAL 14MM",
+    "precio": 1343.9
+  },
+  {
+    "codigo": "VM02",
+    "nombre": "VIDRIO  2 MM. A MEDIDA",
+    "precio": 27173.3
+  },
+  {
+    "codigo": "ESP02",
+    "nombre": "ESPEJO 3 MM A MEDIDA",
+    "precio": 47874.9
+  },
+  {
+    "codigo": "TA4",
+    "nombre": "TARUGO PALO BLANCO  4MM",
+    "precio": 700.3
+  },
+  {
+    "codigo": "PPF",
+    "nombre": "PANERA PERSIANA F FACIL",
+    "precio": 35162.0
+  },
+  {
+    "codigo": "PVF",
+    "nombre": "PANERA C/VIDRIO F FACIL",
+    "precio": 31249.8
+  },
+  {
+    "codigo": "TE29",
+    "nombre": "CAJA TE X 2 TAPA CIEGA FF9",
+    "precio": 5929.2
+  },
+  {
+    "codigo": "MO311",
+    "nombre": "RINCONERO 11/2 X 11/2 MOLD.",
+    "precio": 2229.4
+  },
+  {
+    "codigo": "MO305",
+    "nombre": "RINCONERO 1 X 11/2 MOLD.",
+    "precio": 1458.3
+  },
+  {
+    "codigo": "MO603",
+    "nombre": "CONTRAVIDRIO 3/4 X 3/4 MOLD.",
+    "precio": 832.4
+  },
+  {
+    "codigo": "MO605",
+    "nombre": "CONTRAVIDRIO 1/2 X 1/2 MOLD.",
+    "precio": 662.6
+  },
+  {
+    "codigo": "MO609",
+    "nombre": "CONTRAVIDRIO 1/2 X 1 MOLD.",
+    "precio": 761.0
+  },
+  {
+    "codigo": "MO174",
+    "nombre": "CONTRAVIDRIO 3/4 X 1 MOLD.",
+    "precio": 1256.0
+  },
+  {
+    "codigo": "MO150",
+    "nombre": "CONTRAVIDRIO 1/2 X 3/4 MOLD.",
+    "precio": 698.5
+  },
+  {
+    "codigo": "MO404",
+    "nombre": "ESQUINERO 1 X 11/2 MOLD.Y LISO",
+    "precio": 1498.2
+  },
+  {
+    "codigo": "MO406",
+    "nombre": "ESQUINERO 2 X 2",
+    "precio": 3715.0
+  },
+  {
+    "codigo": "MO506",
+    "nombre": "TAPA JUNTA 1/2 X 3/4 LISA",
+    "precio": 669.8
+  },
+  {
+    "codigo": "MO753",
+    "nombre": "TAPA CANTO 1/2 X 1",
+    "precio": 872.8
+  },
+  {
+    "codigo": "MO750",
+    "nombre": "MEDIA CAÑA 1/2 X 3/4",
+    "precio": 580.8
+  },
+  {
+    "codigo": "MO500",
+    "nombre": "MEDIA CAÑA 1/2 X 1",
+    "precio": 630.1
+  },
+  {
+    "codigo": "MO510",
+    "nombre": "MEDIA CAÑA 1/2 X 1/2",
+    "precio": 539.5
+  },
+  {
+    "codigo": "MO511",
+    "nombre": "MEDIA CAÑA 3/4 X 11/2",
+    "precio": 1507.2
+  },
+  {
+    "codigo": "MO176",
+    "nombre": "TERM. MOLDURADAS 1/4 X 1/2",
+    "precio": 771.8
+  },
+  {
+    "codigo": "MO152",
+    "nombre": "TERM. MOLDURADA 3/4 X 1/2",
+    "precio": 711.4
+  },
+  {
+    "codigo": "MO173",
+    "nombre": "TERM. MOLDURADA 13X25",
+    "precio": 1619.7
+  },
+  {
+    "codigo": "MO505",
+    "nombre": "GUARDASILLA 1/2 X 2",
+    "precio": 1177.2
+  },
+  {
+    "codigo": "MO651",
+    "nombre": "GUARDASILLA 1/2 X 3 MOLD.",
+    "precio": 1519.7
+  },
+  {
+    "codigo": "MO156",
+    "nombre": "NARIZ P/ ESCALON",
+    "precio": 5916.0
+  },
+  {
+    "codigo": "1170/345",
+    "nombre": "ELE RECTA 10 X 20 ALUMINIO",
+    "precio": 9748.2
+  },
+  {
+    "codigo": "1712/345",
+    "nombre": "PARABOLA 28 ALUMINIO",
+    "precio": 10138.7
+  },
+  {
+    "codigo": "MO350",
+    "nombre": "BARRAL 22 MM DE PINO",
+    "precio": 1400.7
+  },
+  {
+    "codigo": "MO351",
+    "nombre": "BARRAL 33 MM DE PINO",
+    "precio": 3081.8
+  },
+  {
+    "codigo": "MO352",
+    "nombre": "BARRAL 43 MM DE PINO",
+    "precio": 6079.3
+  },
+  {
+    "codigo": "1548/423",
+    "nombre": "ITALIANA 4 ROBLE PATINADA FH",
+    "precio": 12087.7
+  },
+  {
+    "codigo": "MO111",
+    "nombre": "ZOCALO 1/2 X 4",
+    "precio": 1945.2
+  },
+  {
+    "codigo": "MO170",
+    "nombre": "TERMINACION 1/2 X 1",
+    "precio": 771.8
+  },
+  {
+    "codigo": "TER3",
+    "nombre": "TERCIADO 3MM",
+    "precio": 17694.1
+  },
+  {
+    "codigo": "MB",
+    "nombre": "MELAMINA BLANCA 18 MM",
+    "precio": 32945.1
+  },
+  {
+    "codigo": "TCB",
+    "nombre": "TAPA CANTO BLANCO",
+    "precio": 836.0
+  },
+  {
+    "codigo": "MO403",
+    "nombre": "ESQUINERO MOLDURADO 1X1",
+    "precio": 1096.4
+  },
+  {
+    "codigo": "FLEX",
+    "nombre": "TIRA DE FLEXIPUNTAS (166)",
+    "precio": 3850.0
+  },
+  {
+    "codigo": "G7",
+    "nombre": "GRAMPAS 7 MM (142)",
+    "precio": 3850.0
+  },
+  {
+    "codigo": "G10",
+    "nombre": "GRAMPAS 10 MM (142)",
+    "precio": 3850.0
+  },
+  {
+    "codigo": "T16",
+    "nombre": "TORNILLO 4 X 15",
+    "precio": 23.0
+  },
+  {
+    "codigo": "T20",
+    "nombre": "TORNILLO 4 X 20",
+    "precio": 15.1
+  },
+  {
+    "codigo": "T25",
+    "nombre": "TORNILLO 4 X 25",
+    "precio": 35.7
+  },
+  {
+    "codigo": "T30",
+    "nombre": "TORNILLO 4 X 30",
+    "precio": 20.3
+  },
+  {
+    "codigo": "T35",
+    "nombre": "TORNILLO 4 X 35",
+    "precio": 23.9
+  },
+  {
+    "codigo": "T40",
+    "nombre": "TORNILLO 4 X 40",
+    "precio": 52.1
+  },
+  {
+    "codigo": "BAL",
+    "nombre": "BALUSTRE TORNEADO",
+    "precio": 9728.5
+  },
+  {
+    "codigo": "T45",
+    "nombre": "TORNILLO 4 X 45",
+    "precio": 55.9
+  },
+  {
+    "codigo": "T50",
+    "nombre": "TORNILLO 4 X 50",
+    "precio": 61.8
+  },
+  {
+    "codigo": "T60",
+    "nombre": "TORNILLO 4 X 60",
+    "precio": 71.0
+  },
+  {
+    "codigo": "T70",
+    "nombre": "TORNILLO 5 X 70",
+    "precio": 31.9
+  },
+  {
+    "codigo": "T10",
+    "nombre": "TORNILLO (2.5) 3 X 10",
+    "precio": 16.1
+  },
+  {
+    "codigo": "TA",
+    "nombre": "TARUGO FISHER 6 MM",
+    "precio": 9.1
+  },
+  {
+    "codigo": "PASP",
+    "nombre": "PASTPARTOU FF3",
+    "precio": 15892.1
+  },
+  {
+    "codigo": "COLU",
+    "nombre": "COLUMNA TORNEADA PINO",
+    "precio": 22316.3
+  },
+  {
+    "codigo": "CL",
+    "nombre": "CLAVOS",
+    "precio": 239.3
+  },
+  {
+    "codigo": "BL",
+    "nombre": "BLISTER TARUGOS",
+    "precio": 1829.5
+  },
+  {
+    "codigo": "Z3030",
+    "nombre": "CAJA ZAPATO 30 X 30 X 12",
+    "precio": 13086.1
+  },
+  {
+    "codigo": "P1014",
+    "nombre": "FILETE 33 P. BLANCO",
+    "precio": 75.1
+  },
+  {
+    "codigo": "MO408",
+    "nombre": "ESQUINERO 1/2 X 1/2",
+    "precio": 893.6
+  },
+  {
+    "codigo": "BP60",
+    "nombre": "BAUL PINO 60 X 40 X 40",
+    "precio": 53134.7
+  },
+  {
+    "codigo": "BP80",
+    "nombre": "BAUL PINO 80 X 40 X 40",
+    "precio": 59776.9
+  },
+  {
+    "codigo": "BP100",
+    "nombre": "BAUL PINO 100 X 40 X 40",
+    "precio": 66421.5
+  },
+  {
+    "codigo": "GA1",
+    "nombre": "GLAZING AL AGUA 50 CC.",
+    "precio": 1386.6
+  },
+  {
+    "codigo": "CAC",
+    "nombre": "CAJON CHICO15X20 F.FACIL",
+    "precio": 8982.0
+  },
+  {
+    "codigo": "CAM",
+    "nombre": "CAJON MEDIANO 20X25 F. FACIL",
+    "precio": 11000.0
+  },
+  {
+    "codigo": "PI3",
+    "nombre": "PINCELETA Nº 3 Y N° 4",
+    "precio": 1324.7
+  },
+  {
+    "codigo": "PI7",
+    "nombre": "PINCELETA Nº 7 Y N° 8",
+    "precio": 3017.4
+  },
+  {
+    "codigo": "CPS",
+    "nombre": "CAJA PORTA SAHUMERIOS",
+    "precio": 7981.0
+  },
+  {
+    "codigo": "CB",
+    "nombre": "CUNA BEBE",
+    "precio": 15678.0
+  },
+  {
+    "codigo": "CCH",
+    "nombre": "COCINA PARA CHICOS",
+    "precio": 34492.2
+  },
+  {
+    "codigo": "BUP",
+    "nombre": "BUZÓN DE PINO",
+    "precio": 32711.8
+  },
+  {
+    "codigo": "Z354520",
+    "nombre": "CAJA ZAPATO 35 X 45 X 20",
+    "precio": 14004.0
+  },
+  {
+    "codigo": "PH",
+    "nombre": "PORTA HILO",
+    "precio": 3832.9
+  },
+  {
+    "codigo": "MO175",
+    "nombre": "TERMINACION 1/2 X 1",
+    "precio": 711.4
+  },
+  {
+    "codigo": "BA",
+    "nombre": "BANQUETA ALTA RECTA",
+    "precio": 40808.3
+  },
+  {
+    "codigo": "MO450",
+    "nombre": "ANTEPECHO 1 X 2 1/2 PINO",
+    "precio": 2677.0
+  },
+  {
+    "codigo": "BDI1",
+    "nombre": "BARNIZ DILUYENTE X 250 EQ",
+    "precio": 6933.1
+  },
+  {
+    "codigo": "CRA2",
+    "nombre": "CRAQUELADOR 2 COMPONENTES",
+    "precio": 5680.4
+  },
+  {
+    "codigo": "BI70",
+    "nombre": "BIBLIOTECA 70 X 30 X 1.83",
+    "precio": 118200.5
+  },
+  {
+    "codigo": "BI80",
+    "nombre": "BIBLIOTECA 80 X 30 X 1.83",
+    "precio": 129465.0
+  },
+  {
+    "codigo": "ESC2",
+    "nombre": "ESCALERITA 2 ESC. FIBRO FACIL",
+    "precio": 21978.5
+  },
+  {
+    "codigo": "CAJ4CH",
+    "nombre": "CAJONERA C/CALADOS 4 CAJ.",
+    "precio": 129439.0
+  },
+  {
+    "codigo": "G1",
+    "nombre": "GESSO 200 CC",
+    "precio": 4352.1
+  },
+  {
+    "codigo": "MO119",
+    "nombre": "ZOCALO 1/2 X 3 PINO MOLDURADO",
+    "precio": 1458.8
+  },
+  {
+    "codigo": "1470",
+    "nombre": "SUBIDA 45 MM",
+    "precio": 8321.8
+  },
+  {
+    "codigo": "F1",
+    "nombre": "FIGURA CHICA",
+    "precio": 88.3
+  },
+  {
+    "codigo": "F2",
+    "nombre": "FIGURA MEDIANA",
+    "precio": 115.2
+  },
+  {
+    "codigo": "F3",
+    "nombre": "FIGURA GRANDE",
+    "precio": 136.1
+  },
+  {
+    "codigo": "BB1",
+    "nombre": "BARNIZ ACRILICO MATE SATIN Y BRILLANTE X100CC",
+    "precio": 3922.3
+  },
+  {
+    "codigo": "A15",
+    "nombre": "ARGOLLA NATURAL 86 MM",
+    "precio": 1821.2
+  },
+  {
+    "codigo": "A16",
+    "nombre": "ARGOLLA NATURAL  105 MM",
+    "precio": 1851.8
+  },
+  {
+    "codigo": "PMO1",
+    "nombre": "PASTA DE MODELAR",
+    "precio": 7081.9
+  },
+  {
+    "codigo": "BO5",
+    "nombre": "BODEGA REDONDA 5 BOTELLAS",
+    "precio": 53014.9
+  },
+  {
+    "codigo": "R35",
+    "nombre": "RUEDITAS 35 TORNEADAS",
+    "precio": 415.4
+  },
+  {
+    "codigo": "R45",
+    "nombre": "RUEDITAS 45 TORNEADAS",
+    "precio": 532.3
+  },
+  {
+    "codigo": "T4",
+    "nombre": "TIRADOR 4 PALO BLANCO",
+    "precio": 523.0
+  },
+  {
+    "codigo": "TBA",
+    "nombre": "TERMINAL BANDERIN 4-5-6 MM",
+    "precio": 108.9
+  },
+  {
+    "codigo": "TTA",
+    "nombre": "TERMINAL NATURAL 8-10-12 MM",
+    "precio": 286.0
+  },
+  {
+    "codigo": "GR",
+    "nombre": "CAJA GRAMPAS 7 / 10",
+    "precio": 65999.9
+  },
+  {
+    "codigo": "GP",
+    "nombre": "GANCHO DE PERCHERO",
+    "precio": 2435.3
+  },
+  {
+    "codigo": "BLC",
+    "nombre": "BLISTER CONOS CENTRADORES P/ TARUGOS",
+    "precio": 16632.0
+  },
+  {
+    "codigo": "CPPI",
+    "nombre": "CASA DE PAJARITOS PINO",
+    "precio": 7855.2
+  },
+  {
+    "codigo": "COR",
+    "nombre": "PLANCHA DE CORCHO X MM",
+    "precio": 2512.1
+  },
+  {
+    "codigo": "S139",
+    "nombre": "PIE  PLATO FF MINI  9CM",
+    "precio": 672.5
+  },
+  {
+    "codigo": "CFF3030",
+    "nombre": "CUBO FF 30 X 30 X 20",
+    "precio": 9475.4
+  },
+  {
+    "codigo": "CFF3040",
+    "nombre": "CUBO FF 30 X 40 X 20",
+    "precio": 11010.9
+  },
+  {
+    "codigo": "CFF4040",
+    "nombre": "CUBO FF 40 X 40 X 20",
+    "precio": 12588.7
+  },
+  {
+    "codigo": "2267",
+    "nombre": "POLIG C/ CUADR 28 X 13",
+    "precio": 7167.3
+  },
+  {
+    "codigo": "2268",
+    "nombre": "POLIG C/CUADR 42 X 19",
+    "precio": 10949.2
+  },
+  {
+    "codigo": "2269",
+    "nombre": "POLIG C/CUADR 60 X 19",
+    "precio": 14492.8
+  },
+  {
+    "codigo": "2264",
+    "nombre": "RATTAN 28 X 15",
+    "precio": 7144.6
+  },
+  {
+    "codigo": "2265",
+    "nombre": "RATTAN 43 X 18",
+    "precio": 10949.2
+  },
+  {
+    "codigo": "2266",
+    "nombre": "RATTAN 62 X 19",
+    "precio": 14492.8
+  },
+  {
+    "codigo": "2366",
+    "nombre": "BAJADA C/ BAMBU 42 X 20",
+    "precio": 10031.8
+  },
+  {
+    "codigo": "2367",
+    "nombre": "BAJADA C/ BAMBU 62 X 20",
+    "precio": 13291.8
+  },
+  {
+    "codigo": "GM",
+    "nombre": "GANCHITOS PARA MARCOS",
+    "precio": 300.0
+  },
+  {
+    "codigo": "POM",
+    "nombre": "POMO PERCHERO 2\"",
+    "precio": 1417.9
+  },
+  {
+    "codigo": "P",
+    "nombre": "PATA/BOCHA TORNEADA 3\" 10CM",
+    "precio": 8800.0
+  },
+  {
+    "codigo": "PAPI",
+    "nombre": "PALETA DE PINTOR",
+    "precio": 1842.9
+  },
+  {
+    "codigo": "2272/503",
+    "nombre": "BATEA CAMPESTRE 64X20 COUNTRY HUESO VIEJO",
+    "precio": 22289.5
+  },
+  {
+    "codigo": "2272/107",
+    "nombre": "BATEA CAMPESTRE 64X20 PLATEADO AT NEG",
+    "precio": 26235.2
+  },
+  {
+    "codigo": "2300/503",
+    "nombre": "CH PETRIFICADA 30X13 COUNTRY HUESO VIEJO",
+    "precio": 11033.4
+  },
+  {
+    "codigo": "2303/503",
+    "nombre": "CH PETRIFICADA 45X15 COUNTRY HUESO VIEJO",
+    "precio": 12453.1
+  },
+  {
+    "codigo": "2304/503",
+    "nombre": "CH PETRIFICADA 65X20 COUNTRY HUESO VIEJO",
+    "precio": 15644.2
+  },
+  {
+    "codigo": "2641/503",
+    "nombre": "CALLE ANGOSTA COUNTRY HUESO VIEJO",
+    "precio": 36266.9
+  },
+  {
+    "codigo": "2265/503",
+    "nombre": "RATTAN 43X18  COUNTRY HUESO VIEJO",
+    "precio": 17002.0
+  },
+  {
+    "codigo": "2266/503",
+    "nombre": "RATTAN 62X19 COUNTRY HUESO VIEJO",
+    "precio": 22289.5
+  },
+  {
+    "codigo": "2369",
+    "nombre": "BASTIDOR 43X20 MADERA",
+    "precio": 7646.5
+  },
+  {
+    "codigo": "TNC",
+    "nombre": "TALLA A PEDIDO NRO Y CALLE",
+    "precio": 32120.0
+  },
+  {
+    "codigo": "PCD",
+    "nombre": "PORTA CARTA DOBLE",
+    "precio": 10550.5
+  },
+  {
+    "codigo": "PCS",
+    "nombre": "PORTA CARTA SIMPLE",
+    "precio": 9782.8
+  },
+  {
+    "codigo": "PQ",
+    "nombre": "PROMO QUINCHO TABLA+2 CABALLETES",
+    "precio": 59001.5
+  },
+  {
+    "codigo": "CFL",
+    "nombre": "CAJA FLEXIPUNTAS",
+    "precio": 65999.9
+  },
+  {
+    "codigo": "MRL",
+    "nombre": "MAQUINA DE RELOJ PERNO LARGO 20MM",
+    "precio": 2610.2
+  },
+  {
+    "codigo": "RC1",
+    "nombre": "CUADRANTE RELOJ  CHICO (8CM)",
+    "precio": 321.7
+  },
+  {
+    "codigo": "BFC",
+    "nombre": "BANDEJA 30 X 20 FF9",
+    "precio": 11192.6
+  },
+  {
+    "codigo": "BBC",
+    "nombre": "BANDEJA BATEA  CHICA",
+    "precio": 6715.5
+  },
+  {
+    "codigo": "AL6",
+    "nombre": "ALAJERO 6 CAJONES",
+    "precio": 20348.7
+  },
+  {
+    "codigo": "2300/449",
+    "nombre": "CH PETRIFICADA 30X13 NOGAL MATE",
+    "precio": 11033.4
+  },
+  {
+    "codigo": "2303/449",
+    "nombre": "CH PETRIFICADA 45X15 NOGAL MATE",
+    "precio": 12454.2
+  },
+  {
+    "codigo": "2304/449",
+    "nombre": "CH PETRIFICADA 65X20 NOGAL MATE",
+    "precio": 17207.4
+  },
+  {
+    "codigo": "2264/449",
+    "nombre": "RATTAN 28X15 NOGAL MATE",
+    "precio": 12337.3
+  },
+  {
+    "codigo": "2265/449",
+    "nombre": "RATTAN 43X18 NOGAL MATE",
+    "precio": 17002.0
+  },
+  {
+    "codigo": "2271",
+    "nombre": "BATEA CAMP. 42X20 MAD. ENVUELTA",
+    "precio": 10949.2
+  },
+  {
+    "codigo": "2271/503",
+    "nombre": "BATEA CAMPESTRE 42X20 COUNTRY HUESO VIEJO",
+    "precio": 17002.0
+  },
+  {
+    "codigo": "2271/107",
+    "nombre": "BATEA CAMPESTRE 42X20 PLATEADO AT NEGRO",
+    "precio": 21597.3
+  },
+  {
+    "codigo": "4547/370",
+    "nombre": "ITALIANA DE 3CM JASPEADA DORADO PATINADO",
+    "precio": 18709.3
+  },
+  {
+    "codigo": "P20305",
+    "nombre": "CAJA PINO C/BROCHE 20 X 30 X 5",
+    "precio": 17908.0
+  },
+  {
+    "codigo": "P20255",
+    "nombre": "CAJA PINO C/BROCHE 20 X 25 X 5",
+    "precio": 16788.8
+  },
+  {
+    "codigo": "P20205",
+    "nombre": "CAJA PINO C/BROCHE 20 X 20 X 5",
+    "precio": 13975.5
+  },
+  {
+    "codigo": "P15205",
+    "nombre": "CAJA PINO C/BROCHE 15 X 20 X 5",
+    "precio": 8970.3
+  },
+  {
+    "codigo": "P15155",
+    "nombre": "CAJA PINO C/BROCHE 15 X 15 X 5",
+    "precio": 9553.9
+  },
+  {
+    "codigo": "P10155",
+    "nombre": "CAJA PINO C/BROCHE 10 X 15 X 5",
+    "precio": 6959.1
+  },
+  {
+    "codigo": "SDTN22",
+    "nombre": "SOPORTE DOBLE TORNEADO NAT 22",
+    "precio": 7214.2
+  },
+  {
+    "codigo": "SDTT22",
+    "nombre": "SOPORTE DOBLE TORNEADO TEÑ 22",
+    "precio": 9109.4
+  },
+  {
+    "codigo": "SDTN33",
+    "nombre": "SOPORTE DOBLE TORNEADO NAT 33",
+    "precio": 7214.2
+  },
+  {
+    "codigo": "SDTT33",
+    "nombre": "SOPORTE DOBLE TORNEADO TEÑ 33",
+    "precio": 9113.2
+  },
+  {
+    "codigo": "CFF2020",
+    "nombre": "CUBO FF 20 X 20 X 20",
+    "precio": 6303.0
+  },
+  {
+    "codigo": "P202510",
+    "nombre": "CAJA PINO C/BROCHE 20 X 25 X 10",
+    "precio": 15972.0
+  },
+  {
+    "codigo": "P20257",
+    "nombre": "CAJA PINO C/BROCHE 20 X 25 X 7",
+    "precio": 16788.8
+  },
+  {
+    "codigo": "P202010",
+    "nombre": "CAJA PINO C/BROCHE 20 X 20 X 10",
+    "precio": 14973.8
+  },
+  {
+    "codigo": "P20207",
+    "nombre": "CAJA PINO C/BROCHE 20 X 20 X 7",
+    "precio": 13975.5
+  },
+  {
+    "codigo": "P15207",
+    "nombre": "CAJA PINO C/BROCHE 15 X 20 X 7",
+    "precio": 8869.0
+  },
+  {
+    "codigo": "A303",
+    "nombre": "ATRIL DE MESA PROFESIONAL",
+    "precio": 16272.3
+  },
+  {
+    "codigo": "P203010",
+    "nombre": "CAJA PINO C/BROCHE 20 X 30 X 10",
+    "precio": 19027.3
+  },
+  {
+    "codigo": "CABLE",
+    "nombre": "CABLE ACERO P/MARCOS",
+    "precio": 481.6
+  },
+  {
+    "codigo": "CAN3",
+    "nombre": "CAJONERA FIBRO 30X40 X 3",
+    "precio": 69999.9
+  },
+  {
+    "codigo": "CAN4",
+    "nombre": "CAJONERA FIBRO 30X40 X 4",
+    "precio": 89999.9
+  },
+  {
+    "codigo": "CAG",
+    "nombre": "CAJON GRANDE 20X30 F. FACIL",
+    "precio": 13000.0
+  },
+  {
+    "codigo": "ML",
+    "nombre": "MESA LUZ DE PINO C/ CAJON Y ESTANTE",
+    "precio": 59975.3
+  },
+  {
+    "codigo": "CACH",
+    "nombre": "CAMION ORDENADOR AUTITOS",
+    "precio": 29949.0
+  },
+  {
+    "codigo": "Z305020",
+    "nombre": "CAJA ZAPATO 30 X 50 X 20",
+    "precio": 14003.8
+  },
+  {
+    "codigo": "B",
+    "nombre": "BOLSA DE CORTES",
+    "precio": 430.0
+  },
+  {
+    "codigo": "2272",
+    "nombre": "BATEA CAMPESTRE 64 X 20 MADERA ENVUELTA",
+    "precio": 12532.2
+  },
+  {
+    "codigo": "RV",
+    "nombre": "REVISTA",
+    "precio": 963.1
+  },
+  {
+    "codigo": "ESP",
+    "nombre": "ESPECIERO 4 CAJONES",
+    "precio": 19532.8
+  },
+  {
+    "codigo": "ETMCAJ",
+    "nombre": "ESPEJO TOCADOR OVAL MOVIL GRANDE CON 3  CAJON",
+    "precio": 21362.4
+  },
+  {
+    "codigo": "MLF",
+    "nombre": "MESA DE LUZ FIBRO C/ 1 CAJON",
+    "precio": 56524.4
+  },
+  {
+    "codigo": "PVIS",
+    "nombre": "CAJA PINO C/BROCHE  1 BOTELLAS",
+    "precio": 16970.3
+  },
+  {
+    "codigo": "PVID",
+    "nombre": "CAJA PINO C/BROCHE  2 BOTELLAS",
+    "precio": 19531.5
+  },
+  {
+    "codigo": "CCCH",
+    "nombre": "CAJA CANOPLA CHICA",
+    "precio": 11192.5
+  },
+  {
+    "codigo": "RUE",
+    "nombre": "RUEDAS C/BASE",
+    "precio": 1143.5
+  },
+  {
+    "codigo": "BI1",
+    "nombre": "BISAGRA CHICA",
+    "precio": 65.9
+  },
+  {
+    "codigo": "P15157",
+    "nombre": "CAJA PINO C/BROCHE 15 X 15 X 7",
+    "precio": 9656.5
+  },
+  {
+    "codigo": "P151510",
+    "nombre": "CAJA PINO C/BROCHE 15 X 15 X 10",
+    "precio": 8615.6
+  },
+  {
+    "codigo": "BCP",
+    "nombre": "BANDEJA P/ CORTAR PAN",
+    "precio": 9540.2
+  },
+  {
+    "codigo": "2140",
+    "nombre": "VETEADO 3 CM",
+    "precio": 5952.5
+  },
+  {
+    "codigo": "2141",
+    "nombre": "VETEADO 4,5 CM",
+    "precio": 7875.0
+  },
+  {
+    "codigo": "2142",
+    "nombre": "VETEADO 6 CM",
+    "precio": 11727.5
+  },
+  {
+    "codigo": "2175",
+    "nombre": "VENECIA 3 CM",
+    "precio": 5892.6
+  },
+  {
+    "codigo": "2176",
+    "nombre": "VENECIA 4.5 CM",
+    "precio": 7875.0
+  },
+  {
+    "codigo": "2177",
+    "nombre": "VENECIA 6 CM",
+    "precio": 11727.5
+  },
+  {
+    "codigo": "FE12",
+    "nombre": "FENOLICO12 MM",
+    "precio": 38114.9
+  },
+  {
+    "codigo": "FE18",
+    "nombre": "FENOLICO 18 MM",
+    "precio": 47008.4
+  },
+  {
+    "codigo": "2197",
+    "nombre": "CASITA 70 MM PINO",
+    "precio": 10886.8
+  },
+  {
+    "codigo": "PCP",
+    "nombre": "PORTA CUENTOS DE PARED",
+    "precio": 12506.6
+  },
+  {
+    "codigo": "BTEV",
+    "nombre": "BANDEJA P/TE C/VIDRIO",
+    "precio": 67948.8
+  },
+  {
+    "codigo": "FC",
+    "nombre": "FLEJE PARA CAMA 1/2 X 3",
+    "precio": 3588.8
+  },
+  {
+    "codigo": "BC",
+    "nombre": "BROCHE P/ COFRE",
+    "precio": 197.8
+  },
+  {
+    "codigo": "BCU",
+    "nombre": "BISAGRA CUNA 30 MM",
+    "precio": 118.7
+  },
+  {
+    "codigo": "BQ",
+    "nombre": "BISAGRA QUEBRADA 50 MM",
+    "precio": 86.0
+  },
+  {
+    "codigo": "MO213",
+    "nombre": "CONTRAMARCO 3/4 X 3 MOLDURADO",
+    "precio": 2310.8
+  },
+  {
+    "codigo": "BCH",
+    "nombre": "BANQUITO P/ CHICOS   PINO",
+    "precio": 23165.7
+  },
+  {
+    "codigo": "BO9",
+    "nombre": "BODEGA P/9 BOTELLAS P/COPAS",
+    "precio": 69618.3
+  },
+  {
+    "codigo": "REVP",
+    "nombre": "REVISTERO PINO",
+    "precio": 22224.3
+  },
+  {
+    "codigo": "PQ6502",
+    "nombre": "P. PLANO N° 2 (F.SINTETICA MIXTA)",
+    "precio": 2454.5
+  },
+  {
+    "codigo": "PQ6504",
+    "nombre": "P. PLANO N°4 (F. SINTETICA MIXTA)",
+    "precio": 2849.5
+  },
+  {
+    "codigo": "PQ6506",
+    "nombre": "P. PLANO N° 6 (F.SINTETICA MIXTA)",
+    "precio": 3166.7
+  },
+  {
+    "codigo": "PQ6508",
+    "nombre": "P. PLANO N°8 (F. SINTETICA MIXTA)",
+    "precio": 3680.8
+  },
+  {
+    "codigo": "PQ65010",
+    "nombre": "P. PLANO N° 10 (F.SINTETICA MIXTA)",
+    "precio": 3799.8
+  },
+  {
+    "codigo": "PQ65012",
+    "nombre": "P. PLANO N°12 (F.SINTETICA MIXTA)",
+    "precio": 4591.9
+  },
+  {
+    "codigo": "PQ65016",
+    "nombre": "P. PLANO N°16",
+    "precio": 5898.4
+  },
+  {
+    "codigo": "PQ65020",
+    "nombre": "P. PLANO N°20 (F.SINTETICA MIXTA)",
+    "precio": 7045.5
+  },
+  {
+    "codigo": "PQ65024",
+    "nombre": "P. PLANO N°24 (F.SINTETICA MIXTA)",
+    "precio": 7916.7
+  },
+  {
+    "codigo": "PQ6600",
+    "nombre": "P. REDONDO N° 0 (F.SINTETICA MIXTA)",
+    "precio": 2375.4
+  },
+  {
+    "codigo": "PQ6602",
+    "nombre": "P. REDONDO N° 2 (F.SINTETICA MIXTA)",
+    "precio": 2612.1
+  },
+  {
+    "codigo": "PQ6604",
+    "nombre": "P. REDONDO N° 4 (F.SINTETICA MIXTA)",
+    "precio": 3088.2
+  },
+  {
+    "codigo": "PQ6606",
+    "nombre": "P. REDONDO N°6 (F.SINTETICA MIXTA)",
+    "precio": 3245.5
+  },
+  {
+    "codigo": "PQ6608",
+    "nombre": "P. REDONDO N°8 (F.SINTETICA MIXTA)",
+    "precio": 3799.8
+  },
+  {
+    "codigo": "PQ66010",
+    "nombre": "P. REDONDO N°10 (F.SINTETICA MIXTA)",
+    "precio": 4037.7
+  },
+  {
+    "codigo": "PQ66012",
+    "nombre": "P. REDONDO N° 12 (F.SINTETICA MIXTA)",
+    "precio": 4512.4
+  },
+  {
+    "codigo": "PQ66014",
+    "nombre": "P. REDONDO N°14 (F.SINTETICA MIXTA)",
+    "precio": 4671.6
+  },
+  {
+    "codigo": "PQ66016",
+    "nombre": "P. REDONDO N°16 (F.SINTETICA MIXTA)",
+    "precio": 4986.7
+  },
+  {
+    "codigo": "PQ66018",
+    "nombre": "P. REDONDO N° 18 (F.SINTETICA MIXTA)",
+    "precio": 5779.6
+  },
+  {
+    "codigo": "PQ66020",
+    "nombre": "P. REDONDO N°20 (F.SINTETICA MIXTA)",
+    "precio": 6016.4
+  },
+  {
+    "codigo": "PQ66024",
+    "nombre": "P. REDONDO N° 24 (F.SINTETICA MIXTA)",
+    "precio": 6966.2
+  },
+  {
+    "codigo": "PQ6702",
+    "nombre": "P. ANGULAR N°2 (F.SINTETICA MIXTA)",
+    "precio": 3008.5
+  },
+  {
+    "codigo": "PQ6704",
+    "nombre": "P. ANGULAR N°4 (F.SINTETICA MIXTA)",
+    "precio": 3799.8
+  },
+  {
+    "codigo": "PQ6706",
+    "nombre": "P. ANGULAR N°6 (F.SINTETICA MIXTA)",
+    "precio": 4908.2
+  },
+  {
+    "codigo": "PQ6708",
+    "nombre": "P. ANGULAR N°8 (F.SINTETICA MIXTA)",
+    "precio": 6016.4
+  },
+  {
+    "codigo": "PQ67010",
+    "nombre": "P. ANGULAR N°10 (F.SINTETICA MIXTA)",
+    "precio": 6807.8
+  },
+  {
+    "codigo": "PQ67012",
+    "nombre": "P. ANGULAR N°12 (F.SINTETICA MIXTA)",
+    "precio": 7916.7
+  },
+  {
+    "codigo": "PLL",
+    "nombre": "PORTA LLAVES",
+    "precio": 5269.6
+  },
+  {
+    "codigo": "BV",
+    "nombre": "BASE RANURADA  SOUVENIR HASTA 10X15",
+    "precio": 750.2
+  },
+  {
+    "codigo": "FE1",
+    "nombre": "FIGURA ESTAMPADA CHICA",
+    "precio": 122.2
+  },
+  {
+    "codigo": "FE2",
+    "nombre": "FIGURA ESTAMPADA MEDIANA",
+    "precio": 244.4
+  },
+  {
+    "codigo": "FE3",
+    "nombre": "FIGURA ESTAMPADA GRANDE",
+    "precio": 305.3
+  },
+  {
+    "codigo": "BOA",
+    "nombre": "BODEGA APILABLE 3 BOT.",
+    "precio": 9768.2
+  },
+  {
+    "codigo": "CAN2",
+    "nombre": "CAJONERA FIBRO 30X40 X 2",
+    "precio": 49999.9
+  },
+  {
+    "codigo": "2632/286",
+    "nombre": "ETNICA DE 20 BLANCO C/ NEGRO",
+    "precio": 8666.4
+  },
+  {
+    "codigo": "2632/281",
+    "nombre": "ETNICA DE 20 BLANCO C/ MOSTAZA",
+    "precio": 8666.4
+  },
+  {
+    "codigo": "2633/601",
+    "nombre": "ETNICA DE 30 MARRON AFRIC C/BLANCO",
+    "precio": 13089.8
+  },
+  {
+    "codigo": "2633/286",
+    "nombre": "ETNICA DE 30 BLANCO C/ NEGRO",
+    "precio": 13089.8
+  },
+  {
+    "codigo": "2264/446",
+    "nombre": "RATTAN 28 X 15 ROBLE PATINADO",
+    "precio": 11215.2
+  },
+  {
+    "codigo": "2264/448",
+    "nombre": "RATTAN 28 X 15 AGARROBO MATE",
+    "precio": 11215.2
+  },
+  {
+    "codigo": "2265/446",
+    "nombre": "RATTAN 43 X 18 ROBLE PATINADO",
+    "precio": 15502.5
+  },
+  {
+    "codigo": "2266/446",
+    "nombre": "RATTAN 62 X 19 ROBLE PATINADO",
+    "precio": 20253.0
+  },
+  {
+    "codigo": "2272/446",
+    "nombre": "BATEA CAMPESTRE 64 X 20 ROBLE PATINADO",
+    "precio": 20253.0
+  },
+  {
+    "codigo": "2272/448",
+    "nombre": "BATEA CAMPESTRE 64 X 20 ALGARROBO MATE",
+    "precio": 20253.0
+  },
+  {
+    "codigo": "2269/446",
+    "nombre": "POLIG C/CUADR 60 X 19 ROBLE PATINADO",
+    "precio": 20253.0
+  },
+  {
+    "codigo": "2177/116",
+    "nombre": "VENECIA DE 6 CM BORDO C/ BETUN",
+    "precio": 14214.9
+  },
+  {
+    "codigo": "2142/097",
+    "nombre": "VETEADO 6 CM AN.CELESTE M",
+    "precio": 14214.9
+  },
+  {
+    "codigo": "2164/556",
+    "nombre": "ASERRADA DE 2 CM COUNTRY HUESO",
+    "precio": 7593.6
+  },
+  {
+    "codigo": "2181/365",
+    "nombre": "ITALIANA DE 2 CM FLOR ARTESANAL",
+    "precio": 11336.3
+  },
+  {
+    "codigo": "2180/365",
+    "nombre": "ITALIANA DE 2 CM SOGA ARTESANAL",
+    "precio": 12898.4
+  },
+  {
+    "codigo": "2235",
+    "nombre": "RECTA 15 X 35",
+    "precio": 3801.6
+  },
+  {
+    "codigo": "C6",
+    "nombre": "CAJA CUBO  6 CM.",
+    "precio": 4496.2
+  },
+  {
+    "codigo": "2267/503",
+    "nombre": "POLIG C/ CUAD 28 X 13 COUNTRY HUESO",
+    "precio": 13568.1
+  },
+  {
+    "codigo": "2268/503",
+    "nombre": "POLIG C/ CUAD 42 X 19 COUNTRY HUESO",
+    "precio": 18696.4
+  },
+  {
+    "codigo": "2269/503",
+    "nombre": "POLIG C/ CUAD 60 X19 COUNTRY HUESO",
+    "precio": 24513.2
+  },
+  {
+    "codigo": "LMED",
+    "nombre": "LETRAS Y NUMEROS MEDIANOS",
+    "precio": 115.2
+  },
+  {
+    "codigo": "L",
+    "nombre": "LIJA",
+    "precio": 442.8
+  },
+  {
+    "codigo": "PAP",
+    "nombre": "PATA PERCHERO GDE.",
+    "precio": 4590.8
+  },
+  {
+    "codigo": "GAP",
+    "nombre": "GANCHO PERCHERO PIE GDE.",
+    "precio": 5356.2
+  },
+  {
+    "codigo": "GAC",
+    "nombre": "GANCHO PERCHERO CH.",
+    "precio": 4592.5
+  },
+  {
+    "codigo": "MUE",
+    "nombre": "CAJA SOUVENIR CORAZON/MUELITA",
+    "precio": 5854.7
+  },
+  {
+    "codigo": "MO551",
+    "nombre": "PASAMANO 1 1/2 X 3",
+    "precio": 5917.0
+  },
+  {
+    "codigo": "MO300",
+    "nombre": "RINCONERO 1 X 1",
+    "precio": 932.3
+  },
+  {
+    "codigo": "4532/160",
+    "nombre": "BOMBE 2 LAQUEADA",
+    "precio": 9234.8
+  },
+  {
+    "codigo": "1473",
+    "nombre": "SUBIDA 60 MM KIRI",
+    "precio": 12968.6
+  },
+  {
+    "codigo": "FE4",
+    "nombre": "FIGURA ESTAMPADA",
+    "precio": 168.7
+  },
+  {
+    "codigo": "PVIT",
+    "nombre": "CAJA PINO C/BROCHE  3 BOTELLAS",
+    "precio": 21961.5
+  },
+  {
+    "codigo": "MG",
+    "nombre": "MACETA GRANDE",
+    "precio": 2272.8
+  },
+  {
+    "codigo": "MM",
+    "nombre": "MACETA MEDIANA",
+    "precio": 1794.5
+  },
+  {
+    "codigo": "MC",
+    "nombre": "MACETA CHICA",
+    "precio": 1315.9
+  },
+  {
+    "codigo": "BB40",
+    "nombre": "BIBLIOTECA BAJA 40",
+    "precio": 47119.5
+  },
+  {
+    "codigo": "BB50",
+    "nombre": "BIBLIOTECA BAJA 50",
+    "precio": 53712.3
+  },
+  {
+    "codigo": "BB60",
+    "nombre": "BIBLIOTECA BAJA 60",
+    "precio": 60322.2
+  },
+  {
+    "codigo": "TIC4101",
+    "nombre": "TIRADOR INDIKO CROMO MATE",
+    "precio": 250.3
+  },
+  {
+    "codigo": "TIC4105",
+    "nombre": "TIRADOR LOSSA CROMO MATE",
+    "precio": 165.3
+  },
+  {
+    "codigo": "TIC7005",
+    "nombre": "TIRADOR UNAM CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "TIC7003",
+    "nombre": "TIRADOR TAMAR CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "TIC5202",
+    "nombre": "TIRADOR BISTU CROMO MATE",
+    "precio": 366.4
+  },
+  {
+    "codigo": "TIC6002",
+    "nombre": "TIRADOR ONWE128MM CROMO MATE",
+    "precio": 324.1
+  },
+  {
+    "codigo": "TIC6001",
+    "nombre": "TIRADOR ONWE96MM CROMO MATE",
+    "precio": 324.1
+  },
+  {
+    "codigo": "TIC7004",
+    "nombre": "TIRADOR UNAM64MM CROMO MATE",
+    "precio": 232.4
+  },
+  {
+    "codigo": "TIC7002",
+    "nombre": "TIRADOR SIARA128MM CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "TIC7007",
+    "nombre": "TIRADOR CIRION 128MM CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "CAN6",
+    "nombre": "CAJONERA FIBRO 30X40 X 6",
+    "precio": 100978.9
+  },
+  {
+    "codigo": "FLOT",
+    "nombre": "ESTANTE FLOTANTE",
+    "precio": 102204.1
+  },
+  {
+    "codigo": "PPI",
+    "nombre": "PORTA PINCEL",
+    "precio": 1124.7
+  },
+  {
+    "codigo": "EST",
+    "nombre": "ESTECAS METÀLICAS",
+    "precio": 1740.2
+  },
+  {
+    "codigo": "CA",
+    "nombre": "CABALLITO PINO CHICO",
+    "precio": 32576.0
+  },
+  {
+    "codigo": "TIC7001",
+    "nombre": "TIRADOR SIARA 96MM CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "2271/446",
+    "nombre": "BATEA CAMPESTRE 42 X 20 ROBLE PATINADO",
+    "precio": 18709.0
+  },
+  {
+    "codigo": "2266/449",
+    "nombre": "RATTAN 62 X 19 NOGAL MATE",
+    "precio": 24507.1
+  },
+  {
+    "codigo": "2265/448",
+    "nombre": "RATTAN 43 X 18 ALGARROBO MATE",
+    "precio": 18709.0
+  },
+  {
+    "codigo": "2268/446",
+    "nombre": "POLIG C/CUADR 42 X 19 ROBLE PATINAD",
+    "precio": 18709.0
+  },
+  {
+    "codigo": "2268/448",
+    "nombre": "POLIG C/CUADR 42 X 19 ALGARROBO",
+    "precio": 18709.0
+  },
+  {
+    "codigo": "Z",
+    "nombre": "ZOCALIN",
+    "precio": 502.4
+  },
+  {
+    "codigo": "BAB",
+    "nombre": "BANQUETA BAJA",
+    "precio": 28600.0
+  },
+  {
+    "codigo": "BB30",
+    "nombre": "BIBLIOTECA BAJA 30",
+    "precio": 40507.4
+  },
+  {
+    "codigo": "BB70",
+    "nombre": "BIBLIOTECA BAJA 70",
+    "precio": 66927.1
+  },
+  {
+    "codigo": "BB80",
+    "nombre": "BIBLIOTECA BAJA 80",
+    "precio": 83672.1
+  },
+  {
+    "codigo": "BAU1",
+    "nombre": "BAUL 12 X 17",
+    "precio": 18000.4
+  },
+  {
+    "codigo": "BAU2",
+    "nombre": "BAUL 18 X 23",
+    "precio": 21130.9
+  },
+  {
+    "codigo": "2264/503",
+    "nombre": "RATTAN 28 X 15 HUESO VIEJO",
+    "precio": 11209.5
+  },
+  {
+    "codigo": "MO109",
+    "nombre": "ZOCALO 3/4 X 2 PINO",
+    "precio": 1326.4
+  },
+  {
+    "codigo": "PET",
+    "nombre": "PASTA PETREA 1 KG BLANCA/NATUTRAL",
+    "precio": 4456.9
+  },
+  {
+    "codigo": "CPCH",
+    "nombre": "CAJA PINO C/BROCHE PINCEL  CHICA",
+    "precio": 9981.2
+  },
+  {
+    "codigo": "MR60",
+    "nombre": "MESA RATONA 60CM - PINO/MELAMINA - PINO",
+    "precio": 62259.9
+  },
+  {
+    "codigo": "BAM2",
+    "nombre": "ACRILICO METALIZADO 200 ML",
+    "precio": 6557.7
+  },
+  {
+    "codigo": "AC2",
+    "nombre": "ACRILICO 50 ML",
+    "precio": 1870.2
+  },
+  {
+    "codigo": "BDI125",
+    "nombre": "BARNIZ Y DILUYENTE X 125 ML",
+    "precio": 4609.5
+  },
+  {
+    "codigo": "BDI250",
+    "nombre": "BARNIZ Y DILUYENTE X 250 ML PLANTEC",
+    "precio": 8451.4
+  },
+  {
+    "codigo": "BA2",
+    "nombre": "ACRILICO 200CC",
+    "precio": 5318.0
+  },
+  {
+    "codigo": "2367/503",
+    "nombre": "BAJADA C/BAMBU 62 X 20 COUTRY HUESO VIEJO",
+    "precio": 26910.8
+  },
+  {
+    "codigo": "2668/286",
+    "nombre": "ETNICA DE 6 BLANCO C/ NEGRO",
+    "precio": 26467.5
+  },
+  {
+    "codigo": "2668/281",
+    "nombre": "ETNICA 6 BLANCO C/ MOSTAZA",
+    "precio": 26467.5
+  },
+  {
+    "codigo": "AM",
+    "nombre": "ARMADO DE CUADROS",
+    "precio": 11.0
+  },
+  {
+    "codigo": "CAN",
+    "nombre": "CANASTO MIMBRE",
+    "precio": 5437.6
+  },
+  {
+    "codigo": "ORGS",
+    "nombre": "ORGANIZADOR SOUVENIR 7 X 8 X 5",
+    "precio": 933.4
+  },
+  {
+    "codigo": "ORG1",
+    "nombre": "ORGANIZADOR 11 X 11 X 7",
+    "precio": 1341.8
+  },
+  {
+    "codigo": "ORG3",
+    "nombre": "ORGANIZADOR 22 X 14 X 12",
+    "precio": 2397.1
+  },
+  {
+    "codigo": "ORG4",
+    "nombre": "ORGANIZADOR 30 X 20 X 16",
+    "precio": 4064.1
+  },
+  {
+    "codigo": "IG",
+    "nombre": "CAJA DE INGLETAR GRANDE",
+    "precio": 6530.8
+  },
+  {
+    "codigo": "1288/026",
+    "nombre": "TRAMADA DE 20 PLATEADO M",
+    "precio": 13473.9
+  },
+  {
+    "codigo": "1288/108",
+    "nombre": "TRAMADA DE 20 DORADO PAT MARRON",
+    "precio": 13479.7
+  },
+  {
+    "codigo": "1288/021",
+    "nombre": "TRAMADA DE 20 DORADO",
+    "precio": 13479.7
+  },
+  {
+    "codigo": "1288/107",
+    "nombre": "TRAMADA DE 20 PLATEADO PAT NEGRO",
+    "precio": 13479.7
+  },
+  {
+    "codigo": "4906/403",
+    "nombre": "PLANO C/SUBIDA 70 WENGUE C/ORO",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/404",
+    "nombre": "PLANO C/ SUBIDA 70 WENGUE C/PLATA",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/130",
+    "nombre": "PLANO C/ SUBIDA 70 BROOKYN ORO",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/156",
+    "nombre": "PLANO C/ SUBIDA 70 WENGUE",
+    "precio": 36082.6
+  },
+  {
+    "codigo": "4333/881",
+    "nombre": "CUADRADA 30X30 ORO VIEJO",
+    "precio": 22496.5
+  },
+  {
+    "codigo": "4333/158",
+    "nombre": "CUADRADA 30X30 HAYA REAL",
+    "precio": 22496.5
+  },
+  {
+    "codigo": "4332/130",
+    "nombre": "CUADRADA 20X20 BROOKLYN ORO",
+    "precio": 18788.8
+  },
+  {
+    "codigo": "4332/881",
+    "nombre": "CUADRADA 20 X 20 ORO VIEJO",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4332/157",
+    "nombre": "CUADRADA 20X20 ROBLE REAL",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4332/882",
+    "nombre": "CUADRADA 20X20 PLATA VIEJA",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4332/156",
+    "nombre": "CUADRADA 20X20 WENGUE",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4549/881",
+    "nombre": "ITALIANA 6.5 CM ORO VIEJO",
+    "precio": 40123.2
+  },
+  {
+    "codigo": "4549/882",
+    "nombre": "ITALIANA 6.5 CM PLATA VIEJO",
+    "precio": 40123.2
+  },
+  {
+    "codigo": "4548/881",
+    "nombre": "ITALIANA 4.5 CM ORO VIEJO",
+    "precio": 23480.7
+  },
+  {
+    "codigo": "4548/882",
+    "nombre": "ITALIANA 4.5 CM PLATA VIEJO",
+    "precio": 23480.7
+  },
+  {
+    "codigo": "4547/881",
+    "nombre": "ITALIANA 3 CM ORO VIEJO",
+    "precio": 19205.2
+  },
+  {
+    "codigo": "4547/882",
+    "nombre": "ITALIANA 3 CM PLATA VIEJO",
+    "precio": 19205.2
+  },
+  {
+    "codigo": "4546//881",
+    "nombre": "ITALIANA 2 CM ORO VIEJO",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4546/882",
+    "nombre": "ITALIANA 2 CM PLATA VIEJO",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4906/131",
+    "nombre": "PLANO C/SUBIDA 70 BROOKLYN PLATA",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/410",
+    "nombre": "PLANO C/SUBIDA 70 WENGUE C/ BROOKLYN PLATA",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/409",
+    "nombre": "PLANO C/SUBIDA 70 WENGUE C/BROOKLYN ORO",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4882/780",
+    "nombre": "MILLENIUM 97 BLANCO MATE",
+    "precio": 85648.6
+  },
+  {
+    "codigo": "4882/758",
+    "nombre": "MILLENIUM 97 NEGRO MATE",
+    "precio": 85648.6
+  },
+  {
+    "codigo": "4363/780",
+    "nombre": "BATEA FRANCESA 50 BLANCO MATE",
+    "precio": 40990.5
+  },
+  {
+    "codigo": "4363/758",
+    "nombre": "BATEA FRANCESA 50 NEGRO MATE",
+    "precio": 40990.5
+  },
+  {
+    "codigo": "4881/780",
+    "nombre": "MILLENIUM 65 BLANCO MATE",
+    "precio": 51147.1
+  },
+  {
+    "codigo": "4881/758",
+    "nombre": "MILLENIUM 65 NEGRO MATE",
+    "precio": 51147.1
+  },
+  {
+    "codigo": "2139/108",
+    "nombre": "VETEADA DE 2 CM DORADA PAT MARRON",
+    "precio": 11603.7
+  },
+  {
+    "codigo": "2139/107",
+    "nombre": "VETEADA DE 2CM PLATEADA PAT NEGRO",
+    "precio": 11603.7
+  },
+  {
+    "codigo": "2139/780",
+    "nombre": "VETEADA DE 20 CM BLANCO MATE",
+    "precio": 8451.4
+  },
+  {
+    "codigo": "4361/035",
+    "nombre": "PECHO DE PALOMA 80 GRAB ALUMINIO",
+    "precio": 72005.6
+  },
+  {
+    "codigo": "4361/173",
+    "nombre": "P. DE PALOMA 80 GRAB CHOC. BRILL.",
+    "precio": 72005.6
+  },
+  {
+    "codigo": "4361/774",
+    "nombre": "P. DE PALOMA 80 GRAB CAMEL MATE",
+    "precio": 72005.6
+  },
+  {
+    "codigo": "4361/780",
+    "nombre": "PECHO PALOMA 80 GRAB BLANCP MATE",
+    "precio": 72005.6
+  },
+  {
+    "codigo": "4361/758",
+    "nombre": "P. DE PALOMA 80 GRAB NEGRO MATE",
+    "precio": 72005.6
+  },
+  {
+    "codigo": "4866/780",
+    "nombre": "BATEA 111X63 BLANCO MATE",
+    "precio": 116000.3
+  },
+  {
+    "codigo": "4866/758",
+    "nombre": "BATEA 111X63 NEGRO MATE",
+    "precio": 116000.3
+  },
+  {
+    "codigo": "4364/780",
+    "nombre": "BATEA FRANCESA 90 BLANCO MATE",
+    "precio": 63975.0
+  },
+  {
+    "codigo": "4364/758",
+    "nombre": "BATEA FRANCESA 90 NEGRO MATE",
+    "precio": 64476.1
+  },
+  {
+    "codigo": "4208/780",
+    "nombre": "GRABADA 90X46 C/CALLE BLANCO MATE",
+    "precio": 96702.1
+  },
+  {
+    "codigo": "4208/758",
+    "nombre": "GRABADA 90X46 C/CALLE NEGRA MATE",
+    "precio": 96702.1
+  },
+  {
+    "codigo": "2797/780",
+    "nombre": "BATEA SOGA Y FRISA 93 BLANCO MATE",
+    "precio": 55852.4
+  },
+  {
+    "codigo": "2797/758",
+    "nombre": "BATEA  SOGA Y FRISA 93 NEGRO MATE",
+    "precio": 55852.4
+  },
+  {
+    "codigo": "1789/780",
+    "nombre": "GALONES PAN FLAUTA BLANCO MATE",
+    "precio": 63125.1
+  },
+  {
+    "codigo": "1789/758",
+    "nombre": "GALONES PAN FLAUTA NEGRO MATE",
+    "precio": 63125.1
+  },
+  {
+    "codigo": "2161/415",
+    "nombre": "CHATA 59 X 15 C/ FIL VETEADA BROOKLYN C/PLATA",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/405",
+    "nombre": "CHATA 59 X 15 C/FIL VET ROBLE REAL C/ORO",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/406",
+    "nombre": "CHATA 59 X 15 C/FIL VET ROBLE REAL C/PLATA P",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/412",
+    "nombre": "CHATA 59 X 15 C/FIL VET ROBLE REAL C/NEGRO",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/403",
+    "nombre": "CHATA 59 X 15 C/FIL VET WENGUE REAL C/ORO P",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/404",
+    "nombre": "CHATA 59 X 15 C/FIL VET WENGUE REAL C/PLATA P",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/411",
+    "nombre": "CHATA 59 X 15 C/FIL VET WENGUE REAL C/NEGRO",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/053",
+    "nombre": "CHATA 59 X 15 C/FIL VET NEGRO MATE C/ORO",
+    "precio": 25308.5
+  },
+  {
+    "codigo": "4906/158",
+    "nombre": "PLANO C/SUBIDA DE 70 HAYA REAL",
+    "precio": 36082.6
+  },
+  {
+    "codigo": "2185/780",
+    "nombre": "ONDA 65 SOGA Y BALAUS BLANCO MATE",
+    "precio": 27517.8
+  },
+  {
+    "codigo": "2185/758",
+    "nombre": "ONDA 65 SOGA Y BALAUS NEGRO MATE",
+    "precio": 27517.8
+  },
+  {
+    "codigo": "2305/108",
+    "nombre": "CHATA 59 X 15 PETRIF DORADO PAT MARRON",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2305/107",
+    "nombre": "CHATA 59 X 15 PETRIF  PLATEADO PAT NEGRO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2139/758",
+    "nombre": "VETEADA DE 2 CM NEGRO MATE",
+    "precio": 8452.8
+  },
+  {
+    "codigo": "1546/137",
+    "nombre": "ITALIANA DE 2 CM JASPEADO DORADO PAT",
+    "precio": 9168.7
+  },
+  {
+    "codigo": "4867/107",
+    "nombre": "BATEA 65 X 41 PLATEADO PAT NEGRO",
+    "precio": 61553.7
+  },
+  {
+    "codigo": "4867/108",
+    "nombre": "BATEA 65 X 41 DORADO PAT MARRON",
+    "precio": 61553.7
+  },
+  {
+    "codigo": "2300/107",
+    "nombre": "CHATA 30 X 13 PETRIF PLATEADO PAT NEGRO",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2300/108",
+    "nombre": "CHATA 30 X 13 PETRIF DORADO PAT MARRON",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2161/780",
+    "nombre": "CHATA 59 X 15 C/FIL VET BLANCO MATE",
+    "precio": 19528.4
+  },
+  {
+    "codigo": "2161/758",
+    "nombre": "CHATA 59 X 15 C/FIL VET NEGRO MATE",
+    "precio": 19528.4
+  },
+  {
+    "codigo": "2161/052",
+    "nombre": "CHATA 59 X 15 C/FIL VET BLANCO MATE C/PLATA",
+    "precio": 25308.5
+  },
+  {
+    "codigo": "2161/051",
+    "nombre": "CHATA 59 X 15 C/FIL VET BLANCO C/ ORO",
+    "precio": 25308.5
+  },
+  {
+    "codigo": "2161/416",
+    "nombre": "CHATA 59 X 15 C/FIL VET BROOKLYN ORO C/NEGRO",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/414",
+    "nombre": "CHATA 59 X 15 C/FIL VET BROOKLYNORO C/ORO",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "2161/417",
+    "nombre": "CHATA 59 X 15 C/FIL VET BROOKLYN PLATA C/NEGR",
+    "precio": 28682.8
+  },
+  {
+    "codigo": "4159/130",
+    "nombre": "CHATA 59 X 15 BROOKLYN ORO",
+    "precio": 31411.7
+  },
+  {
+    "codigo": "4159/881",
+    "nombre": "CHATA 59 X 15 ST ORO VIEJO T",
+    "precio": 28400.6
+  },
+  {
+    "codigo": "4159/157",
+    "nombre": "CHATA 59 X 15 ROBLE REAL",
+    "precio": 28400.6
+  },
+  {
+    "codigo": "4159/158",
+    "nombre": "CHATA 59 X 15 HAYA REAL",
+    "precio": 28400.6
+  },
+  {
+    "codigo": "4159/156",
+    "nombre": "CHATA 59 X 15 WENGUE REAL",
+    "precio": 28400.6
+  },
+  {
+    "codigo": "4159/131",
+    "nombre": "CHATA 59 X 15 BROOKLYN PLATA",
+    "precio": 31411.7
+  },
+  {
+    "codigo": "4159/882",
+    "nombre": "CHATA 59 X 15 ST PLATA VIEJA T",
+    "precio": 28400.6
+  },
+  {
+    "codigo": "4169/403",
+    "nombre": "CHATA 59 X 15 C/FIL LISO WENGUE REAL",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/409",
+    "nombre": "CHATA 59 X 15 C/FIL LISO BROOKLYN ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/404",
+    "nombre": "CHATA 59 X 15 C/FIL LISO BROOKLYN C/ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/410",
+    "nombre": "CHATA 59 X 15 C/FIL LISO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/405",
+    "nombre": "CHATA 59 X 15 C/FIL LISO BROOKLYN C/ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/418",
+    "nombre": "CHATA 59 X 15 C/FIL LISO BROOKLYN C/ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/406",
+    "nombre": "CHATA 59 X 15 C/FIL LISO CROOKLYN C/ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/419",
+    "nombre": "CHATA 59 X 15 C/FIL LISO ROBLE REAL C/BROOK P",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/407",
+    "nombre": "CHATA 59 X 15 C/FIL LISO HAYA REAL C/ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/408",
+    "nombre": "CHATA 59 X 15 C/FIL LISO HAYA REAL",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "2909/107",
+    "nombre": "ME 227 C/SUPL 44 X 20 PLATEADO PATINADO",
+    "precio": 13382.2
+  },
+  {
+    "codigo": "4842/108",
+    "nombre": "BATEA 100 X 60 GRABADO DORADO PAT MARRON",
+    "precio": 116000.3
+  },
+  {
+    "codigo": "4866/108",
+    "nombre": "BATEA 111 X 63 DORADO PATINADO MARRON",
+    "precio": 126536.8
+  },
+  {
+    "codigo": "2797/107",
+    "nombre": "BATEA SOGA Y FRISA 93 PLATEADO P",
+    "precio": 83151.2
+  },
+  {
+    "codigo": "2797/108",
+    "nombre": "BATEA SOGA Y FRISA 93 DORADO PAT",
+    "precio": 83151.2
+  },
+  {
+    "codigo": "2303/132",
+    "nombre": "CHATA 45 X 15 PETRIFICADO PLATEADO VET",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2303/840",
+    "nombre": "CHATA 45 X 15 PETRIFICADA ST DORADO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2300/840",
+    "nombre": "CHATA PETRIFICADA 30 X 13  ST DORADO C/HUESO",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2300/132",
+    "nombre": "CHATA PETRIFICADA 30 X 13 PLATEADO V",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2908/108",
+    "nombre": "ME 225 C/SUPL 70 X 22 DORADO PAT MARRON",
+    "precio": 25829.0
+  },
+  {
+    "codigo": "2908/107",
+    "nombre": "ME 225 C/SUPL 70 X22 PLATEADO NEGRO",
+    "precio": 25829.0
+  },
+  {
+    "codigo": "2909/108",
+    "nombre": "ME 227 C/SUPL 44 X 20 DORADO PATINADO MARRON",
+    "precio": 13383.2
+  },
+  {
+    "codigo": "4330/866",
+    "nombre": "CHATA DE 3 CM",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4350/866",
+    "nombre": "CHATA DE 5 CM COMPLETAR COLOR",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4350/867",
+    "nombre": "CHATA DE 5 CM COMP´LETAR COLOR",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4330/867",
+    "nombre": "CHATA DE 3 CM COMPLETAR COLOR",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "2303/021",
+    "nombre": "CHATA PETRIFICADA 45 X 15 DORADA",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2303/108",
+    "nombre": "CHATA PETRIFICADA 45 X 15 DORADA PATINADA",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2303/026",
+    "nombre": "CHATA PETRIFICADA 45 X 15 PLATEADO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2303/107",
+    "nombre": "CHATA PETRIFICADA 45 X 15 PLATEAD PAT NEGRO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2142/021",
+    "nombre": "VETEADO 6 CM DORADA",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2142/026",
+    "nombre": "VETEADO 6 CM  PLATEADO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2142/758",
+    "nombre": "VETEADO 6 CM NEGRO MATE",
+    "precio": 16055.3
+  },
+  {
+    "codigo": "2142/780",
+    "nombre": "VETEADO 6 CM BLANCO MATE",
+    "precio": 16055.3
+  },
+  {
+    "codigo": "2141/021",
+    "nombre": "VETEADO 4.5 CM DORADO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2141/108",
+    "nombre": "VETEADO 4.5 CM DORADO PATINADO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2141/026",
+    "nombre": "VETEADO 4.5 CM PLATEADO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "2141/758",
+    "nombre": "VETEADO 4.5 CM NEGRO MATE",
+    "precio": 12802.4
+  },
+  {
+    "codigo": "2141/780",
+    "nombre": "VETEADO 4.5 CM BLANCO MATE",
+    "precio": 12802.4
+  },
+  {
+    "codigo": "2140/021",
+    "nombre": "VETEADO 3 CM DORADA",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2140/108",
+    "nombre": "VETEADO 3 CM DORADO PATINADO",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2140/026",
+    "nombre": "VETEADO 3 CM PLATEADO",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2140/107",
+    "nombre": "VETEADO 3 CM PLATEADO PATINADO NEGRO",
+    "precio": 17308.4
+  },
+  {
+    "codigo": "2140/780",
+    "nombre": "VETEADO 3 CM BLANCO MATE",
+    "precio": 11315.8
+  },
+  {
+    "codigo": "2140/758",
+    "nombre": "VETEADO 3 CM NEGRO MATE",
+    "precio": 11315.8
+  },
+  {
+    "codigo": "4350/154",
+    "nombre": "CHATA DE 5 CM GOLD",
+    "precio": 25143.3
+  },
+  {
+    "codigo": "4350/130",
+    "nombre": "CHATA DE 5 CM BROOKLYN ORO",
+    "precio": 25143.3
+  },
+  {
+    "codigo": "4350/881",
+    "nombre": "CHATA DE 5 CM ORO VIEJO",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4350/158",
+    "nombre": "CHATA DE 5 CM HAYA REAL",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4350/131",
+    "nombre": "CHATA 5 CM BROOKLYN PLATA",
+    "precio": 25143.3
+  },
+  {
+    "codigo": "4350/882",
+    "nombre": "CHATA 5 CM PLATA VIEJO",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4330/154",
+    "nombre": "CHATA DE 3 CM GOLD",
+    "precio": 16999.9
+  },
+  {
+    "codigo": "4330/130",
+    "nombre": "CHATA DE 3 CM BROOKLYN ORO",
+    "precio": 16999.9
+  },
+  {
+    "codigo": "4330/881",
+    "nombre": "CHATA 3 CM ORO VIEJO",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4330/158",
+    "nombre": "CHATA DE 3 CM HAYA REAL",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4330/155",
+    "nombre": "CHATA DE 3 CM STEEL",
+    "precio": 17000.8
+  },
+  {
+    "codigo": "4330/131",
+    "nombre": "CHATA DE 3 CM BROOKLYN PLATA",
+    "precio": 16999.9
+  },
+  {
+    "codigo": "4330/882",
+    "nombre": "CHATA 3 CM PLATA VIEJO",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4330/157",
+    "nombre": "CHATA 3 CM ROBLE REAL",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4330/156",
+    "nombre": "CHATA DE 3 CM WENGUE REAL",
+    "precio": 15392.1
+  },
+  {
+    "codigo": "4197/130",
+    "nombre": "CASITA BROKLYN ORO",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "4197/881",
+    "nombre": "CASITA ORO VIEJO",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4197/158",
+    "nombre": "CASITA HAYA REAL",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4197/157",
+    "nombre": "CASITA ROBLE REAL",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4197/131",
+    "nombre": "CASITA BROOKLYN PLATA",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "4197/882",
+    "nombre": "CASITA PLATA VIEJO",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4197/156",
+    "nombre": "CASITA WENGUE REAL",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4332/154",
+    "nombre": "CUADRADA 20 X 20 GOLD",
+    "precio": 18788.8
+  },
+  {
+    "codigo": "4332/155",
+    "nombre": "CUADRADA 20 X 20 STEEL",
+    "precio": 18788.8
+  },
+  {
+    "codigo": "2141/107",
+    "nombre": "VETEADO 4.5 CM PLATEADO PATINADO NEGRO",
+    "precio": 19726.8
+  },
+  {
+    "codigo": "4332/131",
+    "nombre": "CUADRADA 20 X 20 BROOKLYN PLATA",
+    "precio": 18788.8
+  },
+  {
+    "codigo": "LB",
+    "nombre": "LIJA BLANCA",
+    "precio": 791.0
+  },
+  {
+    "codigo": "BD40",
+    "nombre": "BARNIZ DIMENSIONAL 40 ML",
+    "precio": 2575.3
+  },
+  {
+    "codigo": "AEC1",
+    "nombre": "AEROSOL 240 CC COLORES BRILLANTES",
+    "precio": 2498.5
+  },
+  {
+    "codigo": "AEC2",
+    "nombre": "AEROSOL 240 CC ESPECIALES",
+    "precio": 2964.5
+  },
+  {
+    "codigo": "CAJ2CH",
+    "nombre": "CAJONERA C/CALADOS 2 CAJ",
+    "precio": 89899.7
+  },
+  {
+    "codigo": "4363/040",
+    "nombre": "BATEA FRANCESA 50 TIZA",
+    "precio": 28725.5
+  },
+  {
+    "codigo": "4594/212",
+    "nombre": "SUPLEMENTO ENTELADO 4.5 MARFIL/ORO",
+    "precio": 27630.4
+  },
+  {
+    "codigo": "4594/213",
+    "nombre": "SUPLEMENTO ENTELADO 4.5 MARFIL/PLATA",
+    "precio": 27630.4
+  },
+  {
+    "codigo": "2304/448",
+    "nombre": "CH PETRIFICADA ALGARROBO",
+    "precio": 16055.3
+  },
+  {
+    "codigo": "4163/131",
+    "nombre": "CHATA 80 X 20 BROOKLYN PLATA",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "2305/840",
+    "nombre": "CHATA 59 X 15 PETRIF DORADO PAT HUESO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2305/132",
+    "nombre": "CHATA 59 X 15 PETRIF PLATEADO VENECIANO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "4682/407",
+    "nombre": "PLANO C/BAJADA DE 60 HAYA REAL C/ORO",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/408",
+    "nombre": "PLANO C/BAJADA DE V60 HAYA REAL C/PLATA",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/409",
+    "nombre": "PLANO C/BAJADA DE 60 WENGUE REAL C/BROOK ORO",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "2305/021",
+    "nombre": "CHATA 59 X 15 PETRIF DORADO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2305/026",
+    "nombre": "CHATA 59 X 15 PETROF PLATEADO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2142/108",
+    "nombre": "VETEADO 6CM DORADO PAT/MARRON",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2142/107",
+    "nombre": "VETEADO 6CM PLATEADO PAT/NEGRO",
+    "precio": 24781.1
+  },
+  {
+    "codigo": "2139/021",
+    "nombre": "VETEADO 2CM DORADO",
+    "precio": 11603.7
+  },
+  {
+    "codigo": "2139/026",
+    "nombre": "VETEADO 2CM PLATEADO",
+    "precio": 11603.7
+  },
+  {
+    "codigo": "1289/026",
+    "nombre": "TRAMADA DE 30 PLATEADO",
+    "precio": 15719.5
+  },
+  {
+    "codigo": "1289/108",
+    "nombre": "TRAMADA DE 30 DORADA PAT/MARRON",
+    "precio": 15719.5
+  },
+  {
+    "codigo": "1289/021",
+    "nombre": "TRAMADA DE 30 DORADO",
+    "precio": 15719.5
+  },
+  {
+    "codigo": "1289/107",
+    "nombre": "TRAMADA DE 30 PLATEADO PAT/NEGRO",
+    "precio": 15719.5
+  },
+  {
+    "codigo": "4333/882",
+    "nombre": "CUADRADA 30 X 30 PLATA VIEJA",
+    "precio": 22496.5
+  },
+  {
+    "codigo": "4333/156",
+    "nombre": "CUADRADA 30 X 30 WENGUE REAL",
+    "precio": 22496.5
+  },
+  {
+    "codigo": "4332/158",
+    "nombre": "CUADRADA 20 X 20  HAYA REAL",
+    "precio": 16986.9
+  },
+  {
+    "codigo": "4169/420",
+    "nombre": "CHATA 59 X 15 C/FIL LISO HAYAREAL C/BROOK ORO",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "4169/421",
+    "nombre": "CHATA 59 X 15 C/FIL LISO HAYAREAL C/BROOK PLA",
+    "precio": 35230.3
+  },
+  {
+    "codigo": "2367/446",
+    "nombre": "BAJADA C/BAMBU 62 X 20 ROBLE PAT",
+    "precio": 26910.8
+  },
+  {
+    "codigo": "2367/448",
+    "nombre": "BAJADA C/BAMBU 62 X 20 ALGARROBO MATE",
+    "precio": 26910.8
+  },
+  {
+    "codigo": "4163/154",
+    "nombre": "CHATA 80 X 20 GOLD",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "4163/130",
+    "nombre": "CHATA 80 X 20 BROOKLYN ORO",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "4163/881",
+    "nombre": "CHATA 80 X 20 ORO VIEJO",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4163/157",
+    "nombre": "CHATA 80 X 20 ROBLE REAL",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4163/155",
+    "nombre": "CHATA 80 X 20 STEEL",
+    "precio": 52629.3
+  },
+  {
+    "codigo": "4163/882",
+    "nombre": "CHATA 80 X 20 PLATA VIEJA",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4163/156",
+    "nombre": "CHATA 80 X 20 WENGUE REAL",
+    "precio": 49788.8
+  },
+  {
+    "codigo": "4159/154",
+    "nombre": "CHATA 59 X 15 GOLD",
+    "precio": 31411.7
+  },
+  {
+    "codigo": "4350/155",
+    "nombre": "CHATA 5 CM STEEL",
+    "precio": 25143.3
+  },
+  {
+    "codigo": "4350/157",
+    "nombre": "CHATA 5CM ROBLE REAL",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4350/156",
+    "nombre": "CHATA 5CM WENGUE REAL",
+    "precio": 22795.3
+  },
+  {
+    "codigo": "4333/154",
+    "nombre": "CUADRADA 30 X 30 GOLD",
+    "precio": 24882.0
+  },
+  {
+    "codigo": "4333/130",
+    "nombre": "CUADRADA 30 X 30 BROOKLYN ORO",
+    "precio": 24882.0
+  },
+  {
+    "codigo": "4333/157",
+    "nombre": "CUADRADA 30 X 30 ROBLE REAL",
+    "precio": 22496.5
+  },
+  {
+    "codigo": "4333/155",
+    "nombre": "CUADRADA 30 X 30 STEEL",
+    "precio": 24882.0
+  },
+  {
+    "codigo": "4333/131",
+    "nombre": "CUADRADA 30 X 30 BROOKLYN PLATA",
+    "precio": 24882.0
+  },
+  {
+    "codigo": "4682/406",
+    "nombre": "PLANO C/BAJADA DE 60 ROBLE REAL C/PLATA",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "2161/054",
+    "nombre": "CHATA 59 X 15 C/FIL VET NEGRO MATE C/PLAT",
+    "precio": 25308.5
+  },
+  {
+    "codigo": "4906/157",
+    "nombre": "PLANO C/SUBIDA 70 ROBLE REAL",
+    "precio": 36082.6
+  },
+  {
+    "codigo": "4906/405",
+    "nombre": "PLANO C/SUBIDA 70 ROBLE REAL C/ORO",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/406",
+    "nombre": "PLANO C/SUBIDA 70 ROBLE REAL PLATA",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/407",
+    "nombre": "PLANO C/SUBIDA 70 HAYA REAL C/ORO",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4906/408",
+    "nombre": "PLANO C/SUBIDA 70 HAYA REAL C/PLATA",
+    "precio": 38385.0
+  },
+  {
+    "codigo": "4682/131",
+    "nombre": "PLANO C/BAJADA 60 BROOKLYN PLATA",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/157",
+    "nombre": "PLANO C/BAJADA 60ROBLE REAL",
+    "precio": 35330.8
+  },
+  {
+    "codigo": "4682/158",
+    "nombre": "PLANO C/BAJADA 60 HAYA REAL",
+    "precio": 35330.8
+  },
+  {
+    "codigo": "4682/130",
+    "nombre": "PLANO C/BAJADA 60 BROOKLYN ORO",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/403",
+    "nombre": "PLANO C/BAJADA 60WENGUE REAL C/ORO",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/404",
+    "nombre": "PLANO C/BAJADA 60 WENGUE REAL C/PLATA",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/156",
+    "nombre": "PLANP C/BAJADA 60 WENGUE REAL",
+    "precio": 35330.8
+  },
+  {
+    "codigo": "4682/410",
+    "nombre": "PLANO C/BAJADA 60 WEN REAL C/BROOK PLATA",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4682/405",
+    "nombre": "PLANO C/BAJADA 60 ROBLR REAL C/ORO",
+    "precio": 37325.3
+  },
+  {
+    "codigo": "4159/155",
+    "nombre": "CHATA 59 X 15 STEELL",
+    "precio": 31411.7
+  },
+  {
+    "codigo": "4197/780",
+    "nombre": "CASITA DE 70 MM BLANCO MATE",
+    "precio": 31801.3
+  },
+  {
+    "codigo": "4197/758",
+    "nombre": "CASITA 70 MM NEGRO MATE",
+    "precio": 31801.3
+  },
+  {
+    "codigo": "4364/108",
+    "nombre": "BATEA FRANCESA 90 MM DORADO PAT MARRON",
+    "precio": 70834.9
+  },
+  {
+    "codigo": "4364/107",
+    "nombre": "BATEA FRANCESA 90 MM PLATEADO PAT NEGRO",
+    "precio": 70834.9
+  },
+  {
+    "codigo": "4363/107",
+    "nombre": "BATEA FRANCESA 50 PLATEADO PAT",
+    "precio": 49495.9
+  },
+  {
+    "codigo": "4363/108",
+    "nombre": "BATEA FRANCESA 50MM DORADO PAT MARR",
+    "precio": 49495.9
+  },
+  {
+    "codigo": "4688/212",
+    "nombre": "SUPLEMENTO ENTELADO 42 TELA MARFIL",
+    "precio": 25622.7
+  },
+  {
+    "codigo": "4688/213",
+    "nombre": "SUPLEMENTO ENTELADA 42 TELA MARFIL",
+    "precio": 25622.7
+  },
+  {
+    "codigo": "1230",
+    "nombre": "BOMBE DE 5 CM C/ GARG",
+    "precio": 14892.8
+  },
+  {
+    "codigo": "1322",
+    "nombre": "BOMBE DE 4 CM C/ ONDAS",
+    "precio": 14583.0
+  },
+  {
+    "codigo": "4842/780",
+    "nombre": "100 X 60 GRABADA BLANCO MATE",
+    "precio": 116003.5
+  },
+  {
+    "codigo": "4842/758",
+    "nombre": "100 X 60 GRABADO NEGRO MATE",
+    "precio": 116004.1
+  },
+  {
+    "codigo": "FE5",
+    "nombre": "FIGURA ESTAMPADA 15 CM",
+    "precio": 234.9
+  },
+  {
+    "codigo": "BFG3",
+    "nombre": "BANDEJA FF3 30X40 C/ONDA",
+    "precio": 6892.5
+  },
+  {
+    "codigo": "BFC3",
+    "nombre": "BANDEJA FF3 20X30 C/ONDA",
+    "precio": 6588.4
+  },
+  {
+    "codigo": "4867/758",
+    "nombre": "BATEA 65X41 NEGRO MATE",
+    "precio": 49564.0
+  },
+  {
+    "codigo": "4867/780",
+    "nombre": "BATEA 65X41 BLANCO MATE",
+    "precio": 49564.0
+  },
+  {
+    "codigo": "2185/365",
+    "nombre": "ONDA GRAB. 65 MM BALUSTRE PATINADA ORO",
+    "precio": 45369.1
+  },
+  {
+    "codigo": "SCHM",
+    "nombre": "SILLON DE CHICOS MECEDOR",
+    "precio": 18691.5
+  },
+  {
+    "codigo": "PQ86020",
+    "nombre": "PINCELETA QUALITY 20 MM",
+    "precio": 1844.4
+  },
+  {
+    "codigo": "PQ86025",
+    "nombre": "PINCELETA QUALITY 25 MM",
+    "precio": 2120.3
+  },
+  {
+    "codigo": "PQ86035",
+    "nombre": "PINCELETA QUALITY 35 MM",
+    "precio": 2956.3
+  },
+  {
+    "codigo": "MO168",
+    "nombre": "BOTAGUA 1 1/2 X 2",
+    "precio": 3468.4
+  },
+  {
+    "codigo": "BCOP",
+    "nombre": "BROCHE P/COFRE DE PLASTICO",
+    "precio": 148.3
+  },
+  {
+    "codigo": "TB30",
+    "nombre": "TABLERO PINO 30MM",
+    "precio": 94925.1
+  },
+  {
+    "codigo": "4310/015",
+    "nombre": "CHATA DE 1CM PLATA",
+    "precio": 8956.4
+  },
+  {
+    "codigo": "GD",
+    "nombre": "GUARDAS PARA DECOUPAGE",
+    "precio": 48.4
+  },
+  {
+    "codigo": "S141",
+    "nombre": "PIE  PLATO FF MEDIANO 18CM",
+    "precio": 1242.8
+  },
+  {
+    "codigo": "ZA",
+    "nombre": "ZAPATERO C/ ESTANTES",
+    "precio": 61211.8
+  },
+  {
+    "codigo": "CIR35",
+    "nombre": "CIRCULO FF5 DE 35 CM",
+    "precio": 3720.4
+  },
+  {
+    "codigo": "CIR40",
+    "nombre": "CIRCULO FF5 DE 40 CM",
+    "precio": 4793.8
+  },
+  {
+    "codigo": "CIR45",
+    "nombre": "CIRCULO FF5 DE 45 CM",
+    "precio": 5197.9
+  },
+  {
+    "codigo": "CIR50",
+    "nombre": "CIRCULO FF5 DE 50 CM",
+    "precio": 6928.4
+  },
+  {
+    "codigo": "CIR10",
+    "nombre": "CIRCULO FF5 DE 10 CM",
+    "precio": 491.9
+  },
+  {
+    "codigo": "CIR15",
+    "nombre": "CIRCULO FF5 DE 15 CM",
+    "precio": 974.2
+  },
+  {
+    "codigo": "CIR20",
+    "nombre": "CIRCULO FF5 DE 20 CM",
+    "precio": 1244.1
+  },
+  {
+    "codigo": "CIR25",
+    "nombre": "CIRCULO FF5 DE 25 CM",
+    "precio": 2342.2
+  },
+  {
+    "codigo": "CIR30",
+    "nombre": "CIRCULO FF5 DE 30 CM",
+    "precio": 3409.1
+  },
+  {
+    "codigo": "PAGR",
+    "nombre": "PORTA AROS ESCALONADO",
+    "precio": 3110.2
+  },
+  {
+    "codigo": "P102010",
+    "nombre": "CAJA PINO C/BROCHE 10 X 20 X 10",
+    "precio": 7656.3
+  },
+  {
+    "codigo": "L10",
+    "nombre": "LETRA 10 CM",
+    "precio": 371.3
+  },
+  {
+    "codigo": "A204",
+    "nombre": "ATRIL SOUVENIRS GRANDE",
+    "precio": 5740.1
+  },
+  {
+    "codigo": "LDN",
+    "nombre": "LAMINA DECOUPAGE NO AUTOADHESIVA",
+    "precio": 55.0
+  },
+  {
+    "codigo": "CIR55",
+    "nombre": "CIRCULO FF5 DE 55 CM",
+    "precio": 8160.1
+  },
+  {
+    "codigo": "CIR60",
+    "nombre": "CIRCULO FF5 DE 60 CM",
+    "precio": 9701.6
+  },
+  {
+    "codigo": "AM200",
+    "nombre": "ADHESIVO MULTIPROPÓSITO 200CC",
+    "precio": 8326.2
+  },
+  {
+    "codigo": "PET3",
+    "nombre": "PASTA PETREA 3 KG BLANCA/NATURAL",
+    "precio": 9656.7
+  },
+  {
+    "codigo": "AR513",
+    "nombre": "ARO FF5 13 CM.",
+    "precio": 714.8
+  },
+  {
+    "codigo": "AR517",
+    "nombre": "ARO FF5 17 CM.",
+    "precio": 1197.6
+  },
+  {
+    "codigo": "AR520",
+    "nombre": "ARO FF5 20 CM. EXT",
+    "precio": 1383.6
+  },
+  {
+    "codigo": "AR523",
+    "nombre": "ARO FF5 23 CM.",
+    "precio": 1498.5
+  },
+  {
+    "codigo": "AR527",
+    "nombre": "ARO FF5 27CM.",
+    "precio": 2339.3
+  },
+  {
+    "codigo": "ORG2",
+    "nombre": "ORGANIZADOR 15 X 15 X12",
+    "precio": 1400.1
+  },
+  {
+    "codigo": "ESR7",
+    "nombre": "CIRCULO DE ESPEJO DE  7 CM",
+    "precio": 828.4
+  },
+  {
+    "codigo": "ESR10",
+    "nombre": "CIRCULO DE ESPEJO DE 10 CM",
+    "precio": 1478.4
+  },
+  {
+    "codigo": "ESR15",
+    "nombre": "CIRCULO DE ESPEJO DE 15 CM",
+    "precio": 3183.6
+  },
+  {
+    "codigo": "ESR20",
+    "nombre": "CIRCULO DE ESPEJO DE 20 CM",
+    "precio": 5324.0
+  },
+  {
+    "codigo": "ESR25",
+    "nombre": "CIRCULO DE ESPEJO DE 25 CM",
+    "precio": 8019.0
+  },
+  {
+    "codigo": "ESR30",
+    "nombre": "CIRCULO DE ESPEJO DE 30 CM",
+    "precio": 11264.0
+  },
+  {
+    "codigo": "ESR35",
+    "nombre": "CIRCULO DE ESPEJO DE 35 CM",
+    "precio": 15070.0
+  },
+  {
+    "codigo": "ESR40",
+    "nombre": "CIRCULO DE ESPEJO DE 40 CM",
+    "precio": 19404.0
+  },
+  {
+    "codigo": "CG6",
+    "nombre": "CAJA GALLETITAS   6 CM",
+    "precio": 967.1
+  },
+  {
+    "codigo": "CG8",
+    "nombre": "CAJA GALLETITAS   8 CM.",
+    "precio": 1378.0
+  },
+  {
+    "codigo": "CG10",
+    "nombre": "CAJA GALLETITAS 10 CM.",
+    "precio": 2093.5
+  },
+  {
+    "codigo": "MCE",
+    "nombre": "MACETA CHICA ECONOMICA",
+    "precio": 598.2
+  },
+  {
+    "codigo": "MME",
+    "nombre": "MACETA MEDIANA ECONOMICA",
+    "precio": 837.4
+  },
+  {
+    "codigo": "MGE",
+    "nombre": "MACETA GRANDE ECONOMICA",
+    "precio": 1315.9
+  },
+  {
+    "codigo": "PLAS",
+    "nombre": "GANCHO PLASTICO DE ARGOLLA",
+    "precio": 63.8
+  },
+  {
+    "codigo": "GDG",
+    "nombre": "GUARDA AUTOADHESIVA GRANDE",
+    "precio": 82.6
+  },
+  {
+    "codigo": "Z2525",
+    "nombre": "CAJA ZAPATO 25 X 25 X 10",
+    "precio": 11230.6
+  },
+  {
+    "codigo": "CG15",
+    "nombre": "CAJA GALLETITAS 15 CM.",
+    "precio": 3871.2
+  },
+  {
+    "codigo": "SME",
+    "nombre": "SERVILLETERO DE MESA ECONOMICO",
+    "precio": 1590.0
+  },
+  {
+    "codigo": "ESP1",
+    "nombre": "ESPEJITO 1X1",
+    "precio": 12.1
+  },
+  {
+    "codigo": "ESP2",
+    "nombre": "ESPEJITO 2X2",
+    "precio": 47.6
+  },
+  {
+    "codigo": "ESP3",
+    "nombre": "ESPEJITO 3 X 3",
+    "precio": 106.9
+  },
+  {
+    "codigo": "ROC",
+    "nombre": "RODILLO DE PINTURA CHICO DE 5 CM",
+    "precio": 1255.1
+  },
+  {
+    "codigo": "CPF",
+    "nombre": "CASA DE PAJARITOS FIBRO FACIL",
+    "precio": 5738.4
+  },
+  {
+    "codigo": "ESP4",
+    "nombre": "ESPEJITO 4 X 4",
+    "precio": 86.9
+  },
+  {
+    "codigo": "ESP5",
+    "nombre": "ESPEJITO 5 X 5",
+    "precio": 136.1
+  },
+  {
+    "codigo": "CG20",
+    "nombre": "CAJA GALLETITAS 20 CM",
+    "precio": 5372.2
+  },
+  {
+    "codigo": "CG25",
+    "nombre": "CAJA GALLETITAS 25 CM",
+    "precio": 6543.4
+  },
+  {
+    "codigo": "BA4",
+    "nombre": "BASE ACRILICA 400 C.C.",
+    "precio": 7321.9
+  },
+  {
+    "codigo": "PPLE",
+    "nombre": "PUERTA PLEGABLE CUIDA BEBE",
+    "precio": 98999.9
+  },
+  {
+    "codigo": "BF5G",
+    "nombre": "BANDEJA 30X40 FF5 RECTA",
+    "precio": 16788.8
+  },
+  {
+    "codigo": "MO550",
+    "nombre": "PASAMANO 2 X 3 PINO",
+    "precio": 7457.7
+  },
+  {
+    "codigo": "PV",
+    "nombre": "PERCHERO VALET",
+    "precio": 45501.5
+  },
+  {
+    "codigo": "BF2020",
+    "nombre": "BASTIDOR PLEGADO FF5 20X20",
+    "precio": 2385.0
+  },
+  {
+    "codigo": "BF2525",
+    "nombre": "BASTIDOR PLEGADO FF5 25X25",
+    "precio": 3301.2
+  },
+  {
+    "codigo": "BF3030",
+    "nombre": "BASTIDOR PLEGADO FF5 30X30",
+    "precio": 4401.7
+  },
+  {
+    "codigo": "BF2050",
+    "nombre": "BASTIDOR PLEGADO FF5 20X50",
+    "precio": 4890.5
+  },
+  {
+    "codigo": "BF3040",
+    "nombre": "BASTIDOR PLEGADO FF5 30X40",
+    "precio": 5501.9
+  },
+  {
+    "codigo": "BF3050",
+    "nombre": "BASTIDOR PLEGADO FF5 30X50",
+    "precio": 6724.7
+  },
+  {
+    "codigo": "BF3070",
+    "nombre": "BASTIDOR PLEGADO FF5 30X70",
+    "precio": 8924.1
+  },
+  {
+    "codigo": "BF4040",
+    "nombre": "BASTIDOR PLEGADO FF5 40X40",
+    "precio": 6969.4
+  },
+  {
+    "codigo": "BF4050",
+    "nombre": "BASTIDOR PLEGADO FF5 40X50",
+    "precio": 8435.6
+  },
+  {
+    "codigo": "BF4070",
+    "nombre": "BASTIDOR PLEGADO FF5 40X70",
+    "precio": 11247.7
+  },
+  {
+    "codigo": "BF5050",
+    "nombre": "BASTIDOR PLEGADO FF5 50X50",
+    "precio": 10099.7
+  },
+  {
+    "codigo": "BF5060",
+    "nombre": "BASTIDOR PLEGADO FF5 50X60",
+    "precio": 11859.6
+  },
+  {
+    "codigo": "BF5070",
+    "nombre": "BASTIDOR PLEGADO FF5 50X70",
+    "precio": 13571.5
+  },
+  {
+    "codigo": "BF5080",
+    "nombre": "BASTIDOR PLEGADO FF5 50X80",
+    "precio": 15284.0
+  },
+  {
+    "codigo": "BF50100",
+    "nombre": "BASTIDOR PLEGADO FF5 50X100",
+    "precio": 18951.1
+  },
+  {
+    "codigo": "BF6080",
+    "nombre": "BASTIDOR PLEGADO FF5 60X80",
+    "precio": 17973.0
+  },
+  {
+    "codigo": "PQ9200",
+    "nombre": "P.LENGUA DE GATO N° 0 DORADO",
+    "precio": 2849.5
+  },
+  {
+    "codigo": "PQ9204",
+    "nombre": "P.LENGUA DE GATO N°4 DORADO",
+    "precio": 3482.8
+  },
+  {
+    "codigo": "PQ9206",
+    "nombre": "P.LENGUA DE GATO N° 6 DORADO",
+    "precio": 4037.7
+  },
+  {
+    "codigo": "PQ9202",
+    "nombre": "P.LENGUA DE GATO N°2 DORADO",
+    "precio": 2969.1
+  },
+  {
+    "codigo": "PQ7800",
+    "nombre": "P.LINER N° 0(F.SINTETICA MIXTA)",
+    "precio": 3088.2
+  },
+  {
+    "codigo": "PQ7802",
+    "nombre": "P. LINER N° 2 ( F.SINTETICA MIXTA)",
+    "precio": 3760.2
+  },
+  {
+    "codigo": "PQ7801",
+    "nombre": "P.LINER N°1 (F.SINTETICA MIXTA)",
+    "precio": 3324.7
+  },
+  {
+    "codigo": "PQ9208",
+    "nombre": "P.LENGUA DE GATO N° 8 DORADO",
+    "precio": 4828.4
+  },
+  {
+    "codigo": "CFF3060",
+    "nombre": "CUBO FF 30 X 60 X 20",
+    "precio": 10629.9
+  },
+  {
+    "codigo": "BF3060",
+    "nombre": "BASTIDOR PLEGADO FF5 30X60",
+    "precio": 7763.6
+  },
+  {
+    "codigo": "L1515",
+    "nombre": "LETRAS DE 15 CM. DE 15 MM. DE ESPESOR",
+    "precio": 2295.9
+  },
+  {
+    "codigo": "MO209",
+    "nombre": "CONTRAMARCO 1/2 X 4 MOLDURADO",
+    "precio": 1945.9
+  },
+  {
+    "codigo": "PI1",
+    "nombre": "PINCELETA N 1 Y 2",
+    "precio": 956.7
+  },
+  {
+    "codigo": "PI9",
+    "nombre": "PINCELETA N 9 Y 10",
+    "precio": 3900.6
+  },
+  {
+    "codigo": "MM2",
+    "nombre": "MASILLA IN.CA.MAR.",
+    "precio": 3303.3
+  },
+  {
+    "codigo": "BF2030",
+    "nombre": "BASTIDOR PLEGADO FF5 20X30",
+    "precio": 3240.3
+  },
+  {
+    "codigo": "CV125",
+    "nombre": "COLA VINILICA 125CC.",
+    "precio": 2159.9
+  },
+  {
+    "codigo": "CC100",
+    "nombre": "CEMENTO DE CONTACTO 100CC",
+    "precio": 4573.8
+  },
+  {
+    "codigo": "TVF4",
+    "nombre": "CAJA DE TE X 4 FIBRO C/VIDRIO",
+    "precio": 14550.3
+  },
+  {
+    "codigo": "TVF6",
+    "nombre": "CAJA DE TE X 6 FIBRO C/VIDRIO",
+    "precio": 15972.0
+  },
+  {
+    "codigo": "ETG",
+    "nombre": "ESPEJO TOCADOR  MOVIL OVAL 1 CAJON",
+    "precio": 13584.1
+  },
+  {
+    "codigo": "MCHC",
+    "nombre": "MESITA P/CHICOS C/CAJON Y PIZARRON",
+    "precio": 33482.5
+  },
+  {
+    "codigo": "RCB",
+    "nombre": "ROMPECABEZAS LASER",
+    "precio": 3355.2
+  },
+  {
+    "codigo": "CHAP",
+    "nombre": "CHAPAS IMPRESAS VARIAS",
+    "precio": 5239.9
+  },
+  {
+    "codigo": "MO357",
+    "nombre": "BARRAL 14MM DE PINO",
+    "precio": 1125.8
+  },
+  {
+    "codigo": "FR",
+    "nombre": "FIGURAS CON RUEDAS",
+    "precio": 1866.8
+  },
+  {
+    "codigo": "TVF2",
+    "nombre": "CAJA DE TE X 2 FIBRO C/VIDRIO",
+    "precio": 9405.5
+  },
+  {
+    "codigo": "BF4060",
+    "nombre": "BASTIDOR PLEGADO FF5 40X60",
+    "precio": 9781.8
+  },
+  {
+    "codigo": "BIO",
+    "nombre": "HOJA DE BIOMBO CIEGA",
+    "precio": 38153.1
+  },
+  {
+    "codigo": "BD",
+    "nombre": "BODEGA MESA P/21 BOT.",
+    "precio": 134915.3
+  },
+  {
+    "codigo": "LD",
+    "nombre": "LAMINA DECUPAGE  GRANDE",
+    "precio": 2255.0
+  },
+  {
+    "codigo": "BROG",
+    "nombre": "BROCHE GRANDE",
+    "precio": 97.9
+  },
+  {
+    "codigo": "MP200",
+    "nombre": "MOD PODGE X 200CC",
+    "precio": 4954.7
+  },
+  {
+    "codigo": "LP",
+    "nombre": "LAVAPINCELES X 100 CC",
+    "precio": 3269.9
+  },
+  {
+    "codigo": "3237/400",
+    "nombre": "L RECTA 20X42 CAJON NOGAL",
+    "precio": 25765.9
+  },
+  {
+    "codigo": "4440",
+    "nombre": "CHATA DE 36 SINUS C/ GARG TIZA",
+    "precio": 20796.4
+  },
+  {
+    "codigo": "4441",
+    "nombre": "CHATA 36 GRAB FLORES C/GARG TIZA",
+    "precio": 20796.4
+  },
+  {
+    "codigo": "4439",
+    "nombre": "CHATA 36 SOGA C/GARG TIZA",
+    "precio": 20796.4
+  },
+  {
+    "codigo": "4435",
+    "nombre": "CHATA DE 2 C/ARABESCO TIZA",
+    "precio": 13234.6
+  },
+  {
+    "codigo": "4436",
+    "nombre": "CHATA DE 2 BORLA GIGAN TIZA",
+    "precio": 13234.6
+  },
+  {
+    "codigo": "4434",
+    "nombre": "CHATA DE 2 C/R GRABADA TIZA",
+    "precio": 13234.6
+  },
+  {
+    "codigo": "4432",
+    "nombre": "CHATA DE 1 C/PERLA TIZA",
+    "precio": 8188.0
+  },
+  {
+    "codigo": "4433",
+    "nombre": "CHATA DE 1.5 C/FRISADA TIZA",
+    "precio": 9007.3
+  },
+  {
+    "codigo": "4437",
+    "nombre": "CHATA DE 2 SOGA TIZA",
+    "precio": 12604.0
+  },
+  {
+    "codigo": "4438",
+    "nombre": "CHATA DE 2 GRAB INFIN TIZA",
+    "precio": 12604.0
+  },
+  {
+    "codigo": "4439/107",
+    "nombre": "CHATA DE 36 SOGA C/GAR PLATA",
+    "precio": 25920.9
+  },
+  {
+    "codigo": "4439/108",
+    "nombre": "CHATA DE 36 SOGA DORADO",
+    "precio": 25920.9
+  },
+  {
+    "codigo": "4437/107",
+    "nombre": "CHATA DE 2 PLATA PATIN NEGRO",
+    "precio": 17607.6
+  },
+  {
+    "codigo": "4437/108",
+    "nombre": "CHATA DE 2 SOGA DORADO",
+    "precio": 17607.6
+  },
+  {
+    "codigo": "TP15",
+    "nombre": "TAPONADOR 15MM",
+    "precio": 1905.8
+  },
+  {
+    "codigo": "TP22",
+    "nombre": "TAPONADOR 22MM",
+    "precio": 2058.2
+  },
+  {
+    "codigo": "TP34",
+    "nombre": "TAPONADOR 34MM",
+    "precio": 2820.5
+  },
+  {
+    "codigo": "TP50",
+    "nombre": "TAPONADOR 50MM",
+    "precio": 3544.7
+  },
+  {
+    "codigo": "MO356",
+    "nombre": "BARRAL 18MM DE PINO",
+    "precio": 1202.0
+  },
+  {
+    "codigo": "LIA",
+    "nombre": "LAMINA AUTOADESIVA",
+    "precio": 619.1
+  },
+  {
+    "codigo": "ESTP",
+    "nombre": "ESTECA PLASTICA",
+    "precio": 1374.6
+  },
+  {
+    "codigo": "POMC",
+    "nombre": "POMO CHICO P/PERCHERO",
+    "precio": 1136.0
+  },
+  {
+    "codigo": "HCH",
+    "nombre": "HELADERA P/ CHICOS",
+    "precio": 65152.2
+  },
+  {
+    "codigo": "BF5C",
+    "nombre": "BANDEJA 20X30 FF5 RECTA",
+    "precio": 13431.0
+  },
+  {
+    "codigo": "MUC",
+    "nombre": "MULTICUBOS DE 40X40X25",
+    "precio": 14375.3
+  },
+  {
+    "codigo": "MO353",
+    "nombre": "BARRAL 10MM DE PINO",
+    "precio": 893.6
+  },
+  {
+    "codigo": "MO354",
+    "nombre": "BARRAL 12MM DE PINO",
+    "precio": 1055.6
+  },
+  {
+    "codigo": "MO355",
+    "nombre": "BARRAL 16MM DE PINO",
+    "precio": 1133.8
+  },
+  {
+    "codigo": "AM100",
+    "nombre": "ADHESIVO MULTIPROPOSITO 100CC",
+    "precio": 4406.1
+  },
+  {
+    "codigo": "AM40",
+    "nombre": "ADHESIVO MULTIPROPOSITO 40CC",
+    "precio": 2619.9
+  },
+  {
+    "codigo": "MR10",
+    "nombre": "MARCO REDONDO 10 CM.",
+    "precio": 1582.3
+  },
+  {
+    "codigo": "MR15",
+    "nombre": "MARCO REDONDO 15 CM.",
+    "precio": 2342.5
+  },
+  {
+    "codigo": "MR20",
+    "nombre": "MARCO REDONDO 20 CM.",
+    "precio": 3212.7
+  },
+  {
+    "codigo": "MR25",
+    "nombre": "MARCO REDONDO 25 CM.",
+    "precio": 3682.8
+  },
+  {
+    "codigo": "MR30",
+    "nombre": "MARCO REDONDO 30 CM.",
+    "precio": 4278.5
+  },
+  {
+    "codigo": "MR35",
+    "nombre": "MARCO REDONDO 35 CM.",
+    "precio": 5209.2
+  },
+  {
+    "codigo": "MO160",
+    "nombre": "TAPA JUNTA 3/4 X 2 MOLDURADO",
+    "precio": 2253.4
+  },
+  {
+    "codigo": "PP1",
+    "nombre": "PINTURA PIZARRON",
+    "precio": 5369.4
+  },
+  {
+    "codigo": "RV1",
+    "nombre": "REV.VENECITAS 31.5X31.5",
+    "precio": 1238.2
+  },
+  {
+    "codigo": "GV1",
+    "nombre": "GUARDA VENECITAS 30CM",
+    "precio": 247.7
+  },
+  {
+    "codigo": "TV1",
+    "nombre": "TARRO VENECITAS 800GS.",
+    "precio": 1348.4
+  },
+  {
+    "codigo": "CFF2030",
+    "nombre": "CUBO FF 20 X 30 X 20",
+    "precio": 7887.8
+  },
+  {
+    "codigo": "PVR",
+    "nombre": "PINZA C/RUEDAS",
+    "precio": 5915.7
+  },
+  {
+    "codigo": "RV2",
+    "nombre": "VENECITAS.ROJO/NAR./AMAR.",
+    "precio": 2146.2
+  },
+  {
+    "codigo": "GV2",
+    "nombre": "GUARDA ROJO/NAR./AMAR.",
+    "precio": 440.2
+  },
+  {
+    "codigo": "MPQ275",
+    "nombre": "MESA PLEG.QUINCHO (80X2,75)",
+    "precio": 220740.9
+  },
+  {
+    "codigo": "BAN120",
+    "nombre": "BANCO QUINCHO (1.20)",
+    "precio": 74108.6
+  },
+  {
+    "codigo": "SPLE",
+    "nombre": "SILLA PLEGABLE",
+    "precio": 13050.3
+  },
+  {
+    "codigo": "GL100",
+    "nombre": "GOMA LACA 100 C.C.",
+    "precio": 5183.8
+  },
+  {
+    "codigo": "TB21",
+    "nombre": "TABLERO PINO 21 MM",
+    "precio": 71318.6
+  },
+  {
+    "codigo": "ROM",
+    "nombre": "RODILLO DE PINTURA MEDIANO 8 CM",
+    "precio": 1500.8
+  },
+  {
+    "codigo": "ROG",
+    "nombre": "RODILLO DE PINTURA GRANDE DE 10 CM",
+    "precio": 1783.6
+  },
+  {
+    "codigo": "S142",
+    "nombre": "PIE PLATO GRANDE FF 22CM",
+    "precio": 1728.1
+  },
+  {
+    "codigo": "S143",
+    "nombre": "TABLA DE SURF GRANDE",
+    "precio": 126.2
+  },
+  {
+    "codigo": "BAÑO",
+    "nombre": "FIGURAS BAÑO",
+    "precio": 472.4
+  },
+  {
+    "codigo": "RR",
+    "nombre": "REPUESTO RUEDAS DE CORTE",
+    "precio": 1100.7
+  },
+  {
+    "codigo": "30155",
+    "nombre": "LISTON 11/2 X 3",
+    "precio": 4658.1
+  },
+  {
+    "codigo": "JAC",
+    "nombre": "JAULA CHICA",
+    "precio": 1741.4
+  },
+  {
+    "codigo": "JAM",
+    "nombre": "JAULA MEDIANA",
+    "precio": 2679.4
+  },
+  {
+    "codigo": "JAG",
+    "nombre": "JAULA GRANDE",
+    "precio": 4441.3
+  },
+  {
+    "codigo": "S140",
+    "nombre": "PIE DE PLATO CHICO 13CM",
+    "precio": 940.1
+  },
+  {
+    "codigo": "B60",
+    "nombre": "BOLITA 60 MM",
+    "precio": 2353.5
+  },
+  {
+    "codigo": "CFM",
+    "nombre": "CAJON FRUTA MEDIANO",
+    "precio": 2364.5
+  },
+  {
+    "codigo": "IM",
+    "nombre": "IMANES IMPRESOS",
+    "precio": 791.0
+  },
+  {
+    "codigo": "PIZSM",
+    "nombre": "PIZARRA SOUVENIR  20 X 30",
+    "precio": 6143.1
+  },
+  {
+    "codigo": "TIC4008",
+    "nombre": "TIRADOR FRAGO 23 MM CROMO MATE",
+    "precio": 232.6
+  },
+  {
+    "codigo": "MC60160",
+    "nombre": "MARCO CALADO 60X160",
+    "precio": 30523.0
+  },
+  {
+    "codigo": "MP2C",
+    "nombre": "MESA PINO C/ESTANTE Y 2 CAJONES",
+    "precio": 121487.7
+  },
+  {
+    "codigo": "BICO",
+    "nombre": "BISAGRAS P/ CORBATA",
+    "precio": 197.8
+  },
+  {
+    "codigo": "S66",
+    "nombre": "CAJA STANDAR  6 X 6",
+    "precio": 2107.9
+  },
+  {
+    "codigo": "PB",
+    "nombre": "PORTA BOLSAS",
+    "precio": 9384.7
+  },
+  {
+    "codigo": "BF2060",
+    "nombre": "BASTIDOR PLEGADO FF5 20X60",
+    "precio": 5746.4
+  },
+  {
+    "codigo": "PCHA",
+    "nombre": "PIE CHAPA P/PORTARETRATO",
+    "precio": 197.8
+  },
+  {
+    "codigo": "LP20",
+    "nombre": "LETRA POLIFAN 20CM",
+    "precio": 2420.0
+  },
+  {
+    "codigo": "RE",
+    "nombre": "REPISA ESPECIERO",
+    "precio": 6958.2
+  },
+  {
+    "codigo": "LC",
+    "nombre": "LAMPARA COLGANTE",
+    "precio": 12137.8
+  },
+  {
+    "codigo": "LCG",
+    "nombre": "LAMPARA COLGANTE GRANDE",
+    "precio": 21531.8
+  },
+  {
+    "codigo": "SR",
+    "nombre": "STENCIL 4.5 X 24",
+    "precio": 1334.0
+  },
+  {
+    "codigo": "MRP",
+    "nombre": "MESA RATONA DE PINO",
+    "precio": 255051.0
+  },
+  {
+    "codigo": "BPV",
+    "nombre": "BANDEJA C/PORTA VASO",
+    "precio": 24623.5
+  },
+  {
+    "codigo": "CFJ",
+    "nombre": "CAJON FRUTA JUGUETES 40X60 SIN RUEDAS",
+    "precio": 33541.2
+  },
+  {
+    "codigo": "VMG",
+    "nombre": "VUELTA AL MUNDO",
+    "precio": 15233.3
+  },
+  {
+    "codigo": "LF",
+    "nombre": "CARPETA DE FIRMAS",
+    "precio": 1668.4
+  },
+  {
+    "codigo": "BCB",
+    "nombre": "BASTIDOR BORDAR CHICO 15 CM",
+    "precio": 4400.0
+  },
+  {
+    "codigo": "BMB",
+    "nombre": "BASTIDOR BORDAR MEDIANO 20 CM",
+    "precio": 6380.0
+  },
+  {
+    "codigo": "BGB",
+    "nombre": "BASTIDOR BORDAR GRANDE  25 CM",
+    "precio": 9173.7
+  },
+  {
+    "codigo": "CL35",
+    "nombre": "CIRCULO 35CM 3MM",
+    "precio": 2823.3
+  },
+  {
+    "codigo": "CL40",
+    "nombre": "CIRCULO 40CM 3MM",
+    "precio": 3639.3
+  },
+  {
+    "codigo": "CL45",
+    "nombre": "CIRCULO 45CM 3MM",
+    "precio": 4163.6
+  },
+  {
+    "codigo": "CL50",
+    "nombre": "CIRCULO 50CM 3MM",
+    "precio": 5553.6
+  },
+  {
+    "codigo": "CL55",
+    "nombre": "CIRCULO 55CM 3MM",
+    "precio": 6664.3
+  },
+  {
+    "codigo": "CL60",
+    "nombre": "CIRCULO 60CM 3MM",
+    "precio": 7775.0
+  },
+  {
+    "codigo": "CL3",
+    "nombre": "CIRCULO 3CM",
+    "precio": 138.4
+  },
+  {
+    "codigo": "CL4",
+    "nombre": "CIRCULO 4CM",
+    "precio": 183.0
+  },
+  {
+    "codigo": "CL5",
+    "nombre": "CIRCULO 5CM",
+    "precio": 234.6
+  },
+  {
+    "codigo": "CL6",
+    "nombre": "CIRCULO 6CM",
+    "precio": 248.2
+  },
+  {
+    "codigo": "CL7",
+    "nombre": "CIRCULO 7CM 3MM",
+    "precio": 273.0
+  },
+  {
+    "codigo": "CL8",
+    "nombre": "CIRCULO 8CM 3MM",
+    "precio": 319.6
+  },
+  {
+    "codigo": "CL10",
+    "nombre": "CIRCULO 10CM 3MM",
+    "precio": 422.0
+  },
+  {
+    "codigo": "CL15",
+    "nombre": "CIRCULO 15CM 3MM",
+    "precio": 685.7
+  },
+  {
+    "codigo": "CL20",
+    "nombre": "CIRCULO 20CM 3MM",
+    "precio": 878.0
+  },
+  {
+    "codigo": "CL25",
+    "nombre": "CIRCULO 25 CM 3MM",
+    "precio": 1777.8
+  },
+  {
+    "codigo": "CL30",
+    "nombre": "CIRCULO 30CM 3MM",
+    "precio": 2587.5
+  },
+  {
+    "codigo": "GGD",
+    "nombre": "GUARDA GRANDE DOBLE",
+    "precio": 179.1
+  },
+  {
+    "codigo": "CL2",
+    "nombre": "CIRCULO 2 CM 3MM",
+    "precio": 136.5
+  },
+  {
+    "codigo": "CANDY BAR",
+    "nombre": "CANDY BAR",
+    "precio": 12689.9
+  },
+  {
+    "codigo": "BO18",
+    "nombre": "BODEGA 18 BOTELLAS",
+    "precio": 78018.4
+  },
+  {
+    "codigo": "PIZG",
+    "nombre": "PIZARRON DOBLE 65 X 1.15",
+    "precio": 88934.9
+  },
+  {
+    "codigo": "SJ",
+    "nombre": "SOUVENIRS FIGURA JAULA CHICA",
+    "precio": 203.8
+  },
+  {
+    "codigo": "SCC",
+    "nombre": "SOUVENIRS CANDADO CHICO",
+    "precio": 152.3
+  },
+  {
+    "codigo": "SE",
+    "nombre": "SOUVENIRS ESQUINEROS CHICO",
+    "precio": 203.8
+  },
+  {
+    "codigo": "SLL",
+    "nombre": "SOUVENIRS LLAVE CHICO",
+    "precio": 101.8
+  },
+  {
+    "codigo": "SPC",
+    "nombre": "SOUVENIRS PAJARITO CHICO",
+    "precio": 2431.0
+  },
+  {
+    "codigo": "SPG",
+    "nombre": "SOUVENIRS PAJARITO GRANDE",
+    "precio": 2772.0
+  },
+  {
+    "codigo": "SBC",
+    "nombre": "SOUVENIRS BUHO CHICO",
+    "precio": 203.8
+  },
+  {
+    "codigo": "SBG",
+    "nombre": "SOUVENIRS BUHO GRANDE",
+    "precio": 305.3
+  },
+  {
+    "codigo": "PIZC",
+    "nombre": "PIZARRON DOBLE45X90",
+    "precio": 59713.4
+  },
+  {
+    "codigo": "AR310",
+    "nombre": "ARO FF3 10CM.",
+    "precio": 238.9
+  },
+  {
+    "codigo": "AR313",
+    "nombre": "ARO FF3 13CM.",
+    "precio": 356.8
+  },
+  {
+    "codigo": "AR319",
+    "nombre": "ARO FF3 19 CM.",
+    "precio": 594.0
+  },
+  {
+    "codigo": "AR323",
+    "nombre": "ARO FF3 23CM.",
+    "precio": 741.5
+  },
+  {
+    "codigo": "AR327",
+    "nombre": "ARO FF3 27CM.",
+    "precio": 1166.6
+  },
+  {
+    "codigo": "CF3040",
+    "nombre": "CAJON FRUTA 30X40",
+    "precio": 8664.8
+  },
+  {
+    "codigo": "F203010",
+    "nombre": "CAJA FIBRO 20X30X10",
+    "precio": 16000.0
+  },
+  {
+    "codigo": "F20307",
+    "nombre": "CAJA FIBRO 20X30X7",
+    "precio": 15000.0
+  },
+  {
+    "codigo": "F202510",
+    "nombre": "CAJA FIBRO 20X25X10",
+    "precio": 15669.5
+  },
+  {
+    "codigo": "F20257",
+    "nombre": "CAJA FIBRO 20X25X7",
+    "precio": 14550.3
+  },
+  {
+    "codigo": "F202010",
+    "nombre": "CAJA FIBRO 20X20X10",
+    "precio": 14550.3
+  },
+  {
+    "codigo": "F20207",
+    "nombre": "CAJA FIBRO 20X20X7",
+    "precio": 14550.3
+  },
+  {
+    "codigo": "F15205",
+    "nombre": "CAJA FIBRO 15X20X5",
+    "precio": 8615.6
+  },
+  {
+    "codigo": "F10155",
+    "nombre": "CAJA FIBRO 10X15X5",
+    "precio": 6029.1
+  },
+  {
+    "codigo": "MAN1",
+    "nombre": "MANIJA OVAL",
+    "precio": 151.4
+  },
+  {
+    "codigo": "MAN2",
+    "nombre": "MANIJA BARRAL 96",
+    "precio": 124.1
+  },
+  {
+    "codigo": "MAN3",
+    "nombre": "MANIJA BARRAL 160",
+    "precio": 220.1
+  },
+  {
+    "codigo": "MAN4",
+    "nombre": "MANIJA BARI 96",
+    "precio": 272.0
+  },
+  {
+    "codigo": "MAN5",
+    "nombre": "MANIJA BARI 128",
+    "precio": 326.4
+  },
+  {
+    "codigo": "MAN6",
+    "nombre": "MANIJA ELIPSE 128 NEGRA",
+    "precio": 217.7
+  },
+  {
+    "codigo": "BF2040",
+    "nombre": "BASTIDOR PLEGADO FF5 20X40",
+    "precio": 4035.5
+  },
+  {
+    "codigo": "BF32020",
+    "nombre": "BASTIDOR PLEGADO FF3 20X20",
+    "precio": 1711.3
+  },
+  {
+    "codigo": "BF32030",
+    "nombre": "BASTIDOR PLEGADO FF3 20X30",
+    "precio": 2385.0
+  },
+  {
+    "codigo": "BF33030",
+    "nombre": "BASTIDOR PLEGADO FF3 30X30",
+    "precio": 3178.4
+  },
+  {
+    "codigo": "D3D",
+    "nombre": "DIMENCIONAL 3D",
+    "precio": 2937.4
+  },
+  {
+    "codigo": "BF32525",
+    "nombre": "BASTIDOR PLEGADO FF3 25X25",
+    "precio": 2385.0
+  },
+  {
+    "codigo": "BF2530",
+    "nombre": "BASTIDOR PLEGADO FF5 25X30",
+    "precio": 3789.6
+  },
+  {
+    "codigo": "BRE",
+    "nombre": "BISAGRA RESORTE EMBUTIR",
+    "precio": 412.9
+  },
+  {
+    "codigo": "ESC",
+    "nombre": "ESCALON DE ESCALERA",
+    "precio": 9401.7
+  },
+  {
+    "codigo": "BP",
+    "nombre": "BANCO DE PLAZA",
+    "precio": 39932.7
+  },
+  {
+    "codigo": "BF60C",
+    "nombre": "BAUL FIBRO 60 CURVO",
+    "precio": 99825.0
+  },
+  {
+    "codigo": "BF80C",
+    "nombre": "BAUL FIBRO 80 CURVO",
+    "precio": 113999.8
+  },
+  {
+    "codigo": "BF2070",
+    "nombre": "BASTIDOR PLEGADO FF5 20X70",
+    "precio": 6969.4
+  },
+  {
+    "codigo": "CMI",
+    "nombre": "CAJON FRUTA MINI",
+    "precio": 2627.0
+  },
+  {
+    "codigo": "CF",
+    "nombre": "CAJON FLOTANTE",
+    "precio": 23870.1
+  },
+  {
+    "codigo": "BF100C",
+    "nombre": "BAUL FIBRO 100 CURVO",
+    "precio": 129772.5
+  },
+  {
+    "codigo": "T80",
+    "nombre": "TORNILLO 5 X 80",
+    "precio": 13.7
+  },
+  {
+    "codigo": "CF3040P",
+    "nombre": "CAJON FRUTA 30X40X25",
+    "precio": 19987.4
+  },
+  {
+    "codigo": "BF40C",
+    "nombre": "BAUL FIBRO 40 CURVO",
+    "precio": 44770.0
+  },
+  {
+    "codigo": "TC",
+    "nombre": "TIRADOR CHICO C/TUERCA",
+    "precio": 985.3
+  },
+  {
+    "codigo": "TM",
+    "nombre": "TIRADOR MED. C/TUERCA",
+    "precio": 1089.8
+  },
+  {
+    "codigo": "TG",
+    "nombre": "TIRADOR GR. C/TUERCA",
+    "precio": 1283.8
+  },
+  {
+    "codigo": "CV4",
+    "nombre": "COLA VINILICA 4K",
+    "precio": 34303.5
+  },
+  {
+    "codigo": "BF3090",
+    "nombre": "BASTIDOR PLEGADO FF5 30X90",
+    "precio": 11247.7
+  },
+  {
+    "codigo": "CL9",
+    "nombre": "CIRCULO  9 CM.",
+    "precio": 350.6
+  },
+  {
+    "codigo": "BF31515",
+    "nombre": "BASTIDOR PLEGADO FF3 15X15",
+    "precio": 1650.0
+  },
+  {
+    "codigo": "BF6090",
+    "nombre": "BASTIDOR PLEGADO FF5 60X90",
+    "precio": 19929.5
+  },
+  {
+    "codigo": "BF2025",
+    "nombre": "BASTIDOR PLEGADO FF520X25",
+    "precio": 2811.6
+  },
+  {
+    "codigo": "MAN100",
+    "nombre": "MANIJA CHAPA 100 CM.",
+    "precio": 137.7
+  },
+  {
+    "codigo": "MAN125",
+    "nombre": "MANIJA CHAPA 125 CM.",
+    "precio": 192.9
+  },
+  {
+    "codigo": "MAN150",
+    "nombre": "MANIJA CHAPA 150 CM.",
+    "precio": 261.4
+  },
+  {
+    "codigo": "2331B",
+    "nombre": "CHATA DE 3 C/BORLAS",
+    "precio": 5538.2
+  },
+  {
+    "codigo": "LCAJ",
+    "nombre": "LIBRO CAJON",
+    "precio": 7950.2
+  },
+  {
+    "codigo": "VIN1",
+    "nombre": "VINILO DE TRANSFERENCIA DE 8 CM",
+    "precio": 413.2
+  },
+  {
+    "codigo": "VIN2",
+    "nombre": "VINILO DE TRANSFERENCIA DE 15 CM",
+    "precio": 1038.9
+  },
+  {
+    "codigo": "PRPA",
+    "nombre": "PORTA MI 1ºAÑITO",
+    "precio": 40022.1
+  },
+  {
+    "codigo": "CFF2525",
+    "nombre": "CUBO FF 25X25X20",
+    "precio": 7887.8
+  },
+  {
+    "codigo": "AR317",
+    "nombre": "ARO FF3 17CM",
+    "precio": 595.7
+  },
+  {
+    "codigo": "AR329",
+    "nombre": "ARO FF3 29CM",
+    "precio": 1145.6
+  },
+  {
+    "codigo": "LOC",
+    "nombre": "LOCOMOTORA",
+    "precio": 3943.9
+  },
+  {
+    "codigo": "VAG",
+    "nombre": "VAGON TRENCITO",
+    "precio": 2431.7
+  },
+  {
+    "codigo": "JA",
+    "nombre": "JUGUETERO APILABLE",
+    "precio": 24423.8
+  },
+  {
+    "codigo": "OSB10",
+    "nombre": "OSB 10 MM.",
+    "precio": 34744.0
+  },
+  {
+    "codigo": "MF2C",
+    "nombre": "MESA DE FIBRO C/2 CAJONES",
+    "precio": 91979.2
+  },
+  {
+    "codigo": "BF1515",
+    "nombre": "BASTIDOR PLEGADO FF5 15X15",
+    "precio": 1589.1
+  },
+  {
+    "codigo": "BF1530",
+    "nombre": "BASTIDOR PLEGADO FF515X30",
+    "precio": 2628.6
+  },
+  {
+    "codigo": "BB10",
+    "nombre": "BASTIDOR BORDAR 10CM",
+    "precio": 3287.2
+  },
+  {
+    "codigo": "PT1",
+    "nombre": "PINTURA A LA TIZA",
+    "precio": 5300.9
+  },
+  {
+    "codigo": "BEM1",
+    "nombre": "BARNIZ EXTRA MATE",
+    "precio": 7718.4
+  },
+  {
+    "codigo": "CIM1",
+    "nombre": "CERA INCOLORA MATE",
+    "precio": 6549.9
+  },
+  {
+    "codigo": "LICH",
+    "nombre": "LAMINA AUTOAD. CHICA",
+    "precio": 165.1
+  },
+  {
+    "codigo": "BF3080",
+    "nombre": "BASTIDOR PLEGADO FF5 30X80",
+    "precio": 10088.1
+  },
+  {
+    "codigo": "MPC40100C",
+    "nombre": "MESA PATA CURVA PINO 40X1,00 C/CAJON",
+    "precio": 136206.1
+  },
+  {
+    "codigo": "MPC30100C",
+    "nombre": "MESA PATA CURVA PINO 30X1,00 C/CAJON",
+    "precio": 128496.8
+  },
+  {
+    "codigo": "REE",
+    "nombre": "REPISA EXHIBIDORA ESCALERA",
+    "precio": 53905.5
+  },
+  {
+    "codigo": "CFSF",
+    "nombre": "CAJON FRUTA 10 X 15 FIBRO FACIL",
+    "precio": 3285.3
+  },
+  {
+    "codigo": "CFMF",
+    "nombre": "CAJON FRUTA 15 X 20 FIBRO FACIL",
+    "precio": 3959.8
+  },
+  {
+    "codigo": "CF2030F",
+    "nombre": "CAJON DE FRUTA 20 X 30 FIBRO FACIL",
+    "precio": 5419.0
+  },
+  {
+    "codigo": "BF80100",
+    "nombre": "BASTIDOR PLEGADO FF5 80X100",
+    "precio": 28486.9
+  },
+  {
+    "codigo": "BAV",
+    "nombre": "BANQUITO VINTAGE",
+    "precio": 27951.8
+  },
+  {
+    "codigo": "MPC3080C",
+    "nombre": "MESA PATA CURVA PINO 30 X 80 C/CAJON",
+    "precio": 120913.9
+  },
+  {
+    "codigo": "MPCF30100C",
+    "nombre": "MESA PATA CURVA FIBRO 30 X 100 C/CAJON",
+    "precio": 79836.9
+  },
+  {
+    "codigo": "MPCF4080C",
+    "nombre": "MESA PATA CURVA FIBRO 40 X 80 C/CAJON",
+    "precio": 82398.0
+  },
+  {
+    "codigo": "MPCF40100C",
+    "nombre": "MESA PATA CURVA FIBRO 40X100 C/CAJON",
+    "precio": 90063.0
+  },
+  {
+    "codigo": "BAN180",
+    "nombre": "BANCO QUINCHO 1.80",
+    "precio": 87265.6
+  },
+  {
+    "codigo": "BAR",
+    "nombre": "BANQUETA CON RESPALDO",
+    "precio": 49822.1
+  },
+  {
+    "codigo": "VIN3",
+    "nombre": "VINILO DE TRANSFERENCIA DE 20 CM",
+    "precio": 1500.8
+  },
+  {
+    "codigo": "TENG",
+    "nombre": "TENDER CUELGA FOTOS GRANDE",
+    "precio": 11180.4
+  },
+  {
+    "codigo": "MPCF3080C",
+    "nombre": "MESA PATA CURVA FIBRO 30 X 80 C/CAJON",
+    "precio": 72816.7
+  },
+  {
+    "codigo": "BD38",
+    "nombre": "BISAGRA DORADA 38MM",
+    "precio": 179.2
+  },
+  {
+    "codigo": "RF40",
+    "nombre": "REPISA FIBRO 40CM",
+    "precio": 5858.6
+  },
+  {
+    "codigo": "RF60",
+    "nombre": "REPISA FIBRO 60CM",
+    "precio": 7484.3
+  },
+  {
+    "codigo": "RF80",
+    "nombre": "REPISA FIBRO 80CM",
+    "precio": 9221.9
+  },
+  {
+    "codigo": "VMC",
+    "nombre": "VUELTA AL MUNDO CHICA",
+    "precio": 9643.1
+  },
+  {
+    "codigo": "FAR",
+    "nombre": "FAROL FANAL FIBRO CHICO",
+    "precio": 2655.4
+  },
+  {
+    "codigo": "CALEC",
+    "nombre": "CALESITA SOUVENIRS",
+    "precio": 4379.9
+  },
+  {
+    "codigo": "CALEG",
+    "nombre": "CALESITA GRANDE",
+    "precio": 10734.3
+  },
+  {
+    "codigo": "CV100",
+    "nombre": "COLA VINILICA X 1 KG",
+    "precio": 9401.7
+  },
+  {
+    "codigo": "BC18",
+    "nombre": "BASE CUADRADA 18 CM./RECT. 13X18",
+    "precio": 2100.0
+  },
+  {
+    "codigo": "BF33040",
+    "nombre": "BASTIDOR PLEGADO FF3 30X40",
+    "precio": 4156.3
+  },
+  {
+    "codigo": "BF31530",
+    "nombre": "BASTIDOR PLEGADO FF3 15X30",
+    "precio": 1994.0
+  },
+  {
+    "codigo": "BUR",
+    "nombre": "BURRITO",
+    "precio": 48734.9
+  },
+  {
+    "codigo": "BE",
+    "nombre": "BANCO ESCALERA REBATIBLE",
+    "precio": 77402.6
+  },
+  {
+    "codigo": "LV1",
+    "nombre": "LACA VITRAL",
+    "precio": 3939.6
+  },
+  {
+    "codigo": "DV1",
+    "nombre": "DELINEADOR VITRAL",
+    "precio": 4456.9
+  },
+  {
+    "codigo": "SRG",
+    "nombre": "STENCIL 20X30  Y 13.5 X 30",
+    "precio": 3049.2
+  },
+  {
+    "codigo": "BAPLE",
+    "nombre": "BANQUETA PLEGABLE",
+    "precio": 23758.3
+  },
+  {
+    "codigo": "MLCPC",
+    "nombre": "MESA LUZ PATA CURVA PINO C/CAJON 30X40",
+    "precio": 78555.6
+  },
+  {
+    "codigo": "FARG",
+    "nombre": "FAROL FANAL FIBRO GRANDE",
+    "precio": 8664.8
+  },
+  {
+    "codigo": "RER",
+    "nombre": "REPISA ESCALONADA CON RUEDAS",
+    "precio": 100732.5
+  },
+  {
+    "codigo": "FE8",
+    "nombre": "FENOLICO 8 MM",
+    "precio": 27798.5
+  },
+  {
+    "codigo": "S37",
+    "nombre": "SOUVENIR",
+    "precio": 176.3
+  },
+  {
+    "codigo": "S38",
+    "nombre": "SOUVENIR C/BASE",
+    "precio": 360.7
+  },
+  {
+    "codigo": "S42",
+    "nombre": "FIGURAS CALADAS 15CM",
+    "precio": 1272.9
+  },
+  {
+    "codigo": "S43",
+    "nombre": "FIGURAS CALADAS 20CM",
+    "precio": 2478.9
+  },
+  {
+    "codigo": "S104",
+    "nombre": "Nº ROMANOS CHICOS",
+    "precio": 1231.4
+  },
+  {
+    "codigo": "S105",
+    "nombre": "Nº ROMANOS GRANDES",
+    "precio": 1436.4
+  },
+  {
+    "codigo": "S118",
+    "nombre": "PUENTE CHUP.CHICO",
+    "precio": 2961.2
+  },
+  {
+    "codigo": "S119",
+    "nombre": "PUENTE CHUP.GRANDE",
+    "precio": 6449.7
+  },
+  {
+    "codigo": "S120",
+    "nombre": "CHUPETINERO",
+    "precio": 5423.7
+  },
+  {
+    "codigo": "S124",
+    "nombre": "CARRO MINI",
+    "precio": 5482.4
+  },
+  {
+    "codigo": "S125",
+    "nombre": "CARRO CHICO",
+    "precio": 5921.4
+  },
+  {
+    "codigo": "S126",
+    "nombre": "CARRO GRANDE",
+    "precio": 7094.6
+  },
+  {
+    "codigo": "S127",
+    "nombre": "CARRO C/CHUPET.",
+    "precio": 8385.1
+  },
+  {
+    "codigo": "S130",
+    "nombre": "PALABRAS",
+    "precio": 565.3
+  },
+  {
+    "codigo": "S131",
+    "nombre": "ESQUINERO",
+    "precio": 507.7
+  },
+  {
+    "codigo": "S133",
+    "nombre": "ZAPATILLA ATA CORDONES",
+    "precio": 566.1
+  },
+  {
+    "codigo": "PT9",
+    "nombre": "PINTURA A LA TIZA 900CC",
+    "precio": 19191.3
+  },
+  {
+    "codigo": "BJP100",
+    "nombre": "BETUN EN PASTA 100CC",
+    "precio": 3993.6
+  },
+  {
+    "codigo": "LS100",
+    "nombre": "LIQ.SUBLIMAR 100CC",
+    "precio": 5447.6
+  },
+  {
+    "codigo": "GT100",
+    "nombre": "GEL TRANSFERENCIA 100CC",
+    "precio": 3598.3
+  },
+  {
+    "codigo": "LP100",
+    "nombre": "LACA POLIURET.100CC",
+    "precio": 6492.5
+  },
+  {
+    "codigo": "S134",
+    "nombre": "PALABRAS GRANDES",
+    "precio": 762.6
+  },
+  {
+    "codigo": "CF2535",
+    "nombre": "CAJON FRUTA 25X35",
+    "precio": 7211.4
+  },
+  {
+    "codigo": "MPLEW",
+    "nombre": "MESA PLEGABLE 60X60 CHICA",
+    "precio": 18000.0
+  },
+  {
+    "codigo": "AR325",
+    "nombre": "ARO FF3 25 CM",
+    "precio": 721.2
+  },
+  {
+    "codigo": "AR315",
+    "nombre": "ARO FF3 15 CM",
+    "precio": 424.5
+  },
+  {
+    "codigo": "AR320",
+    "nombre": "ARO FF3 20 CM",
+    "precio": 693.8
+  },
+  {
+    "codigo": "LP15",
+    "nombre": "LETRA POLIFAN 15CM",
+    "precio": 2090.0
+  },
+  {
+    "codigo": "MF10",
+    "nombre": "MACETA FENOLICO 10CM",
+    "precio": 1369.4
+  },
+  {
+    "codigo": "MF15",
+    "nombre": "MACETA FENOLICO 15CM",
+    "precio": 2140.2
+  },
+  {
+    "codigo": "MF20",
+    "nombre": "MACETA FENOLICO 20CM",
+    "precio": 3723.9
+  },
+  {
+    "codigo": "SEL",
+    "nombre": "SELFIE 60X80 EXT.",
+    "precio": 6267.0
+  },
+  {
+    "codigo": "FF18",
+    "nombre": "FIBRO FACIL 18 MM",
+    "precio": 33142.4
+  },
+  {
+    "codigo": "BIOMCAL",
+    "nombre": "HOJAS BIOMBO CALADO",
+    "precio": 53805.6
+  },
+  {
+    "codigo": "LSI",
+    "nombre": "LUMINARIAS SIMPLE C/LUCES 15CM",
+    "precio": 13576.2
+  },
+  {
+    "codigo": "LDO",
+    "nombre": "LUMINARIAS DOBLE C/LUCES 15 CM",
+    "precio": 19575.6
+  },
+  {
+    "codigo": "MPQ180",
+    "nombre": "MESA DE QUINCHO 0.80 X 1.80",
+    "precio": 181499.7
+  },
+  {
+    "codigo": "FLECHA",
+    "nombre": "FLECHA CUBO",
+    "precio": 6748.8
+  },
+  {
+    "codigo": "TAE6",
+    "nombre": "TARUGO ESTRIADO 6MM",
+    "precio": 838.7
+  },
+  {
+    "codigo": "S146",
+    "nombre": "PORTA MUFINS 2 PISOS",
+    "precio": 5199.5
+  },
+  {
+    "codigo": "S147",
+    "nombre": "PORTA MUFFINS DE TRES PISOS",
+    "precio": 10059.8
+  },
+  {
+    "codigo": "BF32530",
+    "nombre": "BASTIDOR PLEGADO FF3 25X30",
+    "precio": 2810.0
+  },
+  {
+    "codigo": "ALC",
+    "nombre": "ALCANCÌA CASITA CHICA",
+    "precio": 1578.9
+  },
+  {
+    "codigo": "ALG",
+    "nombre": "ALCANCÍA CASITA GRANDE",
+    "precio": 2731.1
+  },
+  {
+    "codigo": "SRGE",
+    "nombre": "STENCIL DE 30 X 30 CTS",
+    "precio": 4065.6
+  },
+  {
+    "codigo": "PTM1",
+    "nombre": "PINT.A LA TIZA METALIZADA",
+    "precio": 8602.8
+  },
+  {
+    "codigo": "BF32025",
+    "nombre": "BASTIDOR PLEGADO FF3 20X25",
+    "precio": 2107.3
+  },
+  {
+    "codigo": "CHPV",
+    "nombre": "PIZARRON VERDE",
+    "precio": 34217.8
+  },
+  {
+    "codigo": "SG1010",
+    "nombre": "SELLOS DE GOMA EVA 10X10",
+    "precio": 980.1
+  },
+  {
+    "codigo": "SG1015",
+    "nombre": "SELLO DE GOMA EVA GRANDE 10X15",
+    "precio": 1259.9
+  },
+  {
+    "codigo": "MPG",
+    "nombre": "MACETERO PINO GRANDE",
+    "precio": 75867.0
+  },
+  {
+    "codigo": "MPCH",
+    "nombre": "MACETERO PINO CHICO",
+    "precio": 69877.5
+  },
+  {
+    "codigo": "REM",
+    "nombre": "REPISA EXHIBIDORA MINI",
+    "precio": 10890.0
+  },
+  {
+    "codigo": "SG1515",
+    "nombre": "SELLOS DE GOMA EVA DE 15 X15 CMT",
+    "precio": 1679.5
+  },
+  {
+    "codigo": "MLCFC",
+    "nombre": "MESA LUZ PATA CURVA FIBRO C/CAJON 30X50",
+    "precio": 69961.3
+  },
+  {
+    "codigo": "PM30",
+    "nombre": "PORTA MACETA 30CM",
+    "precio": 7043.7
+  },
+  {
+    "codigo": "PM40",
+    "nombre": "PORTA MACETA 40CM",
+    "precio": 8608.9
+  },
+  {
+    "codigo": "PM50",
+    "nombre": "PORTA MACETA 50CM",
+    "precio": 10174.1
+  },
+  {
+    "codigo": "PQ4406",
+    "nombre": "PLANO CORTO N°6",
+    "precio": 4354.2
+  },
+  {
+    "codigo": "PQ4408",
+    "nombre": "PLANO CORTO N°8",
+    "precio": 4908.2
+  },
+  {
+    "codigo": "PQ44010",
+    "nombre": "PLANO CORTO N°10",
+    "precio": 5501.9
+  },
+  {
+    "codigo": "PQ44012",
+    "nombre": "PLANO CORTO N°12",
+    "precio": 6095.8
+  },
+  {
+    "codigo": "PQ4404",
+    "nombre": "PLANO CORTO N°4",
+    "precio": 3958.6
+  },
+  {
+    "codigo": "PQ4402",
+    "nombre": "PLANO CORTO N°2",
+    "precio": 3561.8
+  },
+  {
+    "codigo": "PREF3",
+    "nombre": "PORTARRETRATO DE 3 FAMILIA",
+    "precio": 14773.5
+  },
+  {
+    "codigo": "ESC2P",
+    "nombre": "ESCALERITA 2 ESC. PINO",
+    "precio": 22107.2
+  },
+  {
+    "codigo": "ESC2F",
+    "nombre": "ESCALERITA 2 ESC FIJOS FIBROFACIL",
+    "precio": 35090.2
+  },
+  {
+    "codigo": "CANDYC",
+    "nombre": "MESA CANDY CHICA",
+    "precio": 27781.3
+  },
+  {
+    "codigo": "CANDYM",
+    "nombre": "MESA CANDY MEDIANA",
+    "precio": 36236.5
+  },
+  {
+    "codigo": "CANDYG",
+    "nombre": "MESA CANDY GRANDE",
+    "precio": 44691.7
+  },
+  {
+    "codigo": "CARREC",
+    "nombre": "CARRETILLA FIBRO CHICA",
+    "precio": 1734.0
+  },
+  {
+    "codigo": "CARREG",
+    "nombre": "CARRETILLA FIBRO GRANDE",
+    "precio": 2537.9
+  },
+  {
+    "codigo": "ACM1",
+    "nombre": "ACRILICO METALIZADO/FLUO",
+    "precio": 1868.0
+  },
+  {
+    "codigo": "MB40100",
+    "nombre": "MESA BARRA 40X100",
+    "precio": 160963.6
+  },
+  {
+    "codigo": "PCB",
+    "nombre": "PORTA COSMETICOS BB",
+    "precio": 9609.2
+  },
+  {
+    "codigo": "HCF",
+    "nombre": "HOJA CALADA DE FF3, PARA BIOMBO Y OTROS USOS",
+    "precio": 27951.0
+  },
+  {
+    "codigo": "PIE",
+    "nombre": "PIE P/MARCOS 40X1.20 PINO O FIBRO",
+    "precio": 10989.0
+  },
+  {
+    "codigo": "PM70",
+    "nombre": "PORTA MACETA 70CM",
+    "precio": 13276.7
+  },
+  {
+    "codigo": "PM60",
+    "nombre": "PORTA MACETA 60CM",
+    "precio": 11739.4
+  },
+  {
+    "codigo": "SGM",
+    "nombre": "SELLO GOMA REDONDO MINI",
+    "precio": 598.2
+  },
+  {
+    "codigo": "PAR",
+    "nombre": "PARRILLA P/CABALLETE",
+    "precio": 8580.0
+  },
+  {
+    "codigo": "MAV",
+    "nombre": "MESA PLEGABLE CON ALAS",
+    "precio": 164910.6
+  },
+  {
+    "codigo": "PN2",
+    "nombre": "PERCHERO NORDICO 2 PERCHAS",
+    "precio": 4332.4
+  },
+  {
+    "codigo": "PN5",
+    "nombre": "PERCHERO NORDICO 5 PERCHAS",
+    "precio": 10900.9
+  },
+  {
+    "codigo": "PN3",
+    "nombre": "PERCHERO NORDICO 3 PERCHAS",
+    "precio": 6557.0
+  },
+  {
+    "codigo": "PN6",
+    "nombre": "PERCHERO NORDICO 6 PERCHAS",
+    "precio": 13137.0
+  },
+  {
+    "codigo": "PN4",
+    "nombre": "PERCHERO NORDICO 4 PERCHAS",
+    "precio": 8747.3
+  },
+  {
+    "codigo": "BMCH",
+    "nombre": "BAJO MESADA FF. NIÑOS",
+    "precio": 49268.9
+  },
+  {
+    "codigo": "HCHP",
+    "nombre": "HELADERA FF.PEQUEÑA",
+    "precio": 43356.6
+  },
+  {
+    "codigo": "BF32535",
+    "nombre": "BASTIDOR PLEGADO FF3 25X35",
+    "precio": 2996.5
+  },
+  {
+    "codigo": "INO",
+    "nombre": "INODORO DE FF BARBY",
+    "precio": 740.7
+  },
+  {
+    "codigo": "TS",
+    "nombre": "TESELAS DE VIDRIO POR PAQ.DE 36 UNI.",
+    "precio": 2221.3
+  },
+  {
+    "codigo": "CAJCOCA",
+    "nombre": "CAJON 10X35 Y 16X23  MANIJA CHAPA",
+    "precio": 4653.9
+  },
+  {
+    "codigo": "CAJMAN",
+    "nombre": "CAJON 20X30X13 MANIJA CHAPA",
+    "precio": 6825.6
+  },
+  {
+    "codigo": "SCHCO",
+    "nombre": "SILLA CONEJO NIÑOS  / MARIPOSA",
+    "precio": 22869.0
+  },
+  {
+    "codigo": "MCHCO",
+    "nombre": "MESA PINO NIÑO CONEJO",
+    "precio": 53106.8
+  },
+  {
+    "codigo": "BARBYA",
+    "nombre": "CASA BARBY DE TRES PISOS CON ASCENSOR",
+    "precio": 108810.3
+  },
+  {
+    "codigo": "MRPCH",
+    "nombre": "MESA REDONDA DE PINO PARA NIÑOS DE 60 CTS DE",
+    "precio": 33725.8
+  },
+  {
+    "codigo": "BB2020",
+    "nombre": "BANDEJA BASTIDOR DE FF3 20X20 CM",
+    "precio": 2420.0
+  },
+  {
+    "codigo": "BB2030",
+    "nombre": "BANDEJA BASTIDOR DE FF3  DE 20X30 CM",
+    "precio": 2904.0
+  },
+  {
+    "codigo": "BB2535",
+    "nombre": "BANDEJA BASTIDOR DE FF3 DE 25X35 CM",
+    "precio": 3631.2
+  },
+  {
+    "codigo": "BB3040",
+    "nombre": "BANDEJA BASTIDOR DE FF3 DE 30 X 40 CM",
+    "precio": 4586.8
+  },
+  {
+    "codigo": "GMG",
+    "nombre": "GANCHOS METAL PLATEADOS PARA CUADROS GRANDES",
+    "precio": 316.3
+  },
+  {
+    "codigo": "FVIS",
+    "nombre": "CAJA FIBRO 1 BOTELLA C/BROCHE",
+    "precio": 15972.0
+  },
+  {
+    "codigo": "FVID",
+    "nombre": "CAJA FIBRO 2 BOTELLA C/BROCHE",
+    "precio": 17968.5
+  },
+  {
+    "codigo": "FVIT",
+    "nombre": "CAJA FIBRO 3 BOTELLA C/BROCHE",
+    "precio": 20000.0
+  },
+  {
+    "codigo": "PN15",
+    "nombre": "PERCHERO NORDICO 15 PERCHAS",
+    "precio": 42619.2
+  },
+  {
+    "codigo": "PN10",
+    "nombre": "PERCHERO NORDICO 10 PERCHAS",
+    "precio": 35356.8
+  },
+  {
+    "codigo": "TVF12",
+    "nombre": "CAJA DE TE X 12 FIBRO C/VIDRIO",
+    "precio": 22385.0
+  },
+  {
+    "codigo": "TVF9",
+    "nombre": "CAJA DE TE X 9 FIBRO C/VIDRIO",
+    "precio": 16044.1
+  },
+  {
+    "codigo": "RHP",
+    "nombre": "REPISA HEXAGONO PINO 12X40 CM",
+    "precio": 13330.6
+  },
+  {
+    "codigo": "RCBP",
+    "nombre": "ROMPECABEZAS LASER PLANISFERIO 14 PIEZAS",
+    "precio": 4823.5
+  },
+  {
+    "codigo": "CHP",
+    "nombre": "CHAPADUR PERFORADO 3 MM",
+    "precio": 35388.3
+  },
+  {
+    "codigo": "CFP2",
+    "nombre": "CAJON Y ESTANTE FLOTANTE  PINO",
+    "precio": 53109.1
+  },
+  {
+    "codigo": "MLN",
+    "nombre": "MESA DE LUZ NORDICA DE PINO CON CAJON",
+    "precio": 63235.5
+  },
+  {
+    "codigo": "PIZSC",
+    "nombre": "PIZARRA SOUVENUIRS  12 X 18",
+    "precio": 3412.8
+  },
+  {
+    "codigo": "BF5M",
+    "nombre": "BANDEJA 25X35 FF5 RECTA",
+    "precio": 15669.5
+  },
+  {
+    "codigo": "PCEL",
+    "nombre": "PORTA CELULAR LASER LISO",
+    "precio": 925.7
+  },
+  {
+    "codigo": "BCHF",
+    "nombre": "BANCO NIÑO DE FF CUAD Y RED",
+    "precio": 13310.0
+  },
+  {
+    "codigo": "PN",
+    "nombre": "PORTA NEETBOOK",
+    "precio": 4357.8
+  },
+  {
+    "codigo": "BBG1",
+    "nombre": "BARNIZ BRILLANTE GENERAL",
+    "precio": 5121.0
+  },
+  {
+    "codigo": "PIZP",
+    "nombre": "PIZARRA DOBLE PORTA TIZA Y ROLLO",
+    "precio": 60353.0
+  },
+  {
+    "codigo": "AR510",
+    "nombre": "ARO FF5  10 CM EXT",
+    "precio": 662.4
+  },
+  {
+    "codigo": "AR525",
+    "nombre": "ARO FF5 25  EXT",
+    "precio": 1747.0
+  },
+  {
+    "codigo": "AR530",
+    "nombre": "ARO FF5 30 CM EXT",
+    "precio": 2392.6
+  },
+  {
+    "codigo": "AR535",
+    "nombre": "ARO FF5 35 CM EXT",
+    "precio": 2434.5
+  },
+  {
+    "codigo": "BALAN",
+    "nombre": "BALANCIN EN FIBRO FACIL",
+    "precio": 68076.7
+  },
+  {
+    "codigo": "MP",
+    "nombre": "MARTILLO PINO",
+    "precio": 658.0
+  },
+  {
+    "codigo": "PCPM",
+    "nombre": "PORTA CUENTOS SIMPLE CON TABLITAS SEPARADAS",
+    "precio": 4539.8
+  },
+  {
+    "codigo": "MLN2",
+    "nombre": "MESA DE LUZ NORDICA CON 2 CAJONES (PINO)",
+    "precio": 74732.8
+  },
+  {
+    "codigo": "VD",
+    "nombre": "VERDULERO DOBLE FF",
+    "precio": 13378.2
+  },
+  {
+    "codigo": "VT",
+    "nombre": "VERDULERO TRIPLE EN FF",
+    "precio": 18501.5
+  },
+  {
+    "codigo": "TO2020",
+    "nombre": "BASE  DE TOTORA CUADRA  20X20 15X20CM",
+    "precio": 810.2
+  },
+  {
+    "codigo": "TO2030",
+    "nombre": "BASE TOTORA   RECTA  20X30CM",
+    "precio": 2660.5
+  },
+  {
+    "codigo": "TOR15",
+    "nombre": "TOTORA RED 15 DIAMETRO",
+    "precio": 1081.7
+  },
+  {
+    "codigo": "TOR10",
+    "nombre": "TOTORA RED   DE 10 CM.",
+    "precio": 693.5
+  },
+  {
+    "codigo": "OVAL1520",
+    "nombre": "BASE OVAL TOTORA DE1520CM",
+    "precio": 870.1
+  },
+  {
+    "codigo": "TOR20",
+    "nombre": "TOTORA RED 20 CM.",
+    "precio": 1462.4
+  },
+  {
+    "codigo": "ER40",
+    "nombre": "ESTANTERIA REJILLA  PINO DE 40 CTS",
+    "precio": 60035.8
+  },
+  {
+    "codigo": "ER60",
+    "nombre": "ESTANTE REJILLA DE PINO DE 60 CTS",
+    "precio": 71279.2
+  },
+  {
+    "codigo": "ER80",
+    "nombre": "ESTANTE REJILLA DE PINO DE 80CTS",
+    "precio": 83371.2
+  },
+  {
+    "codigo": "PLT",
+    "nombre": "MINI PALETS",
+    "precio": 1452.0
+  },
+  {
+    "codigo": "SRGXL",
+    "nombre": "STENCIL 44X44 EXTRA GRANDE",
+    "precio": 4065.6
+  },
+  {
+    "codigo": "BBP3030",
+    "nombre": "BANDEJA BATEA DE PINO 30 X30",
+    "precio": 6115.8
+  },
+  {
+    "codigo": "BBP2030",
+    "nombre": "BANDEJA BATEA DE PINO DE 20 X 30 CTS",
+    "precio": 4969.1
+  },
+  {
+    "codigo": "BBP2020",
+    "nombre": "BANDEJA BATEA DE PINO DE 20 X 20 CTS",
+    "precio": 4204.6
+  },
+  {
+    "codigo": "PR ESP40120 C",
+    "nombre": "PROMOCION, MARCO 40X120 CON ESPEJO P/ COLGAR",
+    "precio": 34045.1
+  },
+  {
+    "codigo": "ETMB40",
+    "nombre": "ESTANTE TRIPLE DE MELAMINA   DE 40CTS",
+    "precio": 72667.1
+  },
+  {
+    "codigo": "ETMB60",
+    "nombre": "ESTANTERIA TRIPLE DE MELAMINA DE 60CTS",
+    "precio": 84393.7
+  },
+  {
+    "codigo": "ETMB80",
+    "nombre": "ESTANTERIA TRIPLE DE MELAMINA DE 80 CTS.",
+    "precio": 93511.1
+  },
+  {
+    "codigo": "R1740",
+    "nombre": "REPISA DE MELAMINA DE 17X 40 CM",
+    "precio": 11979.1
+  },
+  {
+    "codigo": "R1760",
+    "nombre": "REPISA DE MELAMINA  DE 17X60CM",
+    "precio": 13975.5
+  },
+  {
+    "codigo": "R1780",
+    "nombre": "REPISA DE MELAMINA DE 17X80CM",
+    "precio": 16000.0
+  },
+  {
+    "codigo": "MP40120M",
+    "nombre": "MARCOS PINO 40X1.20 BOX MOVIL C/PIE",
+    "precio": 68934.7
+  },
+  {
+    "codigo": "PERFE100",
+    "nombre": "PERCHERO FERIA PLEGABLE DE PINO 100 X 1.80 MT",
+    "precio": 73870.5
+  },
+  {
+    "codigo": "PERFE60",
+    "nombre": "PERCHERO DE FERIA PLEGABLE DE PINO 60 X 1.50",
+    "precio": 63888.0
+  },
+  {
+    "codigo": "S41",
+    "nombre": "FIGURAS CALADAS 10CM",
+    "precio": 990.0
+  },
+  {
+    "codigo": "CPM",
+    "nombre": "CASITA PORTA MACETA FENOLICO",
+    "precio": 3773.7
+  },
+  {
+    "codigo": "PF100",
+    "nombre": "PASTA FLEXIBLE 100CC",
+    "precio": 4213.9
+  },
+  {
+    "codigo": "PF200",
+    "nombre": "PASTA FLEXIBLE DE 200CC",
+    "precio": 7422.9
+  },
+  {
+    "codigo": "CS",
+    "nombre": "CAJA CORAZON SOUVENIRS",
+    "precio": 1285.7
+  },
+  {
+    "codigo": "SR10",
+    "nombre": "STENCIL  DE 10X10  24X5",
+    "precio": 1219.7
+  },
+  {
+    "codigo": "BP2535",
+    "nombre": "BANDEJA PINO 25X35",
+    "precio": 4292.4
+  },
+  {
+    "codigo": "REB",
+    "nombre": "REBAJES O RANURAS POR METRO",
+    "precio": 928.6
+  },
+  {
+    "codigo": "CHANGO",
+    "nombre": "CHANGUITO SUPERMERCADO NIÑOS",
+    "precio": 39721.1
+  },
+  {
+    "codigo": "MATE",
+    "nombre": "JUEGO DE FF. DE MATE",
+    "precio": 12317.3
+  },
+  {
+    "codigo": "ERB",
+    "nombre": "ESTANTE REJILLA BRAZOS",
+    "precio": 71279.2
+  },
+  {
+    "codigo": "EJF80",
+    "nombre": "ESTANTES JOTA  80 CM",
+    "precio": 6958.2
+  },
+  {
+    "codigo": "EJF40",
+    "nombre": "ESTANTE JOTA FIBRO  40 CM",
+    "precio": 3479.1
+  },
+  {
+    "codigo": "EJF60",
+    "nombre": "ESTANTE JOTA FIBRO 60CM",
+    "precio": 5218.7
+  },
+  {
+    "codigo": "MALETIN",
+    "nombre": "MALETIN DE FIBRO",
+    "precio": 14417.3
+  },
+  {
+    "codigo": "TOR30",
+    "nombre": "TOTORA RED. 30CM",
+    "precio": 2573.0
+  },
+  {
+    "codigo": "TR",
+    "nombre": "TAPA ROLLO EN FIBRO FACIL 9MM C/CAJON",
+    "precio": 102670.0
+  },
+  {
+    "codigo": "RHPC",
+    "nombre": "REPISA HEXAGONO CHICO",
+    "precio": 11664.2
+  },
+  {
+    "codigo": "LUL",
+    "nombre": "LUMINARIA PERSONAJE/ LETRAS 30CM S/TAPA",
+    "precio": 13866.6
+  },
+  {
+    "codigo": "FRM",
+    "nombre": "FIGURA CON RUEDAS MEDIANA",
+    "precio": 2521.2
+  },
+  {
+    "codigo": "FRG",
+    "nombre": "FIGURA CON RUEDAS GRANDES",
+    "precio": 3284.2
+  },
+  {
+    "codigo": "OX200",
+    "nombre": "PINTURA BASE X 200 OXIDO",
+    "precio": 6606.2
+  },
+  {
+    "codigo": "ACOX100",
+    "nombre": "ACTIVADOR OXIDO REAL",
+    "precio": 2473.1
+  },
+  {
+    "codigo": "MO",
+    "nombre": "MESA PINO OVAL DE 90 X 60 CM CON BASE EN CRUZ",
+    "precio": 71342.8
+  },
+  {
+    "codigo": "FLOTP",
+    "nombre": "REPISA FLOTANTE DE PINO",
+    "precio": 170640.6
+  },
+  {
+    "codigo": "S15G",
+    "nombre": "SOUVENIR DE 15 GRANDE",
+    "precio": 1797.7
+  },
+  {
+    "codigo": "S15C",
+    "nombre": "SOUVENIR DE 15 CHICO",
+    "precio": 1078.6
+  },
+  {
+    "codigo": "PZT",
+    "nombre": "PIZARRON TRIANGULAR NIÑOS",
+    "precio": 28542.2
+  },
+  {
+    "codigo": "CABE",
+    "nombre": "CABALLETES DE PINO 2 X 1",
+    "precio": 23100.0
+  },
+  {
+    "codigo": "MCC",
+    "nombre": "MINICHEF CLASICA CHICA",
+    "precio": 80079.9
+  },
+  {
+    "codigo": "MCG",
+    "nombre": "MINICHEF CLASICA GRANDE",
+    "precio": 112260.1
+  },
+  {
+    "codigo": "MMCH",
+    "nombre": "MINICHEF CHICA MODER. C/TENDER   Y TABLA DE P",
+    "precio": 85082.1
+  },
+  {
+    "codigo": "MMG",
+    "nombre": "MINICHEF GDE.MODER.C/TENDER Y TAB PLANCHAR",
+    "precio": 112260.1
+  },
+  {
+    "codigo": "BMM",
+    "nombre": "BAJO MESADA MODERNO, CON LAVARROPAS Y TABLA D",
+    "precio": 70454.7
+  },
+  {
+    "codigo": "AR540",
+    "nombre": "ARO FF5 40 CM EXT",
+    "precio": 3158.5
+  },
+  {
+    "codigo": "AR545",
+    "nombre": "ARO  FF5  45 CM EXT",
+    "precio": 3155.7
+  },
+  {
+    "codigo": "AR550",
+    "nombre": "ARO FF5 DE 50 CM",
+    "precio": 3624.8
+  },
+  {
+    "codigo": "AR555",
+    "nombre": "ARO  FF5   55 CM",
+    "precio": 4006.4
+  },
+  {
+    "codigo": "TO1530",
+    "nombre": "BASE TOTORA DE 15 X 30",
+    "precio": 1165.2
+  },
+  {
+    "codigo": "TRI203",
+    "nombre": "TRILLAGE DIAGONAL 70X1.845 60X60",
+    "precio": 74959.4
+  },
+  {
+    "codigo": "TRI201",
+    "nombre": "TRILLAGE DIAGONAL 0.70X1.845 25X25",
+    "precio": 86393.9
+  },
+  {
+    "codigo": "TRI207",
+    "nombre": "TRILLAGE DIAGONAL 1.00X1.00 25X25",
+    "precio": 79533.2
+  },
+  {
+    "codigo": "FARM",
+    "nombre": "FAROL FANAL FIBRO MEDIANO",
+    "precio": 5310.7
+  },
+  {
+    "codigo": "JCHC",
+    "nombre": "JUEGO DE CHACRAS  CHICO",
+    "precio": 4223.4
+  },
+  {
+    "codigo": "TOR15/20",
+    "nombre": "TOTORA OVAL DE 15X20",
+    "precio": 902.5
+  },
+  {
+    "codigo": "TOR25",
+    "nombre": "TOTORA REDONDA 25CM",
+    "precio": 1981.3
+  },
+  {
+    "codigo": "AR515",
+    "nombre": "ARO FF5 15CM EXT",
+    "precio": 1023.0
+  },
+  {
+    "codigo": "PERFE80",
+    "nombre": "PERCHERO FERIA DE PINO DE 80 CTS.",
+    "precio": 69877.5
+  },
+  {
+    "codigo": "MANDXL",
+    "nombre": "MANDALA CALADA DE 88CTS. DE DIAM.",
+    "precio": 17194.0
+  },
+  {
+    "codigo": "DINO REX",
+    "nombre": "DINOSAURIO REX GRANDE",
+    "precio": 50252.3
+  },
+  {
+    "codigo": "DINO TRI",
+    "nombre": "DINOSAURIO TRICERAPTUS GRANDE",
+    "precio": 50086.3
+  },
+  {
+    "codigo": "TCBP",
+    "nombre": "TAPA CANTO BLANCO PEGADO COLOCACION",
+    "precio": 2200.0
+  },
+  {
+    "codigo": "GIM BB",
+    "nombre": "GIMNASIO PARA BEBE",
+    "precio": 20921.2
+  },
+  {
+    "codigo": "CAXL",
+    "nombre": "CABALLO MECEDOR EXTRA LARGE",
+    "precio": 36466.0
+  },
+  {
+    "codigo": "OE",
+    "nombre": "ORGANIZADOR DE ESCRITORIO",
+    "precio": 21717.9
+  },
+  {
+    "codigo": "CESPHO",
+    "nombre": "CAJON PARA ESPEJO HOLLYWOOD",
+    "precio": 14326.0
+  },
+  {
+    "codigo": "VAGM",
+    "nombre": "VAGONES MEDIANOS RECTANGULARES",
+    "precio": 1641.9
+  },
+  {
+    "codigo": "ESPHO",
+    "nombre": "ESPEJO HOLLYWOOD SIN CAJON",
+    "precio": 33175.9
+  },
+  {
+    "codigo": "MR40",
+    "nombre": "MARCO RED. DE FF9 40Ø",
+    "precio": 5780.3
+  },
+  {
+    "codigo": "MAC3D",
+    "nombre": "MACETA DE IMPRESION 3D",
+    "precio": 4955.0
+  },
+  {
+    "codigo": "JO",
+    "nombre": "JUEGO DE OLLAS",
+    "precio": 14088.6
+  },
+  {
+    "codigo": "BIM",
+    "nombre": "BIBLIOTECA MONTESSORI",
+    "precio": 36844.4
+  },
+  {
+    "codigo": "CANDYGXL",
+    "nombre": "MESA CANDY GRANDE DE FF9 DE 0,40 X1.20",
+    "precio": 108719.6
+  },
+  {
+    "codigo": "CANDYMXL",
+    "nombre": "MESA CANDY MEDIANA DE FF9 DE 0.40 X 1.00",
+    "precio": 81045.6
+  },
+  {
+    "codigo": "CANDYCXL",
+    "nombre": "MESA DE CANDY CHICA DE FF9   DE 0.40 X  0.80",
+    "precio": 76321.3
+  },
+  {
+    "codigo": "EMB40",
+    "nombre": "ESTANTERIAS MELAMINA ESCALONADA BLANCA 1.15 X",
+    "precio": 71061.3
+  },
+  {
+    "codigo": "PCZC",
+    "nombre": "PIE DE CAMA ZAPATERO 60CM",
+    "precio": 49923.6
+  },
+  {
+    "codigo": "PCZG",
+    "nombre": "PIE DE CAMA ZAPATERO 120 CM",
+    "precio": 104583.0
+  },
+  {
+    "codigo": "BAM",
+    "nombre": "BANCO EN PINO Y MELAMINA",
+    "precio": 38013.3
+  },
+  {
+    "codigo": "MR4080",
+    "nombre": "MESA RATONA 80CM X 40CM PINO/MELAMINA",
+    "precio": 57029.0
+  },
+  {
+    "codigo": "MUCM",
+    "nombre": "MULTICUBO DE PINO Y MELAMINA120X30X65",
+    "precio": 164999.7
+  },
+  {
+    "codigo": "PRED",
+    "nombre": "PERCHERO RECIBIDOR REDONDO",
+    "precio": 16303.9
+  },
+  {
+    "codigo": "BDT",
+    "nombre": "BANCO DE TRABAJO PARA CHICOS",
+    "precio": 56985.2
+  },
+  {
+    "codigo": "PPP",
+    "nombre": "PARRILLA PARA CHICOS",
+    "precio": 35599.9
+  },
+  {
+    "codigo": "BOMCALC",
+    "nombre": "HOJA DE BIOMBO CHICA CON ESTRUCTURA",
+    "precio": 23995.8
+  },
+  {
+    "codigo": "JENGA",
+    "nombre": "JENGA CHICO",
+    "precio": 3633.6
+  },
+  {
+    "codigo": "JENGAG",
+    "nombre": "JENGA GIGANTE",
+    "precio": 26501.7
+  },
+  {
+    "codigo": "EQ",
+    "nombre": "EQUILIBRISTA",
+    "precio": 870.1
+  },
+  {
+    "codigo": "EMCP",
+    "nombre": "ESCRITORIO MELAMINA CCABALLETE Y PARRILLA",
+    "precio": 104317.1
+  },
+  {
+    "codigo": "CLASE",
+    "nombre": "CLASE DE PINTURA",
+    "precio": 6102.1
+  },
+  {
+    "codigo": "MES",
+    "nombre": "MES DE CLASE PINTURA",
+    "precio": 17085.6
+  },
+  {
+    "codigo": "RE60",
+    "nombre": "REPISA ESPECIERO 60CM",
+    "precio": 10416.1
+  },
+  {
+    "codigo": "AR330",
+    "nombre": "ARO FF3 30CM",
+    "precio": 1327.9
+  },
+  {
+    "codigo": "AR333",
+    "nombre": "ARO FF3 33CM",
+    "precio": 1579.2
+  },
+  {
+    "codigo": "AR335",
+    "nombre": "ARO FF3 35CM",
+    "precio": 1787.1
+  },
+  {
+    "codigo": "PMFF5",
+    "nombre": "PORTA MUFFINS DE FF5 GRANDE",
+    "precio": 17434.1
+  },
+  {
+    "codigo": "PR23",
+    "nombre": "PANERA REDONDA 23CM",
+    "precio": 6722.9
+  },
+  {
+    "codigo": "PR15",
+    "nombre": "PANERA REDONDA 15CM",
+    "precio": 4091.6
+  },
+  {
+    "codigo": "MB6",
+    "nombre": "BAÑO COMPLETO (DUCHA /INODORO",
+    "precio": 7034.7
+  },
+  {
+    "codigo": "MB8",
+    "nombre": "HELADERA BARBY",
+    "precio": 7035.7
+  },
+  {
+    "codigo": "MB9",
+    "nombre": "JUEGO LIVING SIMPLE",
+    "precio": 5976.4
+  },
+  {
+    "codigo": "MB11",
+    "nombre": "PLACARD",
+    "precio": 7034.7
+  },
+  {
+    "codigo": "MB12",
+    "nombre": "VANITORY",
+    "precio": 6153.8
+  },
+  {
+    "codigo": "MB7",
+    "nombre": "COMEDOR ECONOMICO",
+    "precio": 4754.3
+  },
+  {
+    "codigo": "MMCHP",
+    "nombre": "MINI CHEF MODERNA CHICA CON PARRILLA",
+    "precio": 90042.0
+  },
+  {
+    "codigo": "PR30",
+    "nombre": "PANERA REDONDA 30CM",
+    "precio": 7416.2
+  },
+  {
+    "codigo": "CR",
+    "nombre": "COSTURERO REBATIBLE",
+    "precio": 31250.3
+  },
+  {
+    "codigo": "PA",
+    "nombre": "PISTA PARA AUTITOS",
+    "precio": 8486.5
+  },
+  {
+    "codigo": "ESPHOCO",
+    "nombre": "ESPEJO HOLLYWOOD COMPLETO",
+    "precio": 47502.0
+  },
+  {
+    "codigo": "BCM",
+    "nombre": "BEBEDERO Y COMEDERO PARA PERROS",
+    "precio": 33638.0
+  },
+  {
+    "codigo": "TAPAT",
+    "nombre": "TAPA TOMATE",
+    "precio": 904.0
+  },
+  {
+    "codigo": "TAPAD",
+    "nombre": "TAPA DURAZNO",
+    "precio": 1261.2
+  },
+  {
+    "codigo": "PLE",
+    "nombre": "PORTA LAPICERO ELEFANTE",
+    "precio": 1412.7
+  },
+  {
+    "codigo": "AR337",
+    "nombre": "ARO FF3 37CM",
+    "precio": 1677.2
+  },
+  {
+    "codigo": "MB2",
+    "nombre": "CUNA PARA BEBE BARBIE",
+    "precio": 5586.9
+  },
+  {
+    "codigo": "MB3",
+    "nombre": "CAMA PARA BARBIE FF5",
+    "precio": 3207.4
+  },
+  {
+    "codigo": "MB5",
+    "nombre": "COCINA COMPLETA BARBIE FF5",
+    "precio": 15023.5
+  },
+  {
+    "codigo": "CCHR",
+    "nombre": "CAMION CON RUEDAS",
+    "precio": 9571.5
+  },
+  {
+    "codigo": "OVAL1218",
+    "nombre": "BASE TOTORA OVAL. 12X18",
+    "precio": 565.1
+  },
+  {
+    "codigo": "OVAL2030",
+    "nombre": "BASE TOTORA OVAL. 20X30",
+    "precio": 1712.3
+  },
+  {
+    "codigo": "E4MB60",
+    "nombre": "ESTANTERIA DE MELAMINA 30X60X100 MTS",
+    "precio": 78926.4
+  },
+  {
+    "codigo": "MO310",
+    "nombre": "RINCONERO MOLDURADO 1X1",
+    "precio": 930.7
+  },
+  {
+    "codigo": "S44",
+    "nombre": "MANDALA CALADA DE 30CM",
+    "precio": 5584.6
+  },
+  {
+    "codigo": "SETTP",
+    "nombre": "SET DE TAPONADORES",
+    "precio": 3190.0
+  },
+  {
+    "codigo": "FOIL",
+    "nombre": "FOIL ORO/PLATA/COBRE",
+    "precio": 825.0
+  },
+  {
+    "codigo": "LDC",
+    "nombre": "LAMINA DECOUPAGE CHICA",
+    "precio": 1100.0
+  },
+  {
+    "codigo": "FUERTE DOBLE",
+    "nombre": "FUERTE DOBLE",
+    "precio": 30496.0
+  },
+  {
+    "codigo": "TY",
+    "nombre": "TARRO DE YERBA",
+    "precio": 3625.8
+  },
+  {
+    "codigo": "SFR",
+    "nombre": "SOPORTE PARA FOTOS PARA REDES",
+    "precio": 12053.7
+  },
+  {
+    "codigo": "RC180",
+    "nombre": "RESPALDO DE CAMA 180 X 84CTS",
+    "precio": 106663.1
+  },
+  {
+    "codigo": "RC140",
+    "nombre": "RESPALDO DE CAMA 140 X 84CTS",
+    "precio": 74858.1
+  },
+  {
+    "codigo": "CP2020",
+    "nombre": "CUBO PINO 20X20X20",
+    "precio": 11253.0
+  },
+  {
+    "codigo": "CP3030",
+    "nombre": "CUBO PINO 30X30X20",
+    "precio": 16819.0
+  },
+  {
+    "codigo": "CP4040",
+    "nombre": "CUBO PINO 40X40X20",
+    "precio": 22990.0
+  },
+  {
+    "codigo": "BNMP",
+    "nombre": "BANCO PATA EN V 100X35 MELAMINA-PINO",
+    "precio": 47504.9
+  },
+  {
+    "codigo": "JCHEF",
+    "nombre": "JUEGO MINICHEF 14 UNI",
+    "precio": 9312.6
+  },
+  {
+    "codigo": "PCELA",
+    "nombre": "PORTA CELULAR ANIMALITOS",
+    "precio": 2054.4
+  },
+  {
+    "codigo": "EN1C",
+    "nombre": "ESCRITORIO NORDICO 1 CAJON45X100",
+    "precio": 131999.8
+  },
+  {
+    "codigo": "PRM",
+    "nombre": "PERCHERO RECIBIDOR MELAMINA 180 X 80CM",
+    "precio": 78125.8
+  },
+  {
+    "codigo": "MUCC",
+    "nombre": "MULTICUBO C/ 2 CAJONES  70X65 PINO Y MELAMINA",
+    "precio": 206632.8
+  },
+  {
+    "codigo": "RACK",
+    "nombre": "RACK TV 120 X 60 X 35 CM",
+    "precio": 98001.3
+  },
+  {
+    "codigo": "MCB",
+    "nombre": "MESA CUBO NORDICA 80X45 CM",
+    "precio": 74695.2
+  },
+  {
+    "codigo": "MR50100",
+    "nombre": "MESA RATONA 50CMX100CM MELAMINA/PINO",
+    "precio": 84699.9
+  },
+  {
+    "codigo": "MLNM",
+    "nombre": "MESA DE LUZ NORDICA MELAMINA",
+    "precio": 79860.0
+  },
+  {
+    "codigo": "ENMF",
+    "nombre": "ESCRITORIO NORDICO MELAMINAY FIBRO 55X90",
+    "precio": 131127.7
+  },
+  {
+    "codigo": "MCHN",
+    "nombre": "MESA CHICOS NORDICA 70X40 TAPA MELAMINA",
+    "precio": 53228.7
+  },
+  {
+    "codigo": "SCHN",
+    "nombre": "SILLA CHICOS NORDICA 33X33 TAPA MELAMINA",
+    "precio": 31757.8
+  },
+  {
+    "codigo": "PLL5",
+    "nombre": "PORTA LLAVES 5 GANCHOS",
+    "precio": 5775.6
+  },
+  {
+    "codigo": "VAR",
+    "nombre": "VARILLADO M2  1/2 X 1 1/2  CON FONDO FF9",
+    "precio": 96630.6
+  },
+  {
+    "codigo": "BCG",
+    "nombre": "BEBEDERO Y COMEDERO GATOS",
+    "precio": 25099.8
+  },
+  {
+    "codigo": "MCM",
+    "nombre": "MESA COMEDOR MELAMINA1.20 X 0.70 MTS",
+    "precio": 158827.1
+  },
+  {
+    "codigo": "TAC",
+    "nombre": "TORRE APILABLE CIRCULO/CUADRADA",
+    "precio": 10491.2
+  },
+  {
+    "codigo": "AAC",
+    "nombre": "ANIMALES APILABLES CALADOS 6U/DINO/GRANJA/SEL",
+    "precio": 5302.3
+  },
+  {
+    "codigo": "PMC",
+    "nombre": "PORTA MACETA CASITA",
+    "precio": 3699.1
+  },
+  {
+    "codigo": "HCFC",
+    "nombre": "HOJA CALADA EN FF3 CHICA 0.81 X 0.60",
+    "precio": 13975.5
+  },
+  {
+    "codigo": "BNCH",
+    "nombre": "BIBLIOTECA NORDICA CHICOS FIBROY MELAM 60X100",
+    "precio": 81322.6
+  },
+  {
+    "codigo": "CMCH",
+    "nombre": "CUBO/RAMPA MONTESORI 50M",
+    "precio": 90564.2
+  },
+  {
+    "codigo": "TAM",
+    "nombre": "TORRE APRENDIZAJE MONTESORI",
+    "precio": 133169.1
+  },
+  {
+    "codigo": "REEG",
+    "nombre": "REPISA EXHIBIDORA ESCALERA  1.50 MTS",
+    "precio": 59895.0
+  },
+  {
+    "codigo": "ROMPEC",
+    "nombre": "ROMPECABEZAS LEON/VELERO/TORTUGA CHICO",
+    "precio": 5329.3
+  },
+  {
+    "codigo": "PASAT",
+    "nombre": "PASA TRAMPA",
+    "precio": 14895.0
+  },
+  {
+    "codigo": "ROMPEG",
+    "nombre": "ROMPECABEZAS LEON/HUEVO GRANDE",
+    "precio": 6557.0
+  },
+  {
+    "codigo": "S45",
+    "nombre": "MANDALA CALADA DE 40 CTS",
+    "precio": 8091.0
+  },
+  {
+    "codigo": "MEM",
+    "nombre": "ESTANTERIA MACETERO ESCALONADO DE MELAMINA",
+    "precio": 26449.3
+  },
+  {
+    "codigo": "PN1",
+    "nombre": "PERCHERO NORDICO X 1",
+    "precio": 2195.7
+  },
+  {
+    "codigo": "TENM",
+    "nombre": "TENDER CUELGA FOTOS MED.",
+    "precio": 10146.2
+  },
+  {
+    "codigo": "AF315",
+    "nombre": "ARO CORAZON/ESTRELLA/LUNA 15CM",
+    "precio": 508.3
+  },
+  {
+    "codigo": "AF330",
+    "nombre": "ARO CORAZON/ESTRELLA/LUNA 30CM",
+    "precio": 2033.0
+  },
+  {
+    "codigo": "PJE4",
+    "nombre": "PERCHERO J C/ESTANTE  4 GANCHOS",
+    "precio": 12286.1
+  },
+  {
+    "codigo": "CDP",
+    "nombre": "COLITERO DOBLE PINO",
+    "precio": 3952.0
+  },
+  {
+    "codigo": "E4MB30",
+    "nombre": "ESTANTERIA DE MELAMINA 30X30X100",
+    "precio": 61099.7
+  },
+  {
+    "codigo": "BARBYT",
+    "nombre": "CASA BARBY CON TERRAZA",
+    "precio": 125592.9
+  },
+  {
+    "codigo": "ACM2",
+    "nombre": "ACRILICO X 50 METALIZADO",
+    "precio": 1902.4
+  },
+  {
+    "codigo": "PT2",
+    "nombre": "PINTURA A LA TIZA PLANTEC",
+    "precio": 5326.8
+  },
+  {
+    "codigo": "PTM2",
+    "nombre": "PINTURA A LA TIZA METALIZADO",
+    "precio": 12733.9
+  },
+  {
+    "codigo": "MR80",
+    "nombre": "MESA RATONA 80CM - MELAMINA/PINO",
+    "precio": 87983.6
+  },
+  {
+    "codigo": "RM100",
+    "nombre": "REPISA MELAMINA 50X100X20",
+    "precio": 80928.1
+  },
+  {
+    "codigo": "PTG",
+    "nombre": "POSATORTA C/ONDAS 40 CM FF5",
+    "precio": 11674.5
+  },
+  {
+    "codigo": "PTCH",
+    "nombre": "POSATORTA C/ONDA 30CM FF5",
+    "precio": 7586.1
+  },
+  {
+    "codigo": "BARBYC",
+    "nombre": "CASA BARBY CLASSIC",
+    "precio": 29090.2
+  },
+  {
+    "codigo": "BARBYP",
+    "nombre": "CASA BARBY PREMIUM",
+    "precio": 45685.5
+  },
+  {
+    "codigo": "RKG",
+    "nombre": "REPISA KIOSCO",
+    "precio": 9793.7
+  },
+  {
+    "codigo": "A308",
+    "nombre": "ATRIL TRIANGULAR DE PINO SOUVENIRS",
+    "precio": 2333.6
+  },
+  {
+    "codigo": "CAJ2",
+    "nombre": "CAJONERA FIBRO X 2 50X50X15",
+    "precio": 69877.5
+  },
+  {
+    "codigo": "CAJ3",
+    "nombre": "CAJONERA FIBRO X 3 50X50X15",
+    "precio": 121095.1
+  },
+  {
+    "codigo": "CAJ4",
+    "nombre": "CAJONERA FIBRO X 4 50X50X15",
+    "precio": 156252.1
+  },
+  {
+    "codigo": "CAJ5",
+    "nombre": "CAJONERA FIBRO X5 50X50X15",
+    "precio": 193361.0
+  },
+  {
+    "codigo": "CAJ6",
+    "nombre": "CAJONERA FIBRO X 6 50X50X15",
+    "precio": 153730.5
+  },
+  {
+    "codigo": "EJP40",
+    "nombre": "ESTANTE JOTA PINO 40CM",
+    "precio": 6946.0
+  },
+  {
+    "codigo": "EJP60",
+    "nombre": "ESTANTE JOTA PINO 60CM",
+    "precio": 10419.1
+  },
+  {
+    "codigo": "EJP80",
+    "nombre": "ESTANTE JOTA PINO 80CM",
+    "precio": 13335.2
+  },
+  {
+    "codigo": "CP2040",
+    "nombre": "CUBO PINO 20X40X20",
+    "precio": 14411.0
+  },
+  {
+    "codigo": "CM4040",
+    "nombre": "CUBO MELAMINA 40X40",
+    "precio": 28101.8
+  },
+  {
+    "codigo": "CM3040",
+    "nombre": "CUBO MELAMINA 30X40",
+    "precio": 25497.0
+  },
+  {
+    "codigo": "CM3030",
+    "nombre": "CUBO MELAMINA 30X30",
+    "precio": 22881.7
+  },
+  {
+    "codigo": "MB10",
+    "nombre": "JUEGO DE LIVING EN L",
+    "precio": 6190.7
+  },
+  {
+    "codigo": "CMB",
+    "nombre": "CARRITO MONTESSORI CON BLOQUES",
+    "precio": 19059.3
+  },
+  {
+    "codigo": "MPC",
+    "nombre": "MACETERO CHICO PINO  19X27",
+    "precio": 14158.6
+  },
+  {
+    "codigo": "MPM",
+    "nombre": "MACETERO MEDIANO PINO 44X22",
+    "precio": 22705.1
+  },
+  {
+    "codigo": "BIMC",
+    "nombre": "BIBLIOTECA MONTESORI CHICA",
+    "precio": 18635.7
+  },
+  {
+    "codigo": "30111C",
+    "nombre": "LISTON  1/2 X 4",
+    "precio": 1758.1
+  },
+  {
+    "codigo": "30112C",
+    "nombre": "LISTON 1/2 X 5",
+    "precio": 2197.9
+  },
+  {
+    "codigo": "30113C",
+    "nombre": "LISTON 1/2 X6",
+    "precio": 2630.5
+  },
+  {
+    "codigo": "30127C",
+    "nombre": "LISTON 3/4 X 4",
+    "precio": 2632.5
+  },
+  {
+    "codigo": "30128C",
+    "nombre": "LISTON 3/4 X5",
+    "precio": 3305.5
+  },
+  {
+    "codigo": "30129C",
+    "nombre": "LISTON 3/4X6",
+    "precio": 3216.6
+  },
+  {
+    "codigo": "30142C",
+    "nombre": "LISTON 1X4",
+    "precio": 3173.3
+  },
+  {
+    "codigo": "30143C",
+    "nombre": "LISTON 1X5",
+    "precio": 3969.0
+  },
+  {
+    "codigo": "30140C",
+    "nombre": "LISTON 1X2",
+    "precio": 1586.8
+  },
+  {
+    "codigo": "30170C",
+    "nombre": "LISTON 2X2",
+    "precio": 3601.8
+  },
+  {
+    "codigo": "30172C",
+    "nombre": "LISTON 2X4",
+    "precio": 7198.7
+  },
+  {
+    "codigo": "AF23",
+    "nombre": "ARO CORAZON CALADO 23 DE AFUERA",
+    "precio": 788.5
+  },
+  {
+    "codigo": "AF40",
+    "nombre": "ARO DE FIBRO CALADO DE 40 CTS DE AFUERA",
+    "precio": 2176.7
+  },
+  {
+    "codigo": "MO200E",
+    "nombre": "CONTRAMARCO LISO 1/2 X2",
+    "precio": 2358.8
+  },
+  {
+    "codigo": "MO110E",
+    "nombre": "ZOCALO LISO 3/4X3",
+    "precio": 4911.8
+  },
+  {
+    "codigo": "MO602E",
+    "nombre": "CONTRAVIDRIO 3/4 X 3/4",
+    "precio": 2043.1
+  },
+  {
+    "codigo": "MO607E",
+    "nombre": "CONTRAVIDRIO 1/2X1/2",
+    "precio": 922.7
+  },
+  {
+    "codigo": "MAM",
+    "nombre": "MESA DE ARRIME/RECIBIDORA DE MELAMINA Y PINO",
+    "precio": 82279.9
+  },
+  {
+    "codigo": "TATC",
+    "nombre": "TORRE APILABLE TRIPLE CIRCULAR /CUADRADA/TRIA",
+    "precio": 10491.2
+  },
+  {
+    "codigo": "CFP2740",
+    "nombre": "CAJON FRUTA PINO 27X40X15",
+    "precio": 8994.1
+  },
+  {
+    "codigo": "AR336",
+    "nombre": "ARO FF3 36CM",
+    "precio": 2705.0
+  },
+  {
+    "codigo": "AR536",
+    "nombre": "ARO DE FF5       36CM",
+    "precio": 2705.0
+  },
+  {
+    "codigo": "AR340",
+    "nombre": "ARO FF3 40CM",
+    "precio": 1896.7
+  },
+  {
+    "codigo": "AR533",
+    "nombre": "ARO DEFF5 33CM",
+    "precio": 2655.8
+  },
+  {
+    "codigo": "PJE3",
+    "nombre": "PERCHERO PINO C/ESTANTES 3 GANCHOS",
+    "precio": 9214.6
+  },
+  {
+    "codigo": "EMBP",
+    "nombre": "ESQUINERO DE 30X30 X110  PINO Y MELAM",
+    "precio": 52806.1
+  },
+  {
+    "codigo": "MRG",
+    "nombre": "MESA RATONA GOTA EN PINO",
+    "precio": 63413.8
+  },
+  {
+    "codigo": "BPLE",
+    "nombre": "BANCO PLEGABLE",
+    "precio": 28958.2
+  },
+  {
+    "codigo": "PTS",
+    "nombre": "POSATORTA SIMPLE 30CM",
+    "precio": 7672.2
+  },
+  {
+    "codigo": "BRP80",
+    "nombre": "BANCO RECIBIDOR PINO  30X80X50 ALTO",
+    "precio": 61323.2
+  },
+  {
+    "codigo": "MRP100",
+    "nombre": "MESA RECIBIDORA EN PINO 30X100X78 ALTO",
+    "precio": 74950.6
+  },
+  {
+    "codigo": "MED",
+    "nombre": "MEDALLERO GRANDE",
+    "precio": 5110.3
+  },
+  {
+    "codigo": "MEDC",
+    "nombre": "MEDALLERO PEQUEÑO",
+    "precio": 1703.4
+  },
+  {
+    "codigo": "LDO6",
+    "nombre": "LUMINARIA DOBLE/LUCES/ 6 LETRAS/15CM ALTO",
+    "precio": 32365.0
+  },
+  {
+    "codigo": "MARC",
+    "nombre": "MARCO REPISA CHICO",
+    "precio": 4258.6
+  },
+  {
+    "codigo": "MARG",
+    "nombre": "MARCO REPISA GRANDE",
+    "precio": 5110.3
+  },
+  {
+    "codigo": "ENMP",
+    "nombre": "ESCRITORIO NORDICO MELY PINO 1.20X40X78",
+    "precio": 181244.2
+  },
+  {
+    "codigo": "CAMON",
+    "nombre": "CAMINADOR MONTESSORI",
+    "precio": 66705.0
+  },
+  {
+    "codigo": "PCELC3",
+    "nombre": "PORTACELULAR CALADO EN FF3",
+    "precio": 1734.4
+  },
+  {
+    "codigo": "F4",
+    "nombre": "CALADOS VARIOS 10CM",
+    "precio": 439.2
+  },
+  {
+    "codigo": "PORTA",
+    "nombre": "PORTA PLATOS",
+    "precio": 5420.0
+  },
+  {
+    "codigo": "MRV60",
+    "nombre": "MESITAS REDONDAS VARILLADAS DE 0.60",
+    "precio": 46538.4
+  },
+  {
+    "codigo": "MRV80",
+    "nombre": "MESA REDONDA VARILLADA DE 0.80",
+    "precio": 51102.7
+  },
+  {
+    "codigo": "HLB1",
+    "nombre": "HIDROLACA.PROTECTOR MAD. CEMENTO ETC",
+    "precio": 16752.7
+  },
+  {
+    "codigo": "RM35",
+    "nombre": "REPISA MELAMINA PINO 35CM",
+    "precio": 32008.9
+  },
+  {
+    "codigo": "TAN",
+    "nombre": "TANGRAM",
+    "precio": 2322.9
+  },
+  {
+    "codigo": "TBAL",
+    "nombre": "TABLA DE BALANCE",
+    "precio": 12388.5
+  },
+  {
+    "codigo": "MPVM",
+    "nombre": "ESTANTERIA PUERTA DE VIDRIO Y MELAM.30X40X120",
+    "precio": 171577.7
+  },
+  {
+    "codigo": "EN3",
+    "nombre": "ENGRANAJES DE 5CTM DIAM",
+    "precio": 120.0
+  },
+  {
+    "codigo": "EN4",
+    "nombre": "ENGRANAJES DE FF DE 6 DE DIAM",
+    "precio": 147.9
+  },
+  {
+    "codigo": "EN5",
+    "nombre": "ENGRANAJES DE FF DE 9 DIAM",
+    "precio": 175.8
+  },
+  {
+    "codigo": "MR45",
+    "nombre": "MARCO RED DE 0.45CTM DE DIAM INT",
+    "precio": 6495.6
+  },
+  {
+    "codigo": "BJ250",
+    "nombre": "BETUN DE JUDEA AL SOLVENTE",
+    "precio": 4497.6
+  },
+  {
+    "codigo": "S6",
+    "nombre": "CALADO LASER ESPECIAL  (CON CAL . INTERNO)",
+    "precio": 697.6
+  },
+  {
+    "codigo": "CP3040",
+    "nombre": "CUBO PINO 30 X 40 X 20",
+    "precio": 19567.7
+  },
+  {
+    "codigo": "BIL1",
+    "nombre": "BILACA 250CC",
+    "precio": 7203.8
+  },
+  {
+    "codigo": "EEMC",
+    "nombre": "ESTANTE ESCALONADO DE MB, C/CAJON C/COR",
+    "precio": 152332.7
+  },
+  {
+    "codigo": "BVP",
+    "nombre": "BANCO VARILLADO PINO 50X30 X50",
+    "precio": 41713.6
+  },
+  {
+    "codigo": "ARCOIRIS",
+    "nombre": "ARCOIRIS/NARANJA MONTESSORI",
+    "precio": 7131.8
+  },
+  {
+    "codigo": "JDE",
+    "nombre": "JUEGO DE ENCASTRE",
+    "precio": 5580.4
+  },
+  {
+    "codigo": "MI3040",
+    "nombre": "MARCO  30X40 - CHATA DE 4CM",
+    "precio": 7031.3
+  },
+  {
+    "codigo": "MI4050",
+    "nombre": "MARCO 40X50 - CHATA DE 4CM",
+    "precio": 8273.0
+  },
+  {
+    "codigo": "MI4060",
+    "nombre": "MARCO 40X60 - CHATA DE 4CM",
+    "precio": 8738.9
+  },
+  {
+    "codigo": "MI5060",
+    "nombre": "MARCO 50X60 - CHATA DE 4CM",
+    "precio": 9197.9
+  },
+  {
+    "codigo": "MI5070",
+    "nombre": "MARCO 50X70 - CHATA DE 4CM",
+    "precio": 10044.8
+  },
+  {
+    "codigo": "CSP",
+    "nombre": "COLITERO SIMPLE PINO",
+    "precio": 2631.2
+  },
+  {
+    "codigo": "SRC",
+    "nombre": "STENCIL 4.5 X17",
+    "precio": 1014.6
+  },
+  {
+    "codigo": "SR20",
+    "nombre": "STENCIL 20X20",
+    "precio": 2282.9
+  },
+  {
+    "codigo": "1209",
+    "nombre": "GRABADO CON ARABESCO 2CM",
+    "precio": 8703.6
+  },
+  {
+    "codigo": "MPLEWG",
+    "nombre": "MESA PLEGABLES GRANDE",
+    "precio": 38048.3
+  },
+  {
+    "codigo": "KIO",
+    "nombre": "KIOSKO DE VERDULERIA",
+    "precio": 51339.8
+  },
+  {
+    "codigo": "MR50",
+    "nombre": "MARCO REDONDO DE 50CM",
+    "precio": 7940.9
+  },
+  {
+    "codigo": "EV80",
+    "nombre": "ESPEJO VARILLADO 80X1.80 FINAL",
+    "precio": 280719.6
+  },
+  {
+    "codigo": "EV120",
+    "nombre": "ESPEJO VARILLADO 1.20X1.80 FINAL",
+    "precio": 302499.5
+  },
+  {
+    "codigo": "BVP120",
+    "nombre": "BANCO VARILLADO DE PINO DE 1.20 X 0.30",
+    "precio": 79660.2
+  },
+  {
+    "codigo": "MVPV",
+    "nombre": "MESA VARILLADA DE PINO DE 1.20 X 0.70 CON VID",
+    "precio": 254099.6
+  },
+  {
+    "codigo": "BO12R",
+    "nombre": "BODEGAS RECTAS DE 12 BOT",
+    "precio": 30438.6
+  },
+  {
+    "codigo": "BO18R",
+    "nombre": "BODEGA DE PINO DE 18 BOT RECTA",
+    "precio": 45737.9
+  },
+  {
+    "codigo": "ES",
+    "nombre": "ESPEJO FIBRO/PINO  40X1.20",
+    "precio": 41726.9
+  },
+  {
+    "codigo": "CP2030",
+    "nombre": "CUBO PINO 20X30X20",
+    "precio": 14011.4
+  },
+  {
+    "codigo": "MPM2C",
+    "nombre": "MESA PINO/MELAMINA 2 CAJONES",
+    "precio": 139149.8
+  },
+  {
+    "codigo": "TOR2030",
+    "nombre": "TOTORA RECTANGULAR 20X30",
+    "precio": 2874.8
+  },
+  {
+    "codigo": "MRB40",
+    "nombre": "MESA RATONA REDONDA 40CM",
+    "precio": 52799.9
+  },
+  {
+    "codigo": "MBF",
+    "nombre": "MELAMINA BLANCA DE MDF   18MM",
+    "precio": 38432.6
+  },
+  {
+    "codigo": "P832000",
+    "nombre": "PINCEL  PLANTEC REDONDO N´0",
+    "precio": 2218.1
+  },
+  {
+    "codigo": "P832002",
+    "nombre": "PINCEL PLANTEC REDONDO N:2",
+    "precio": 2503.6
+  },
+  {
+    "codigo": "P832006",
+    "nombre": "PINCEL PLANTEC REDONDO N:6",
+    "precio": 3250.3
+  },
+  {
+    "codigo": "P832588",
+    "nombre": "PINCEL PLANTEC PLANO N:8",
+    "precio": 2980.2
+  },
+  {
+    "codigo": "P8326414",
+    "nombre": "PINCEL PLANTEC PLANO N;14",
+    "precio": 3689.5
+  },
+  {
+    "codigo": "P833033",
+    "nombre": "PINCEL PLANTEC LINER N3",
+    "precio": 4710.2
+  },
+  {
+    "codigo": "P833011",
+    "nombre": "PINCEL PLANTEC LINER N1",
+    "precio": 3451.8
+  },
+  {
+    "codigo": "P833000",
+    "nombre": "PINCEL PLANTEC  LINER FINO N: 0",
+    "precio": 2970.0
+  },
+  {
+    "codigo": "P8341010",
+    "nombre": "PINCEL PLANTEC LENGUA DE GATO N:10",
+    "precio": 4884.0
+  },
+  {
+    "codigo": "P834044",
+    "nombre": "PINCEL PLANTEC LENGUA DE GATO N:4",
+    "precio": 3256.0
+  },
+  {
+    "codigo": "P832022",
+    "nombre": "PINCEL  PLANTEC LINER N :2",
+    "precio": 3074.6
+  },
+  {
+    "codigo": "BPG",
+    "nombre": "BANDEJA PINO 30X40",
+    "precio": 16970.3
+  },
+  {
+    "codigo": "TCN",
+    "nombre": "TAPA CANTO NEGRO",
+    "precio": 1111.3
+  },
+  {
+    "codigo": "MN",
+    "nombre": "MELAMINA NEGRA 18MM",
+    "precio": 38432.6
+  },
+  {
+    "codigo": "PLLH",
+    "nombre": "PORTA LLAVES DE PINO C/4 GANCHOS DE METAL",
+    "precio": 13200.0
+  },
+  {
+    "codigo": "MRM60",
+    "nombre": "MESA RATONA DE 60CM",
+    "precio": 71389.9
+  },
+  {
+    "codigo": "MAT",
+    "nombre": "MATERO EN FIBRO CON MANIJA",
+    "precio": 10870.9
+  },
+  {
+    "codigo": "S41N",
+    "nombre": "FIGURAS CALADAS EN CHB(NEGRO ) DE 10 CM",
+    "precio": 1210.0
+  },
+  {
+    "codigo": "S42N",
+    "nombre": "CALADOS LASER EN CHB (NEGRO ) DE 15CM",
+    "precio": 1694.0
+  },
+  {
+    "codigo": "S43N",
+    "nombre": "CALADOS DE CHB(NEGRO) DE 20 CM",
+    "precio": 2904.0
+  },
+  {
+    "codigo": "S44N",
+    "nombre": "CALADOS LASER DE CHB(NEGRO)",
+    "precio": 8470.0
+  },
+  {
+    "codigo": "TORNE20",
+    "nombre": "TORNETA PARA CERAMICA DE 20 DE DIAM",
+    "precio": 10890.0
+  },
+  {
+    "codigo": "TORNE25",
+    "nombre": "TORNETA PARA CERAMICA DE 25 DE DIAM.",
+    "precio": 19360.0
+  },
+  {
+    "codigo": "TORNE30",
+    "nombre": "TORNETA PARA CERAMICA DE 30 DE DIAM.",
+    "precio": 21780.0
+  },
+  {
+    "codigo": "EQC",
+    "nombre": "EQUILIBRISTAS CHICOS",
+    "precio": 660.0
+  },
+  {
+    "codigo": "PC",
+    "nombre": "PATA CATRE",
+    "precio": 39530.7
+  },
+  {
+    "codigo": "MR45100",
+    "nombre": "MESA PARA PARED REBATIBLE 45CM X 100CM",
+    "precio": 65335.5
+  },
+  {
+    "codigo": "R17100",
+    "nombre": "REPISA DE MELAMINA DE 17X100CM",
+    "precio": 17968.5
+  },
+  {
+    "codigo": "P83603",
+    "nombre": "PINCELETA PLANA N:25",
+    "precio": 6494.0
+  },
+  {
+    "codigo": "P83601",
+    "nombre": "PINCELETA PLANA N\"10",
+    "precio": 3911.3
+  },
+  {
+    "codigo": "SELR",
+    "nombre": "SELFIE REDONDO FF5",
+    "precio": 9882.7
+  },
+  {
+    "codigo": "P833522",
+    "nombre": "PINCEL ANGULAR N\"2",
+    "precio": 1816.2
+  },
+  {
+    "codigo": "P832566",
+    "nombre": "PINCEL CHATO N\"6",
+    "precio": 2677.1
+  },
+  {
+    "codigo": "P833544",
+    "nombre": "PINCEL ANGULAR N\"4",
+    "precio": 1978.7
+  },
+  {
+    "codigo": "P833588",
+    "nombre": "PINCEL ANGULAR N\" 8",
+    "precio": 2251.0
+  },
+  {
+    "codigo": "P833566",
+    "nombre": "PINCEL ANGULAR N\"6",
+    "precio": 2165.4
+  },
+  {
+    "codigo": "EM60B",
+    "nombre": "ESTANTERIA MELAMINA /PINO BAJA 60CM",
+    "precio": 89839.8
+  },
+  {
+    "codigo": "EM60A",
+    "nombre": "ESTANTERIA MELAMINA/PINO 60 ALTA",
+    "precio": 139755.0
+  },
+  {
+    "codigo": "EM80A",
+    "nombre": "ESTANTERIA MELAMINA /PINO 80 ALTA",
+    "precio": 169702.5
+  },
+  {
+    "codigo": "AR343",
+    "nombre": "ARO FF3 43CM",
+    "precio": 1976.5
+  },
+  {
+    "codigo": "AR347",
+    "nombre": "ARO FF3 47CM",
+    "precio": 2196.2
+  },
+  {
+    "codigo": "AR350",
+    "nombre": "ARO FF3",
+    "precio": 2375.8
+  }
+]
