@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 
 import productosRoutes from "./routes/productos.routes.js";
+import authRouter from "./routes/auth.routes.js";
+
 
 const app = express();
 
@@ -12,6 +14,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+app.use("/auth", authRouter);
+
 
 app.use("/api/productos", productosRoutes);
 

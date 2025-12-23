@@ -1,11 +1,20 @@
 import { useMemo, useState, useEffect } from "react";
-import { listarProductos } from "../services/productosService";
+import { listarTodosLosProductos } from "../services/productosService";
+
 import "../css/NotasPedido.css";
+
+
 
 const vendedores = ["Matías", "Gustavo", "Ceci", "Guille"];
 const mediosPago = ["Efectivo", "Transferencia", "Débito", "Crédito", "Cuenta Corriente"];
 
-const emptyItem = { productoId: "", descripcion: "", cantidad: 1, precio: "", especial: false };
+const emptyItem = {
+  productoId: "",
+  descripcion: "",
+  cantidad: 1,
+  precio: "",
+  especial: false,
+};
 
 function formatDateYYYYMMDD(date) {
   const d = new Date(date);
@@ -28,30 +37,49 @@ function addBusinessDays(startDate, businessDays) {
 
 function toARS(n) {
   const x = Number(n || 0);
-  return x.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return x.toLocaleString("es-AR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export default function NotasPedido() {
-  // ✅ Productos (AHORA adentro del componente)
+  /* =========================
+     PRODUCTOS
+  ========================= */
   const [productos, setProductos] = useState([]);
   const [productosMap, setProductosMap] = useState({});
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await listarProductos("");
-        setProductos(data);
+  (async () => {
+    try {
+      // Trae todos los productos paginando por detrás
+      const productosArray = await listarTodosLosProductos({ pageSize: 200 });
 
-        const map = {};
-        for (const p of data) map[p._id] = p;
-        setProductosMap(map);
-      } catch (e) {
-        console.error(e);
-        alert(e.message || "No se pudieron cargar productos");
+      setProductos(productosArray);
+
+      const map = {};
+      for (const p of productosArray) {
+        map[p._id] = p;
       }
-    })();
-  }, []);
+      setProductosMap(map);
 
+       console.log("TOTAL productos cargados:", productosArray.length);
+    } catch (e) {
+      console.error(e);
+      alert(e.message || "No se pudieron cargar productos");
+      setProductos([]);
+      setProductosMap({});
+    }
+
+   
+
+  })();
+}, []);
+
+  /* =========================
+     CABECERA
+  ========================= */
   const [fecha, setFecha] = useState(() => formatDateYYYYMMDD(new Date()));
   const [diasHabiles, setDiasHabiles] = useState(15);
 
@@ -65,6 +93,9 @@ export default function NotasPedido() {
   const [vendedor, setVendedor] = useState("");
   const [medioPago, setMedioPago] = useState("");
 
+  /* =========================
+     ITEMS
+  ========================= */
   const [items, setItems] = useState([{ ...emptyItem }]);
 
   const [descuento, setDescuento] = useState("");
@@ -89,7 +120,9 @@ export default function NotasPedido() {
   }, [totalFinal, adelanto]);
 
   function updateItem(idx, patch) {
-    setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
+    setItems((prev) =>
+      prev.map((it, i) => (i === idx ? { ...it, ...patch } : it))
+    );
   }
 
   function addItem() {
@@ -108,6 +141,9 @@ export default function NotasPedido() {
     alert("Luego lo conectamos a una pantalla /notas-pedido/listado");
   }
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="np-page">
       <div className="np-card">
@@ -117,22 +153,39 @@ export default function NotasPedido() {
           <div className="np-col">
             <div className="np-field">
               <label className="np-label">Fecha:</label>
-              <input className="np-input" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+              <input
+                className="np-input"
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              />
             </div>
 
             <div className="np-field">
               <label className="np-label">Señores:</label>
-              <input className="np-input" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+              <input
+                className="np-input"
+                value={cliente}
+                onChange={(e) => setCliente(e.target.value)}
+              />
             </div>
 
             <div className="np-field">
               <label className="np-label">Teléfono:</label>
-              <input className="np-input" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+              <input
+                className="np-input"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+              />
             </div>
 
             <div className="np-field">
               <label className="np-label">Vendedor:</label>
-              <select className="np-input" value={vendedor} onChange={(e) => setVendedor(e.target.value)}>
+              <select
+                className="np-input"
+                value={vendedor}
+                onChange={(e) => setVendedor(e.target.value)}
+              >
                 <option value="">Seleccione un vendedor</option>
                 {vendedores.map((v) => (
                   <option key={v} value={v}>
@@ -144,7 +197,11 @@ export default function NotasPedido() {
 
             <div className="np-field">
               <label className="np-label">Medio de pago:</label>
-              <select className="np-input" value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
+              <select
+                className="np-input"
+                value={medioPago}
+                onChange={(e) => setMedioPago(e.target.value)}
+              >
                 <option value="">Seleccione una opción</option>
                 {mediosPago.map((m) => (
                   <option key={m} value={m}>
@@ -161,7 +218,10 @@ export default function NotasPedido() {
               <input
                 className="np-input np-readonly"
                 readOnly
-                value={`${diasHabiles} días hábiles (${entregaDate.split("-").reverse().join("/")})`}
+                value={`${diasHabiles} días hábiles (${entregaDate
+                  .split("-")
+                  .reverse()
+                  .join("/")})`}
               />
             </div>
 
@@ -178,7 +238,12 @@ export default function NotasPedido() {
 
             <div className="np-field">
               <label className="np-label">Fecha entrega:</label>
-              <input className="np-input" type="date" value={entregaDate} readOnly />
+              <input
+                className="np-input"
+                type="date"
+                value={entregaDate}
+                readOnly
+              />
             </div>
           </div>
         </div>
@@ -203,11 +268,12 @@ export default function NotasPedido() {
                 }}
               >
                 <option value="">Seleccione un producto</option>
-                {productos.map((p) => (
-                  <option key={p._id} value={p._id}>
-                    {p.codigo} - {p.nombre}
-                  </option>
-                ))}
+                {Array.isArray(productos) &&
+                  productos.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      {p.codigo} - {p.nombre}
+                    </option>
+                  ))}
               </select>
 
               <input
@@ -215,27 +281,37 @@ export default function NotasPedido() {
                 type="number"
                 min={0}
                 value={it.cantidad}
-                onChange={(e) => updateItem(idx, { cantidad: e.target.value })}
+                onChange={(e) =>
+                  updateItem(idx, { cantidad: e.target.value })
+                }
               />
 
               <input
                 className="np-input np-item-price"
                 placeholder="Precio"
                 value={it.precio}
-                onChange={(e) => updateItem(idx, { precio: e.target.value })}
+                onChange={(e) =>
+                  updateItem(idx, { precio: e.target.value })
+                }
               />
 
               <label className="np-check">
                 <input
                   type="checkbox"
                   checked={it.especial}
-                  onChange={(e) => updateItem(idx, { especial: e.target.checked })}
+                  onChange={(e) =>
+                    updateItem(idx, { especial: e.target.checked })
+                  }
                 />
                 <span>Especial</span>
               </label>
 
               {items.length > 1 ? (
-                <button className="np-linkdanger" type="button" onClick={() => removeItem(idx)}>
+                <button
+                  className="np-linkdanger"
+                  type="button"
+                  onClick={() => removeItem(idx)}
+                >
                   Quitar
                 </button>
               ) : (
@@ -244,7 +320,11 @@ export default function NotasPedido() {
             </div>
           ))}
 
-          <button className="np-btn np-btn-secondary" type="button" onClick={addItem}>
+          <button
+            className="np-btn np-btn-secondary"
+            type="button"
+            onClick={addItem}
+          >
             Agregar otro producto
           </button>
         </div>
@@ -252,31 +332,55 @@ export default function NotasPedido() {
         <div className="np-totals">
           <div className="np-field">
             <label className="np-label">Total $:</label>
-            <input className="np-input np-readonly" readOnly value={toARS(totalFinal)} />
+            <input
+              className="np-input np-readonly"
+              readOnly
+              value={toARS(totalFinal)}
+            />
           </div>
 
           <div className="np-field">
             <label className="np-label">Descuento $:</label>
-            <input className="np-input" value={descuento} onChange={(e) => setDescuento(e.target.value)} />
+            <input
+              className="np-input"
+              value={descuento}
+              onChange={(e) => setDescuento(e.target.value)}
+            />
           </div>
 
           <div className="np-field">
             <label className="np-label">Adelanto $:</label>
-            <input className="np-input" value={adelanto} onChange={(e) => setAdelanto(e.target.value)} />
+            <input
+              className="np-input"
+              value={adelanto}
+              onChange={(e) => setAdelanto(e.target.value)}
+            />
           </div>
 
           <div className="np-field">
             <label className="np-label">Resta $:</label>
-            <input className="np-input np-readonly" readOnly value={toARS(resta)} />
+            <input
+              className="np-input np-readonly"
+              readOnly
+              value={toARS(resta)}
+            />
           </div>
         </div>
 
         <div className="np-actions">
-          <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota}>
+          <button
+            className="np-btn np-btn-green"
+            type="button"
+            onClick={onGuardarNota}
+          >
             Guardar Nota
           </button>
 
-          <button className="np-btn np-btn-blue" type="button" onClick={onVerNotas}>
+          <button
+            className="np-btn np-btn-blue"
+            type="button"
+            onClick={onVerNotas}
+          >
             Ver Notas
           </button>
         </div>
