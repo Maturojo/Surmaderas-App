@@ -38,6 +38,11 @@ const NotaPedidoSchema = new mongoose.Schema(
       resta: { type: Number, default: 0 },
     },
 
+    pdfBase64: { type: String, default: "" },
+
+    // Para tu sistema (si tenés login)
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    
     estado: { type: String, enum: ["pendiente", "entregado", "cancelado"], default: "pendiente" },
   },
   { timestamps: true }
