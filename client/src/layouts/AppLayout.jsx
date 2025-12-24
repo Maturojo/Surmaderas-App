@@ -3,6 +3,10 @@ import { logout } from "../services/auth";
 import Productos from "../pages/Productos";
 
 
+
+
+
+
 export default function AppLayout() {
   return (
     <div className="min-h-screen flex">
@@ -14,6 +18,7 @@ export default function AppLayout() {
           <Link className="hover:underline" to="/calendario">Calendario</Link>
           <Link className="hover:underline" to="/notas-pedido">Notas de pedido</Link>
           <Link className="hover:underline" to="/productos">Productos</Link>
+          <Link to="/generador-3d">Generador 3D</Link>
 
         </nav>
 
