@@ -1,4 +1,5 @@
 import React from "react";
+import ImageUploadField from "./ImageUploadField";
 
 function numOrEmpty(v) {
   return v === 0 ? 0 : v || "";
@@ -10,8 +11,18 @@ export default function MarcoFields({ it, setData }) {
   return (
     <div style={{ display: "grid", gap: 10 }}>
       <div className="np-fields-grid-2">
-        <input className="np-input" value={d.material || ""} onChange={(e) => setData({ material: e.target.value })} placeholder="Material" />
-        <input className="np-input" value={d.perfil || ""} onChange={(e) => setData({ perfil: e.target.value })} placeholder="Perfil / Moldura" />
+        <input
+          className="np-input"
+          value={d.material || ""}
+          onChange={(e) => setData({ material: e.target.value })}
+          placeholder="Material"
+        />
+        <input
+          className="np-input"
+          value={d.perfil || ""}
+          onChange={(e) => setData({ perfil: e.target.value })}
+          placeholder="Perfil / Moldura"
+        />
       </div>
 
       <div className="np-fields-grid-2">
@@ -33,7 +44,19 @@ export default function MarcoFields({ it, setData }) {
         />
       </div>
 
-      <input className="np-input" value={d.obs || ""} onChange={(e) => setData({ obs: e.target.value })} placeholder="Observaciones" />
+      <input
+        className="np-input"
+        value={d.obs || ""}
+        onChange={(e) => setData({ obs: e.target.value })}
+        placeholder="Observaciones"
+      />
+
+      <ImageUploadField
+        label="Imagen del marco"
+        value={d.imagen || null}
+        onChange={(img) => setData({ imagen: img })}
+        maxMB={1.5}
+      />
     </div>
   );
 }

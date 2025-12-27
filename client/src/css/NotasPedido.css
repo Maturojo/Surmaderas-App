@@ -437,6 +437,177 @@
   justify-self: end;
 }
 
+/* ===== Modal base nicer ===== */
+.npl-modal--nice {
+  max-width: 980px;
+  width: min(980px, calc(100vw - 32px));
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.npl-modalHeader--nice {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.npl-modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.npl-modalSub {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.npl-body {
+  display: grid;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  background: #fafafa;
+}
+
+/* ===== top card ===== */
+.npl-topCard,
+.npl-bottomCard {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.npl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+@media (max-width: 860px) {
+  .npl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .npl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.npl-kv .npl-k {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.npl-kv .npl-v {
+  font-size: 13px;
+  color: #111;
+}
+
+/* ===== badge ===== */
+.npl-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid #e5e5e5;
+  background: #f7f7f7;
+  width: fit-content;
+}
+
+.npl-badge--pendiente { }
+.npl-badge--entregado { }
+.npl-badge--cancelado { }
+
+/* ===== scroll only items ===== */
+.npl-scrollOnly {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 10px;
+  max-height: 360px;
+  overflow: auto;
+}
+
+.npl-itemRow--nice {
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+
+.npl-itemRow--nice + .npl-itemRow--nice {
+  margin-top: 10px;
+}
+
+.npl-itemDesc {
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 6px;
+}
+
+.npl-itemMeta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #444;
+}
+
+/* thumbs */
+.npl-thumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.npl-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+}
+
+/* bottom totals */
+.npl-totalsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 860px) {
+  .npl-totalsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.npl-totalBox {
+  border: 1px solid #eee;
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.npl-totalBox--strong {
+  background: #f2f7ff;
+  border-color: #dbe7ff;
+}
+
+.npl-modalActions--nice {
+  padding-top: 4px;
+}
+
+
 
 /* ==========================
    RESPONSIVE

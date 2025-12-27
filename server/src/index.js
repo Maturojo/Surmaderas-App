@@ -7,27 +7,36 @@ import productosRoutes from "./routes/productos.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import notasPedidoRoutes from "./routes/notasPedido.routes.js";
 
-
 const app = express();
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-  credentials: true,
-}));
-app.use(express.json());
+/* ================= CORS ================= */
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
+/* =================================================
+   BODY PARSERS (CLAVE PARA IMÁGENES EN BASE64)
+   =================================================
+   - NO usar express.json() sin límite
+   - Debe ir ANTES de las rutas
+*/
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+
+/* ================= ROUTES ================= */
 app.use("/auth", authRouter);
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-
-
 app.use("/api/productos", productosRoutes);
 app.use("/api/notas-pedido", notasPedidoRoutes);
 
+/* ================= HEALTH ================= */
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 const PORT = process.env.PORT || 4000;
 
+/* ================= START ================= */
 async function start() {
   try {
     if (!process.env.MONGODB_URI) {
