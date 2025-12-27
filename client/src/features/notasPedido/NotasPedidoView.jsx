@@ -7,18 +7,34 @@ import { useProductos } from "./hooks/useProductos";
 import { addBusinessDays, formatDateYYYYMMDD } from "./utils/dates";
 import { toARS } from "./utils/money";
 
+import { DEFAULT_TIPO, buildDescripcionFromItem } from "./config/detalleTypes";
+
+import CorteFields from "./components/fields/CorteFields";
+import MarcoFields from "./components/fields/MarcoFields";
+import CaladoFields from "./components/fields/CaladoFields";
+import MuebleFields from "./components/fields/MuebleFields";
+import PrestamoFields from "./components/fields/PrestamoFields";
+
 import "../../css/NotasPedido.css";
 
 const vendedores = ["Matías", "Gustavo", "Ceci", "Guille"];
 const mediosPago = ["Efectivo", "Transferencia", "Débito", "Crédito", "Cuenta Corriente"];
 
 const emptyItem = {
+  tipo: DEFAULT_TIPO,
+  data: {},
+
+  // producto (autocomplete)
   busqueda: "",
   productoId: "",
   descripcion: "",
+
+  // comunes
   cantidad: 1,
   precio: "",
   especial: false,
+
+  // autocomplete ux
   open: false,
   activeIndex: 0,
 };
@@ -27,6 +43,7 @@ export default function NotasPedidoView() {
   const navigate = useNavigate();
   const { productos } = useProductos();
 
+  // para scroll del item activo en la lista
   const acItemsRef = useRef({});
   const rootRef = useRef(null);
 
@@ -48,8 +65,7 @@ export default function NotasPedidoView() {
   const [descuento, setDescuento] = useState("");
   const [adelanto, setAdelanto] = useState("");
 
-  /* -------------------- UX helpers -------------------- */
-
+  /* -------------------- cerrar dropdowns al click afuera -------------------- */
   useEffect(() => {
     function handleClickOutside(e) {
       if (rootRef.current && !rootRef.current.contains(e.target)) {
@@ -60,6 +76,7 @@ export default function NotasPedidoView() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  /* -------------------- scroll al item activo del autocomplete -------------------- */
   useEffect(() => {
     items.forEach((it, idx) => {
       if (!it.open) return;
@@ -69,7 +86,6 @@ export default function NotasPedidoView() {
   }, [items]);
 
   /* -------------------- Totales -------------------- */
-
   const subtotal = useMemo(
     () =>
       items.reduce((acc, it) => {
@@ -90,10 +106,22 @@ export default function NotasPedidoView() {
     return Math.max(0, totalFinal - a);
   }, [totalFinal, adelanto]);
 
-  /* -------------------- Items -------------------- */
-
+  /* -------------------- Items helpers -------------------- */
   function updateItem(idx, patch) {
     setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
+  }
+
+  function setItemData(idx, dataPatch) {
+    setItems((prev) =>
+      prev.map((it, i) =>
+        i === idx
+          ? {
+              ...it,
+              data: { ...(it.data || {}), ...dataPatch },
+            }
+          : it
+      )
+    );
   }
 
   function addItem() {
@@ -102,6 +130,31 @@ export default function NotasPedidoView() {
 
   function removeItem(idx) {
     setItems((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function onChangeTipo(idx, tipo) {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== idx) return it;
+
+        const next = {
+          ...it,
+          tipo,
+          data: {},
+        };
+
+        // si deja de ser producto: limpiar estado del autocomplete
+        if (tipo !== "producto") {
+          next.busqueda = "";
+          next.productoId = "";
+          next.open = false;
+          next.activeIndex = 0;
+          // (descripcion la dejamos por si el usuario escribió algo manual)
+        }
+
+        return next;
+      })
+    );
   }
 
   function buscarOpciones(q) {
@@ -124,11 +177,11 @@ export default function NotasPedidoView() {
       busqueda: `${p.codigo} - ${p.nombre}`,
       open: false,
       activeIndex: 0,
+      data: { ...(items[idx]?.data || {}), nombre: `${p.codigo} - ${p.nombre}` },
     });
   }
 
-  /* -------------------- GUARDAR NOTA (SOLO DATOS) -------------------- */
-
+  /* -------------------- Guardar Nota -------------------- */
   async function onGuardarNota() {
     if (guardando) return;
     setGuardando(true);
@@ -140,24 +193,28 @@ export default function NotasPedidoView() {
 
       const itemsMapped = items
         .map((it) => {
-          const descripcion = String(it.descripcion || it.busqueda || "").trim();
-          if (!descripcion) return null;
+          const tipo = it.tipo || DEFAULT_TIPO;
+          const descFinal = buildDescripcionFromItem(it);
+
+          if (!String(descFinal || "").trim()) return null;
 
           const cantidad = Number(it.cantidad || 0);
           const precioUnit = Number(String(it.precio ?? "").replace(",", ".")) || 0;
 
           return {
-            productoId: it.productoId || null,
-            descripcion,
+            tipo,
+            productoId: tipo === "producto" ? it.productoId || null : null,
+            descripcion: descFinal,
             cantidad,
             precioUnit,
             especial: Boolean(it.especial),
+            data: it.data || {},
           };
         })
         .filter(Boolean)
         .filter((it) => it.cantidad > 0);
 
-      if (itemsMapped.length === 0) throw new Error("Tenés que cargar al menos un producto válido");
+      if (itemsMapped.length === 0) throw new Error("Tenés que cargar al menos un ítem válido");
 
       const payload = {
         numero,
@@ -178,7 +235,6 @@ export default function NotasPedidoView() {
           resta,
         },
 
-        // 🔴 PDF NO se genera acá
         pdfBase64: "",
       };
 
@@ -206,24 +262,34 @@ export default function NotasPedidoView() {
     navigate("/notas-pedido/listado");
   }
 
-  /* -------------------- JSX -------------------- */
+  function renderFieldsByTipo(it, idx) {
+    switch (it.tipo) {
+      case "corte":
+        return <CorteFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+      case "marco":
+        return <MarcoFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+      case "calado":
+        return <CaladoFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+      case "mueble":
+        return <MuebleFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+      case "prestamo":
+        return <PrestamoFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+      case "producto":
+      default:
+        return null;
+    }
+  }
 
   return (
     <div className="np-page" ref={rootRef}>
       <div className="np-card">
         <h1 className="np-title">Generador de Nota de Pedido - Sur Maderas</h1>
 
-        {/* Header/Formulario */}
         <div className="np-grid-2">
           <div className="np-col">
             <div className="np-field">
               <label className="np-label">Fecha:</label>
-              <input
-                className="np-input"
-                type="date"
-                value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-              />
+              <input className="np-input" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
             </div>
 
             <div className="np-field">
@@ -238,12 +304,7 @@ export default function NotasPedidoView() {
 
             <div className="np-field">
               <label className="np-label">Teléfono:</label>
-              <input
-                className="np-input"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                placeholder="Ej: 223..."
-              />
+              <input className="np-input" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Ej: 223..." />
             </div>
 
             <div className="np-field">
@@ -283,13 +344,7 @@ export default function NotasPedidoView() {
 
             <div className="np-field">
               <label className="np-label">Días hábiles:</label>
-              <input
-                className="np-input"
-                type="number"
-                min={0}
-                value={diasHabiles}
-                onChange={(e) => setDiasHabiles(e.target.value)}
-              />
+              <input className="np-input" type="number" min={0} value={diasHabiles} onChange={(e) => setDiasHabiles(e.target.value)} />
             </div>
 
             <div className="np-field">
@@ -301,81 +356,98 @@ export default function NotasPedidoView() {
 
         <h2 className="np-section-title">Detalle del Pedido:</h2>
 
-        {/* Items */}
         <div className="np-items">
           {items.map((it, idx) => {
-            const opciones = buscarOpciones(it.busqueda);
+            const opciones = it.tipo === "producto" ? buscarOpciones(it.busqueda) : [];
 
-            // reiniciar refs por fila (para scrollIntoView)
+            // reiniciamos refs por fila (para scroll)
             acItemsRef.current[idx] = [];
 
             return (
               <div className="np-item-row" key={idx}>
-                <div className="np-autocomplete">
-                  <input
-                    className="np-input np-item-search"
-                    placeholder="Buscar producto por código o nombre..."
-                    value={it.busqueda}
-                    onFocus={() => updateItem(idx, { open: true })}
-                    onChange={(e) => updateItem(idx, { busqueda: e.target.value, open: true, activeIndex: 0 })}
-                    onKeyDown={(e) => {
-                      if (!it.open) return;
+                {/* Tipo */}
+                <select className="np-input" value={it.tipo || DEFAULT_TIPO} onChange={(e) => onChangeTipo(idx, e.target.value)}>
+                  <option value="corte">Corte</option>
+                  <option value="marco">Marco</option>
+                  <option value="calado">Calado</option>
+                  <option value="mueble">Mueble</option>
+                  <option value="producto">Producto estándar</option>
+                  <option value="prestamo">Préstamo</option>
+                </select>
 
-                      if (e.key === "Escape") {
-                        e.preventDefault();
-                        updateItem(idx, { open: false });
-                        return;
-                      }
+                {/* Campos dinámicos / autocomplete */}
+                <div className="np-item-fields">
+                  {it.tipo === "producto" ? (
+                    <div className="np-autocomplete">
+                      <input
+                        className="np-input np-item-search"
+                        placeholder="Buscar producto por código o nombre..."
+                        value={it.busqueda}
+                        onFocus={() => updateItem(idx, { open: true })}
+                        onChange={(e) => updateItem(idx, { busqueda: e.target.value, open: true, activeIndex: 0 })}
+                        onKeyDown={(e) => {
+                          if (!it.open) return;
 
-                      if (opciones.length === 0) return;
+                          if (e.key === "Escape") {
+                            e.preventDefault();
+                            updateItem(idx, { open: false });
+                            return;
+                          }
 
-                      if (e.key === "ArrowDown") {
-                        e.preventDefault();
-                        updateItem(idx, { activeIndex: Math.min(it.activeIndex + 1, opciones.length - 1) });
-                        return;
-                      }
+                          if (opciones.length === 0) return;
 
-                      if (e.key === "ArrowUp") {
-                        e.preventDefault();
-                        updateItem(idx, { activeIndex: Math.max(it.activeIndex - 1, 0) });
-                        return;
-                      }
+                          if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            updateItem(idx, { activeIndex: Math.min(it.activeIndex + 1, opciones.length - 1) });
+                            return;
+                          }
 
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        const p = opciones[it.activeIndex] || opciones[0];
-                        if (p) seleccionarProducto(idx, p);
-                      }
-                    }}
-                  />
+                          if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            updateItem(idx, { activeIndex: Math.max(it.activeIndex - 1, 0) });
+                            return;
+                          }
 
-                  {it.open && it.busqueda.trim() !== "" && (
-                    <div className="np-ac-list">
-                      {opciones.length === 0 ? (
-                        <div className="np-ac-empty">Sin resultados</div>
-                      ) : (
-                        opciones.map((p, i) => (
-                          <button
-                            ref={(el) => {
-                              if (el) acItemsRef.current[idx][i] = el;
-                            }}
-                            type="button"
-                            key={p._id}
-                            className={`np-ac-item ${i === it.activeIndex ? "is-active" : ""}`}
-                            onMouseEnter={() => updateItem(idx, { activeIndex: i })}
-                            onClick={() => seleccionarProducto(idx, p)}
-                          >
-                            <div className="np-ac-main">
-                              {p.codigo} - {p.nombre}
-                            </div>
-                            <div className="np-ac-sub">${toARS(p.precio)}</div>
-                          </button>
-                        ))
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const p = opciones[it.activeIndex] || opciones[0];
+                            if (p) seleccionarProducto(idx, p);
+                          }
+                        }}
+                      />
+
+                      {it.open && it.busqueda.trim() !== "" && (
+                        <div className="np-ac-list">
+                          {opciones.length === 0 ? (
+                            <div className="np-ac-empty">Sin resultados</div>
+                          ) : (
+                            opciones.map((p, i) => (
+                              <button
+                                ref={(el) => {
+                                  if (el) acItemsRef.current[idx][i] = el;
+                                }}
+                                type="button"
+                                key={p._id}
+                                className={`np-ac-item ${i === it.activeIndex ? "is-active" : ""}`}
+                                onMouseEnter={() => updateItem(idx, { activeIndex: i })}
+                                onClick={() => seleccionarProducto(idx, p)}
+                              >
+                                <div className="np-ac-main">
+                                  {p.codigo} - {p.nombre}
+                                </div>
+                                <div className="np-ac-sub">${toARS(p.precio)}</div>
+                              </button>
+                            ))
+                          )}
+                        </div>
                       )}
                     </div>
+                  ) : (
+                    renderFieldsByTipo(it, idx)
                   )}
                 </div>
 
+                {/* Cantidad / Precio / Especial / Quitar */}
                 <input
                   className="np-input np-item-qty"
                   type="number"
@@ -392,11 +464,7 @@ export default function NotasPedidoView() {
                 />
 
                 <label className="np-check">
-                  <input
-                    type="checkbox"
-                    checked={it.especial}
-                    onChange={(e) => updateItem(idx, { especial: e.target.checked })}
-                  />
+                  <input type="checkbox" checked={it.especial} onChange={(e) => updateItem(idx, { especial: e.target.checked })} />
                   <span>Especial</span>
                 </label>
 
@@ -405,7 +473,7 @@ export default function NotasPedidoView() {
                     Quitar
                   </button>
                 ) : (
-                  <span className="np-spacer" />
+                  <span />
                 )}
               </div>
             );
@@ -416,7 +484,6 @@ export default function NotasPedidoView() {
           </button>
         </div>
 
-        {/* Totales */}
         <div className="np-totals">
           <div className="np-field">
             <label className="np-label">Total $:</label>
@@ -439,15 +506,12 @@ export default function NotasPedidoView() {
           </div>
         </div>
 
-        {/* Acciones */}
         <div className="np-actions">
           <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar Nota"}
           </button>
 
-          <button className="np-btn np-btn-blue" type="button" onClick={onVerNotas}>
-            Ver Notas
-          </button>
+          
         </div>
       </div>
     </div>

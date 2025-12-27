@@ -254,3 +254,209 @@
   background: rgba(0,0,0,0.20);
 }
 
+/* ==========================
+   DETALLE DEL PEDIDO - ITEMS
+   ========================== */
+
+.np-items {
+  display: grid;
+  gap: 14px;
+}
+
+/* Cada fila del detalle */
+.np-item-row {
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+
+  /* Tipo | Campos | Cant | Precio | Especial | Quitar */
+  grid-template-columns: 240px minmax(360px, 1fr) 110px 160px 130px 90px;
+
+  align-items: end;
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* IMPORTANTÍSIMO: evita que el contenido haga overflow */
+/* Evita que algo se dibuje por afuera de la card */
+.np-card {
+  overflow: hidden;
+}
+
+/* Fila del item: que SI pueda encogerse */
+.np-item-row{
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  align-items: end;
+
+  /* Tipo | Campos | Cant | Precio | Especial | Quitar */
+  grid-template-columns:
+    220px
+    minmax(0, 1fr)
+    90px
+    140px
+    120px
+    80px;
+
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Clave para que el contenido no "empuje" el grid */
+.np-item-row > * {
+  min-width: 0;
+}
+
+.np-item-fields,
+.np-autocomplete {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Autocomplete: dropdown siempre igual al input */
+.np-ac-list {
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* Contenedor de campos dinámicos (corte/mueble/etc. o autocomplete) */
+.np-item-fields {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Inputs: que siempre ocupen su columna */
+.np-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Checkbox alineado estético */
+.np-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+/* Botón quitar alineado */
+.np-linkdanger {
+  height: 40px;
+  align-self: end;
+  justify-self: end;
+}
+
+/* ==========================
+   AUTOCOMPLETE: MISMO ANCHO
+   ========================== */
+
+.np-autocomplete {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.np-item-search {
+  width: 100%;
+}
+
+/* Dropdown lista: mismo ancho que el input */
+.np-ac-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 50;
+
+  margin-top: 6px;
+  max-height: 280px;
+  overflow: auto;
+
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Items de autocomplete: que no se rompan */
+.np-ac-item {
+  width: 100%;
+  text-align: left;
+}
+
+/* ==========================
+   FIELDS INTERNOS (GRID)
+   ========================== */
+
+/* Grids internos: asegurá que no desborden */
+.np-fields-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.np-fields-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.np-fields-grid-2 > *,
+.np-fields-grid-3 > * {
+  min-width: 0;
+}
+
+.np-item-row{
+  align-items: center; /* mejor alineación general */
+}
+
+.np-item-qty,
+.np-item-price{
+  height: 40px; /* igual que inputs */
+}
+
+.np-check{
+  height: 40px;
+  display:flex;
+  align-items:center;
+}
+
+.np-linkdanger{
+  justify-self: end;
+}
+
+
+/* ==========================
+   RESPONSIVE
+   ========================== */
+
+@media (max-width: 1100px) {
+  .np-item-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .np-linkdanger {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 980px) {
+  .np-item-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
+

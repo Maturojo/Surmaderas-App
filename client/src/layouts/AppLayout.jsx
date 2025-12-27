@@ -17,6 +17,7 @@ export default function AppLayout() {
           <Link className="hover:underline" to="/">Dashboard</Link>
           <Link className="hover:underline" to="/calendario">Calendario</Link>
           <Link className="hover:underline" to="/notas-pedido">Notas de pedido</Link>
+          <Link className="hover:underline" to="/notas-pedido/listado">Listado de notas</Link>
           <Link className="hover:underline" to="/productos">Productos</Link>
           <Link to="/generador-3d">Generador 3D</Link>
 
