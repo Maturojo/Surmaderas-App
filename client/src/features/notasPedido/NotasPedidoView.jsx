@@ -134,9 +134,7 @@ export default function NotasPedidoView() {
     setGuardando(true);
 
     try {
-      if (!String(cliente || "").trim()) {
-        throw new Error("Falta el nombre del cliente");
-      }
+      if (!String(cliente || "").trim()) throw new Error("Falta el nombre del cliente");
 
       const numero = `NP-${Date.now()}`;
 
@@ -159,9 +157,7 @@ export default function NotasPedidoView() {
         .filter(Boolean)
         .filter((it) => it.cantidad > 0);
 
-      if (itemsMapped.length === 0) {
-        throw new Error("Tenés que cargar al menos un producto válido");
-      }
+      if (itemsMapped.length === 0) throw new Error("Tenés que cargar al menos un producto válido");
 
       const payload = {
         numero,
@@ -217,14 +213,239 @@ export default function NotasPedidoView() {
       <div className="np-card">
         <h1 className="np-title">Generador de Nota de Pedido - Sur Maderas</h1>
 
-        {/* --- (todo el JSX de formulario e items queda IGUAL al tuyo) --- */}
+        {/* Header/Formulario */}
+        <div className="np-grid-2">
+          <div className="np-col">
+            <div className="np-field">
+              <label className="np-label">Fecha:</label>
+              <input
+                className="np-input"
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              />
+            </div>
 
+            <div className="np-field">
+              <label className="np-label">Señores:</label>
+              <input
+                className="np-input"
+                value={cliente}
+                onChange={(e) => setCliente(e.target.value)}
+                placeholder="Nombre del cliente"
+              />
+            </div>
+
+            <div className="np-field">
+              <label className="np-label">Teléfono:</label>
+              <input
+                className="np-input"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="Ej: 223..."
+              />
+            </div>
+
+            <div className="np-field">
+              <label className="np-label">Vendedor:</label>
+              <select className="np-input" value={vendedor} onChange={(e) => setVendedor(e.target.value)}>
+                <option value="">Seleccione un vendedor</option>
+                {vendedores.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="np-field">
+              <label className="np-label">Medio de pago:</label>
+              <select className="np-input" value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
+                <option value="">Seleccione una opción</option>
+                {mediosPago.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="np-col">
+            <div className="np-field">
+              <label className="np-label">Entrega para el día:</label>
+              <input
+                className="np-input np-readonly"
+                readOnly
+                value={`${diasHabiles} días hábiles (${entregaDate.split("-").reverse().join("/")})`}
+              />
+            </div>
+
+            <div className="np-field">
+              <label className="np-label">Días hábiles:</label>
+              <input
+                className="np-input"
+                type="number"
+                min={0}
+                value={diasHabiles}
+                onChange={(e) => setDiasHabiles(e.target.value)}
+              />
+            </div>
+
+            <div className="np-field">
+              <label className="np-label">Fecha entrega:</label>
+              <input className="np-input" type="date" value={entregaDate} readOnly />
+            </div>
+          </div>
+        </div>
+
+        <h2 className="np-section-title">Detalle del Pedido:</h2>
+
+        {/* Items */}
+        <div className="np-items">
+          {items.map((it, idx) => {
+            const opciones = buscarOpciones(it.busqueda);
+
+            // reiniciar refs por fila (para scrollIntoView)
+            acItemsRef.current[idx] = [];
+
+            return (
+              <div className="np-item-row" key={idx}>
+                <div className="np-autocomplete">
+                  <input
+                    className="np-input np-item-search"
+                    placeholder="Buscar producto por código o nombre..."
+                    value={it.busqueda}
+                    onFocus={() => updateItem(idx, { open: true })}
+                    onChange={(e) => updateItem(idx, { busqueda: e.target.value, open: true, activeIndex: 0 })}
+                    onKeyDown={(e) => {
+                      if (!it.open) return;
+
+                      if (e.key === "Escape") {
+                        e.preventDefault();
+                        updateItem(idx, { open: false });
+                        return;
+                      }
+
+                      if (opciones.length === 0) return;
+
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        updateItem(idx, { activeIndex: Math.min(it.activeIndex + 1, opciones.length - 1) });
+                        return;
+                      }
+
+                      if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        updateItem(idx, { activeIndex: Math.max(it.activeIndex - 1, 0) });
+                        return;
+                      }
+
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const p = opciones[it.activeIndex] || opciones[0];
+                        if (p) seleccionarProducto(idx, p);
+                      }
+                    }}
+                  />
+
+                  {it.open && it.busqueda.trim() !== "" && (
+                    <div className="np-ac-list">
+                      {opciones.length === 0 ? (
+                        <div className="np-ac-empty">Sin resultados</div>
+                      ) : (
+                        opciones.map((p, i) => (
+                          <button
+                            ref={(el) => {
+                              if (el) acItemsRef.current[idx][i] = el;
+                            }}
+                            type="button"
+                            key={p._id}
+                            className={`np-ac-item ${i === it.activeIndex ? "is-active" : ""}`}
+                            onMouseEnter={() => updateItem(idx, { activeIndex: i })}
+                            onClick={() => seleccionarProducto(idx, p)}
+                          >
+                            <div className="np-ac-main">
+                              {p.codigo} - {p.nombre}
+                            </div>
+                            <div className="np-ac-sub">${toARS(p.precio)}</div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  className="np-input np-item-qty"
+                  type="number"
+                  min={0}
+                  value={it.cantidad}
+                  onChange={(e) => updateItem(idx, { cantidad: e.target.value })}
+                />
+
+                <input
+                  className="np-input np-item-price"
+                  placeholder="Precio"
+                  value={it.precio}
+                  onChange={(e) => updateItem(idx, { precio: e.target.value })}
+                />
+
+                <label className="np-check">
+                  <input
+                    type="checkbox"
+                    checked={it.especial}
+                    onChange={(e) => updateItem(idx, { especial: e.target.checked })}
+                  />
+                  <span>Especial</span>
+                </label>
+
+                {items.length > 1 ? (
+                  <button className="np-linkdanger" type="button" onClick={() => removeItem(idx)}>
+                    Quitar
+                  </button>
+                ) : (
+                  <span className="np-spacer" />
+                )}
+              </div>
+            );
+          })}
+
+          <button className="np-btn np-btn-secondary" type="button" onClick={addItem}>
+            Agregar otro producto
+          </button>
+        </div>
+
+        {/* Totales */}
+        <div className="np-totals">
+          <div className="np-field">
+            <label className="np-label">Total $:</label>
+            <input className="np-input np-readonly" readOnly value={toARS(totalFinal)} />
+          </div>
+
+          <div className="np-field">
+            <label className="np-label">Descuento $:</label>
+            <input className="np-input" value={descuento} onChange={(e) => setDescuento(e.target.value)} />
+          </div>
+
+          <div className="np-field">
+            <label className="np-label">Adelanto $:</label>
+            <input className="np-input" value={adelanto} onChange={(e) => setAdelanto(e.target.value)} />
+          </div>
+
+          <div className="np-field">
+            <label className="np-label">Resta $:</label>
+            <input className="np-input np-readonly" readOnly value={toARS(resta)} />
+          </div>
+        </div>
+
+        {/* Acciones */}
         <div className="np-actions">
-          <button className="np-btn np-btn-green" onClick={onGuardarNota} disabled={guardando}>
+          <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar Nota"}
           </button>
 
-          <button className="np-btn np-btn-blue" onClick={onVerNotas}>
+          <button className="np-btn np-btn-blue" type="button" onClick={onVerNotas}>
             Ver Notas
           </button>
         </div>
