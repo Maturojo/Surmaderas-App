@@ -1,0 +1,42 @@
+.npl-page { padding:20px; display:flex; justify-content:center; }
+.npl-card { width:min(1100px, 100%); background:#fff; border:1px solid #e8e8e8; border-radius:12px; padding:16px; }
+.npl-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.npl-title { margin:0; font-size:20px; }
+
+.npl-toolbar { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+.npl-input { flex:1; min-width:260px; padding:10px; border:1px solid #ddd; border-radius:10px; outline:none; }
+
+.npl-btn { padding:10px 12px; border:0; border-radius:10px; background:#1f6feb; color:#fff; cursor:pointer; }
+.npl-btn:disabled { opacity:.6; cursor:not-allowed; }
+.npl-btnGhost { padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; cursor:pointer; }
+
+.npl-tableWrap { overflow:auto; border:1px solid #eee; border-radius:10px; }
+.npl-table { width:100%; border-collapse:collapse; }
+.npl-table th, .npl-table td { padding:10px; border-bottom:1px solid #eee; text-align:left; white-space:nowrap; }
+.npl-actions { text-align:right; }
+.npl-link { background:transparent; border:0; color:#1f6feb; cursor:pointer; padding:6px 8px; }
+.npl-muted { color:#666; padding:10px; }
+
+.npl-error { background:#ffecec; border:1px solid #ffb3b3; padding:10px; border-radius:10px; color:#8a0000; margin:10px 0; }
+.npl-pager { display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:10px; flex-wrap:wrap; }
+
+.npl-modalBack { position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:16px; }
+.npl-modal { width:min(900px, 100%); background:#fff; border-radius:12px; padding:14px; border:1px solid #e8e8e8; }
+.npl-modalHeader { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.npl-modalTitle { font-weight:700; }
+.npl-x { border:0; background:transparent; font-size:22px; cursor:pointer; }
+
+.npl-detailGrid { display:grid; grid-template-columns: 1fr 1fr; gap:8px 12px; margin-bottom:10px; }
+.npl-itemsTitle { font-weight:700; margin:10px 0 6px; }
+.npl-itemsList { border:1px solid #eee; border-radius:10px; padding:10px; max-height:260px; overflow:auto; }
+.npl-itemRow { padding:8px 0; border-bottom:1px dashed #eee; }
+.npl-itemRow:last-child { border-bottom:0; }
+.npl-itemDesc { font-weight:600; }
+.npl-itemMeta { color:#555; margin-top:2px; font-size:13px; }
+
+.npl-totalsBox { margin-top:10px; border:1px solid #eee; border-radius:10px; padding:10px; display:grid; gap:6px; }
+.npl-modalActions { margin-top:12px; display:flex; justify-content:flex-end; }
+
+@media (max-width: 900px) {
+  .npl-detailGrid { grid-template-columns: 1fr; }
+}

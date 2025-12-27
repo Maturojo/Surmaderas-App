@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { listarTodosLosProductos } from "../services/productosService";
 import jsPDF from "jspdf";
 import { crearNotaPedido } from "../services/notasPedido";
+import { useNavigate } from "react-router-dom";
 
 import "../css/NotasPedido.css";
 
@@ -15,8 +16,8 @@ const emptyItem = {
   cantidad: 1,
   precio: "",
   especial: false,
-  open: false,        // dropdown abierto/cerrado
-  activeIndex: 0,     // navegación con flechas
+  open: false, // dropdown abierto/cerrado
+  activeIndex: 0, // navegación con flechas
 };
 
 function formatDateYYYYMMDD(date) {
@@ -44,6 +45,8 @@ function toARS(n) {
 }
 
 export default function NotasPedido() {
+  const navigate = useNavigate();
+
   // ✅ ESTE REF TIENE QUE ESTAR DENTRO DEL COMPONENTE (no afuera)
   const acItemsRef = useRef({});
 
@@ -147,158 +150,154 @@ export default function NotasPedido() {
   }
 
   async function onGuardarNota() {
-   
     if (guardando) return;
     setGuardando(true);
- 
 
-  try {
-    // =========================
-    // VALIDACIONES
-    // =========================
-    if (!String(cliente || "").trim()) throw new Error("Falta el nombre del cliente");
+    try {
+      // =========================
+      // VALIDACIONES
+      // =========================
+      if (!String(cliente || "").trim()) throw new Error("Falta el nombre del cliente");
 
-    // =========================
-    // NÚMERO DE NOTA
-    // =========================
-    const numero = `NP-${Date.now()}`;
+      // =========================
+      // NÚMERO DE NOTA
+      // =========================
+      const numero = `NP-${Date.now()}`;
 
-    // =========================
-    // ITEMS -> schema: { descripcion, cantidad, precioUnit, especial, productoId }
-    // =========================
-    const itemsMapped = items
-  .map((it) => {
-    const descripcion = String(it.descripcion || it.busqueda || "").trim();
+      // =========================
+      // ITEMS -> schema: { descripcion, cantidad, precioUnit, especial, productoId }
+      // =========================
+      const itemsMapped = items
+        .map((it) => {
+          const descripcion = String(it.descripcion || it.busqueda || "").trim();
 
-    // si no hay descripción, lo marcamos como null para filtrar después
-    if (!descripcion) return null;
+          // si no hay descripción, lo marcamos como null para filtrar después
+          if (!descripcion) return null;
 
-    const cantidad = Number(it.cantidad || 0);
+          const cantidad = Number(it.cantidad || 0);
 
-    // precioUnit en tu schema (si no se puede parsear, queda 0 pero NO rompe)
-    const precioUnitRaw = String(it.precio ?? "").replace(",", ".");
-    const precioUnit = Number.isFinite(Number(precioUnitRaw)) ? Number(precioUnitRaw) : 0;
+          // precioUnit en tu schema (si no se puede parsear, queda 0 pero NO rompe)
+          const precioUnitRaw = String(it.precio ?? "").replace(",", ".");
+          const precioUnit = Number.isFinite(Number(precioUnitRaw)) ? Number(precioUnitRaw) : 0;
 
-    return {
-      productoId: it.productoId || null,
-      descripcion,
-      cantidad,
-      precioUnit,
-      especial: Boolean(it.especial),
-    };
-  })
-  .filter(Boolean)                 // saca null
-  .filter((it) => it.cantidad > 0); // cantidad válida
+          return {
+            productoId: it.productoId || null,
+            descripcion,
+            cantidad,
+            precioUnit,
+            especial: Boolean(it.especial),
+          };
+        })
+        .filter(Boolean) // saca null
+        .filter((it) => it.cantidad > 0); // cantidad válida
 
-if (itemsMapped.length === 0) {
-  throw new Error("Items vacíos: tenés que seleccionar al menos 1 producto del listado (o presionar Enter).");
-}
+      if (itemsMapped.length === 0) {
+        throw new Error(
+          "Items vacíos: tenés que seleccionar al menos 1 producto del listado (o presionar Enter)."
+        );
+      }
 
-
-    // =========================
-    // TOTALES (con tu lógica actual)
-    // =========================
-    const totalesPayload = {
-      subtotal: Number(subtotal || 0),
-      descuento: Number(String(descuento).replace(",", ".") || 0),
-      total: Number(totalFinal || 0),
-      adelanto: Number(String(adelanto).replace(",", ".") || 0),
-      resta: Number(resta || 0),
-    };
-
-    // =========================
-    // PDF (usa itemsMapped, y calcula subtotal item al vuelo)
-    // =========================
-    const doc = new jsPDF();
-
-    doc.setFontSize(14);
-    doc.text(`NOTA DE PEDIDO ${numero}`, 14, 16);
-
-    doc.setFontSize(10);
-    doc.text(`Fecha: ${fecha.split("-").reverse().join("/")}`, 14, 24);
-    doc.text(`Entrega: ${entregaDate.split("-").reverse().join("/")}`, 14, 30);
-
-    doc.text(`Cliente: ${cliente}`, 14, 38);
-    doc.text(`Tel: ${telefono || ""}`, 14, 44);
-    doc.text(`Vendedor: ${vendedor || ""}`, 14, 50);
-    doc.text(`Medio de pago: ${medioPago || ""}`, 14, 56);
-
-    let y = 70;
-    doc.setFontSize(9);
-
-    itemsMapped.forEach((it) => {
-      const sub = it.cantidad * it.precioUnit;
-      doc.text(`${it.descripcion} | Cant: ${it.cantidad} | $${toARS(sub)}`, 14, y);
-      y += 6;
-      if (y > 280) { doc.addPage(); y = 20; }
-    });
-
-
-    y += 8;
-    doc.setFontSize(11);
-    doc.text(`Subtotal: $${toARS(totalesPayload.subtotal)}`, 14, y); y += 7;
-    doc.text(`Descuento: $${toARS(totalesPayload.descuento)}`, 14, y); y += 7;
-    doc.text(`TOTAL: $${toARS(totalesPayload.total)}`, 14, y); y += 7;
-    doc.setFontSize(10);
-    doc.text(
-      `Adelanto: $${toARS(totalesPayload.adelanto)} | Resta: $${toARS(totalesPayload.resta)}`,
-      14,
-      y
-    );
-
-    // =========================
-    // PAYLOAD FINAL (1:1 schema)
-    // fecha/entrega son STRING "YYYY-MM-DD"
-    // =========================
-    const payload = {
-      numero,
-      fecha,              // "YYYY-MM-DD"
-      entrega: entregaDate, // "YYYY-MM-DD"
-      diasHabiles: Number(diasHabiles || 0),
-
-      cliente: { nombre: cliente, telefono: telefono || "", direccion: "" },
-      vendedor: vendedor || "",
-      medioPago: medioPago || "",
-
-      items: itemsMapped,
-
-      totales: {
+      // =========================
+      // TOTALES (con tu lógica actual)
+      // =========================
+      const totalesPayload = {
         subtotal: Number(subtotal || 0),
         descuento: Number(String(descuento).replace(",", ".") || 0),
         total: Number(totalFinal || 0),
         adelanto: Number(String(adelanto).replace(",", ".") || 0),
         resta: Number(resta || 0),
-      },
-    };
+      };
 
+      // =========================
+      // PDF (usa itemsMapped, y calcula subtotal item al vuelo)
+      // =========================
+      const doc = new jsPDF();
 
-    console.log("PAYLOAD FINAL NOTA PEDIDO =>", payload);
+      doc.setFontSize(14);
+      doc.text(`NOTA DE PEDIDO ${numero}`, 14, 16);
 
-    // =========================
-    // GUARDAR EN MONGO
-    // =========================
-    await crearNotaPedido(payload);
+      doc.setFontSize(10);
+      doc.text(`Fecha: ${fecha.split("-").reverse().join("/")}`, 14, 24);
+      doc.text(`Entrega: ${entregaDate.split("-").reverse().join("/")}`, 14, 30);
 
-    // =========================
-    // DESCARGAR PDF
-    // =========================
-    doc.save(`${numero}.pdf`);
-  } catch (e) {
-    console.error("Error guardando nota:", e);
-    alert(e.message || "Error guardando la nota");
-  } finally 
-  { setGuardando(false); 
+      doc.text(`Cliente: ${cliente}`, 14, 38);
+      doc.text(`Tel: ${telefono || ""}`, 14, 44);
+      doc.text(`Vendedor: ${vendedor || ""}`, 14, 50);
+      doc.text(`Medio de pago: ${medioPago || ""}`, 14, 56);
 
+      let y = 70;
+      doc.setFontSize(9);
+
+      itemsMapped.forEach((it) => {
+        const sub = it.cantidad * it.precioUnit;
+        doc.text(`${it.descripcion} | Cant: ${it.cantidad} | $${toARS(sub)}`, 14, y);
+        y += 6;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+
+      y += 8;
+      doc.setFontSize(11);
+      doc.text(`Subtotal: $${toARS(totalesPayload.subtotal)}`, 14, y);
+      y += 7;
+      doc.text(`Descuento: $${toARS(totalesPayload.descuento)}`, 14, y);
+      y += 7;
+      doc.text(`TOTAL: $${toARS(totalesPayload.total)}`, 14, y);
+      y += 7;
+      doc.setFontSize(10);
+      doc.text(
+        `Adelanto: $${toARS(totalesPayload.adelanto)} | Resta: $${toARS(totalesPayload.resta)}`,
+        14,
+        y
+      );
+
+      // =========================
+      // PAYLOAD FINAL (1:1 schema)
+      // =========================
+      const payload = {
+        numero,
+        fecha, // "YYYY-MM-DD"
+        entrega: entregaDate, // "YYYY-MM-DD"
+        diasHabiles: Number(diasHabiles || 0),
+
+        cliente: { nombre: cliente, telefono: telefono || "", direccion: "" },
+        vendedor: vendedor || "",
+        medioPago: medioPago || "",
+
+        items: itemsMapped,
+
+        totales: {
+          subtotal: Number(subtotal || 0),
+          descuento: Number(String(descuento).replace(",", ".") || 0),
+          total: Number(totalFinal || 0),
+          adelanto: Number(String(adelanto).replace(",", ".") || 0),
+          resta: Number(resta || 0),
+        },
+      };
+
+      console.log("PAYLOAD FINAL NOTA PEDIDO =>", payload);
+
+      // =========================
+      // GUARDAR EN MONGO
+      // =========================
+      await crearNotaPedido(payload);
+
+      // =========================
+      // DESCARGAR PDF
+      // =========================
+      doc.save(`${numero}.pdf`);
+    } catch (e) {
+      console.error("Error guardando nota:", e);
+      alert(e.message || "Error guardando la nota");
+    } finally {
+      setGuardando(false);
+    }
   }
 
-
-}
-
-
-
-
   function onVerNotas() {
-    alert("Luego lo conectamos a una pantalla /notas-pedido/listado");
+    navigate("/notas-pedido/listado");
   }
 
   function buscarOpciones(q) {
@@ -332,7 +331,12 @@ if (itemsMapped.length === 0) {
           <div className="np-col">
             <div className="np-field">
               <label className="np-label">Fecha:</label>
-              <input className="np-input" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+              <input
+                className="np-input"
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              />
             </div>
 
             <div className="np-field">
@@ -540,7 +544,6 @@ if (itemsMapped.length === 0) {
           <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar Nota"}
           </button>
-
 
           <button className="np-btn np-btn-blue" type="button" onClick={onVerNotas}>
             Ver Notas

@@ -1,30 +1,54 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-export async function crearNotaPedido(payload) {
+function authHeaders() {
   const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
-  const res = await fetch(`${API_BASE}/api/notas-pedido`, {
+export async function crearNotaPedido(payload) {
+  const r = await fetch(`${API_BASE}/api/notas-pedido`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...authHeaders(),
     },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
 
-  const text = await res.text(); // para capturar TODO
-  let data = {};
-  try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-
-  if (!res.ok) {
-    console.error("ERROR API /api/notas-pedido", {
-    status: res.status,
-    data,
-    backendError: data?.error,
-    });
-
-    throw new Error(data?.message || `Error creando nota (${res.status})`);
-  }
-
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error creando nota");
   return data;
+}
+
+export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
+  const url = new URL(`${API_BASE}/api/notas-pedido`);
+  if (q) url.searchParams.set("q", q);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("limit", String(limit));
+
+  const r = await fetch(url.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error listando notas");
+  return data; // { ok, items, total, page, limit }
+}
+
+export async function obtenerNotaPedido(id) {
+  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}`, {
+    headers: {
+      ...authHeaders(),
+    },
+    credentials: "include",
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error obteniendo nota");
+  return data.item;
 }
