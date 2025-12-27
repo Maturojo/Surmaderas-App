@@ -209,4 +209,29 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Guardar/actualizar PDF de una nota
+router.patch("/:id/pdf", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { pdfBase64 } = req.body;
+
+    if (!pdfBase64 || typeof pdfBase64 !== "string") {
+      return res.status(400).json({ message: "Falta pdfBase64" });
+    }
+
+    const updated = await NotaPedido.findByIdAndUpdate(
+      id,
+      { pdfBase64 },
+      { new: true }
+    ).lean();
+
+    if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
+
+    return res.json({ ok: true, item: updated });
+  } catch (err) {
+    return res.status(500).json({ message: "Error guardando PDF", error: err.message });
+  }
+});
+
+
 export default router;

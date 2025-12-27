@@ -1,10 +1,20 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+/* ---------------------------------------------
+   Helpers
+--------------------------------------------- */
 function authHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+async function parseJsonSafe(r) {
+  return r.json().catch(() => ({}));
+}
+
+/* ---------------------------------------------
+   Crear Nota de Pedido (SOLO DATOS)
+--------------------------------------------- */
 export async function crearNotaPedido(payload) {
   const r = await fetch(`${API_BASE}/api/notas-pedido`, {
     method: "POST",
@@ -16,11 +26,14 @@ export async function crearNotaPedido(payload) {
     body: JSON.stringify(payload),
   });
 
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.message || "Error creando nota");
-  return data;
+  const data = await parseJsonSafe(r);
+  if (!r.ok) throw new Error(data?.message || "Error creando nota de pedido");
+  return data; // nota creada
 }
 
+/* ---------------------------------------------
+   Listar Notas de Pedido
+--------------------------------------------- */
 export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
   const url = new URL(`${API_BASE}/api/notas-pedido`);
   if (q) url.searchParams.set("q", q);
@@ -35,12 +48,19 @@ export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
     credentials: "include",
   });
 
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.message || "Error listando notas");
-  return data; // { ok, items, total, page, limit }
+  const data = await parseJsonSafe(r);
+  if (!r.ok) throw new Error(data?.message || "Error listando notas de pedido");
+
+  // esperado: { items, total, page, limit }
+  return data;
 }
 
+/* ---------------------------------------------
+   Obtener Nota de Pedido por ID
+--------------------------------------------- */
 export async function obtenerNotaPedido(id) {
+  if (!id) throw new Error("Falta id de la nota");
+
   const r = await fetch(`${API_BASE}/api/notas-pedido/${id}`, {
     headers: {
       ...authHeaders(),
@@ -48,7 +68,31 @@ export async function obtenerNotaPedido(id) {
     credentials: "include",
   });
 
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.message || "Error obteniendo nota");
-  return data.item;
+  const data = await parseJsonSafe(r);
+  if (!r.ok) throw new Error(data?.message || "Error obteniendo nota de pedido");
+
+  return data.item; // nota completa
+}
+
+/* ---------------------------------------------
+   Guardar PDF (BASE64) luego de creada la nota
+--------------------------------------------- */
+export async function guardarPdfNotaPedido(id, pdfBase64) {
+  if (!id) throw new Error("Falta id de la nota");
+  if (!pdfBase64) throw new Error("Falta pdfBase64");
+
+  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}/pdf`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify({ pdfBase64 }),
+  });
+
+  const data = await parseJsonSafe(r);
+  if (!r.ok) throw new Error(data?.message || "Error guardando PDF");
+
+  return data.item; // nota actualizada
 }
