@@ -46,3 +46,27 @@ export function defaultDeskSide() {
     soporteVacio: "placa", // placa | marco | patas
   };
 }
+
+export const DEFAULT_DIMENSIONS_BY_TIPO = {
+  escritorio: {
+    ancho: 1200,        // 120 cm
+    alto: 750,          // 75 cm
+    profundidad: 400,   // 40 cm
+    espesor: 18,
+    falda: 80,
+  },
+  estanteria: {
+    ancho: 800,         // 80 cm
+    alto: 1800,         // 180 cm
+    profundidad: 300,   // 30 cm
+    espesor: 18,
+    estantes: 4,
+  },
+  modulo_zonas: {
+    ancho: 1200,        // 120 cm
+    alto: 2000,         // 200 cm
+    profundidad: 500,   // 50 cm
+    espesor: 18,
+    estantes: 5,
+  },
+};
