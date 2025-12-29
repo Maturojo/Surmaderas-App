@@ -1,6 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { Bounds, ContactShadows, Environment, OrbitControls, useTexture } from "@react-three/drei";
+import {
+  Bounds,
+  ContactShadows,
+  Environment,
+  OrbitControls,
+  useTexture,
+} from "@react-three/drei";
 import * as THREE from "three";
 
 import { MATERIALES_POR_PIEZA_DEFAULT } from "../constants/defaults";
@@ -11,6 +17,7 @@ import { Mueble3D } from "./Mueble3D";
 export function Scene({ m }) {
   const fondoModo = m.fondoModo || "habitacion"; // hdri | habitacion | gris
 
+  // --- materiales ---
   const usedMatKeys = useMemo(() => {
     const set = new Set();
     set.add(m.material);
@@ -87,8 +94,9 @@ export function Scene({ m }) {
     return out;
   }, [usedMatKeys, texAll]);
 
+  // --- fondo fijo (scene.background) ---
   const { scene } = useThree();
-  const roomBg = useTexture(fondoModo === "habitacion" ? "/fondos/habitacion.jpg" : WHITE_PIXEL);
+  const roomBg = useTexture("/fondos/habitacion.jpg");
 
   useEffect(() => {
     if (fondoModo === "gris") {
@@ -100,17 +108,27 @@ export function Scene({ m }) {
 
     if (fondoModo === "habitacion") {
       roomBg.colorSpace = THREE.SRGBColorSpace;
-      scene.background = roomBg;
+      scene.background = roomBg; // <-- CLAVE: fondo fijo 2D
       return () => {
         scene.background = null;
       };
     }
 
+    // hdri (Environment background)
     scene.background = null;
     return () => {
       scene.background = null;
     };
   }, [fondoModo, roomBg, scene]);
+
+  // Orbit target (centrar cámara en el mueble)
+  const altoMm = Math.max(0, Number(m.alto || 1800));
+  const altoM = altoMm * 0.001;
+  const targetY = Math.max(0.6, Math.min(1.2, altoM * 0.5));
+
+  // Si en Mueble3D lo pegás a pared con z = D/2, conviene targetear también a ese centro.
+  const profundidadMm = Math.max(0, Number(m.profundidad || 350));
+  const zTarget = (profundidadMm * 0.001) / 2;
 
   return (
     <>
@@ -127,16 +145,20 @@ export function Scene({ m }) {
       />
       <directionalLight position={[-6, 6, -8]} intensity={0.35} />
 
-      {m.pisoModo === "visible" && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, 0, 0]}>
-          <planeGeometry args={[30, 30]} />
-          <meshStandardMaterial color="#efefef" roughness={0.92} metalness={0.0} />
-        </mesh>
-      )}
+      {/* PISO INVISIBLE SOLO PARA SOMBRA (sensación de apoyo) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <planeGeometry args={[50, 50]} />
+        <shadowMaterial opacity={0.18} />
+      </mesh>
 
-      {m.pisoModo === "cuadros" && <gridHelper args={[30, 60, "#bbb", "#666"]} />}
-
-      <ContactShadows position={[0, 0.001, 0]} scale={18} blur={2.6} opacity={0.55} far={10} />
+      {/* Sombra suave de contacto (muy buen “apoyo” visual) */}
+      <ContactShadows
+        position={[0, 0.001, zTarget]}
+        scale={18}
+        blur={2.6}
+        opacity={0.55}
+        far={10}
+      />
 
       <Bounds fit clip observe margin={1.25}>
         <Mueble3D m={m} materialPropsByKey={materialPropsByKey} />
@@ -144,12 +166,15 @@ export function Scene({ m }) {
 
       <OrbitControls
         makeDefault
-        target={[0, 0.9, 0]}
+        target={[0, targetY, zTarget]}
         enableDamping
         dampingFactor={0.08}
         rotateSpeed={0.6}
         minDistance={2.5}
         maxDistance={40}
+        enablePan={false}     // <-- solo orbitar/zoom, no “mover todo”
+        minPolarAngle={0.15}  // <-- evita meterse bajo el piso
+        maxPolarAngle={Math.PI / 2 - 0.05}
       />
     </>
   );

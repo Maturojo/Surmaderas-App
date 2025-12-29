@@ -374,7 +374,11 @@
   background: #fff;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 
-  max-width: 920px;
+  width: 100%;
+  max-width: none;   /* 🔴 elimina límite */
+  
+
+  border-radius: 0;  /* opcional: más “integrada” al layout */
   margin: 0 auto;
 
   border-left: 1px solid rgba(0, 0, 0, 0.06);
