@@ -51,7 +51,6 @@ export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
   const data = await parseJsonSafe(r);
   if (!r.ok) throw new Error(data?.message || "Error listando notas de pedido");
 
-  // esperado: { items, total, page, limit }
   return data;
 }
 
@@ -62,16 +61,14 @@ export async function obtenerNotaPedido(id) {
   if (!id) throw new Error("Falta id de la nota");
 
   const r = await fetch(`${API_BASE}/api/notas-pedido/${id}`, {
-    headers: {
-      ...authHeaders(),
-    },
+    headers: { ...authHeaders() },
     credentials: "include",
   });
 
   const data = await parseJsonSafe(r);
   if (!r.ok) throw new Error(data?.message || "Error obteniendo nota de pedido");
 
-  return data.item; // nota completa
+  return data.item;
 }
 
 /* ---------------------------------------------
@@ -94,5 +91,33 @@ export async function guardarPdfNotaPedido(id, pdfBase64) {
   const data = await parseJsonSafe(r);
   if (!r.ok) throw new Error(data?.message || "Error guardando PDF");
 
-  return data.item; // nota actualizada
+  return data.item;
+}
+
+/* ---------------------------------------------
+   CAJA: Guardar descuento / precio especial / tipo pago / seña
+   PUT /api/notas-pedido/:id/caja
+   Header: x-caja-key (clave)
+--------------------------------------------- */
+export async function actualizarCajaNota(id, payload, cajaKey) {
+  if (!id) throw new Error("Falta id de la nota");
+
+  const extra = {};
+  if (cajaKey) extra["x-caja-key"] = cajaKey;
+
+  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}/caja`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+      ...extra,
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseJsonSafe(r);
+  if (!r.ok) throw new Error(data?.message || "Error actualizando caja");
+
+  return data.item ?? data;
 }

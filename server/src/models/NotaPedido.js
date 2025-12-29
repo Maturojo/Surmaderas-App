@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const ItemSchema = new mongoose.Schema(
   {
-    // Nuevo: tipo de ítem (corte/marco/calado/mueble/producto/prestamo)
     tipo: {
       type: String,
       enum: ["corte", "marco", "calado", "mueble", "producto", "prestamo"],
@@ -19,12 +18,6 @@ const ItemSchema = new mongoose.Schema(
 
     especial: { type: Boolean, default: false },
 
-    // Nuevo: datos específicos por tipo, incluyendo imagen (base64)
-    // Ej:
-    // data: {
-    //   material, largoMm, ...
-    //   imagen: { dataUrl, name, type, size, updatedAt }
-    // }
     data: { type: mongoose.Schema.Types.Mixed, default: {} },
   },
   { _id: false }
@@ -45,16 +38,53 @@ const NotaPedidoSchema = new mongoose.Schema(
     },
 
     vendedor: { type: String, default: "" },
+
+    // Lo mantenemos por compatibilidad visual, pero CAJA ahora es la fuente de verdad:
     medioPago: { type: String, default: "" },
 
     items: { type: [ItemSchema], default: [] },
 
+    // Mantengo tu estructura original por compatibilidad con notas existentes y PDF actual
     totales: {
       subtotal: { type: Number, default: 0 },
       descuento: { type: Number, default: 0 },
       total: { type: Number, default: 0 },
       adelanto: { type: Number, default: 0 },
       resta: { type: Number, default: 0 },
+    },
+
+    // NUEVO: datos de caja (editables solo por endpoint protegido)
+    caja: {
+      ajuste: {
+        modo: {
+          type: String,
+          enum: ["sin", "descuento_monto", "descuento_pct", "precio_especial"],
+          default: "sin",
+        },
+        descuentoMonto: { type: Number, default: 0, min: 0 },
+        descuentoPct: { type: Number, default: 0, min: 0, max: 100 },
+        precioEspecial: { type: Number, default: 0, min: 0 },
+        motivo: { type: String, default: "" },
+      },
+      pago: {
+        tipo: {
+          type: String,
+          enum: ["", "efectivo", "debito", "credito", "transferencia", "qr", "mixto", "otro"],
+          default: "",
+        },
+        adelanto: { type: Number, default: 0, min: 0 },
+        estado: {
+          type: String,
+          enum: ["pendiente", "parcial", "pagado"],
+          default: "pendiente",
+        },
+        updatedAt: { type: Date, default: null },
+      },
+      totales: {
+        descuentoAplicado: { type: Number, default: 0, min: 0 },
+        totalFinal: { type: Number, default: 0, min: 0 },
+        resta: { type: Number, default: 0 },
+      },
     },
 
     pdfBase64: { type: String, default: "" },

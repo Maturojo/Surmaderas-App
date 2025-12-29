@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
-import { guardarPdfNotaPedido } from "../../../services/notasPedido";
+import { guardarPdfNotaPedido, actualizarCajaNota } from "../../../services/notasPedido";
 
 /* ================= HELPERS ================= */
 
@@ -44,24 +44,6 @@ function fitRect(srcW, srcH, maxW, maxH) {
   return { w: srcW * r, h: srcH * r };
 }
 
-function drawLabelValue(x, y, label, value) {
-  // label
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);        // antes 8
-  doc.setTextColor(130);
-  doc.text(String(label || ""), x, y);
-
-  // value
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);        // antes 10
-  doc.setTextColor(25);
-  doc.text(String(value || "-"), x, y + 3.2);
-
-  // step ultra compacto
-  return y + 8.8;              // antes ~9.8
-}
-
-
 /* ================= LOGO LOADER =================
    Poné el logo acá:
    client/public/logo-sur-maderas.png
@@ -73,7 +55,6 @@ async function fetchAsDataUrlSafe(url) {
   try {
     const res = await fetch(url, { cache: "force-cache" });
     if (!res.ok) return "";
-
     const blob = await res.blob();
     return await new Promise((resolve) => {
       const reader = new FileReader();
@@ -97,23 +78,19 @@ async function getLogoDataUrlSafe() {
 async function buildPdfDocFromNota(nota) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
 
-  const pageW = doc.internal.pageSize.getWidth();   // ~210
-  const pageH = doc.internal.pageSize.getHeight();  // ~297
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
   const margin = 12;
 
-  // ===== MEDIA HOJA A4 =====
   const usableTop = 6;
-  const usableH = pageH / 2 - 6; // media hoja (mitad superior)
+  const usableH = pageH / 2 - 6;
   const usableBottom = usableTop + usableH;
 
-  // Datos del local
   const LOCAL_NOMBRE = "Sur Maderas";
   const LOCAL_DIRECCION = "Luro 5020, Mar del Plata";
   const LOCAL_TELEFONO = "Tel: __________";
 
-  const LOGO_DATA_URL = (await (typeof getLogoDataUrlSafe === "function" ? getLogoDataUrlSafe() : "")) || "";
-
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const LOGO_DATA_URL = (await getLogoDataUrlSafe()) || "";
 
   function safeSplitText(text, maxW) {
     return doc.splitTextToSize(String(text ?? ""), maxW);
@@ -124,24 +101,19 @@ async function buildPdfDocFromNota(nota) {
     return s.slice(0, maxChars - 1) + "…";
   }
 
-function drawLabelValue(x, y, label, value) {
-  // Label (más chico)
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);          // más chico
-  doc.setTextColor(130);
-  doc.text(String(label || ""), x, y);
+  function drawLabelValue(x, y, label, value) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(130);
+    doc.text(String(label || ""), x, y);
 
-  // Value (más cerca del label)
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);          // más chico
-  doc.setTextColor(25);
-  doc.text(String(value || "-"), x, y + 3.9); // antes ~3.2/3.6
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(25);
+    doc.text(String(value || "-"), x, y + 3.9);
 
-  // Paso total por bloque (MUY importante)
-  return y + 7.6;              // antes 8.8 / 9.8 / 12
-}
-
-
+    return y + 7.6;
+  }
 
   async function drawCenterLogoOrText(x, y, w) {
     let curY = y;
@@ -215,8 +187,6 @@ function drawLabelValue(x, y, label, value) {
   let yL = headerTop + 5;
   yL = drawLabelValue(leftBoxX + 5, yL, "Estado", nota.estado || "pendiente");
   yL = drawLabelValue(leftBoxX + 5, yL, "Fecha", fmtDate(nota.fecha));
-  
-
   yL = drawLabelValue(leftBoxX + 5, yL, "Cliente", clipTextLine(nota?.cliente?.nombre || "-", 26));
   yL = drawLabelValue(leftBoxX + 5, yL, "Tel", clipTextLine(nota?.cliente?.telefono || "-", 20));
   yL = drawLabelValue(leftBoxX + 5, yL, "Vendedor", clipTextLine(nota?.vendedor || "-", 16));
@@ -247,20 +217,16 @@ function drawLabelValue(x, y, label, value) {
 
   /* ================= BODY (AUTO-FIT) ================= */
 
-  // zona de items dentro de media hoja
-  const bottomReserved = 22;                 // totales + separación
+  const bottomReserved = 22;
   const itemsTop = headerSepY + 8;
   const itemsMaxBottom = usableBottom - bottomReserved;
 
-  // columnas
-  const rightColW = 64; // foto
+  const rightColW = 64;
   const rightColX = pageW - margin - rightColW;
   const dividerX = rightColX - 6;
   const leftColX = margin;
   const textW = dividerX - leftColX - 10;
 
-  // perfiles de compactación (de “normal” a “ultra compacto”)
-  // Se prueban en orden hasta que entren más items.
   const PROFILES = [
     { titleSize: 11, metaSize: 10, maxTitleLines: 3, rowPadTop: 14, lineH: 5.0, minRowH: 52, imgBoxH: 42 },
     { titleSize: 10, metaSize: 9.5, maxTitleLines: 3, rowPadTop: 13, lineH: 4.6, minRowH: 48, imgBoxH: 40 },
@@ -270,15 +236,14 @@ function drawLabelValue(x, y, label, value) {
   ];
 
   function estimateRowHeightForItem(it, p) {
-    // Estima alto según cantidad de líneas del título
     doc.setFont("helvetica", "bold");
     doc.setFontSize(p.titleSize);
 
     const rawLines = safeSplitText(String(it?.descripcion || ""), textW);
     const titleLines = rawLines.slice(0, p.maxTitleLines);
 
-    const titleH = p.rowPadTop + titleLines.length * p.lineH; // y de texto
-    const metaH = 22; // Cant/Unit/Sub
+    const titleH = p.rowPadTop + titleLines.length * p.lineH;
+    const metaH = 22;
     const textH = titleH + metaH;
 
     const imgH = p.imgBoxH + 12;
@@ -299,7 +264,6 @@ function drawLabelValue(x, y, label, value) {
     return count;
   }
 
-  // Elegimos el perfil que haga entrar la mayor cantidad
   const items = nota.items || [];
   let bestProfile = PROFILES[0];
   let bestCount = -1;
@@ -310,7 +274,7 @@ function drawLabelValue(x, y, label, value) {
       bestCount = c;
       bestProfile = p;
     }
-    if (c === items.length) break; // si ya entran todos, listo
+    if (c === items.length) break;
   }
 
   async function drawItem(it, startY, p) {
@@ -319,7 +283,6 @@ function drawLabelValue(x, y, label, value) {
     const pu = Number(it?.precioUnit || 0);
     const sub = qty * pu;
 
-    // preparar líneas de título ya recortadas
     doc.setFont("helvetica", "bold");
     doc.setFontSize(p.titleSize);
     doc.setTextColor(20);
@@ -331,17 +294,14 @@ function drawLabelValue(x, y, label, value) {
 
     const rowH = estimateRowHeightForItem(it, p);
 
-    // tarjeta
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(235);
     doc.rect(margin, startY, pageW - margin * 2, rowH, "F");
     doc.rect(margin, startY, pageW - margin * 2, rowH, "S");
 
-    // divisor vertical
     doc.setDrawColor(235);
     doc.line(dividerX, startY + 6, dividerX, startY + rowH - 6);
 
-    // texto
     doc.text(titleLines, leftColX + 8, startY + p.rowPadTop);
 
     const yAfterTitle = startY + p.rowPadTop + titleLines.length * p.lineH;
@@ -353,7 +313,6 @@ function drawLabelValue(x, y, label, value) {
     doc.text(`Unit: $${toARS(pu)}`, leftColX + 8, yAfterTitle + 13);
     doc.text(`Sub: $${toARS(sub)}`, leftColX + 8, yAfterTitle + 19);
 
-    // imagen
     const allowImage = ["mueble", "marco", "calado"].includes(it?.tipo);
     const imgs = allowImage ? normalizeImages(it) : [];
     const img = imgs[0];
@@ -389,7 +348,6 @@ function drawLabelValue(x, y, label, value) {
     return startY + rowH + 8;
   }
 
-  // dibujar tantos como entren con el perfil elegido
   let y = itemsTop;
   for (let i = 0; i < items.length; i++) {
     const it = items[i];
@@ -405,27 +363,52 @@ function drawLabelValue(x, y, label, value) {
   doc.setDrawColor(230);
   doc.line(margin, totalsY - 10, pageW - margin, totalsY - 10);
 
+  const totalToShow = nota?.caja?.totales?.totalFinal ?? nota?.totales?.total ?? 0;
+  const adelantoToShow = nota?.caja?.pago?.adelanto ?? nota?.totales?.adelanto ?? 0;
+  const restaToShow = nota?.caja?.totales?.resta ?? nota?.totales?.resta ?? 0;
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(20);
-  doc.text(`Total: $${toARS(nota.totales?.total)}`, pageW - margin, totalsY, { align: "right" });
+  doc.text(`Total: $${toARS(totalToShow)}`, pageW - margin, totalsY, { align: "right" });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(60);
-  doc.text(`Adelanto: $${toARS(nota.totales?.adelanto)}`, pageW - margin, totalsY + 6, { align: "right" });
-  doc.text(`Resta: $${toARS(nota.totales?.resta)}`, pageW - margin, totalsY + 12, { align: "right" });
+  doc.text(`Adelanto: $${toARS(adelantoToShow)}`, pageW - margin, totalsY + 6, { align: "right" });
+  doc.text(`Resta: $${toARS(restaToShow)}`, pageW - margin, totalsY + 12, { align: "right" });
 
   return doc;
 }
 
-
-
-
 /* ================= COMPONENT ================= */
 
-export default function NotaDetalleModal({ open, onClose, detalle, loading, error }) {
+export default function NotaDetalleModal({ open, onClose, detalle, loading, error, onRefresh }) {
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  // Workflow flags
+  const [notaPreviewOk, setNotaPreviewOk] = useState(false); // vista previa de nota (PDF) obligatoria
+  const [cajaPreviewOk, setCajaPreviewOk] = useState(false); // vista previa de caja obligatoria
+
+  // Inline edit lock
+  const [editCajaMode, setEditCajaMode] = useState(false);   // permite editar inline aunque esté “cerrada”
+  const [cajaUnlocked, setCajaUnlocked] = useState(false);
+  const [cajaKey, setCajaKey] = useState(() => sessionStorage.getItem("CAJA_KEY") || "");
+
+  const [savingCaja, setSavingCaja] = useState(false);
+
+  // Caja UI state
+  const [modo, setModo] = useState("sin");
+  const [descuentoMonto, setDescuentoMonto] = useState(0);
+  const [descuentoPct, setDescuentoPct] = useState(0);
+  const [precioEspecial, setPrecioEspecial] = useState(0);
+  const [tipoPago, setTipoPago] = useState("");
+  const [adelanto, setAdelanto] = useState(0);
+
+  const cajaCerradaBackend = Boolean(detalle?.caja?.pago?.updatedAt);
+  const cajaCerradaUI = cajaCerradaBackend && !editCajaMode; // si desbloqueo, se edita inline
+
+  const totalLista = useMemo(() => Number(detalle?.totales?.subtotal || 0), [detalle]);
 
   useEffect(() => {
     return () => {
@@ -435,20 +418,94 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     };
   }, [previewUrl]);
 
+  // Inicializo inputs desde caja/totales existentes al abrir/cambiar nota
+  useEffect(() => {
+    if (!detalle) return;
+
+    const ajuste = detalle?.caja?.ajuste || {};
+    const pago = detalle?.caja?.pago || {};
+
+    setModo(ajuste.modo || "sin");
+    setDescuentoMonto(Number(ajuste.descuentoMonto || detalle?.totales?.descuento || 0));
+    setDescuentoPct(Number(ajuste.descuentoPct || 0));
+    setPrecioEspecial(Number(ajuste.precioEspecial || 0));
+    setTipoPago(pago.tipo || detalle?.medioPago || "");
+    setAdelanto(Number(pago.adelanto || detalle?.totales?.adelanto || 0));
+
+    // Reglas workflow: siempre exigir previews antes de guardar
+    setNotaPreviewOk(false);
+    setCajaPreviewOk(false);
+
+    // si ya estaba cerrada, arrancar en modo no edición
+    setEditCajaMode(false);
+    setCajaUnlocked(false);
+    setSavingCaja(false);
+  }, [detalle]);
+
   if (!open) return null;
+
+  async function pedirClaveCaja() {
+    const r = await Swal.fire({
+      icon: "question",
+      title: "Clave de caja",
+      input: "password",
+      inputPlaceholder: "Ingresá la clave",
+      showCancelButton: true,
+      confirmButtonText: "Desbloquear",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!r.isConfirmed) return false;
+
+    const key = String(r.value || "").trim();
+    if (!key) return false;
+
+    sessionStorage.setItem("CAJA_KEY", key);
+    setCajaKey(key);
+    setCajaUnlocked(true);
+    return true;
+  }
+
+  function calcCajaPreview() {
+    const subtotal = totalLista;
+
+    let totalFinal = subtotal;
+    let desc = 0;
+
+    if (modo === "precio_especial") {
+      totalFinal = Number(precioEspecial || 0);
+      desc = Math.max(0, subtotal - totalFinal);
+    } else if (modo === "descuento_monto") {
+      desc = Math.max(0, Number(descuentoMonto || 0));
+      totalFinal = subtotal - desc;
+    } else if (modo === "descuento_pct") {
+      const pct = Math.max(0, Math.min(100, Number(descuentoPct || 0)));
+      desc = (subtotal * pct) / 100;
+      totalFinal = subtotal - desc;
+    }
+
+    totalFinal = Math.max(0, totalFinal);
+    const ad = Math.max(0, Number(adelanto || 0));
+    const resta = totalFinal - ad;
+
+    return { subtotal, desc, totalFinal, adelanto: ad, resta };
+  }
+
+  /* ===== PDF ACTIONS ===== */
 
   async function onVistaPreviaPdf() {
     if (!detalle) return;
     try {
-      // si ya está guardado, lo mostramos
       if (detalle.pdfBase64) {
         setPreviewUrl(detalle.pdfBase64);
-        return;
+      } else {
+        const doc = await buildPdfDocFromNota(detalle);
+        const url = doc.output("bloburl");
+        setPreviewUrl(url);
       }
 
-      const doc = await buildPdfDocFromNota(detalle);
-      const url = doc.output("bloburl");
-      setPreviewUrl(url);
+      // Marca que el usuario ya vio la nota (requisito para guardar caja)
+      setNotaPreviewOk(true);
     } catch (e) {
       await Swal.fire({
         icon: "error",
@@ -497,6 +554,8 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
         timer: 1500,
         showConfirmButton: false,
       });
+
+      onRefresh?.();
     } catch (e) {
       await Swal.fire({
         icon: "error",
@@ -506,9 +565,134 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     }
   }
 
+  /* ===== CAJA WORKFLOW ===== */
+
+  async function onVistaPreviaCaja() {
+    if (!detalle) return;
+
+    const p = calcCajaPreview();
+
+    await Swal.fire({
+      icon: "info",
+      title: "Vista previa de Caja",
+      html: `
+        <div style="text-align:left">
+          <div><b>Tipo pago:</b> ${tipoPago || "-"}</div>
+          <div><b>Subtotal:</b> $${toARS(p.subtotal)}</div>
+          <div><b>Descuento:</b> $${toARS(p.desc)}</div>
+          <div><b>Total final:</b> $${toARS(p.totalFinal)}</div>
+          <div><b>Adelanto:</b> $${toARS(p.adelanto)}</div>
+          <div><b>Resta:</b> $${toARS(p.resta)}</div>
+        </div>
+      `,
+      confirmButtonText: "OK",
+    });
+
+    setCajaPreviewOk(true);
+  }
+
+  async function onGuardarCaja() {
+    if (!detalle?._id) return;
+
+    // 0) vista previa de la NOTA obligatoria
+    if (!notaPreviewOk) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Falta vista previa de la nota",
+        text: "Primero hacé “Vista previa PDF” para revisar la nota antes de guardar caja.",
+      });
+      return;
+    }
+
+    // 1) vista previa de caja obligatoria
+    if (!cajaPreviewOk) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Falta vista previa de Caja",
+        text: "Primero hacé “Vista previa Caja” antes de guardar.",
+      });
+      return;
+    }
+
+    // 2) clave obligatoria (si está cerrada o si estamos en modo edición)
+    if (!cajaUnlocked) {
+      const ok = await pedirClaveCaja();
+      if (!ok) return;
+    }
+
+    try {
+      setSavingCaja(true);
+
+      await actualizarCajaNota(
+        detalle._id,
+        {
+          ajuste: {
+            modo,
+            descuentoMonto: Number(descuentoMonto || 0),
+            descuentoPct: Number(descuentoPct || 0),
+            precioEspecial: Number(precioEspecial || 0),
+          },
+          pago: {
+            tipo: tipoPago,
+            adelanto: Number(adelanto || 0),
+          },
+        },
+        cajaKey
+      );
+
+      await Swal.fire({
+        icon: "success",
+        title: "Caja guardada",
+        timer: 1100,
+        showConfirmButton: false,
+      });
+
+      // al guardar: volver a bloqueado + reset previews para futuras ediciones
+      setEditCajaMode(false);
+      setCajaUnlocked(false);
+      setCajaPreviewOk(false);
+
+      // recargar detalle
+      onRefresh?.();
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error guardando Caja",
+        text: e?.message || "No se pudo guardar Caja",
+      });
+    } finally {
+      setSavingCaja(false);
+    }
+  }
+
+  async function onEditarCajaInline() {
+    // pedir clave y habilitar inline edit
+    const ok = await pedirClaveCaja();
+    if (!ok) return;
+
+    setEditCajaMode(true);
+    setCajaPreviewOk(false); // obliga a hacer vista previa caja de nuevo
+    await Swal.fire({
+      icon: "info",
+      title: "Edición habilitada",
+      text: "Podés editar caja inline. Luego hacé Vista previa Caja y Guardar Caja.",
+    });
+  }
+
+  async function onCancelarEdicionCajaInline() {
+    // vuelve a bloqueado, sin perder datos del backend (se verán tras refresh)
+    setEditCajaMode(false);
+    setCajaUnlocked(false);
+    setCajaPreviewOk(false);
+
+    // re-cargar para que vuelva exactamente a lo guardado
+    onRefresh?.();
+  }
+
+  /* ===== UI ===== */
+
   return (
     <>
-      {/* MODAL DETALLE */}
       <div className="npl-modalBack" onMouseDown={onClose}>
         <div className="npl-modal npl-modal--nice" onMouseDown={(e) => e.stopPropagation()}>
           <div className="npl-modalHeader npl-modalHeader--nice">
@@ -527,7 +711,7 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
             <div className="npl-muted npl-pad">Sin información</div>
           ) : (
             <div className="npl-body">
-              {/* TOP sin scroll */}
+              {/* TOP */}
               <div className="npl-topCard">
                 <div className="npl-grid">
                   <div className="npl-kv">
@@ -565,9 +749,15 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                     <div className="npl-v">{detalle.vendedor || "-"}</div>
                   </div>
                 </div>
+
+                {/* Nota preview status */}
+                <div className="npl-muted" style={{ marginTop: 8 }}>
+                  Requisito: Vista previa de la nota (PDF) antes de guardar Caja —{" "}
+                  <strong>{notaPreviewOk ? "OK" : "pendiente"}</strong>
+                </div>
               </div>
 
-              {/* Scroll solo items */}
+              {/* Scroll items */}
               <div className="npl-scrollOnly">
                 {(detalle.items || []).map((it, i) => {
                   const imgs = normalizeImages(it);
@@ -594,15 +784,176 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                 })}
               </div>
 
-              {/* Bottom sin scroll */}
+              {/* Bottom */}
               <div className="npl-bottomCard">
-                <div className="npl-bottomRow">
-                  <div className="npl-kv">
-                    <div className="npl-k">Medio de pago</div>
-                    <div className="npl-v">{detalle.medioPago || "-"}</div>
-                  </div>
-                </div>
+                {/* CAJA (inline edit) */}
+                {!cajaCerradaUI ? (
+                  <>
+                    <div className="npl-bottomRow">
+                      <div className="npl-kv">
+                        <div className="npl-k">Caja (editable)</div>
+                        <div className="npl-v">
+                          Requiere: Vista previa Nota (PDF) + Vista previa Caja
+                        </div>
+                      </div>
+                      {cajaCerradaBackend && (
+                        <button className="npl-btnGhost" type="button" onClick={onCancelarEdicionCajaInline}>
+                          Cancelar edición
+                        </button>
+                      )}
+                    </div>
 
+                    <div className="npl-totalsGrid" style={{ marginBottom: 10 }}>
+                      <div className="npl-totalBox">
+                        <div className="npl-k">Ajuste</div>
+                        <div className="npl-v">
+                          <select value={modo} onChange={(e) => setModo(e.target.value)} style={{ width: "100%" }}>
+                            <option value="sin">Sin ajuste</option>
+                            <option value="descuento_monto">Descuento $</option>
+                            <option value="descuento_pct">Descuento %</option>
+                            <option value="precio_especial">Precio especial</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {modo === "descuento_monto" && (
+                        <div className="npl-totalBox">
+                          <div className="npl-k">Descuento $</div>
+                          <div className="npl-v">
+                            <input
+                              type="number"
+                              min="0"
+                              value={descuentoMonto}
+                              onChange={(e) => setDescuentoMonto(e.target.value)}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {modo === "descuento_pct" && (
+                        <div className="npl-totalBox">
+                          <div className="npl-k">Descuento %</div>
+                          <div className="npl-v">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={descuentoPct}
+                              onChange={(e) => setDescuentoPct(e.target.value)}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {modo === "precio_especial" && (
+                        <div className="npl-totalBox">
+                          <div className="npl-k">Total especial</div>
+                          <div className="npl-v">
+                            <input
+                              type="number"
+                              min="0"
+                              value={precioEspecial}
+                              onChange={(e) => setPrecioEspecial(e.target.value)}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="npl-totalBox">
+                        <div className="npl-k">Tipo de pago</div>
+                        <div className="npl-v">
+                          <select value={tipoPago} onChange={(e) => setTipoPago(e.target.value)} style={{ width: "100%" }}>
+                            <option value="">-</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="debito">Débito</option>
+                            <option value="credito">Crédito</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="qr">QR</option>
+                            <option value="mixto">Mixto</option>
+                            <option value="otro">Otro</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="npl-totalBox">
+                        <div className="npl-k">Seña / Adelanto</div>
+                        <div className="npl-v">
+                          <input
+                            type="number"
+                            min="0"
+                            value={adelanto}
+                            onChange={(e) => setAdelanto(e.target.value)}
+                            style={{ width: "100%" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="npl-modalActions npl-modalActions--nice">
+                      <button className="npl-btn" onClick={onVistaPreviaPdf}>
+                        Vista previa PDF
+                      </button>
+
+                      <button className="npl-btn" onClick={onVistaPreviaCaja}>
+                        Vista previa Caja
+                      </button>
+
+                      <button className="npl-btn" onClick={onGuardarCaja} disabled={savingCaja}>
+                        {savingCaja ? "Guardando..." : "Guardar Caja"}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* CAJA cerrada: solo acciones PDF + botón editar inline */}
+                    <div className="npl-bottomRow">
+                      <div className="npl-kv">
+                        <div className="npl-k">Caja</div>
+                        <div className="npl-v">Guardada. Para editar: clave.</div>
+                      </div>
+                      <button className="npl-btnGhost" type="button" onClick={onEditarCajaInline}>
+                        Editar Caja (clave)
+                      </button>
+                    </div>
+
+                    {/* ===== Resumen previo a guardar ===== */}
+                    <div className="npl-cajaResumen">
+                      <div>
+                        <span>Ajuste</span>
+                        <strong>
+                          {modo === "sin" && "Sin ajuste"}
+                          {modo === "descuento_pct" && `Descuento ${descuentoPct}%`}
+                          {modo === "descuento_monto" && `Descuento $${toARS(descuentoMonto)}`}
+                          {modo === "precio_especial" && `Precio especial $${toARS(precioEspecial)}`}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>Pago</span>
+                        <strong>{tipoPago || "-"}</strong>
+                      </div>
+
+                      <div>
+                        <span>Seña</span>
+                        <strong>${toARS(adelanto)}</strong>
+                      </div>
+                    </div>
+
+
+                    <div className="npl-modalActions npl-modalActions--nice">
+                      <button className="npl-btn" onClick={onVistaPreviaPdf}>Vista previa PDF</button>
+                      <button className="npl-btn" onClick={onDescargarPdf}>Descargar PDF</button>
+                      <button className="npl-btn" disabled={Boolean(detalle.pdfBase64)} onClick={onGuardarPdfEnBD}>
+                        Guardar PDF en la BD
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {/* Totales visibles siempre (caja si existe, fallback a totales viejos) */}
                 <div className="npl-totalsGrid">
                   <div className="npl-totalBox">
                     <div className="npl-k">Subtotal</div>
@@ -611,56 +962,55 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
 
                   <div className="npl-totalBox">
                     <div className="npl-k">Descuento</div>
-                    <div className="npl-v">${toARS(detalle.totales?.descuento)}</div>
+                    <div className="npl-v">
+                      ${toARS(detalle.caja?.totales?.descuentoAplicado ?? detalle.totales?.descuento)}
+                    </div>
                   </div>
 
                   <div className="npl-totalBox npl-totalBox--strong">
                     <div className="npl-k">Total</div>
-                    <div className="npl-v">${toARS(detalle.totales?.total)}</div>
+                    <div className="npl-v">
+                      ${toARS(detalle.caja?.totales?.totalFinal ?? detalle.totales?.total)}
+                    </div>
                   </div>
 
                   <div className="npl-totalBox">
                     <div className="npl-k">Adelanto</div>
-                    <div className="npl-v">${toARS(detalle.totales?.adelanto)}</div>
+                    <div className="npl-v">
+                      ${toARS(detalle.caja?.pago?.adelanto ?? detalle.totales?.adelanto)}
+                    </div>
                   </div>
 
                   <div className="npl-totalBox">
                     <div className="npl-k">Resta</div>
-                    <div className="npl-v">${toARS(detalle.totales?.resta)}</div>
+                    <div className="npl-v">
+                      ${toARS(detalle.caja?.totales?.resta ?? detalle.totales?.resta)}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="npl-modalActions npl-modalActions--nice">
-                <button className="npl-btn" onClick={onVistaPreviaPdf}>Vista previa PDF</button>
-                <button className="npl-btn" onClick={onDescargarPdf}>Descargar PDF</button>
-                <button className="npl-btn" disabled={Boolean(detalle.pdfBase64)} onClick={onGuardarPdfEnBD}>
-                  Guardar PDF en la BD
-                </button>
-              </div>
+              {/* Preview PDF modal */}
+              {previewUrl && (
+                <div className="npl-modalBack" onMouseDown={() => setPreviewUrl(null)}>
+                  <div className="npl-modal npl-modal-preview" onMouseDown={(e) => e.stopPropagation()}>
+                    <div className="npl-modalHeader">
+                      <div className="npl-modalTitle">Vista previa PDF</div>
+                      <button className="npl-x" type="button" onClick={() => setPreviewUrl(null)}>×</button>
+                    </div>
+
+                    <iframe
+                      src={previewUrl}
+                      title="Vista previa PDF"
+                      style={{ width: "100%", height: "80vh", border: "none" }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
-
-      {/* MODAL PREVIEW PDF */}
-      {previewUrl && (
-        <div className="npl-modalBack" onMouseDown={() => setPreviewUrl(null)}>
-          <div className="npl-modal npl-modal-preview" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="npl-modalHeader">
-              <div className="npl-modalTitle">Vista previa PDF</div>
-              <button className="npl-x" type="button" onClick={() => setPreviewUrl(null)}>×</button>
-            </div>
-
-            <iframe
-              src={previewUrl}
-              title="Vista previa PDF"
-              style={{ width: "100%", height: "80vh", border: "none" }}
-            />
-          </div>
-        </div>
-      )}
     </>
   );
 }

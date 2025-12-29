@@ -3,12 +3,33 @@ import NotaPedido from "../models/NotaPedido.js";
 
 const router = Router();
 
-// Crear Nota de Pedido
+/* ===============================
+   Middleware: clave de caja
+   Header requerido: x-caja-key
+   (CAJA_KEY en .env)
+================================ */
+function requireCajaKey(req, res, next) {
+  const key = req.headers["x-caja-key"];
+  if (!process.env.CAJA_KEY) {
+    return res.status(500).json({ message: "CAJA_KEY no configurada en el servidor" });
+  }
+  if (!key || key !== process.env.CAJA_KEY) {
+    return res.status(403).json({ message: "Clave de caja incorrecta" });
+  }
+  next();
+}
+
+/* ===============================
+   Crear Nota de Pedido (VENDEDOR)
+   POST /api/notas-pedido
+   - No guarda descuento/adelanto/medio pago desde vendedor.
+   - Calcula subtotal/total “lista”.
+================================ */
 router.post("/", async (req, res) => {
   try {
-    const { numero, fecha, entrega, diasHabiles, cliente, vendedor, medioPago, totales, pdfBase64 } = req.body;
+    const { numero, fecha, entrega, diasHabiles, cliente, vendedor, pdfBase64 } = req.body;
 
-    // ✅ aceptar items en raíz o dentro de entrega
+    // aceptar items en raíz o dentro de entrega (compatibilidad)
     const items = req.body.items ?? req.body?.entrega?.items ?? [];
 
     if (!numero) return res.status(400).json({ message: "Falta numero" });
@@ -17,6 +38,12 @@ router.post("/", async (req, res) => {
     if (!cliente?.nombre) return res.status(400).json({ message: "Falta cliente.nombre" });
     if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ message: "Items vacíos" });
 
+    // total lista
+    const subtotal = items.reduce(
+      (acc, it) => acc + Number(it.cantidad || 0) * Number(it.precioUnit || 0),
+      0
+    );
+
     const creada = await NotaPedido.create({
       numero,
       fecha,
@@ -24,87 +51,43 @@ router.post("/", async (req, res) => {
       diasHabiles: Number(diasHabiles || 0),
       cliente,
       vendedor: vendedor || "",
-      medioPago: medioPago || "",
       items,
-      totales: totales || {},
+
+      // compat: guardo totales lista en tu estructura original
+      totales: {
+        subtotal,
+        descuento: 0,
+        total: subtotal,
+        adelanto: 0,
+        resta: subtotal,
+      },
+
+      // compat: medioPago vacío al crear
+      medioPago: "",
+
+      // caja inicial vacía
+      caja: {
+        ajuste: { modo: "sin", descuentoMonto: 0, descuentoPct: 0, precioEspecial: 0, motivo: "" },
+        pago: { tipo: "", adelanto: 0, estado: "pendiente", updatedAt: null },
+        totales: { descuentoAplicado: 0, totalFinal: subtotal, resta: subtotal },
+      },
+
       pdfBase64: pdfBase64 || "",
     });
 
     return res.status(201).json(creada);
   } catch (err) {
+    if (err?.code === 11000) {
+      return res.status(409).json({ message: "El numero de nota ya existe (duplicado)" });
+    }
     return res.status(500).json({ message: "Error creando nota", error: err.message });
   }
 });
 
-
-// Listar (por si después querés ver historial)
-router.post("/", async (req, res) => {
-  try {
-    const {
-      numero,
-      fecha,
-      entrega,
-      diasHabiles,
-      cliente,
-      vendedor,
-      medioPago,
-      totales,
-      pdfBase64,
-      userId,
-      estado,
-    } = req.body;
-
-    // ✅ aceptar items en raíz o dentro de entrega (compatibilidad)
-    const items = req.body.items ?? req.body?.entrega?.items ?? [];
-
-    if (!numero) return res.status(400).json({ message: "Falta numero" });
-    if (!fecha) return res.status(400).json({ message: "Falta fecha" });
-    if (!entrega) return res.status(400).json({ message: "Falta entrega" });
-
-    if (!cliente?.nombre) return res.status(400).json({ message: "Falta cliente.nombre" });
-    if (!Array.isArray(items) || items.length === 0)
-      return res.status(400).json({ message: "Items vacíos" });
-
-    const creada = await NotaPedido.create({
-      numero,
-      fecha,
-      entrega,
-      diasHabiles: Number(diasHabiles || 0),
-      cliente,
-      vendedor: vendedor || "",
-      medioPago: medioPago || "",
-      items,
-      totales: totales || {},
-      pdfBase64: pdfBase64 || "",
-      userId: userId || null,
-      estado: estado || "pendiente",
-    });
-
-    return res.status(201).json({ ok: true, item: creada });
-  } catch (err) {
-    // Manejo de error de unique (numero duplicado)
-    if (err?.code === 11000) {
-      return res.status(409).json({ message: "El numero de nota ya existe (duplicado)" });
-    }
-
-    return res.status(500).json({
-      message: "Error creando nota",
-      error: err.message,
-    });
-  }
-});
-
-/**
- * Listar notas (historial)
- * GET /api/notas-pedido?q=&page=&limit=&estado=&vendedor=&from=&to=&dateField=fecha|entrega&userId=
- *
- * - q: busca por numero, cliente.nombre, cliente.telefono
- * - estado: pendiente | entregado | cancelado
- * - vendedor: string exacto
- * - from/to: rango de fechas en formato YYYY-MM-DD
- * - dateField: "fecha" (default) o "entrega"
- * - userId: filtra por userId (si lo usás)
- */
+/* ===============================
+   Listar notas (historial)
+   GET /api/notas-pedido?q=&page=&limit=&estado=&vendedor=&from=&to=&dateField=fecha|entrega&userId=
+================================ */
 router.get("/", async (req, res) => {
   try {
     const {
@@ -125,7 +108,6 @@ router.get("/", async (req, res) => {
 
     const filter = {};
 
-    // Search
     const query = String(q || "").trim();
     if (query) {
       filter.$or = [
@@ -135,22 +117,10 @@ router.get("/", async (req, res) => {
       ];
     }
 
-    // Estado
-    if (String(estado).trim()) {
-      filter.estado = String(estado).trim();
-    }
+    if (String(estado).trim()) filter.estado = String(estado).trim();
+    if (String(vendedor).trim()) filter.vendedor = String(vendedor).trim();
+    if (String(userId).trim()) filter.userId = String(userId).trim();
 
-    // Vendedor
-    if (String(vendedor).trim()) {
-      filter.vendedor = String(vendedor).trim();
-    }
-
-    // UserId (si lo necesitás)
-    if (String(userId).trim()) {
-      filter.userId = String(userId).trim();
-    }
-
-    // Rango de fechas (fecha o entrega)
     const df = dateField === "entrega" ? "entrega" : "fecha";
     if (from || to) {
       filter[df] = {};
@@ -158,11 +128,7 @@ router.get("/", async (req, res) => {
       if (to) filter[df].$lte = String(to);
     }
 
-    // Proyección liviana para listado (no traer pdfBase64 en listado)
-    const projection = {
-      pdfBase64: 0,
-      __v: 0,
-    };
+    const projection = { pdfBase64: 0, __v: 0 };
 
     const [items, total] = await Promise.all([
       NotaPedido.find(filter, projection)
@@ -181,18 +147,14 @@ router.get("/", async (req, res) => {
       limit: limitNum,
     });
   } catch (err) {
-    return res.status(500).json({
-      message: "Error listando notas",
-      error: err.message,
-    });
+    return res.status(500).json({ message: "Error listando notas", error: err.message });
   }
 });
 
-/**
- * Obtener una nota por ID (detalle)
- * GET /api/notas-pedido/:id
- * (Acá sí devolvemos pdfBase64 si existe)
- */
+/* ===============================
+   Obtener nota por ID (detalle)
+   GET /api/notas-pedido/:id
+================================ */
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -202,14 +164,97 @@ router.get("/:id", async (req, res) => {
 
     return res.json({ ok: true, item });
   } catch (err) {
-    return res.status(500).json({
-      message: "Error obteniendo nota",
-      error: err.message,
-    });
+    return res.status(500).json({ message: "Error obteniendo nota", error: err.message });
   }
 });
 
-// Guardar/actualizar PDF de una nota
+/* ===============================
+   Actualizar CAJA (protegiendo con clave)
+   PUT /api/notas-pedido/:id/caja
+   Body:
+   {
+     ajuste: { modo, descuentoMonto, descuentoPct, precioEspecial, motivo? },
+     pago: { tipo, adelanto }
+   }
+================================ */
+router.put("/:id/caja", requireCajaKey, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ajuste = {}, pago = {} } = req.body || {};
+
+    const nota = await NotaPedido.findById(id);
+    if (!nota) return res.status(404).json({ message: "Nota no encontrada" });
+
+    const totalLista = Number(nota?.totales?.subtotal || 0);
+
+    const modo = String(ajuste.modo || "sin");
+    const descuentoMonto = Math.max(0, Number(ajuste.descuentoMonto || 0));
+    const descuentoPct = Math.max(0, Math.min(100, Number(ajuste.descuentoPct || 0)));
+    const precioEspecial = Math.max(0, Number(ajuste.precioEspecial || 0));
+
+    let totalFinal = totalLista;
+    let descuentoAplicado = 0;
+
+    if (modo === "precio_especial") {
+      totalFinal = precioEspecial;
+      descuentoAplicado = Math.max(0, totalLista - totalFinal);
+    } else if (modo === "descuento_monto") {
+      descuentoAplicado = descuentoMonto;
+      totalFinal = totalLista - descuentoAplicado;
+    } else if (modo === "descuento_pct") {
+      descuentoAplicado = (totalLista * descuentoPct) / 100;
+      totalFinal = totalLista - descuentoAplicado;
+    }
+
+    totalFinal = Math.max(0, totalFinal);
+
+    const tipo = String(pago.tipo || "");
+    const adelanto = Math.max(0, Number(pago.adelanto || 0));
+    const resta = totalFinal - adelanto;
+
+    const estadoPago = resta <= 0 ? "pagado" : adelanto > 0 ? "parcial" : "pendiente";
+
+    // Guardado en caja (fuente de verdad)
+    nota.caja = {
+      ajuste: {
+        modo,
+        descuentoMonto,
+        descuentoPct,
+        precioEspecial,
+        motivo: String(ajuste.motivo || ""),
+      },
+      pago: {
+        tipo,
+        adelanto,
+        estado: estadoPago,
+        updatedAt: new Date(), // marca como “cerrada”
+      },
+      totales: {
+        descuentoAplicado,
+        totalFinal,
+        resta,
+      },
+    };
+
+    // Compatibilidad con campos viejos (para que tu UI/PDF no se rompa)
+    nota.medioPago = tipo || "";
+    nota.totales.descuento = descuentoAplicado;
+    nota.totales.total = totalFinal;
+    nota.totales.adelanto = adelanto;
+    nota.totales.resta = resta;
+
+    await nota.save();
+
+    return res.json({ ok: true, item: nota });
+  } catch (err) {
+    return res.status(500).json({ message: "Error actualizando caja", error: err.message });
+  }
+});
+
+/* ===============================
+   Guardar/actualizar PDF de una nota
+   PATCH /api/notas-pedido/:id/pdf
+================================ */
 router.patch("/:id/pdf", async (req, res) => {
   try {
     const { id } = req.params;
@@ -219,12 +264,7 @@ router.patch("/:id/pdf", async (req, res) => {
       return res.status(400).json({ message: "Falta pdfBase64" });
     }
 
-    const updated = await NotaPedido.findByIdAndUpdate(
-      id,
-      { pdfBase64 },
-      { new: true }
-    ).lean();
-
+    const updated = await NotaPedido.findByIdAndUpdate(id, { pdfBase64 }, { new: true }).lean();
     if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
 
     return res.json({ ok: true, item: updated });
@@ -232,6 +272,5 @@ router.patch("/:id/pdf", async (req, res) => {
     return res.status(500).json({ message: "Error guardando PDF", error: err.message });
   }
 });
-
 
 export default router;

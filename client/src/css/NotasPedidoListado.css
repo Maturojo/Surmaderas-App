@@ -1,42 +1,516 @@
-.npl-page { padding:20px; display:flex; justify-content:center; }
-.npl-card { width:min(1100px, 100%); background:#fff; border:1px solid #e8e8e8; border-radius:12px; padding:16px; }
-.npl-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.npl-title { margin:0; font-size:20px; }
+/* =========================
+   NotasPedidoListado.css
+   Reemplazo completo (FIX scroll + bottom fijo visible)
+========================= */
 
-.npl-toolbar { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
-.npl-input { flex:1; min-width:260px; padding:10px; border:1px solid #ddd; border-radius:10px; outline:none; }
-
-.npl-btn { padding:10px 12px; border:0; border-radius:10px; background:#1f6feb; color:#fff; cursor:pointer; }
-.npl-btn:disabled { opacity:.6; cursor:not-allowed; }
-.npl-btnGhost { padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; cursor:pointer; }
-
-.npl-tableWrap { overflow:auto; border:1px solid #eee; border-radius:10px; }
-.npl-table { width:100%; border-collapse:collapse; }
-.npl-table th, .npl-table td { padding:10px; border-bottom:1px solid #eee; text-align:left; white-space:nowrap; }
-.npl-actions { text-align:right; }
-.npl-link { background:transparent; border:0; color:#1f6feb; cursor:pointer; padding:6px 8px; }
-.npl-muted { color:#666; padding:10px; }
-
-.npl-error { background:#ffecec; border:1px solid #ffb3b3; padding:10px; border-radius:10px; color:#8a0000; margin:10px 0; }
-.npl-pager { display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:10px; flex-wrap:wrap; }
-
-.npl-modalBack { position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:16px; }
-.npl-modal { width:min(900px, 100%); background:#fff; border-radius:12px; padding:14px; border:1px solid #e8e8e8; }
-.npl-modalHeader { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.npl-modalTitle { font-weight:700; }
-.npl-x { border:0; background:transparent; font-size:22px; cursor:pointer; }
-
-.npl-detailGrid { display:grid; grid-template-columns: 1fr 1fr; gap:8px 12px; margin-bottom:10px; }
-.npl-itemsTitle { font-weight:700; margin:10px 0 6px; }
-.npl-itemsList { border:1px solid #eee; border-radius:10px; padding:10px; max-height:260px; overflow:auto; }
-.npl-itemRow { padding:8px 0; border-bottom:1px dashed #eee; }
-.npl-itemRow:last-child { border-bottom:0; }
-.npl-itemDesc { font-weight:600; }
-.npl-itemMeta { color:#555; margin-top:2px; font-size:13px; }
-
-.npl-totalsBox { margin-top:10px; border:1px solid #eee; border-radius:10px; padding:10px; display:grid; gap:6px; }
-.npl-modalActions { margin-top:12px; display:flex; justify-content:flex-end; }
-
-@media (max-width: 900px) {
-  .npl-detailGrid { grid-template-columns: 1fr; }
+/* Page */
+.npl-page {
+  padding: 18px;
+  background: #f6f7f8;
+  min-height: 100vh;
 }
+
+.npl-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+.npl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.npl-title {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 800;
+  color: #111;
+}
+
+.npl-muted {
+  color: #666;
+  font-size: 13px;
+}
+
+.npl-error {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff2f2;
+  border: 1px solid #ffd8d8;
+  color: #a30000;
+  margin: 10px 0;
+}
+
+.npl-pad {
+  padding: 12px;
+}
+
+/* Search */
+.npl-searchRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0 10px;
+}
+
+.npl-searchRow input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  outline: none;
+  font-size: 14px;
+}
+
+.npl-searchRow input:focus {
+  border-color: rgba(0, 0, 0, 0.24);
+}
+
+/* Table */
+.npl-tableWrap {
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.npl-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.npl-table th,
+.npl-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+  color: #111;
+  white-space: nowrap;
+}
+
+.npl-table th {
+  font-weight: 800;
+  color: #444;
+  background: #fbfbfb;
+}
+
+.npl-table tr:hover td {
+  background: #fafafa;
+}
+
+/* Pager */
+.npl-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* Buttons */
+.npl-btn {
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #111;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.04s ease, opacity 0.15s ease;
+}
+
+.npl-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.npl-btn:active {
+  transform: translateY(1px);
+}
+
+.npl-btnGhost {
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: transparent;
+  color: #111;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.npl-btnLink {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #0a58ca;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Modal Backdrop */
+.npl-modalBack {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 50;
+}
+
+/* ==========================================
+   Modal (FIX ALTURA + LAYOUT ESTABLE)
+   - El modal tiene alto fijo relativo al viewport
+   - El body ocupa el alto disponible
+   - Solo scrollea el bloque central
+========================================== */
+.npl-modal {
+  width: 100%;
+  max-width: 980px;
+  height: calc(100vh - 60px); /* CLAVE: evita que se pase de pantalla */
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.npl-modal--nice {
+  max-width: 980px;
+}
+
+.npl-modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fcfcfc;
+}
+
+.npl-modalHeader--nice {
+  background: #fcfcfc;
+}
+
+.npl-modalTitle {
+  font-weight: 900;
+  color: #111;
+  font-size: 16px;
+}
+
+.npl-modalSub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #666;
+}
+
+.npl-x {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Modal body layout:
+   TOP + scroll items + bottom fixed section */
+/* =========================
+   SCROLL GENERAL (NO por item)
+========================= */
+
+/* 1) El scroll vive en TODO el body del modal */
+.npl-body{
+  overflow-y: auto;   /* ✅ scroll acá */
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+/* 2) La lista de items ya NO scrollea */
+.npl-scrollOnly{
+  overflow: visible;  /* ❌ sin scroll acá */
+}
+
+/* 3) Cada item (Escritorio...) nunca tiene scroll propio */
+.npl-itemRow{
+  overflow: visible;
+  max-height: none;
+  height: auto;
+}
+
+
+/* Top card */
+.npl-topCard {
+  padding: 20px 22px; /* más aire */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+  margin-bottom: 18px;
+  border-radius: 18px;
+}
+
+.npl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.npl-topCard .npl-grid {
+  row-gap: 16px;
+}
+
+.npl-kv .npl-k {
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.npl-topCard .npl-k {
+  font-size: 13px;
+}
+
+.npl-kv .npl-v {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111;
+}
+
+.npl-topCard .npl-v {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* Badge */
+.npl-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f6f6f6;
+  font-size: 13px;
+  font-weight: 900;
+  color: #111;
+  width: fit-content;
+}
+
+.npl-badge--pendiente { background: #f7f7f7; }
+.npl-badge--entregado { background: #eaffea; border-color: #c8f2c8; }
+.npl-badge--cancelado { background: #fff0f0; border-color: #ffd1d1; }
+
+/* ==========================================
+   Scroll only items (MÁS GRANDE / CÓMODO)
+========================================== */
+.npl-scrollOnly {
+  padding: 18px 20px;
+  
+  background: #fff;
+  scrollbar-gutter: stable;
+}
+
+.npl-itemRow {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 12px 12px;
+  background: #fff;
+  margin-bottom: 10px;
+}
+
+.npl-itemRow--nice {
+  border-radius: 16px;
+}
+
+.npl-itemDesc {
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 6px;
+}
+
+.npl-itemMeta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #555;
+  font-size: 13px;
+}
+
+.npl-thumbs {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.npl-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+/* ==========================================
+   BOTTOM CARD (CAJA) - SIEMPRE VISIBLE
+   - sin margin-top/bottom que rompían el grid
+========================================== */
+.npl-bottomCard {
+  padding: 12px 14px;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  max-width: 920px;
+  margin: 0 auto;
+
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+
+  /* look premium y “fijo” */
+  box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.04);
+}
+
+.npl-bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* Inputs compactos */
+.npl-bottomCard input,
+.npl-bottomCard select {
+  padding: 6px 10px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  outline: none;
+  background: #fff;
+}
+
+.npl-bottomCard input:focus,
+.npl-bottomCard select:focus {
+  border-color: rgba(0, 0, 0, 0.24);
+}
+
+/* Grid de cajas (inputs / totales) */
+.npl-totalsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.npl-totalBox {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.npl-totalBox--strong {
+  background: #fafafa;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.npl-totalBox .npl-k {
+  font-size: 11px;
+  color: #777;
+  margin-bottom: 2px;
+}
+
+.npl-totalBox .npl-v {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111;
+}
+
+/* Caja de detalle (ajuste / pago / seña) */
+.npl-cajaResumen {
+  padding: 14px 16px;
+  gap: 14px;
+  margin-top: 14px;
+  margin-bottom: 16px;
+}
+
+/* Texto más legible */
+.npl-cajaResumen span {
+  font-size: 12px;
+}
+
+.npl-cajaResumen strong {
+  font-size: 14px;
+}
+
+/* Botonera: separación + wrap + centrado */
+.npl-modalActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* Barra de botones más chica dentro del bottomCard */
+.npl-bottomCard .npl-modalActions {
+  padding: 10px 14px;
+  margin: 14px auto 10px;
+}
+
+.npl-bottomCard .npl-modalActions .npl-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+/* Preview modal (PDF) */
+.npl-modal-preview {
+  max-width: 1020px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .npl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .npl-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .npl-modalActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .npl-modalActions .npl-btn,
+  .npl-modalActions .npl-btnGhost {
+    width: 100%;
+  }
+
+  .npl-cajaResumen {
+    grid-template-columns: 1fr;
+  }
+}
+

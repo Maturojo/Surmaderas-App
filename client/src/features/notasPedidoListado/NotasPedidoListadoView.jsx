@@ -70,6 +70,7 @@ export default function NotasPedidoListadoView() {
         detalle={detalle}
         loading={detalleLoading}
         error={detalleError}
+        onRefresh={() => openId && abrirDetalle(openId)}
       />
     </div>
   );
