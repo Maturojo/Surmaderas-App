@@ -74,7 +74,7 @@ async function getLogoDataUrlSafe() {
   return _logoCacheDataUrl;
 }
 
-/* ================= PDF BUILDER (DISEÑO NUEVO) ================= */
+/* ================= PDF BUILDER (MEDIA HOJA + PAGINADO) ================= */
 async function buildPdfDocFromNota(nota) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
 
@@ -82,316 +82,258 @@ async function buildPdfDocFromNota(nota) {
   const pageH = doc.internal.pageSize.getHeight();
   const margin = 12;
 
-  const usableTop = 6;
-  const usableH = pageH / 2 - 6;
-  const usableBottom = usableTop + usableH;
-
-  const LOCAL_NOMBRE = "Sur Maderas";
-  const LOCAL_DIRECCION = "Luro 5020, Mar del Plata";
-  const LOCAL_TELEFONO = "Tel: __________";
-
   const LOGO_DATA_URL = (await getLogoDataUrlSafe()) || "";
 
-  function safeSplitText(text, maxW) {
-    return doc.splitTextToSize(String(text ?? ""), maxW);
-  }
-  function clipTextLine(line, maxChars = 90) {
-    const s = String(line ?? "");
-    if (s.length <= maxChars) return s;
-    return s.slice(0, maxChars - 1) + "…";
+  const items = nota?.items || [];
+  const totalItems = items.length;
+
+  // === Config: usamos SIEMPRE la MITAD SUPERIOR ===
+  const topPad = 8;
+  const halfTop = topPad;
+  const halfBottom = pageH / 2 - topPad; // límite inferior de la mitad superior
+  const footerReserve = 18; // espacio para el footer dentro de la mitad superior
+
+  function safeText(s) {
+    return String(s ?? "");
   }
 
   function drawLabelValue(x, y, label, value) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(130);
-    doc.text(String(label || ""), x, y);
+    doc.text(safeText(label), x, y);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(25);
-    doc.text(String(value || "-"), x, y + 3.9);
+    doc.text(safeText(value || "-"), x, y + 4);
 
-    return y + 7.6;
+    return y + 7.5;
   }
 
-  async function drawCenterLogoOrText(x, y, w) {
-    let curY = y;
+  async function drawLogoInBox(x, y, w, h) {
+    if (!LOGO_DATA_URL) return;
+    try {
+      const { w: iw, h: ih } = await loadImageDimensions(LOGO_DATA_URL);
+      const fitted = fitRect(iw, ih, w, h);
+      doc.addImage(
+        LOGO_DATA_URL,
+        getImgFormatFromDataUrl(LOGO_DATA_URL),
+        x + (w - fitted.w) / 2,
+        y + (h - fitted.h) / 2,
+        fitted.w,
+        fitted.h
+      );
+    } catch {
+      // no rompemos si falla el logo
+    }
+  }
 
-    if (LOGO_DATA_URL) {
-      try {
-        const { w: iw, h: ih } = await loadImageDimensions(LOGO_DATA_URL);
-        const maxLogoW = Math.min(42, w);
-        const maxLogoH = 14;
-        const fitted = fitRect(iw, ih, maxLogoW, maxLogoH);
-        const logoX = x + (w - fitted.w) / 2;
-        doc.addImage(
-          LOGO_DATA_URL,
-          getImgFormatFromDataUrl(LOGO_DATA_URL),
-          logoX,
-          curY,
-          fitted.w,
-          fitted.h
-        );
-        curY += fitted.h + 4;
-      } catch {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(20);
-        doc.text(LOCAL_NOMBRE, x + w / 2, curY + 6, { align: "center" });
-        curY += 12;
-      }
-    } else {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.setTextColor(20);
-      doc.text(LOCAL_NOMBRE, x + w / 2, curY + 6, { align: "center" });
-      curY += 12;
+  // ================= HEADER (solo se dibuja dentro de mitad superior) =================
+  async function drawHeader({ compact = false }) {
+    const headerTop = halfTop + 4;
+    const headerH = compact ? 28 : 46;
+
+    const rightBoxW = 62;
+    const rightBoxX = pageW - margin - rightBoxW;
+
+    doc.setDrawColor(220);
+    doc.setLineWidth(0.35);
+
+    // FULL: caja izquierda
+    let leftBoxW = 0;
+    if (!compact) {
+      leftBoxW = 71;
+      doc.setFillColor(250, 250, 250);
+      doc.rect(margin, headerTop, leftBoxW, headerH, "F");
+      doc.rect(margin, headerTop, leftBoxW, headerH, "S");
+
+      let y = headerTop + 5;
+      y = drawLabelValue(margin + 5, y, "Estado", nota?.estado || "pendiente");
+      y = drawLabelValue(margin + 5, y, "Fecha", fmtDate(nota?.fecha));
+      y = drawLabelValue(margin + 5, y, "Cliente", nota?.cliente?.nombre || "-");
+      y = drawLabelValue(margin + 5, y, "Tel", nota?.cliente?.telefono || "-");
+      drawLabelValue(margin + 5, y, "Vendedor", nota?.vendedor || "-");
     }
 
+    // Caja entrega (siempre)
+    doc.setFillColor(250, 250, 250);
+    doc.rect(rightBoxX, headerTop, rightBoxW, headerH, "F");
+    doc.rect(rightBoxX, headerTop, rightBoxW, headerH, "S");
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.setTextColor(80);
-    doc.text(LOCAL_DIRECCION, x + w / 2, curY + 4, { align: "center" });
-    doc.text(LOCAL_TELEFONO, x + w / 2, curY + 9, { align: "center" });
+    doc.setTextColor(110);
+    doc.text(compact ? "Entrega" : "Fecha de entrega", rightBoxX + 6, headerTop + 10);
 
-    return curY + 12;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(compact ? 14 : 16);
+    doc.setTextColor(20);
+    doc.text(fmtDate(nota?.entrega), rightBoxX + 6, headerTop + 22);
+
+    if (!compact && typeof nota?.diasHabiles === "number") {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(80);
+      doc.text(`${nota.diasHabiles} días hábiles`, rightBoxX + 6, headerTop + 32);
+    }
+
+    // Logo: en el espacio del medio
+    const gap = 6;
+    const logoAreaX = margin + (compact ? 0 : leftBoxW + gap);
+    const logoAreaW = rightBoxX - gap - logoAreaX;
+    await drawLogoInBox(logoAreaX, headerTop + 6, logoAreaW, compact ? 12 : 16);
+
+    const sepY = headerTop + headerH + 6;
+    doc.setDrawColor(230);
+    doc.line(margin, sepY, pageW - margin, sepY);
+
+    return sepY + 6;
   }
 
-  /* ================= HEADER ================= */
-
-  const headerTop = usableTop + 4;
-  const headerH = 46;
-
-  const leftBoxX = margin;
-  const leftBoxW = 71;
-
-  const rightBoxW = 62;
-  const rightBoxX = pageW - margin - rightBoxW;
-
-  const centerX = leftBoxX + leftBoxW + 6;
-  const centerW = rightBoxX - 6 - centerX;
-
-  doc.setDrawColor(220);
-  doc.setLineWidth(0.35);
-
-  doc.setFillColor(250, 250, 250);
-  doc.rect(leftBoxX, headerTop, leftBoxW, headerH, "F");
-  doc.rect(leftBoxX, headerTop, leftBoxW, headerH, "S");
-
-  doc.setFillColor(250, 250, 250);
-  doc.rect(rightBoxX, headerTop, rightBoxW, headerH, "F");
-  doc.rect(rightBoxX, headerTop, rightBoxW, headerH, "S");
-
-  // izquierda
-  let yL = headerTop + 5;
-  yL = drawLabelValue(leftBoxX + 5, yL, "Estado", nota.estado || "pendiente");
-  yL = drawLabelValue(leftBoxX + 5, yL, "Fecha", fmtDate(nota.fecha));
-  yL = drawLabelValue(leftBoxX + 5, yL, "Cliente", clipTextLine(nota?.cliente?.nombre || "-", 26));
-  yL = drawLabelValue(leftBoxX + 5, yL, "Tel", clipTextLine(nota?.cliente?.telefono || "-", 20));
-  yL = drawLabelValue(leftBoxX + 5, yL, "Vendedor", clipTextLine(nota?.vendedor || "-", 16));
-
-  // derecha entrega
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(110);
-  doc.text("Fecha de entrega", rightBoxX + 6, headerTop + 12);
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.setTextColor(20);
-  doc.text(fmtDate(nota.entrega), rightBoxX + 6, headerTop + 24);
-
-  if (typeof nota.diasHabiles === "number") {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(80);
-    doc.text(`${nota.diasHabiles} días hábiles`, rightBoxX + 6, headerTop + 32);
-  }
-
-  await drawCenterLogoOrText(centerX, headerTop + 8, centerW);
-
-  const headerSepY = headerTop + headerH + 6;
-  doc.setDrawColor(230);
-  doc.line(margin, headerSepY, pageW - margin, headerSepY);
-
-  /* ================= BODY (AUTO-FIT) ================= */
-
-  const bottomReserved = 22;
-  const itemsTop = headerSepY + 8;
-  const itemsMaxBottom = usableBottom - bottomReserved;
-
+  // ================= ITEM CARD (igual estética, más compacto para que entren más) =================
   const rightColW = 64;
   const rightColX = pageW - margin - rightColW;
   const dividerX = rightColX - 6;
-  const leftColX = margin;
-  const textW = dividerX - leftColX - 10;
 
-  const PROFILES = [
-    { titleSize: 11, metaSize: 10, maxTitleLines: 3, rowPadTop: 14, lineH: 5.0, minRowH: 52, imgBoxH: 42 },
-    { titleSize: 10, metaSize: 9.5, maxTitleLines: 3, rowPadTop: 13, lineH: 4.6, minRowH: 48, imgBoxH: 40 },
-    { titleSize: 10, metaSize: 9,   maxTitleLines: 2, rowPadTop: 13, lineH: 4.6, minRowH: 44, imgBoxH: 36 },
-    { titleSize: 9.5, metaSize: 9,  maxTitleLines: 2, rowPadTop: 12, lineH: 4.2, minRowH: 40, imgBoxH: 34 },
-    { titleSize: 9,   metaSize: 8.5,maxTitleLines: 1, rowPadTop: 12, lineH: 4.0, minRowH: 36, imgBoxH: 30 },
-  ];
+  const gapBetweenItems = 2.5;
+  const rowH = 22; // ↓ para que entren más en media hoja (22–26 recomendado)
 
-  function estimateRowHeightForItem(it, p) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(p.titleSize);
-
-    const rawLines = safeSplitText(String(it?.descripcion || ""), textW);
-    const titleLines = rawLines.slice(0, p.maxTitleLines);
-
-    const titleH = p.rowPadTop + titleLines.length * p.lineH;
-    const metaH = 22;
-    const textH = titleH + metaH;
-
-    const imgH = p.imgBoxH + 12;
-
-    return Math.max(p.minRowH, textH, imgH);
-  }
-
-  function countHowManyFit(items, p) {
-    let y = itemsTop;
-    let count = 0;
-
-    for (const it of items) {
-      const h = estimateRowHeightForItem(it, p);
-      if (y + h > itemsMaxBottom) break;
-      y += h + 8;
-      count++;
-    }
-    return count;
-  }
-
-  const items = nota.items || [];
-  let bestProfile = PROFILES[0];
-  let bestCount = -1;
-
-  for (const p of PROFILES) {
-    const c = countHowManyFit(items, p);
-    if (c > bestCount) {
-      bestCount = c;
-      bestProfile = p;
-    }
-    if (c === items.length) break;
-  }
-
-  async function drawItem(it, startY, p) {
-    const desc = String(it?.descripcion || "");
+  async function drawItemCard(it, y) {
+    const desc = safeText(it?.descripcion);
     const qty = Number(it?.cantidad || 0);
     const pu = Number(it?.precioUnit || 0);
     const sub = qty * pu;
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(p.titleSize);
-    doc.setTextColor(20);
-
-    const raw = safeSplitText(desc, textW);
-    const titleLines = raw
-      .slice(0, p.maxTitleLines)
-      .map((ln) => clipTextLine(ln, 95));
-
-    const rowH = estimateRowHeightForItem(it, p);
-
+    doc.setDrawColor(235);
     doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(235);
-    doc.rect(margin, startY, pageW - margin * 2, rowH, "F");
-    doc.rect(margin, startY, pageW - margin * 2, rowH, "S");
+    doc.rect(margin, y, pageW - margin * 2, rowH, "F");
+    doc.rect(margin, y, pageW - margin * 2, rowH, "S");
 
-    doc.setDrawColor(235);
-    doc.line(dividerX, startY + 6, dividerX, startY + rowH - 6);
+    doc.line(dividerX, y + 2, dividerX, y + rowH - 2);
 
-    doc.text(titleLines, leftColX + 8, startY + p.rowPadTop);
+    const textW = dividerX - margin - 12;
 
-    const yAfterTitle = startY + p.rowPadTop + titleLines.length * p.lineH;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(20);
+    const title = doc.splitTextToSize(desc, textW)[0] || "";
+    doc.text(title.length > 88 ? title.slice(0, 87) + "…" : title, margin + 8, y + 8.6);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(p.metaSize);
-    doc.setTextColor(50);
-    doc.text(`Cant: ${qty}`, leftColX + 8, yAfterTitle + 7);
-    doc.text(`Unit: $${toARS(pu)}`, leftColX + 8, yAfterTitle + 13);
-    doc.text(`Sub: $${toARS(sub)}`, leftColX + 8, yAfterTitle + 19);
+    doc.setFontSize(7.5);
+    doc.setTextColor(60);
+    doc.text(`Cant: ${qty}  Unit: $${toARS(pu)}  Sub: $${toARS(sub)}`, margin + 8, y + 15.4);
+
+    // Imagen derecha
+    const imgBoxH = Math.max(12, rowH - 6);
+    const boxW = rightColW - 12;
+    const boxX = rightColX + 6;
+    const boxY = y + (rowH - imgBoxH) / 2;
+
+    doc.setDrawColor(225);
+    doc.setFillColor(250, 250, 250);
+    doc.rect(boxX, boxY, boxW, imgBoxH, "F");
+    doc.rect(boxX, boxY, boxW, imgBoxH, "S");
 
     const allowImage = ["mueble", "marco", "calado"].includes(it?.tipo);
     const imgs = allowImage ? normalizeImages(it) : [];
     const img = imgs[0];
 
-    const boxW = rightColW - 12;
-    const boxH = p.imgBoxH;
-    const boxX = rightColX + 6;
-    const boxY = startY + (rowH - boxH) / 2;
-
-    doc.setDrawColor(225);
-    doc.setFillColor(250, 250, 250);
-    doc.rect(boxX, boxY, boxW, boxH, "F");
-    doc.rect(boxX, boxY, boxW, boxH, "S");
-
     if (img?.dataUrl) {
       try {
         const { w, h } = await loadImageDimensions(img.dataUrl);
-        const fitted = fitRect(w, h, boxW - 4, boxH - 4);
-        const imgX = boxX + (boxW - fitted.w) / 2;
-        const imgY = boxY + (boxH - fitted.h) / 2;
-        doc.addImage(img.dataUrl, getImgFormatFromDataUrl(img.dataUrl), imgX, imgY, fitted.w, fitted.h);
+        const fitted = fitRect(w, h, boxW - 2, imgBoxH - 2);
+        doc.addImage(
+          img.dataUrl,
+          getImgFormatFromDataUrl(img.dataUrl),
+          boxX + (boxW - fitted.w) / 2,
+          boxY + (imgBoxH - fitted.h) / 2,
+          fitted.w,
+          fitted.h
+        );
       } catch {
-        doc.setFontSize(8);
+        doc.setFontSize(7);
         doc.setTextColor(140);
-        doc.text("Imagen inválida", boxX + 4, boxY + 8);
+        doc.text("Imagen inválida", boxX + 2.5, boxY + 6);
       }
     } else {
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setTextColor(140);
-      doc.text("Sin imagen", boxX + 4, boxY + 8);
+      doc.text("Sin imagen", boxX + 2.5, boxY + 6);
     }
 
-    return startY + rowH + 8;
+    return y + rowH + gapBetweenItems;
   }
 
-  let y = itemsTop;
+  // ================= FOOTER (EN TODAS LAS HOJAS, DENTRO DE MITAD SUPERIOR) =================
+  function drawFooter(pageNum, totalPages) {
+    const y = halfBottom - 10; // dentro de mitad superior
+
+    doc.setDrawColor(230);
+    doc.line(margin, y - 6, pageW - margin, y - 6);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    doc.text(`Ítems: ${totalItems}`, margin, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    doc.text(`Hoja ${pageNum} de ${totalPages}`, pageW / 2, y, { align: "center" });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(20);
+    doc.text(`Total: $${toARS(nota?.totales?.total || 0)}`, pageW - margin, y, { align: "right" });
+  }
+
+  // ================= RENDER: SIEMPRE mitad superior; overflow => nueva hoja =================
+  let pageNo = 1;
+
+  // Dibujo página 1 (header full)
+  let y = await drawHeader({ compact: false });
+
+  // límite de items dentro de la mitad superior (dejando footerReserve)
+  const itemsMaxY = () => (halfBottom - footerReserve);
+
   for (let i = 0; i < items.length; i++) {
-    const it = items[i];
-    const rowH = estimateRowHeightForItem(it, bestProfile);
-    if (y + rowH > itemsMaxBottom) break;
-    y = await drawItem(it, y, bestProfile);
+    if (y + rowH > itemsMaxY()) {
+      // cerrar footer de la página actual (todavía no sabemos totalPages, lo ponemos después en segundo pase)
+      doc.addPage(); // siempre nueva hoja
+      pageNo++;
+      y = await drawHeader({ compact: true }); // desde la 2da hoja, compacto
+    }
+    y = await drawItemCard(items[i], y);
   }
 
-  /* ================= TOTALES ================= */
+  const totalPages = pageNo;
 
-  const totalsY = usableBottom - 18;
+  // Segundo pase: footers en todas las páginas
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+    drawFooter(p, totalPages);
+  }
 
-  doc.setDrawColor(230);
-  doc.line(margin, totalsY - 10, pageW - margin, totalsY - 10);
-
-  const totalToShow = nota?.caja?.totales?.totalFinal ?? nota?.totales?.total ?? 0;
-  const adelantoToShow = nota?.caja?.pago?.adelanto ?? nota?.totales?.adelanto ?? 0;
-  const restaToShow = nota?.caja?.totales?.resta ?? nota?.totales?.resta ?? 0;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.setTextColor(20);
-  doc.text(`Total: $${toARS(totalToShow)}`, pageW - margin, totalsY, { align: "right" });
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(60);
-  doc.text(`Adelanto: $${toARS(adelantoToShow)}`, pageW - margin, totalsY + 6, { align: "right" });
-  doc.text(`Resta: $${toARS(restaToShow)}`, pageW - margin, totalsY + 12, { align: "right" });
-
+  // Nota: mitad inferior queda en blanco por diseño.
   return doc;
 }
+
+
+
+
 
 /* ================= COMPONENT ================= */
 
 export default function NotaDetalleModal({ open, onClose, detalle, loading, error, onRefresh }) {
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  // Workflow flags
-  const [notaPreviewOk, setNotaPreviewOk] = useState(false); // vista previa de nota (PDF) obligatoria
-  const [cajaPreviewOk, setCajaPreviewOk] = useState(false); // vista previa de caja obligatoria
+  // Workflow: vista previa de nota obligatoria antes de guardar caja
+  const [notaPreviewOk, setNotaPreviewOk] = useState(false);
 
   // Inline edit lock
-  const [editCajaMode, setEditCajaMode] = useState(false);   // permite editar inline aunque esté “cerrada”
+  const [editCajaMode, setEditCajaMode] = useState(false);
   const [cajaUnlocked, setCajaUnlocked] = useState(false);
   const [cajaKey, setCajaKey] = useState(() => sessionStorage.getItem("CAJA_KEY") || "");
 
@@ -406,7 +348,7 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
   const [adelanto, setAdelanto] = useState(0);
 
   const cajaCerradaBackend = Boolean(detalle?.caja?.pago?.updatedAt);
-  const cajaCerradaUI = cajaCerradaBackend && !editCajaMode; // si desbloqueo, se edita inline
+  const cajaCerradaUI = cajaCerradaBackend && !editCajaMode;
 
   const totalLista = useMemo(() => Number(detalle?.totales?.subtotal || 0), [detalle]);
 
@@ -432,11 +374,8 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     setTipoPago(pago.tipo || detalle?.medioPago || "");
     setAdelanto(Number(pago.adelanto || detalle?.totales?.adelanto || 0));
 
-    // Reglas workflow: siempre exigir previews antes de guardar
     setNotaPreviewOk(false);
-    setCajaPreviewOk(false);
 
-    // si ya estaba cerrada, arrancar en modo no edición
     setEditCajaMode(false);
     setCajaUnlocked(false);
     setSavingCaja(false);
@@ -503,8 +442,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
         const url = doc.output("bloburl");
         setPreviewUrl(url);
       }
-
-      // Marca que el usuario ya vio la nota (requisito para guardar caja)
       setNotaPreviewOk(true);
     } catch (e) {
       await Swal.fire({
@@ -565,16 +502,27 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     }
   }
 
-  /* ===== CAJA WORKFLOW ===== */
+  /* ===== CAJA WORKFLOW (confirmación automática) ===== */
 
-  async function onVistaPreviaCaja() {
-    if (!detalle) return;
+  async function onGuardarCaja() {
+    if (!detalle?._id) return;
 
+    // vista previa de la NOTA obligatoria
+    if (!notaPreviewOk) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Falta vista previa de la nota",
+        text: "Primero hacé “Vista previa PDF” para revisar la nota antes de guardar caja.",
+      });
+      return;
+    }
+
+    // Confirmación automática con vista previa integrada
     const p = calcCajaPreview();
 
-    await Swal.fire({
-      icon: "info",
-      title: "Vista previa de Caja",
+    const confirm = await Swal.fire({
+      icon: "question",
+      title: "Confirmar Caja",
       html: `
         <div style="text-align:left">
           <div><b>Tipo pago:</b> ${tipoPago || "-"}</div>
@@ -585,36 +533,14 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
           <div><b>Resta:</b> $${toARS(p.resta)}</div>
         </div>
       `,
-      confirmButtonText: "OK",
+      showCancelButton: true,
+      confirmButtonText: "Aceptar y guardar",
+      cancelButtonText: "Cancelar",
     });
 
-    setCajaPreviewOk(true);
-  }
+    if (!confirm.isConfirmed) return;
 
-  async function onGuardarCaja() {
-    if (!detalle?._id) return;
-
-    // 0) vista previa de la NOTA obligatoria
-    if (!notaPreviewOk) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Falta vista previa de la nota",
-        text: "Primero hacé “Vista previa PDF” para revisar la nota antes de guardar caja.",
-      });
-      return;
-    }
-
-    // 1) vista previa de caja obligatoria
-    if (!cajaPreviewOk) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Falta vista previa de Caja",
-        text: "Primero hacé “Vista previa Caja” antes de guardar.",
-      });
-      return;
-    }
-
-    // 2) clave obligatoria (si está cerrada o si estamos en modo edición)
+    // clave obligatoria
     if (!cajaUnlocked) {
       const ok = await pedirClaveCaja();
       if (!ok) return;
@@ -647,12 +573,9 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
         showConfirmButton: false,
       });
 
-      // al guardar: volver a bloqueado + reset previews para futuras ediciones
       setEditCajaMode(false);
       setCajaUnlocked(false);
-      setCajaPreviewOk(false);
 
-      // recargar detalle
       onRefresh?.();
     } catch (e) {
       await Swal.fire({
@@ -666,26 +589,20 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
   }
 
   async function onEditarCajaInline() {
-    // pedir clave y habilitar inline edit
     const ok = await pedirClaveCaja();
     if (!ok) return;
 
     setEditCajaMode(true);
-    setCajaPreviewOk(false); // obliga a hacer vista previa caja de nuevo
     await Swal.fire({
       icon: "info",
       title: "Edición habilitada",
-      text: "Podés editar caja inline. Luego hacé Vista previa Caja y Guardar Caja.",
+      text: "Podés editar caja inline. Luego guardá Caja.",
     });
   }
 
   async function onCancelarEdicionCajaInline() {
-    // vuelve a bloqueado, sin perder datos del backend (se verán tras refresh)
     setEditCajaMode(false);
     setCajaUnlocked(false);
-    setCajaPreviewOk(false);
-
-    // re-cargar para que vuelva exactamente a lo guardado
     onRefresh?.();
   }
 
@@ -750,7 +667,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                   </div>
                 </div>
 
-                {/* Nota preview status */}
                 <div className="npl-muted" style={{ marginTop: 8 }}>
                   Requisito: Vista previa de la nota (PDF) antes de guardar Caja —{" "}
                   <strong>{notaPreviewOk ? "OK" : "pendiente"}</strong>
@@ -786,14 +702,13 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
 
               {/* Bottom */}
               <div className="npl-bottomCard">
-                {/* CAJA (inline edit) */}
                 {!cajaCerradaUI ? (
                   <>
                     <div className="npl-bottomRow">
                       <div className="npl-kv">
                         <div className="npl-k">Caja (editable)</div>
                         <div className="npl-v">
-                          Requiere: Vista previa Nota (PDF) + Vista previa Caja
+                          Requiere: Vista previa Nota (PDF) + Confirmación Caja
                         </div>
                       </div>
                       {cajaCerradaBackend && (
@@ -897,10 +812,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                         Vista previa PDF
                       </button>
 
-                      <button className="npl-btn" onClick={onVistaPreviaCaja}>
-                        Vista previa Caja
-                      </button>
-
                       <button className="npl-btn" onClick={onGuardarCaja} disabled={savingCaja}>
                         {savingCaja ? "Guardando..." : "Guardar Caja"}
                       </button>
@@ -908,7 +819,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                   </>
                 ) : (
                   <>
-                    {/* CAJA cerrada: solo acciones PDF + botón editar inline */}
                     <div className="npl-bottomRow">
                       <div className="npl-kv">
                         <div className="npl-k">Caja</div>
@@ -918,30 +828,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                         Editar Caja (clave)
                       </button>
                     </div>
-
-                    {/* ===== Resumen previo a guardar ===== */}
-                    <div className="npl-cajaResumen">
-                      <div>
-                        <span>Ajuste</span>
-                        <strong>
-                          {modo === "sin" && "Sin ajuste"}
-                          {modo === "descuento_pct" && `Descuento ${descuentoPct}%`}
-                          {modo === "descuento_monto" && `Descuento $${toARS(descuentoMonto)}`}
-                          {modo === "precio_especial" && `Precio especial $${toARS(precioEspecial)}`}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Pago</span>
-                        <strong>{tipoPago || "-"}</strong>
-                      </div>
-
-                      <div>
-                        <span>Seña</span>
-                        <strong>${toARS(adelanto)}</strong>
-                      </div>
-                    </div>
-
 
                     <div className="npl-modalActions npl-modalActions--nice">
                       <button className="npl-btn" onClick={onVistaPreviaPdf}>Vista previa PDF</button>
@@ -953,7 +839,7 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                   </>
                 )}
 
-                {/* Totales visibles siempre (caja si existe, fallback a totales viejos) */}
+                {/* Totales visibles siempre en UI */}
                 <div className="npl-totalsGrid">
                   <div className="npl-totalBox">
                     <div className="npl-k">Subtotal</div>

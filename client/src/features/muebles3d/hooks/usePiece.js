@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import { MATERIALES_POR_PIEZA_DEFAULT, defaultDeskSide, defaultSideBottom, defaultSideTop } from "../constants/defaults";
+import {
+  MATERIALES_POR_PIEZA_DEFAULT,
+  defaultDeskSide,
+  defaultSideBottom,
+  defaultSideTop,
+} from "../constants/defaults";
 import { MM_TO_UNITS, FRONT_GAP_MM, DOOR_THICK_MM, LEG_SIZE_MM } from "../constants/medidas";
 import { clampNum } from "../utils/clamp";
 import { normalizeDimsMm } from "../utils/normalizeDimsMm";
@@ -15,8 +20,12 @@ export function usePieces(m) {
   const usableDepth = Math.max(D - T, T);
   const zUsableCenter = T / 2;
 
-  const legsOn = !!m.patas?.activo;
-  const legH = (legsOn ? Math.max(0, Number(m.patas.altura || 0)) : 0) * s;
+  // ✅ soporte global (nuevo) con compatibilidad
+  const soporte = m.soporte || (m.patas?.activo ? "patas" : "nada");
+
+  // patas (si soporte=patas)
+  const legsOn = soporte === "patas";
+  const legH = (legsOn ? Math.max(0, Number(m.patas?.altura || 0)) : 0) * s;
 
   return useMemo(() => {
     const list = [];
@@ -29,7 +38,6 @@ export function usePieces(m) {
 
       const materialKey = materialesPorPieza[pieza] || m.material;
 
-      // size en unidades -> mm
       const mmX = size[0] / s;
       const mmY = size[1] / s;
       const mmZ = size[2] / s;
@@ -40,13 +48,17 @@ export function usePieces(m) {
         nombre: nombre || pieza,
         pieza,
         ancho_mm: norm.ancho_mm,
-        alto_mm: norm.largo_mm, // columna Alto = LARGO (mayor)
+        alto_mm: norm.largo_mm,
         espesor_mm: norm.espesor_mm,
         material: materialKey,
       });
     };
 
     const zFront = D / 2 + (DOOR_THICK_MM * s) / 2 + FRONT_GAP_MM * s;
+
+    // ✅ Fondo “un poco más alejado” (evita z-fighting y queda más prolijo)
+    const BACK_OFFSET_MM = 8; // ajustá 5–15mm
+    const BACK_OFFSET = BACK_OFFSET_MM * s;
 
     const makeCaja = () => {
       const bodyH = H;
@@ -55,18 +67,16 @@ export function usePieces(m) {
       const xSide = W / 2 - T / 2;
       const innerW = Math.max(W - 2 * T, T);
 
-      // laterales
       addBox([T, bodyH, D], [xSide, yBodyCenter, 0], "cuerpo", "Lateral derecho");
       addBox([T, bodyH, D], [-xSide, yBodyCenter, 0], "cuerpo", "Lateral izquierdo");
 
-      // base/tapa
       const yBase = yBodyCenter - bodyH / 2 + T / 2;
       const yTop = yBodyCenter + bodyH / 2 - T / 2;
       addBox([innerW, T, usableDepth], [0, yBase, zUsableCenter], "cuerpo", "Base");
       addBox([innerW, T, usableDepth], [0, yTop, zUsableCenter], "tapa", "Tapa");
 
-      // fondo
-      const zBack = -D / 2 + T / 2;
+      // ✅ fondo con offset
+      const zBack = -D / 2 + T / 2 - BACK_OFFSET;
       addBox([innerW, bodyH, T], [0, yBodyCenter, zBack], "fondo", "Fondo");
 
       return { innerW, bodyH, yBodyCenter };
@@ -92,7 +102,6 @@ export function usePieces(m) {
       const faldaMm = Math.max(0, Number(m.falda || 0));
       const falda = faldaMm * s;
 
-      // tapa
       const yTop = H / 2 - T / 2;
       addBox([W, T, D], [0, yTop, 0], "tapa", "Tapa escritorio");
 
@@ -117,7 +126,7 @@ export function usePieces(m) {
       const panelX = (xLeftEdge + xRightEdge) / 2;
 
       const EPS = 0.0005;
-      const zBack = -D / 2 + T / 2 - EPS;
+      const zBack = -D / 2 + T / 2 - BACK_OFFSET - EPS;
 
       const traseraModo = m.escritorio?.traseraModo || "falda";
 
@@ -196,7 +205,7 @@ export function usePieces(m) {
         addBox([innerSideW, T, usableDepth], [xCenter, yBottom + T / 2, zUsableCenter], "cuerpo", "Base módulo");
         addBox([innerSideW, T, usableDepth], [xCenter, yTopLocal - T / 2, zUsableCenter], "cuerpo", "Tapa módulo");
 
-        const zBackSide = -D / 2 + T / 2;
+        const zBackSide = -D / 2 + T / 2 - BACK_OFFSET;
         addBox([Math.max(sideW - T, T), supportH, T], [xCenter, ySupportCenter, zBackSide], "fondo", "Fondo módulo");
 
         if (cfg.tipo === "estanteria") {
@@ -313,10 +322,18 @@ export function usePieces(m) {
       }
     }
 
-    /* ====== PATAS GLOBALES ====== */
+    /* ====== SOPORTE GLOBAL ====== */
+    if (soporte === "zocalo") {
+      const zH = 80 * s;
+      const yZ = -H / 2 - zH / 2;
+      addBox([Math.max(W - 2 * T, T), zH, usableDepth], [0, yZ, zUsableCenter], "cuerpo", "Zócalo");
+    }
+
     if (legsOn) {
       const sLeg = Math.min(LEG_SIZE_MM * s, W / 8, D / 6);
-      const yLegCenter = sLeg / 2;
+
+      // ✅ CLAVE: patas abajo, no en el medio
+      const yLegCenter = -H / 2 - legH / 2;
 
       const x1 = -W / 2 + sLeg;
       const x2 = W / 2 - sLeg;
@@ -338,6 +355,7 @@ export function usePieces(m) {
     m.espesor,
     m.estantes,
     m.falda,
+    m.soporte,          // ✅
     m.patas?.activo,
     m.patas?.altura,
     m.zonas,
