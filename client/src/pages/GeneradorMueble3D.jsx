@@ -40,46 +40,75 @@ export default function GeneradorMueble3D() {
     []
   );
 
-  const [m, setM] = useState({
+   const [m, setM] = useState({
+    // material global
     material: "melamina_blanca",
-    fondoModo: "habitacion",
-    // Nota: ahora ya no dependés del piso, pero dejo el campo por compatibilidad
-    pisoModo: "cuadros",
 
+    // escena / fondo
+    fondoModo: "habitacion",
+
+    // ✅ soporte global (nuevo)
+    soporte: "patas", // "patas" | "zocalo" | "nada"
+
+    // ✅ patas (se usa cuando soporte === "patas")
+    patas: { activo: true, altura: 120 },
+
+    // ✅ zócalo (se usa cuando soporte === "zocalo")
+    zocalo: { altura: 80, retiro: 20 }, // retiro 0 = al ras | >0 = metido (vuelo)
+
+    // materiales por pieza
     materialesPorPieza: { ...MATERIALES_POR_PIEZA_DEFAULT },
 
+    // tipo de mueble + medidas
     tipo: "modulo_zonas",
     ancho: 800,
     alto: 1800,
     profundidad: 350,
     espesor: 18,
 
+    // estantería simple
     estantes: 4,
+
+    // escritorio
     falda: 80,
-
-    patas: { activo: true, altura: 120 },
-
     escritorio: {
-      traseraModo: "falda",
+      traseraModo: "falda", // "falda" | "fondo"
       fondoAlturaMm: 0,
       cortePorPatas: true,
+
+      // ✅ nuevos
+      tapaVuelo: 0,    // mm de vuelo de tapa
+      patasRas: false, // si true, patas acompañan el vuelo
+
+      // laterales del escritorio
       ladoIzq: defaultDeskSide(),
-      ladoDer: { ...defaultDeskSide(), tipo: "estanteria", estantes: 2, ancho: 300 },
+      ladoDer: defaultDeskSide(),
     },
 
+    // módulo por zonas
     zonas: {
       altoSuperior: 900,
+
+      // "split" = izq/der, "single" = un bloque
       layoutArriba: "split",
       layoutAbajo: "split",
+
       arriba: {
-        single: defaultSideTop(),
-        izquierda: defaultSideTop(),
-        derecha: { tipo: "estanteria", estantes: 2, puertas: { activo: false, hojas: 2 } },
+        // si layoutArriba = single
+        single: { tipo: "estanteria", estantes: 1, puertas: { activo: false, hojas: 2 }, cajones: [] },
+
+        // si layoutArriba = split
+        izquierda: { tipo: "estanteria", estantes: 1, puertas: { activo: false, hojas: 2 }, cajones: [] },
+        derecha: { tipo: "puertas", estantes: 0, puertas: { activo: true, hojas: 2 }, cajones: [] },
       },
+
       abajo: {
-        single: defaultSideBottom(),
-        izquierda: { ...defaultSideBottom(), tipo: "estanteria", estantes: 2 },
-        derecha: defaultSideBottom(),
+        // si layoutAbajo = single
+        single: { tipo: "cajonera", estantes: 0, puertas: { activo: false, hojas: 2 }, cajones: [{ alto: 160 }, { alto: 160 }, { alto: 220 }] },
+
+        // si layoutAbajo = split
+        izquierda: { tipo: "cajonera", estantes: 0, puertas: { activo: false, hojas: 2 }, cajones: [{ alto: 160 }, { alto: 160 }] },
+        derecha: { tipo: "estanteria", estantes: 2, puertas: { activo: false, hojas: 2 }, cajones: [] },
       },
     },
   });

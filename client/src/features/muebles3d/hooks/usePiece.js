@@ -5,17 +5,22 @@ import {
   defaultSideBottom,
   defaultSideTop,
 } from "../constants/defaults";
-import { MM_TO_UNITS, FRONT_GAP_MM, DOOR_THICK_MM, LEG_SIZE_MM } from "../constants/medidas";
+import {
+  MM_TO_UNITS,
+  FRONT_GAP_MM,
+  DOOR_THICK_MM,
+  LEG_SIZE_MM,
+} from "../constants/medidas";
 import { clampNum } from "../utils/clamp";
 import { normalizeDimsMm } from "../utils/normalizeDimsMm";
 
 export function usePieces(m) {
   const s = MM_TO_UNITS;
 
-  const W = Math.max(1, m.ancho) * s;
-  const H = Math.max(1, m.alto) * s;
-  const D = Math.max(1, m.profundidad) * s;
-  const T = Math.max(1, m.espesor) * s;
+  const W = Math.max(1, Number(m.ancho || 1)) * s;
+  const H = Math.max(1, Number(m.alto || 1)) * s;
+  const D = Math.max(1, Number(m.profundidad || 1)) * s;
+  const T = Math.max(1, Number(m.espesor || 1)) * s;
 
   const usableDepth = Math.max(D - T, T);
   const zUsableCenter = T / 2;
@@ -56,8 +61,8 @@ export function usePieces(m) {
 
     const zFront = D / 2 + (DOOR_THICK_MM * s) / 2 + FRONT_GAP_MM * s;
 
-    // ✅ Fondo “un poco más alejado” (evita z-fighting y queda más prolijo)
-    const BACK_OFFSET_MM = 8; // ajustá 5–15mm
+    // ✅ Fondo un poco más alejado
+    const BACK_OFFSET_MM = 8;
     const BACK_OFFSET = BACK_OFFSET_MM * s;
 
     const makeCaja = () => {
@@ -72,10 +77,10 @@ export function usePieces(m) {
 
       const yBase = yBodyCenter - bodyH / 2 + T / 2;
       const yTop = yBodyCenter + bodyH / 2 - T / 2;
+
       addBox([innerW, T, usableDepth], [0, yBase, zUsableCenter], "cuerpo", "Base");
       addBox([innerW, T, usableDepth], [0, yTop, zUsableCenter], "tapa", "Tapa");
 
-      // ✅ fondo con offset
       const zBack = -D / 2 + T / 2 - BACK_OFFSET;
       addBox([innerW, bodyH, T], [0, yBodyCenter, zBack], "fondo", "Fondo");
 
@@ -102,8 +107,12 @@ export function usePieces(m) {
       const faldaMm = Math.max(0, Number(m.falda || 0));
       const falda = faldaMm * s;
 
+      // ✅ vuelo tapa
+      const vueloMm = clampNum(m.escritorio?.tapaVuelo ?? 0, 0);
+      const vuelo = vueloMm * s;
+
       const yTop = H / 2 - T / 2;
-      addBox([W, T, D], [0, yTop, 0], "tapa", "Tapa escritorio");
+      addBox([W + 2 * vuelo, T, D + 2 * vuelo], [0, yTop, 0], "tapa", "Tapa escritorio");
 
       const left = m.escritorio?.ladoIzq ?? defaultDeskSide();
       const right = m.escritorio?.ladoDer ?? defaultDeskSide();
@@ -305,40 +314,61 @@ export function usePieces(m) {
       const yInf = yInnerBottom;
       const ySup = yInnerBottom + hInf + (hasDivider ? T : 0);
 
-      if (m.zonas.layoutAbajo === "single") {
-        renderCfgBlock(m.zonas.abajo.single, 0, yInf, hInf, innerW, true);
+      if (m.zonas?.layoutAbajo === "single") {
+        renderCfgBlock(m.zonas?.abajo?.single || defaultSideBottom(), 0, yInf, hInf, innerW, true);
       } else {
         addBox([T, hInf, D], [0, yInf + hInf / 2, 0], "cuerpo", "Divisor vertical abajo");
-        renderCfgBlock(m.zonas.abajo.izquierda, -innerW / 4, yInf, hInf, halfW, true);
-        renderCfgBlock(m.zonas.abajo.derecha, innerW / 4, yInf, hInf, halfW, true);
+        renderCfgBlock(m.zonas?.abajo?.izquierda || defaultSideBottom(), -innerW / 4, yInf, hInf, halfW, true);
+        renderCfgBlock(m.zonas?.abajo?.derecha || defaultSideBottom(), innerW / 4, yInf, hInf, halfW, true);
       }
 
-      if (m.zonas.layoutArriba === "single") {
-        renderCfgBlock(m.zonas.arriba.single, 0, ySup, hSup, innerW, false);
+      if (m.zonas?.layoutArriba === "single") {
+        renderCfgBlock(m.zonas?.arriba?.single || defaultSideTop(), 0, ySup, hSup, innerW, false);
       } else {
         addBox([T, hSup, D], [0, ySup + hSup / 2, 0], "cuerpo", "Divisor vertical arriba");
-        renderCfgBlock(m.zonas.arriba.izquierda, -innerW / 4, ySup, hSup, halfW, false);
-        renderCfgBlock(m.zonas.arriba.derecha, innerW / 4, ySup, hSup, halfW, false);
+        renderCfgBlock(m.zonas?.arriba?.izquierda || defaultSideTop(), -innerW / 4, ySup, hSup, halfW, false);
+        renderCfgBlock(m.zonas?.arriba?.derecha || defaultSideTop(), innerW / 4, ySup, hSup, halfW, false);
       }
     }
 
-    /* ====== SOPORTE GLOBAL ====== */
+    /* ====== ZÓCALO GLOBAL (AL RAS REAL) ====== */
     if (soporte === "zocalo") {
-      const zH = 80 * s;
-      const yZ = -H / 2 - zH / 2;
-      addBox([Math.max(W - 2 * T, T), zH, usableDepth], [0, yZ, zUsableCenter], "cuerpo", "Zócalo");
+      const zH = clampNum(m.zocalo?.altura ?? 80, 0) * s;
+      const retiro = clampNum(m.zocalo?.retiro ?? 0, 0) * s;
+
+      if (zH > 0) {
+        // ✅ usa el contorno EXTERIOR del mueble
+        const zW = Math.max(W - 2 * retiro, T);
+        const zD = Math.max(D - 2 * retiro, T);
+
+        const yZ = -H / 2 - zH / 2;
+
+        // ✅ pieza = "zocalo" para excluir del auto-ground
+        addBox([zW, zH, zD], [0, yZ, 0], "zocalo", "Zócalo");
+      }
     }
 
+    /* ====== PATAS GLOBALES ====== */
     if (legsOn) {
       const sLeg = Math.min(LEG_SIZE_MM * s, W / 8, D / 6);
 
-      // ✅ CLAVE: patas abajo, no en el medio
+      // ✅ patas abajo
       const yLegCenter = -H / 2 - legH / 2;
 
-      const x1 = -W / 2 + sLeg;
-      const x2 = W / 2 - sLeg;
-      const z1 = D / 2 - sLeg;
-      const z2 = -D / 2 + sLeg;
+      // ✅ escritorio: patas pueden acompañar vuelo de tapa
+      const isDesk = m.tipo === "escritorio";
+      const patasRas = !!m.escritorio?.patasRas;
+      const vueloMm = clampNum(m.escritorio?.tapaVuelo ?? 0, 0);
+      const vuelo = vueloMm * s;
+
+      const retiroBase = patasRas ? sLeg / 2 : sLeg;
+      const xEdge = W / 2 + (isDesk && patasRas ? vuelo : 0);
+      const zEdge = D / 2 + (isDesk && patasRas ? vuelo : 0);
+
+      const x1 = -xEdge + retiroBase;
+      const x2 = xEdge - retiroBase;
+      const z1 = zEdge - retiroBase;
+      const z2 = -zEdge + retiroBase;
 
       addBox([sLeg, legH, sLeg], [x1, yLegCenter, z1], "patas", "Pata global 1");
       addBox([sLeg, legH, sLeg], [x2, yLegCenter, z1], "patas", "Pata global 2");
@@ -355,11 +385,12 @@ export function usePieces(m) {
     m.espesor,
     m.estantes,
     m.falda,
-    m.soporte,          // ✅
-    m.patas?.activo,
+    m.soporte,
+    m.zocalo?.altura,
+    m.zocalo?.retiro,
     m.patas?.altura,
-    m.zonas,
     m.escritorio,
+    m.zonas,
     m.material,
     m.materialesPorPieza,
   ]);

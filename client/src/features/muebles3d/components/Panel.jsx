@@ -8,11 +8,7 @@ import {
 } from "../constants/defaults";
 import { MATERIALES } from "../constants/materiales";
 import { clampNum } from "../utils/clamp";
-import {
-  downloadDataUrl,
-  exportDespieceCSV,
-  exportDespiecePDFPrint,
-} from "../utils/exportDespiece";
+import { downloadDataUrl, exportDespieceCSV, exportDespiecePDFPrint } from "../utils/exportDespiece";
 
 export function Panel({ m, setM, despiece }) {
   const materialOptions = useMemo(() => {
@@ -22,9 +18,7 @@ export function Panel({ m, setM, despiece }) {
     }));
   }, []);
 
-  const setField = (key, value) => {
-    setM((prev) => ({ ...prev, [key]: value }));
-  };
+  const setField = (key, value) => setM((prev) => ({ ...prev, [key]: value }));
 
   const setNested = (path, value) => {
     const keys = path.split(".");
@@ -41,7 +35,7 @@ export function Panel({ m, setM, despiece }) {
     });
   };
 
-  // ✅ Soporte efectivo (compatibilidad retro con m.patas.activo)
+  // ✅ Soporte efectivo (compatibilidad con m.patas.activo)
   const soporteEffective = m.soporte || (m.patas?.activo ? "patas" : "nada");
 
   const ensureTipoState = (tipo) => {
@@ -50,10 +44,11 @@ export function Panel({ m, setM, despiece }) {
 
       next.materialesPorPieza =
         next.materialesPorPieza || { ...MATERIALES_POR_PIEZA_DEFAULT };
-      next.patas = next.patas || { activo: false, altura: 120 };
 
-      // ✅ nuevo campo soporte (sin romper lo anterior)
+      // soporte global
       next.soporte = next.soporte || (next.patas?.activo ? "patas" : "nada");
+      next.patas = next.patas || { activo: false, altura: 120 };
+      next.zocalo = next.zocalo || { altura: 80, retiro: 20 };
 
       if (tipo === "escritorio") {
         next.escritorio = next.escritorio || {};
@@ -62,6 +57,10 @@ export function Panel({ m, setM, despiece }) {
         next.escritorio.cortePorPatas = next.escritorio.cortePorPatas ?? true;
         next.escritorio.ladoIzq = next.escritorio.ladoIzq || defaultDeskSide();
         next.escritorio.ladoDer = next.escritorio.ladoDer || defaultDeskSide();
+
+        // ✅ nuevos
+        next.escritorio.tapaVuelo = next.escritorio.tapaVuelo ?? 0;
+        next.escritorio.patasRas = next.escritorio.patasRas ?? false;
 
         // escritorio suele ir con patas por defecto
         if (!next.soporte) next.soporte = "patas";
@@ -75,18 +74,13 @@ export function Panel({ m, setM, despiece }) {
 
         next.zonas.arriba = next.zonas.arriba || {};
         next.zonas.arriba.single = next.zonas.arriba.single || defaultSideTop();
-        next.zonas.arriba.izquierda =
-          next.zonas.arriba.izquierda || defaultSideTop();
-        next.zonas.arriba.derecha =
-          next.zonas.arriba.derecha || defaultSideTop();
+        next.zonas.arriba.izquierda = next.zonas.arriba.izquierda || defaultSideTop();
+        next.zonas.arriba.derecha = next.zonas.arriba.derecha || defaultSideTop();
 
         next.zonas.abajo = next.zonas.abajo || {};
-        next.zonas.abajo.single =
-          next.zonas.abajo.single || defaultSideBottom();
-        next.zonas.abajo.izquierda =
-          next.zonas.abajo.izquierda || defaultSideBottom();
-        next.zonas.abajo.derecha =
-          next.zonas.abajo.derecha || defaultSideBottom();
+        next.zonas.abajo.single = next.zonas.abajo.single || defaultSideBottom();
+        next.zonas.abajo.izquierda = next.zonas.abajo.izquierda || defaultSideBottom();
+        next.zonas.abajo.derecha = next.zonas.abajo.derecha || defaultSideBottom();
       }
 
       return next;
@@ -448,6 +442,7 @@ export function Panel({ m, setM, despiece }) {
               <option value="hdri">HDRI</option>
             </select>
           </div>
+
           <div />
         </div>
       </div>
@@ -501,6 +496,7 @@ export function Panel({ m, setM, despiece }) {
       {/* ===== Soporte global ===== */}
       <div style={sectionStyle}>
         <div style={{ fontWeight: 700, marginBottom: 10 }}>Soporte</div>
+
         <div style={row2}>
           <div>
             <label style={labelStyle}>Tipo</label>
@@ -533,6 +529,33 @@ export function Panel({ m, setM, despiece }) {
             />
           </div>
         </div>
+
+        {soporteEffective === "zocalo" && (
+          <div style={{ marginTop: 10, ...row2 }}>
+            <div>
+              <label style={labelStyle}>Altura zócalo (mm)</label>
+              <input
+                style={inputStyle}
+                type="number"
+                value={m.zocalo?.altura ?? 80}
+                onChange={(e) => setNested("zocalo.altura", clampNum(e.target.value, 0))}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Retiro zócalo (mm)</label>
+              <input
+                style={inputStyle}
+                type="number"
+                value={m.zocalo?.retiro ?? 20}
+                onChange={(e) => setNested("zocalo.retiro", clampNum(e.target.value, 0))}
+              />
+              <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>
+                0 = al ras | mayor a 0 = zócalo metido (vuelo)
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ===== Materiales por pieza ===== */}
@@ -641,9 +664,7 @@ export function Panel({ m, setM, despiece }) {
                   style={inputStyle}
                   type="number"
                   value={m.escritorio?.fondoAlturaMm ?? 0}
-                  onChange={(e) =>
-                    setNested("escritorio.fondoAlturaMm", clampNum(e.target.value, 0))
-                  }
+                  onChange={(e) => setNested("escritorio.fondoAlturaMm", clampNum(e.target.value, 0))}
                   disabled={(m.escritorio?.traseraModo || "falda") !== "fondo"}
                 />
               </div>
@@ -653,13 +674,36 @@ export function Panel({ m, setM, despiece }) {
                 <select
                   style={inputStyle}
                   value={m.escritorio?.cortePorPatas === false ? "no" : "si"}
-                  onChange={(e) =>
-                    setNested("escritorio.cortePorPatas", e.target.value === "si")
-                  }
+                  onChange={(e) => setNested("escritorio.cortePorPatas", e.target.value === "si")}
                   disabled={(m.escritorio?.traseraModo || "falda") !== "fondo"}
                 >
                   <option value="si">Sí</option>
                   <option value="no">No</option>
+                </select>
+              </div>
+            </div>
+
+            {/* ✅ NUEVO: vuelo tapa + patas al ras */}
+            <div style={{ marginTop: 10, ...row2 }}>
+              <div>
+                <label style={labelStyle}>Vuelo tapa (mm)</label>
+                <input
+                  style={inputStyle}
+                  type="number"
+                  value={m.escritorio?.tapaVuelo ?? 0}
+                  onChange={(e) => setNested("escritorio.tapaVuelo", clampNum(e.target.value, 0))}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>Patas al ras</label>
+                <select
+                  style={inputStyle}
+                  value={m.escritorio?.patasRas ? "si" : "no"}
+                  onChange={(e) => setNested("escritorio.patasRas", e.target.value === "si")}
+                >
+                  <option value="no">No (con retiro)</option>
+                  <option value="si">Sí (a ras de tapa)</option>
                 </select>
               </div>
             </div>
@@ -672,8 +716,79 @@ export function Panel({ m, setM, despiece }) {
         </>
       )}
 
-      {/* Zonas: dejo tu versión original en tu archivo si querés,
-          porque esto es largo; no cambia por el soporte */}
+      {m.tipo === "modulo_zonas" && (
+        <div style={sectionStyle}>
+          <div style={{ fontWeight: 700, marginBottom: 10 }}>Módulo por zonas</div>
+
+          <div style={row2}>
+            <div>
+              <label style={labelStyle}>Alto superior (mm)</label>
+              <input
+                style={inputStyle}
+                type="number"
+                value={m.zonas?.altoSuperior ?? 900}
+                onChange={(e) => setNested("zonas.altoSuperior", clampNum(e.target.value, 0))}
+              />
+            </div>
+            <div />
+          </div>
+
+          <div style={{ marginTop: 10, ...row2 }}>
+            <div>
+              <label style={labelStyle}>Arriba</label>
+              <select
+                style={inputStyle}
+                value={m.zonas?.layoutArriba || "split"}
+                onChange={(e) => setNested("zonas.layoutArriba", e.target.value)}
+              >
+                <option value="split">Izq / Der</option>
+                <option value="single">Un bloque</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Abajo</label>
+              <select
+                style={inputStyle}
+                value={m.zonas?.layoutAbajo || "split"}
+                onChange={(e) => setNested("zonas.layoutAbajo", e.target.value)}
+              >
+                <option value="split">Izq / Der</option>
+                <option value="single">Un bloque</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Arriba */}
+          <div style={{ marginTop: 12, fontWeight: 700, fontSize: 13 }}>Zona superior</div>
+
+          {m.zonas?.layoutArriba === "single" ? (
+            <div style={{ marginTop: 10 }}>
+              {renderCfgBlock(m.zonas?.arriba?.single, (cfg) => setNested("zonas.arriba.single", cfg), false)}
+            </div>
+          ) : (
+            <div style={{ marginTop: 10, display: "grid", gap: 12 }}>
+              {renderCfgBlock(m.zonas?.arriba?.izquierda, (cfg) => setNested("zonas.arriba.izquierda", cfg), false)}
+              {renderCfgBlock(m.zonas?.arriba?.derecha, (cfg) => setNested("zonas.arriba.derecha", cfg), false)}
+            </div>
+          )}
+
+          {/* Abajo */}
+          <div style={{ marginTop: 12, fontWeight: 700, fontSize: 13 }}>Zona inferior</div>
+
+          {m.zonas?.layoutAbajo === "single" ? (
+            <div style={{ marginTop: 10 }}>
+              {renderCfgBlock(m.zonas?.abajo?.single, (cfg) => setNested("zonas.abajo.single", cfg), true)}
+            </div>
+          ) : (
+            <div style={{ marginTop: 10, display: "grid", gap: 12 }}>
+              {renderCfgBlock(m.zonas?.abajo?.izquierda, (cfg) => setNested("zonas.abajo.izquierda", cfg), true)}
+              {renderCfgBlock(m.zonas?.abajo?.derecha, (cfg) => setNested("zonas.abajo.derecha", cfg), true)}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Export / capturas */}
       <div style={sectionStyle}>
         <div style={{ fontWeight: 700, marginBottom: 10 }}>Producción</div>
@@ -751,11 +866,6 @@ export function Panel({ m, setM, despiece }) {
             Nota: la captura se habilita cuando el Canvas termina de inicializar.
           </div>
         )}
-      </div>
-
-      <div style={{ fontSize: 11, color: "#777", padding: "6px 4px" }}>
-        Consejo: para “despiece” real, exportá CSV y lo usás para producción/corte. El espesor se toma como la dimensión
-        más chica y el largo como la más grande.
       </div>
     </div>
   );

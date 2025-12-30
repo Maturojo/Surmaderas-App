@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
 import { guardarPdfNotaPedido, actualizarCajaNota } from "../../../services/notasPedido";
@@ -300,7 +301,6 @@ async function buildPdfDocFromNota(nota) {
 
   for (let i = 0; i < items.length; i++) {
     if (y + rowH > itemsMaxY()) {
-      // cerrar footer de la página actual (todavía no sabemos totalPages, lo ponemos después en segundo pase)
       doc.addPage(); // siempre nueva hoja
       pageNo++;
       y = await drawHeader({ compact: true }); // desde la 2da hoja, compacto
@@ -320,13 +320,11 @@ async function buildPdfDocFromNota(nota) {
   return doc;
 }
 
-
-
-
-
 /* ================= COMPONENT ================= */
 
 export default function NotaDetalleModal({ open, onClose, detalle, loading, error, onRefresh }) {
+  const navigate = useNavigate();
+
   const [previewUrl, setPreviewUrl] = useState(null);
 
   // Workflow: vista previa de nota obligatoria antes de guardar caja
@@ -577,6 +575,10 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
       setCajaUnlocked(false);
 
       onRefresh?.();
+
+      // ✅ NUEVO: cerrar modal + ir a gestión de caja
+      onClose?.();
+      navigate(`/caja/nota/${detalle._id}`);
     } catch (e) {
       await Swal.fire({
         icon: "error",

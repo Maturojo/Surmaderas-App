@@ -28,8 +28,10 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      // 🏠 Dashboard
       { index: true, element: <Dashboard /> },
 
+      // 📅 Calendario
       { path: "calendario", element: <Calendar /> },
 
       // 🧾 Notas de Pedido
