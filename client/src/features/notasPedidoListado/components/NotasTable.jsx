@@ -11,7 +11,7 @@ function fmtDate(yyyyMMdd) {
   return String(yyyyMMdd).split("-").reverse().join("/");
 }
 
-export default function NotasTable({ items, loading, onVerDetalle, onRefreshList }) {
+export default function NotasTable({ items, loading, onVerDetalle, onRefreshList, onDeleted }) {
   async function onEliminar(id) {
     const r = await Swal.fire({
       icon: "warning",
@@ -26,11 +26,11 @@ export default function NotasTable({ items, loading, onVerDetalle, onRefreshList
 
     try {
       await eliminarNotaPedido(id);
-
+      onDeleted?.(id); // ✅ ocultar instantáneo
       await Swal.fire({
         icon: "success",
         title: "Nota eliminada",
-        timer: 900,
+        timer: 650,
         showConfirmButton: false,
       });
 

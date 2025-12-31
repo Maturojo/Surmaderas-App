@@ -1,5 +1,6 @@
 import "../../css/NotasPedidoListado.css";
 
+import { useEffect, useMemo, useState } from "react";
 import { useNotasPedidoListado } from "./hooks/useNotasPedidoListado";
 import SearchBar from "./components/SearchBar";
 import NotasTable from "./components/NotasTable";
@@ -26,9 +27,26 @@ export default function NotasPedidoListadoView() {
     cerrarDetalle,
   } = useNotasPedidoListado({ initialLimit: 25 });
 
-  // ✅ refresca listado manteniendo búsqueda y página
-  function refrescarListado() {
-    buscar();
+  // ✅ IDs eliminados para ocultar instantáneo sin refetch
+  const [deletedIds, setDeletedIds] = useState(() => new Set());
+
+  // ✅ opcional: cuando cambia búsqueda o página, limpiamos el set
+  useEffect(() => {
+    setDeletedIds(new Set());
+  }, [q, page]);
+
+  const visibleItems = useMemo(() => {
+    const items = Array.isArray(data?.items) ? data.items : [];
+    if (!deletedIds.size) return items;
+    return items.filter((n) => !deletedIds.has(n._id));
+  }, [data?.items, deletedIds]);
+
+  function marcarEliminada(id) {
+    setDeletedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
   }
 
   return (
@@ -43,10 +61,10 @@ export default function NotasPedidoListadoView() {
         {error && <div className="npl-error">{error}</div>}
 
         <NotasTable
-          items={data.items}
+          items={visibleItems}
           loading={loading}
           onVerDetalle={abrirDetalle}
-          onRefreshList={refrescarListado}
+          onDeleted={marcarEliminada} // ✅ ahora sí desaparece al instante
         />
 
         <div className="npl-pager">
