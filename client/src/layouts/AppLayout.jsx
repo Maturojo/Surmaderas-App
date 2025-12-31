@@ -1,11 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
 import { logout } from "../services/auth";
-import Productos from "../pages/Productos";
-
-
-
-
-
 
 export default function AppLayout() {
   return (
@@ -16,11 +10,22 @@ export default function AppLayout() {
         <nav className="mt-6 flex flex-col gap-2">
           <Link className="hover:underline" to="/">Dashboard</Link>
           <Link className="hover:underline" to="/calendario">Calendario</Link>
+
           <Link className="hover:underline" to="/notas-pedido">Notas de pedido</Link>
           <Link className="hover:underline" to="/notas-pedido/listado">Listado de notas</Link>
-          <Link className="hover:underline" to="/productos">Productos</Link>
-          <Link to="/generador-3d">Generador 3D</Link>
 
+          {/* ✅ NUEVA: Notas guardadas (Pagadas / Señadas) */}
+          <Link className="hover:underline" to="/notas-pedido/guardadas">
+            Notas guardadas
+          </Link>
+
+          {/* ✅ NUEVA: Generador de presupuestos */}
+          <Link className="hover:underline" to="/presupuestos">
+            Presupuestos
+          </Link>
+
+          <Link className="hover:underline" to="/productos">Productos</Link>
+          <Link className="hover:underline" to="/generador-3d">Generador 3D</Link>
         </nav>
 
         <button

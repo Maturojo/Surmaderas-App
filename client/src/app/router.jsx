@@ -9,6 +9,10 @@ import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 
+// ✅ NUEVAS PÁGINAS
+import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
+import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
+
 import { isAuthenticated } from "../services/auth";
 
 function ProtectedRoute({ children }) {
@@ -37,6 +41,12 @@ export const router = createBrowserRouter([
       // 🧾 Notas de Pedido
       { path: "notas-pedido", element: <NotasPedido /> },
       { path: "notas-pedido/listado", element: <NotasPedidoListado /> },
+
+      // ✅ NUEVA: Notas guardadas (Pagadas / Señadas)
+      { path: "notas-pedido/guardadas", element: <NotasPedidoGuardadas /> },
+
+      // ✅ NUEVA: Generador de presupuestos
+      { path: "presupuestos", element: <GeneradorPresupuestos /> },
 
       // 📦 Productos
       { path: "productos", element: <Productos /> },
