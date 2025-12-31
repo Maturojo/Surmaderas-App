@@ -99,25 +99,26 @@ export async function guardarPdfNotaPedido(id, pdfBase64) {
    PUT /api/notas-pedido/:id/caja
    Header: x-caja-key (clave)
 --------------------------------------------- */
-export async function actualizarCajaNota(id, payload, cajaKey) {
-  if (!id) throw new Error("Falta id de la nota");
-
-  const extra = {};
-  if (cajaKey) extra["x-caja-key"] = cajaKey;
-
+export async function actualizarCajaNota(id, payload) {
   const r = await fetch(`${API_BASE}/api/notas-pedido/${id}/caja`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...authHeaders(),
-      ...extra,
     },
     credentials: "include",
     body: JSON.stringify(payload),
   });
 
-  const data = await parseJsonSafe(r);
-  if (!r.ok) throw new Error(data?.message || "Error actualizando caja");
+  const data = await r.json().catch(() => ({}));
 
-  return data.item ?? data;
+  if (!r.ok) {
+    // 🔥 Mostramos el error real del backend
+    const msg = data?.message || "Error actualizando caja";
+    const extra = data?.error ? `\n${data.error}` : "";
+    throw new Error(msg + extra);
+  }
+
+  return data;
 }
+

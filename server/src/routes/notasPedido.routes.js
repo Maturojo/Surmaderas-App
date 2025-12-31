@@ -177,13 +177,17 @@ router.get("/:id", async (req, res) => {
      pago: { tipo, adelanto }
    }
 ================================ */
-router.put("/:id/caja", requireCajaKey, async (req, res) => {
+  router.put("/:id/caja", async (req, res) => {
   try {
     const { id } = req.params;
     const { ajuste = {}, pago = {} } = req.body || {};
 
     const nota = await NotaPedido.findById(id);
     if (!nota) return res.status(404).json({ message: "Nota no encontrada" });
+
+    // ✅ asegurá subdocumentos
+    if (!nota.totales) nota.totales = {};
+    if (!nota.caja) nota.caja = {};
 
     const totalLista = Number(nota?.totales?.subtotal || 0);
 
@@ -208,7 +212,30 @@ router.put("/:id/caja", requireCajaKey, async (req, res) => {
 
     totalFinal = Math.max(0, totalFinal);
 
-    const tipo = String(pago.tipo || "");
+    const rawTipo = String(pago.tipo || "").trim();
+
+    // normaliza a valores esperados por enum (minúsculas)
+    const tipo = rawTipo
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, ""); // saca acentos
+
+    // opcional: mapeos por si viene con otras palabras
+    const tipoMap = {
+      "transf": "transferencia",
+      "transferencia": "transferencia",
+      "efectivo": "efectivo",
+      "debito": "debito",
+      "débito": "debito",
+      "credito": "credito",
+      "crédito": "credito",
+      "qr": "qr",
+      "mixto": "mixto",
+      "otro": "otro",
+    };
+
+    const tipoFinal = tipoMap[tipo] || tipo; // fallback
+
     const adelanto = Math.max(0, Number(pago.adelanto || 0));
     const resta = totalFinal - adelanto;
 
@@ -224,10 +251,10 @@ router.put("/:id/caja", requireCajaKey, async (req, res) => {
         motivo: String(ajuste.motivo || ""),
       },
       pago: {
-        tipo,
+        tipoFinal,
         adelanto,
         estado: estadoPago,
-        updatedAt: new Date(), // marca como “cerrada”
+        updatedAt: new Date(),
       },
       totales: {
         descuentoAplicado,
@@ -236,7 +263,7 @@ router.put("/:id/caja", requireCajaKey, async (req, res) => {
       },
     };
 
-    // Compatibilidad con campos viejos (para que tu UI/PDF no se rompa)
+    // Compatibilidad con campos viejos
     nota.medioPago = tipo || "";
     nota.totales.descuento = descuentoAplicado;
     nota.totales.total = totalFinal;
@@ -247,9 +274,16 @@ router.put("/:id/caja", requireCajaKey, async (req, res) => {
 
     return res.json({ ok: true, item: nota });
   } catch (err) {
-    return res.status(500).json({ message: "Error actualizando caja", error: err.message });
+    // ✅ devolvé más info para debug
+    return res.status(500).json({
+      message: "Error actualizando caja",
+      error: err.message,
+      stack: err.stack, // si no querés exponer stack, sacalo luego
+    });
   }
 });
+
+
 
 /* ===============================
    Guardar/actualizar PDF de una nota

@@ -192,13 +192,13 @@ async function buildPdfDocFromNota(nota) {
     return sepY + 6;
   }
 
-  // ================= ITEM CARD (igual estética, más compacto para que entren más) =================
+  // ================= ITEM CARD (compacto) =================
   const rightColW = 64;
   const rightColX = pageW - margin - rightColW;
   const dividerX = rightColX - 6;
 
   const gapBetweenItems = 2.5;
-  const rowH = 22; // ↓ para que entren más en media hoja (22–26 recomendado)
+  const rowH = 22;
 
   async function drawItemCard(it, y) {
     const desc = safeText(it?.descripcion);
@@ -267,9 +267,9 @@ async function buildPdfDocFromNota(nota) {
     return y + rowH + gapBetweenItems;
   }
 
-  // ================= FOOTER (EN TODAS LAS HOJAS, DENTRO DE MITAD SUPERIOR) =================
+  // ================= FOOTER =================
   function drawFooter(pageNum, totalPages) {
-    const y = halfBottom - 10; // dentro de mitad superior
+    const y = halfBottom - 10;
 
     doc.setDrawColor(230);
     doc.line(margin, y - 6, pageW - margin, y - 6);
@@ -290,33 +290,28 @@ async function buildPdfDocFromNota(nota) {
     doc.text(`Total: $${toARS(nota?.totales?.total || 0)}`, pageW - margin, y, { align: "right" });
   }
 
-  // ================= RENDER: SIEMPRE mitad superior; overflow => nueva hoja =================
+  // ================= RENDER =================
   let pageNo = 1;
 
-  // Dibujo página 1 (header full)
   let y = await drawHeader({ compact: false });
-
-  // límite de items dentro de la mitad superior (dejando footerReserve)
   const itemsMaxY = () => (halfBottom - footerReserve);
 
   for (let i = 0; i < items.length; i++) {
     if (y + rowH > itemsMaxY()) {
-      doc.addPage(); // siempre nueva hoja
+      doc.addPage();
       pageNo++;
-      y = await drawHeader({ compact: true }); // desde la 2da hoja, compacto
+      y = await drawHeader({ compact: true });
     }
     y = await drawItemCard(items[i], y);
   }
 
   const totalPages = pageNo;
 
-  // Segundo pase: footers en todas las páginas
   for (let p = 1; p <= totalPages; p++) {
     doc.setPage(p);
     drawFooter(p, totalPages);
   }
 
-  // Nota: mitad inferior queda en blanco por diseño.
   return doc;
 }
 
@@ -330,11 +325,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
   // Workflow: vista previa de nota obligatoria antes de guardar caja
   const [notaPreviewOk, setNotaPreviewOk] = useState(false);
 
-  // Inline edit lock
-  const [editCajaMode, setEditCajaMode] = useState(false);
-  const [cajaUnlocked, setCajaUnlocked] = useState(false);
-  const [cajaKey, setCajaKey] = useState(() => sessionStorage.getItem("CAJA_KEY") || "");
-
   const [savingCaja, setSavingCaja] = useState(false);
 
   // Caja UI state
@@ -345,8 +335,7 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
   const [tipoPago, setTipoPago] = useState("");
   const [adelanto, setAdelanto] = useState(0);
 
-  const cajaCerradaBackend = Boolean(detalle?.caja?.pago?.updatedAt);
-  const cajaCerradaUI = cajaCerradaBackend && !editCajaMode;
+  const cajaCerrada = Boolean(detalle?.caja?.pago?.updatedAt);
 
   const totalLista = useMemo(() => Number(detalle?.totales?.subtotal || 0), [detalle]);
 
@@ -373,35 +362,10 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     setAdelanto(Number(pago.adelanto || detalle?.totales?.adelanto || 0));
 
     setNotaPreviewOk(false);
-
-    setEditCajaMode(false);
-    setCajaUnlocked(false);
     setSavingCaja(false);
   }, [detalle]);
 
   if (!open) return null;
-
-  async function pedirClaveCaja() {
-    const r = await Swal.fire({
-      icon: "question",
-      title: "Clave de caja",
-      input: "password",
-      inputPlaceholder: "Ingresá la clave",
-      showCancelButton: true,
-      confirmButtonText: "Desbloquear",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!r.isConfirmed) return false;
-
-    const key = String(r.value || "").trim();
-    if (!key) return false;
-
-    sessionStorage.setItem("CAJA_KEY", key);
-    setCajaKey(key);
-    setCajaUnlocked(true);
-    return true;
-  }
 
   function calcCajaPreview() {
     const subtotal = totalLista;
@@ -500,10 +464,19 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     }
   }
 
-  /* ===== CAJA WORKFLOW (confirmación automática) ===== */
+  /* ===== CAJA WORKFLOW (sin clave) ===== */
 
   async function onGuardarCaja() {
     if (!detalle?._id) return;
+
+    if (cajaCerrada) {
+      await Swal.fire({
+        icon: "info",
+        title: "Caja ya guardada",
+        text: "Esta caja ya fue guardada. (Edición sin clave deshabilitada.)",
+      });
+      return;
+    }
 
     // vista previa de la NOTA obligatoria
     if (!notaPreviewOk) {
@@ -515,7 +488,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
       return;
     }
 
-    // Confirmación automática con vista previa integrada
     const p = calcCajaPreview();
 
     const confirm = await Swal.fire({
@@ -538,31 +510,21 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
 
     if (!confirm.isConfirmed) return;
 
-    // clave obligatoria
-    if (!cajaUnlocked) {
-      const ok = await pedirClaveCaja();
-      if (!ok) return;
-    }
-
     try {
       setSavingCaja(true);
 
-      await actualizarCajaNota(
-        detalle._id,
-        {
-          ajuste: {
-            modo,
-            descuentoMonto: Number(descuentoMonto || 0),
-            descuentoPct: Number(descuentoPct || 0),
-            precioEspecial: Number(precioEspecial || 0),
-          },
-          pago: {
-            tipo: tipoPago,
-            adelanto: Number(adelanto || 0),
-          },
+      await actualizarCajaNota(detalle._id, {
+        ajuste: {
+          modo,
+          descuentoMonto: Number(descuentoMonto || 0),
+          descuentoPct: Number(descuentoPct || 0),
+          precioEspecial: Number(precioEspecial || 0),
         },
-        cajaKey
-      );
+        pago: {
+          tipo: tipoPago,
+          adelanto: Number(adelanto || 0),
+        },
+      });
 
       await Swal.fire({
         icon: "success",
@@ -571,14 +533,10 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
         showConfirmButton: false,
       });
 
-      setEditCajaMode(false);
-      setCajaUnlocked(false);
-
       onRefresh?.();
-
-      // ✅ NUEVO: cerrar modal + ir a gestión de caja
       onClose?.();
-      navigate(`/caja/nota/${detalle._id}`);
+      navigate("/notas-pedido/listado");
+
     } catch (e) {
       await Swal.fire({
         icon: "error",
@@ -588,24 +546,6 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
     } finally {
       setSavingCaja(false);
     }
-  }
-
-  async function onEditarCajaInline() {
-    const ok = await pedirClaveCaja();
-    if (!ok) return;
-
-    setEditCajaMode(true);
-    await Swal.fire({
-      icon: "info",
-      title: "Edición habilitada",
-      text: "Podés editar caja inline. Luego guardá Caja.",
-    });
-  }
-
-  async function onCancelarEdicionCajaInline() {
-    setEditCajaMode(false);
-    setCajaUnlocked(false);
-    onRefresh?.();
   }
 
   /* ===== UI ===== */
@@ -619,7 +559,9 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
               <div className="npl-modalTitle">Detalle de Nota de Pedido</div>
               {!!detalle?.numero && <div className="npl-modalSub">#{detalle.numero}</div>}
             </div>
-            <button className="npl-x" type="button" onClick={onClose}>×</button>
+            <button className="npl-x" type="button" onClick={onClose}>
+              ×
+            </button>
           </div>
 
           {loading ? (
@@ -685,9 +627,15 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                     <div className="npl-itemRow npl-itemRow--nice" key={i}>
                       <div className="npl-itemDesc">{it.descripcion}</div>
                       <div className="npl-itemMeta">
-                        <span>Cant: <strong>{it.cantidad}</strong></span>
-                        <span>Unit: <strong>${toARS(it.precioUnit)}</strong></span>
-                        <span>Sub: <strong>${toARS(sub)}</strong></span>
+                        <span>
+                          Cant: <strong>{it.cantidad}</strong>
+                        </span>
+                        <span>
+                          Unit: <strong>${toARS(it.precioUnit)}</strong>
+                        </span>
+                        <span>
+                          Sub: <strong>${toARS(sub)}</strong>
+                        </span>
                       </div>
 
                       {imgs.length > 0 && (
@@ -704,20 +652,13 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
 
               {/* Bottom */}
               <div className="npl-bottomCard">
-                {!cajaCerradaUI ? (
+                {!cajaCerrada ? (
                   <>
                     <div className="npl-bottomRow">
                       <div className="npl-kv">
                         <div className="npl-k">Caja (editable)</div>
-                        <div className="npl-v">
-                          Requiere: Vista previa Nota (PDF) + Confirmación Caja
-                        </div>
+                        <div className="npl-v">Requiere: Vista previa Nota (PDF) + Confirmación Caja</div>
                       </div>
-                      {cajaCerradaBackend && (
-                        <button className="npl-btnGhost" type="button" onClick={onCancelarEdicionCajaInline}>
-                          Cancelar edición
-                        </button>
-                      )}
                     </div>
 
                     <div className="npl-totalsGrid" style={{ marginBottom: 10 }}>
@@ -815,7 +756,7 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                       </button>
 
                       <button className="npl-btn" onClick={onGuardarCaja} disabled={savingCaja}>
-                        {savingCaja ? "Guardando..." : "Guardar Caja"}
+                        {savingCaja ? "Guardando..." : "Guardar caja"}
                       </button>
                     </div>
                   </>
@@ -824,16 +765,17 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                     <div className="npl-bottomRow">
                       <div className="npl-kv">
                         <div className="npl-k">Caja</div>
-                        <div className="npl-v">Guardada. Para editar: clave.</div>
+                        <div className="npl-v">Guardada.</div>
                       </div>
-                      <button className="npl-btnGhost" type="button" onClick={onEditarCajaInline}>
-                        Editar Caja (clave)
-                      </button>
                     </div>
 
                     <div className="npl-modalActions npl-modalActions--nice">
-                      <button className="npl-btn" onClick={onVistaPreviaPdf}>Vista previa PDF</button>
-                      <button className="npl-btn" onClick={onDescargarPdf}>Descargar PDF</button>
+                      <button className="npl-btn" onClick={onVistaPreviaPdf}>
+                        Vista previa PDF
+                      </button>
+                      <button className="npl-btn" onClick={onDescargarPdf}>
+                        Descargar PDF
+                      </button>
                       <button className="npl-btn" disabled={Boolean(detalle.pdfBase64)} onClick={onGuardarPdfEnBD}>
                         Guardar PDF en la BD
                       </button>
@@ -857,23 +799,17 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
 
                   <div className="npl-totalBox npl-totalBox--strong">
                     <div className="npl-k">Total</div>
-                    <div className="npl-v">
-                      ${toARS(detalle.caja?.totales?.totalFinal ?? detalle.totales?.total)}
-                    </div>
+                    <div className="npl-v">${toARS(detalle.caja?.totales?.totalFinal ?? detalle.totales?.total)}</div>
                   </div>
 
                   <div className="npl-totalBox">
                     <div className="npl-k">Adelanto</div>
-                    <div className="npl-v">
-                      ${toARS(detalle.caja?.pago?.adelanto ?? detalle.totales?.adelanto)}
+                    <div className="npl-v">${toARS(detalle.caja?.pago?.adelanto ?? detalle.totales?.adelanto)}</div>
                     </div>
-                  </div>
 
                   <div className="npl-totalBox">
                     <div className="npl-k">Resta</div>
-                    <div className="npl-v">
-                      ${toARS(detalle.caja?.totales?.resta ?? detalle.totales?.resta)}
-                    </div>
+                    <div className="npl-v">${toARS(detalle.caja?.totales?.resta ?? detalle.totales?.resta)}</div>
                   </div>
                 </div>
               </div>
@@ -884,7 +820,9 @@ export default function NotaDetalleModal({ open, onClose, detalle, loading, erro
                   <div className="npl-modal npl-modal-preview" onMouseDown={(e) => e.stopPropagation()}>
                     <div className="npl-modalHeader">
                       <div className="npl-modalTitle">Vista previa PDF</div>
-                      <button className="npl-x" type="button" onClick={() => setPreviewUrl(null)}>×</button>
+                      <button className="npl-x" type="button" onClick={() => setPreviewUrl(null)}>
+                        ×
+                      </button>
                     </div>
 
                     <iframe
