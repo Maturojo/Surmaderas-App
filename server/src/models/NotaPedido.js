@@ -1,101 +1,91 @@
 import mongoose from "mongoose";
 
-const ItemSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+// Subschemas (ajustá si ya los tenés)
+const ClienteSchema = new Schema(
   {
-    tipo: {
-      type: String,
-      enum: ["corte", "marco", "calado", "mueble", "producto", "prestamo"],
-      default: "producto",
-      index: true,
-    },
-
-    productoId: { type: mongoose.Schema.Types.ObjectId, ref: "Producto", default: null },
-
-    descripcion: { type: String, required: true },
-
-    cantidad: { type: Number, required: true, min: 0 },
-    precioUnit: { type: Number, required: true, min: 0 },
-
-    especial: { type: Boolean, default: false },
-
-    data: { type: mongoose.Schema.Types.Mixed, default: {} },
+    nombre: { type: String, default: "" },
+    telefono: { type: String, default: "" },
   },
   { _id: false }
 );
 
-const NotaPedidoSchema = new mongoose.Schema(
+const ItemSchema = new Schema(
   {
-    numero: { type: String, required: true, unique: true },
+    descripcion: { type: String, required: true },
+    tipo: { type: String, default: "" },
+    cantidad: { type: Number, default: 1 },
+    precioUnit: { type: Number, default: 0 },
+    data: { type: Schema.Types.Mixed, default: {} }, // imágenes, etc.
+  },
+  { _id: false }
+);
 
-    fecha: { type: String, required: true }, // "YYYY-MM-DD"
-    entrega: { type: String, required: true }, // "YYYY-MM-DD"
+const TotalesSchema = new Schema(
+  {
+    subtotal: { type: Number, default: 0 },
+    descuento: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
+    adelanto: { type: Number, default: 0 },
+    resta: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+// IMPORTANTE: enum en minúsculas (evita el error de "Transferencia")
+const CajaSchema = new Schema(
+  {
+    ajuste: {
+      modo: { type: String, default: "sin" }, // sin | descuento_monto | descuento_pct | precio_especial
+      descuentoMonto: { type: Number, default: 0 },
+      descuentoPct: { type: Number, default: 0 },
+      precioEspecial: { type: Number, default: 0 },
+      motivo: { type: String, default: "" },
+    },
+    pago: {
+      tipo: {
+        type: String,
+        enum: ["", "efectivo", "debito", "credito", "transferencia", "qr", "mixto", "otro"],
+        default: "",
+      },
+      adelanto: { type: Number, default: 0 },
+      estado: { type: String, enum: ["pendiente", "parcial", "pagado"], default: "pendiente" },
+      updatedAt: { type: Date, default: null },
+    },
+    totales: {
+      descuentoAplicado: { type: Number, default: 0 },
+      totalFinal: { type: Number, default: 0 },
+      resta: { type: Number, default: 0 },
+    },
+  },
+  { _id: false }
+);
+
+const NotaPedidoSchema = new Schema(
+  {
+    numero: { type: String, required: true, index: true },
+    fecha: { type: String, default: "" }, // yyyy-mm-dd
+    entrega: { type: String, default: "" }, // yyyy-mm-dd
     diasHabiles: { type: Number, default: 0 },
 
-    cliente: {
-      nombre: { type: String, required: true },
-      telefono: { type: String, default: "" },
-      direccion: { type: String, default: "" },
-    },
+    estado: { type: String, default: "pendiente" },
 
+    cliente: { type: ClienteSchema, default: () => ({}) },
     vendedor: { type: String, default: "" },
-
-    // Lo mantenemos por compatibilidad visual, pero CAJA ahora es la fuente de verdad:
-    medioPago: { type: String, default: "" },
 
     items: { type: [ItemSchema], default: [] },
 
-    // Mantengo tu estructura original por compatibilidad con notas existentes y PDF actual
-    totales: {
-      subtotal: { type: Number, default: 0 },
-      descuento: { type: Number, default: 0 },
-      total: { type: Number, default: 0 },
-      adelanto: { type: Number, default: 0 },
-      resta: { type: Number, default: 0 },
-    },
+    medioPago: { type: String, default: "" }, // compat viejo
+    totales: { type: TotalesSchema, default: () => ({}) },
 
-    // NUEVO: datos de caja (editables solo por endpoint protegido)
-    caja: {
-      ajuste: {
-        modo: {
-          type: String,
-          enum: ["sin", "descuento_monto", "descuento_pct", "precio_especial"],
-          default: "sin",
-        },
-        descuentoMonto: { type: Number, default: 0, min: 0 },
-        descuentoPct: { type: Number, default: 0, min: 0, max: 100 },
-        precioEspecial: { type: Number, default: 0, min: 0 },
-        motivo: { type: String, default: "" },
-      },
-      pago: {
-        tipo: {
-          type: String,
-          enum: ["", "efectivo", "debito", "credito", "transferencia", "qr", "mixto", "otro"],
-          default: "",
-        },
-        adelanto: { type: Number, default: 0, min: 0 },
-        estado: {
-          type: String,
-          enum: ["pendiente", "parcial", "pagado"],
-          default: "pendiente",
-        },
-        updatedAt: { type: Date, default: null },
-      },
-      totales: {
-        descuentoAplicado: { type: Number, default: 0, min: 0 },
-        totalFinal: { type: Number, default: 0, min: 0 },
-        resta: { type: Number, default: 0 },
-      },
-    },
+    caja: { type: CajaSchema, default: () => ({}) },
 
     pdfBase64: { type: String, default: "" },
 
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-
-    estado: {
-      type: String,
-      enum: ["pendiente", "entregado", "cancelado"],
-      default: "pendiente",
-    },
+    // ✅ SOFT DELETE
+    eliminada: { type: Boolean, default: false, index: true },
+    eliminadaAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

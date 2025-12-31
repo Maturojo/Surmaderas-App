@@ -26,6 +26,11 @@ export default function NotasPedidoListadoView() {
     cerrarDetalle,
   } = useNotasPedidoListado({ initialLimit: 25 });
 
+  // ✅ refresca listado manteniendo búsqueda y página
+  function refrescarListado() {
+    buscar();
+  }
+
   return (
     <div className="npl-page">
       <div className="npl-card">
@@ -37,7 +42,12 @@ export default function NotasPedidoListadoView() {
 
         {error && <div className="npl-error">{error}</div>}
 
-        <NotasTable items={data.items} loading={loading} onVerDetalle={abrirDetalle} />
+        <NotasTable
+          items={data.items}
+          loading={loading}
+          onVerDetalle={abrirDetalle}
+          onRefreshList={refrescarListado}
+        />
 
         <div className="npl-pager">
           <button
