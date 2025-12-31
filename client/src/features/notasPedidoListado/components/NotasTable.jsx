@@ -1,6 +1,3 @@
-import Swal from "sweetalert2";
-import { eliminarNotaPedido } from "../../../services/notasPedido"; // ajustá ruta si tu estructura difiere
-
 function toARS(n) {
   const x = Number(n || 0);
   return x.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -8,42 +5,11 @@ function toARS(n) {
 
 function fmtDate(yyyyMMdd) {
   if (!yyyyMMdd) return "-";
-  return String(yyyyMMdd).split("-").reverse().join("/");
+  if (String(yyyyMMdd).includes("-")) return String(yyyyMMdd).split("-").reverse().join("/");
+  return String(yyyyMMdd);
 }
 
-export default function NotasTable({ items, loading, onVerDetalle, onRefreshList, onDeleted }) {
-  async function onEliminar(id) {
-    const r = await Swal.fire({
-      icon: "warning",
-      title: "Eliminar nota",
-      text: "¿Seguro? Esta nota se quitará del listado.",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!r.isConfirmed) return;
-
-    try {
-      await eliminarNotaPedido(id);
-      onDeleted?.(id); // ✅ ocultar instantáneo
-      await Swal.fire({
-        icon: "success",
-        title: "Nota eliminada",
-        timer: 650,
-        showConfirmButton: false,
-      });
-
-      onRefreshList?.();
-    } catch (e) {
-      await Swal.fire({
-        icon: "error",
-        title: "Error eliminando nota",
-        text: e?.message || "No se pudo eliminar la nota",
-      });
-    }
-  }
-
+export default function NotasTable({ items, loading, onVerDetalle, onDeleted, onGuardarCaja }) {
   return (
     <div className="npl-tableWrap">
       <table className="npl-table">
@@ -55,6 +21,7 @@ export default function NotasTable({ items, loading, onVerDetalle, onRefreshList
             <th>Cliente</th>
             <th>Vendedor</th>
             <th>Total</th>
+            <th>Caja</th>
             <th></th>
           </tr>
         </thead>
@@ -62,40 +29,45 @@ export default function NotasTable({ items, loading, onVerDetalle, onRefreshList
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="7" className="npl-muted">
-                Cargando...
-              </td>
+              <td colSpan={8} className="npl-empty">Cargando…</td>
             </tr>
-          ) : items?.length ? (
+          ) : !items?.length ? (
+            <tr>
+              <td colSpan={8} className="npl-empty">Sin resultados</td>
+            </tr>
+          ) : (
             items.map((n) => (
               <tr key={n._id}>
-                <td>{n.numero}</td>
+                <td>{n.numero || "-"}</td>
                 <td>{fmtDate(n.fecha)}</td>
-                <td>{fmtDate(n.entrega)}</td>
-                <td>{n.cliente?.nombre || "-"}</td>
+                <td>{n.entrega || "-"}</td>
+                <td>{n.cliente || "-"}</td>
                 <td>{n.vendedor || "-"}</td>
-                <td>${toARS(n.totales?.total)}</td>
+                <td>${toARS(n.total)}</td>
+                <td>{n?.caja?.guardada ? "Guardada" : "Pendiente"}</td>
 
                 <td className="npl-actions">
-                  <button className="npl-link" type="button" onClick={() => onVerDetalle(n._id)}>
+                  <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>
                     Ver
                   </button>
 
-                  {/* separador mínimo */}
-                  <span style={{ display: "inline-block", width: 10 }} />
-
-                  <button className="npl-link npl-linkDanger" type="button" onClick={() => onEliminar(n._id)}>
-                    Eliminar
+                  <button
+                    className="npl-btn"
+                    disabled={n?.caja?.guardada === true}
+                    onClick={async () => {
+                      try {
+                        await onGuardarCaja?.(n, { tipo: "pago", monto: n.total, metodo: "efectivo" });
+                        onDeleted?.(n._id); // opcional: ocultar
+                      } catch (e) {
+                        alert(e?.message || "Error guardando caja");
+                      }
+                    }}
+                  >
+                    Guardar caja
                   </button>
                 </td>
               </tr>
             ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="npl-muted">
-                Sin resultados
-              </td>
-            </tr>
           )}
         </tbody>
       </table>

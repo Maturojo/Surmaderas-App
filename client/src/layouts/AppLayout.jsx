@@ -14,15 +14,11 @@ export default function AppLayout() {
           <Link className="hover:underline" to="/notas-pedido">Notas de pedido</Link>
           <Link className="hover:underline" to="/notas-pedido/listado">Listado de notas</Link>
 
-          {/* ✅ NUEVA: Notas guardadas (Pagadas / Señadas) */}
-          <Link className="hover:underline" to="/notas-pedido/guardadas">
-            Notas guardadas
-          </Link>
+          {/* NUEVA: Notas guardadas */}
+          <Link className="hover:underline" to="/notas-pedido/guardadas">Notas guardadas</Link>
 
-          {/* ✅ NUEVA: Generador de presupuestos */}
-          <Link className="hover:underline" to="/presupuestos">
-            Presupuestos
-          </Link>
+          {/* NUEVA: Presupuestos */}
+          <Link className="hover:underline" to="/presupuestos">Presupuestos</Link>
 
           <Link className="hover:underline" to="/productos">Productos</Link>
           <Link className="hover:underline" to="/generador-3d">Generador 3D</Link>

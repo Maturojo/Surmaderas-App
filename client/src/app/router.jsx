@@ -9,7 +9,6 @@ import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 
-// ✅ NUEVAS PÁGINAS
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
 
@@ -20,10 +19,7 @@ function ProtectedRoute({ children }) {
 }
 
 export const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <Login />,
-  },
+  { path: "/login", element: <Login /> },
   {
     path: "/",
     element: (
@@ -32,26 +28,19 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      // 🏠 Dashboard
       { index: true, element: <Dashboard /> },
-
-      // 📅 Calendario
       { path: "calendario", element: <Calendar /> },
 
-      // 🧾 Notas de Pedido
       { path: "notas-pedido", element: <NotasPedido /> },
       { path: "notas-pedido/listado", element: <NotasPedidoListado /> },
 
-      // ✅ NUEVA: Notas guardadas (Pagadas / Señadas)
+      // NUEVA: Notas guardadas
       { path: "notas-pedido/guardadas", element: <NotasPedidoGuardadas /> },
 
-      // ✅ NUEVA: Generador de presupuestos
+      // NUEVA: Presupuestos
       { path: "presupuestos", element: <GeneradorPresupuestos /> },
 
-      // 📦 Productos
       { path: "productos", element: <Productos /> },
-
-      // 🪑 Generador 3D
       { path: "generador-3d", element: <GeneradorMueble3D /> },
     ],
   },

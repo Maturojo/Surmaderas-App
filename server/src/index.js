@@ -10,9 +10,22 @@ import notasPedidoRoutes from "./routes/notasPedido.routes.js";
 const app = express();
 
 /* ================= CORS ================= */
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,
+  "http://localhost:5173",
+  "http://localhost:5174",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    origin: function (origin, callback) {
+      // Permite requests sin origin (Postman/curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      return callback(new Error(`CORS bloqueado para origin: ${origin}`), false);
+    },
     credentials: true,
   })
 );
@@ -49,6 +62,7 @@ async function start() {
 
     app.listen(PORT, () => {
       console.log(`API corriendo en http://localhost:${PORT}`);
+      console.log("CORS allowlist:", allowedOrigins);
     });
   } catch (err) {
     console.error("Error conectando a MongoDB:", err.message);
