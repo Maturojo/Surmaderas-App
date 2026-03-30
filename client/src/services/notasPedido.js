@@ -1,12 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-
-function authHeaders() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+import { API_URL, authHeaders } from "./http";
 
 export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
-  const url = new URL(`${API_BASE}/api/notas-pedido`);
+  const url = new URL(`${API_URL}/api/notas-pedido`);
   if (q) url.searchParams.set("q", q);
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
@@ -22,7 +17,7 @@ export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
 }
 
 export async function crearNotaPedido(payload) {
-  const r = await fetch(`${API_BASE}/api/notas-pedido`, {
+  const r = await fetch(`${API_URL}/api/notas-pedido`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +33,7 @@ export async function crearNotaPedido(payload) {
 }
 
 export async function obtenerNotaPedido(id) {
-  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}`, {
+  const r = await fetch(`${API_URL}/api/notas-pedido/${id}`, {
     headers: { ...authHeaders() },
     credentials: "include",
   });
@@ -49,7 +44,7 @@ export async function obtenerNotaPedido(id) {
 }
 
 export async function eliminarNotaPedido(id) {
-  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}`, {
+  const r = await fetch(`${API_URL}/api/notas-pedido/${id}`, {
     method: "DELETE",
     headers: { ...authHeaders() },
     credentials: "include",
@@ -61,7 +56,7 @@ export async function eliminarNotaPedido(id) {
 }
 
 export async function guardarCajaNota(id, payload) {
-  const r = await fetch(`${API_BASE}/api/notas-pedido/${id}/guardar-caja`, {
+  const r = await fetch(`${API_URL}/api/notas-pedido/${id}/guardar-caja`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

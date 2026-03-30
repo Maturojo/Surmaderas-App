@@ -1,9 +1,10 @@
 import { Router } from "express";
 import Producto from "../models/Producto.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   const q = String(req.query.q || "").trim();
   const page = Math.max(1, parseInt(req.query.page || "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || "25", 10)));

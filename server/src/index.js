@@ -56,7 +56,9 @@ async function start() {
       throw new Error("Falta MONGODB_URI en el .env del server");
     }
 
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+    });
 
     console.log("MongoDB conectado OK:", mongoose.connection.name);
 
@@ -66,6 +68,15 @@ async function start() {
     });
   } catch (err) {
     console.error("Error conectando a MongoDB:", err.message);
+    if (err?.message?.includes("ENOTFOUND")) {
+      console.error("Revisa el hostname del cluster en MONGODB_URI.");
+    }
+    if (err?.message?.includes("bad auth") || err?.message?.includes("Authentication failed")) {
+      console.error("Revisa usuario y password del usuario de MongoDB Atlas.");
+    }
+    if (err?.message?.includes("IP") || err?.message?.includes("whitelist")) {
+      console.error("Revisa Network Access en MongoDB Atlas.");
+    }
     process.exit(1);
   }
 }
