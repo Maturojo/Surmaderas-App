@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
@@ -11,12 +11,7 @@ import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
-
-import { isAuthenticated } from "../services/auth";
-
-function ProtectedRoute({ children }) {
-  return isAuthenticated() ? children : <Navigate to="/login" replace />;
-}
+import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },

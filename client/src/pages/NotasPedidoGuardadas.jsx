@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { listarNotasPedido } from "../services/notasPedido";
+﻿import { useEffect, useMemo, useState } from "react";
+import { listarNotasPedido, obtenerNotaPedido } from "../services/notasPedido";
+import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
+import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
 
 function toARS(n) {
   const x = Number(n || 0);
@@ -21,6 +23,10 @@ export default function NotasPedidoGuardadas() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [err, setErr] = useState("");
+  const [openId, setOpenId] = useState(null);
+  const [detalle, setDetalle] = useState(null);
+  const [detalleLoading, setDetalleLoading] = useState(false);
+  const [detalleError, setDetalleError] = useState("");
 
   async function load() {
     setLoading(true);
@@ -40,6 +46,29 @@ export default function NotasPedidoGuardadas() {
     load();
   }, []);
 
+  async function abrirDetalle(id) {
+    setOpenId(id);
+    setDetalle(null);
+    setDetalleError("");
+    setDetalleLoading(true);
+
+    try {
+      const item = await obtenerNotaPedido(id);
+      setDetalle(item);
+    } catch (e) {
+      setDetalleError(e?.message || "Error cargando vista previa");
+    } finally {
+      setDetalleLoading(false);
+    }
+  }
+
+  function cerrarDetalle() {
+    setOpenId(null);
+    setDetalle(null);
+    setDetalleError("");
+    setDetalleLoading(false);
+  }
+
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
     return items
@@ -48,7 +77,7 @@ export default function NotasPedidoGuardadas() {
         if (!qq) return true;
         return (
           String(n?.numero || "").toLowerCase().includes(qq) ||
-          String(n?.cliente || "").toLowerCase().includes(qq) ||
+          getNotaClienteNombre(n).toLowerCase().includes(qq) ||
           String(n?.vendedor || "").toLowerCase().includes(qq) ||
           String(n?.entrega || "").toLowerCase().includes(qq) ||
           String(n?.estado || "").toLowerCase().includes(qq)
@@ -72,12 +101,12 @@ export default function NotasPedidoGuardadas() {
         <div className="flex gap-2 items-center">
           <input
             className="border rounded px-3 py-2 w-[320px]"
-            placeholder="Buscar…"
+            placeholder="Buscar..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
           <button className="border rounded px-3 py-2" onClick={load} disabled={loading}>
-            {loading ? "Cargando…" : "Actualizar"}
+            {loading ? "Cargando..." : "Actualizar"}
           </button>
         </div>
       </div>
@@ -92,7 +121,7 @@ export default function NotasPedidoGuardadas() {
         <table className="w-full text-sm">
           <thead className="border-b">
             <tr>
-              <th className="text-left p-3">Número</th>
+              <th className="text-left p-3">Numero</th>
               <th className="text-left p-3">Fecha</th>
               <th className="text-left p-3">Entrega</th>
               <th className="text-left p-3">Cliente</th>
@@ -100,33 +129,49 @@ export default function NotasPedidoGuardadas() {
               <th className="text-left p-3">Estado</th>
               <th className="text-left p-3">Caja</th>
               <th className="text-left p-3">Total</th>
+              <th className="text-left p-3"></th>
             </tr>
           </thead>
 
           <tbody>
             {loading ? (
-              <tr><td className="p-4 opacity-70" colSpan={8}>Cargando…</td></tr>
+              <tr><td className="p-4 opacity-70" colSpan={9}>Cargando...</td></tr>
             ) : guardadas.length === 0 ? (
-              <tr><td className="p-4 opacity-70" colSpan={8}>No hay notas guardadas.</td></tr>
+              <tr><td className="p-4 opacity-70" colSpan={9}>No hay notas guardadas.</td></tr>
             ) : (
               guardadas.map((n) => (
                 <tr key={n?._id || n?.id || n?.numero} className="border-b">
                   <td className="p-3">{n?.numero ?? "-"}</td>
                   <td className="p-3">{fmtDate(n?.fecha)}</td>
                   <td className="p-3">{n?.entrega ?? "-"}</td>
-                  <td className="p-3">{n?.cliente ?? "-"}</td>
+                  <td className="p-3">{getNotaClienteNombre(n)}</td>
                   <td className="p-3">{n?.vendedor ?? "-"}</td>
                   <td className="p-3 font-semibold">{n?.estado ?? "-"}</td>
                   <td className="p-3">
-                    {n?.caja?.tipo ? `${n.caja.tipo} $${toARS(n?.caja?.monto)}` : "—"}
+                    {n?.caja?.tipo ? `${n.caja.tipo} $${toARS(n?.caja?.monto)}` : "-"}
                   </td>
-                  <td className="p-3">${toARS(n?.total)}</td>
+                  <td className="p-3">${toARS(getNotaTotal(n))}</td>
+                  <td className="p-3">
+                    <button className="border rounded px-3 py-1" onClick={() => abrirDetalle(n._id)}>
+                      Ver
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      <NotaDetalleModal
+        open={Boolean(openId)}
+        onClose={cerrarDetalle}
+        detalle={detalle}
+        loading={detalleLoading}
+        error={detalleError}
+        onRefresh={() => abrirDetalle(openId)}
+        soloVistaPrevia
+      />
     </div>
   );
 }

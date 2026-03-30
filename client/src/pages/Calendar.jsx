@@ -30,7 +30,7 @@ function typeLabel(t) {
 export default function Calendar() {
   const [cursor, setCursor] = useState(() => new Date());
   const [selectedDay, setSelectedDay] = useState(() => ymd(new Date()));
-  const [eventsByDay, setEventsByDay] = useState(() => {
+  const [eventsByDay] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     } catch {

@@ -1,5 +1,60 @@
 import NotaPedido from "../models/NotaPedido.js";
 
+function getClienteNombre(doc) {
+  if (typeof doc?.cliente === "string") return doc.cliente;
+  return doc?.cliente?.nombre || "";
+}
+
+function getClienteTelefono(doc) {
+  if (typeof doc?.cliente === "string") return "";
+  return doc?.cliente?.telefono || "";
+}
+
+function normalizeNotaPayload(body = {}) {
+  const clienteBody = body?.cliente;
+  const cliente =
+    typeof clienteBody === "string"
+      ? { nombre: clienteBody, telefono: "", direccion: "" }
+      : {
+          nombre: String(clienteBody?.nombre || ""),
+          telefono: String(clienteBody?.telefono || ""),
+          direccion: String(clienteBody?.direccion || ""),
+        };
+
+  const totalesBody = body?.totales || {};
+  const total = Number(totalesBody?.total ?? body?.total ?? 0);
+
+  return {
+    numero: String(body?.numero || ""),
+    fecha: String(body?.fecha || ""),
+    entrega: String(body?.entrega || ""),
+    diasHabiles: Number(body?.diasHabiles || 0),
+    cliente,
+    vendedor: String(body?.vendedor || ""),
+    medioPago: String(body?.medioPago || ""),
+    items: Array.isArray(body?.items) ? body.items : [],
+    total,
+    totales: {
+      subtotal: Number(totalesBody?.subtotal || 0),
+      descuento: Number(totalesBody?.descuento || 0),
+      total,
+      adelanto: Number(totalesBody?.adelanto || 0),
+      resta: Number(totalesBody?.resta || 0),
+    },
+    pdfBase64: String(body?.pdfBase64 || ""),
+    estado: String(body?.estado || "pendiente"),
+    caja: body?.caja || undefined,
+  };
+}
+
+function enrichNota(doc) {
+  const item = doc?.toObject ? doc.toObject() : doc;
+  item.clienteNombre = getClienteNombre(item);
+  item.clienteTelefono = getClienteTelefono(item);
+  item.total = Number(item?.totales?.total ?? item?.total ?? 0);
+  return item;
+}
+
 export async function listarNotasPedido(req, res) {
   try {
     const { q = "", page = 1, limit = 25 } = req.query;
@@ -10,6 +65,8 @@ export async function listarNotasPedido(req, res) {
       filter.$or = [
         { numero: rx },
         { cliente: rx },
+        { "cliente.nombre": rx },
+        { "cliente.telefono": rx },
         { vendedor: rx },
         { entrega: rx },
         { estado: rx },
@@ -25,7 +82,7 @@ export async function listarNotasPedido(req, res) {
       NotaPedido.countDocuments(filter),
     ]);
 
-    res.json({ items, page: p, limit: l, total, pages: Math.ceil(total / l) });
+    res.json({ items: items.map(enrichNota), page: p, limit: l, total, pages: Math.ceil(total / l) });
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error listando notas" });
   }
@@ -33,8 +90,9 @@ export async function listarNotasPedido(req, res) {
 
 export async function crearNotaPedido(req, res) {
   try {
-    const doc = await NotaPedido.create(req.body);
-    res.status(201).json(doc);
+    const payload = normalizeNotaPayload(req.body);
+    const doc = await NotaPedido.create(payload);
+    res.status(201).json(enrichNota(doc));
   } catch (e) {
     res.status(400).json({ message: e?.message || "Error creando nota" });
   }
@@ -45,7 +103,7 @@ export async function obtenerNotaPedido(req, res) {
     const { id } = req.params;
     const doc = await NotaPedido.findById(id);
     if (!doc) return res.status(404).json({ message: "Nota no encontrada" });
-    res.json(doc);
+    res.json(enrichNota(doc));
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error obteniendo nota" });
   }
@@ -68,14 +126,14 @@ export async function guardarCajaNota(req, res) {
     const { tipo = "pago", monto = 0, metodo = "", nota = "" } = req.body;
 
     const t = String(tipo).toLowerCase();
-    const esSena = t === "seÃ±a" || t === "sena" || t === "senia";
-    const estado = esSena ? "seÃ±ada" : "pagada";
+    const esSena = t === "seña" || t === "sena" || t === "senia";
+    const estado = esSena ? "señada" : "pagada";
 
     const update = {
       estado,
       caja: {
         guardada: true,
-        tipo: esSena ? "seÃ±a" : "pago",
+        tipo: esSena ? "seña" : "pago",
         monto: Number(monto || 0),
         metodo: String(metodo || ""),
         nota: String(nota || ""),
@@ -86,7 +144,7 @@ export async function guardarCajaNota(req, res) {
     const updated = await NotaPedido.findByIdAndUpdate(id, update, { new: true });
     if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
 
-    res.json(updated);
+    res.json(enrichNota(updated));
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error guardando caja" });
   }

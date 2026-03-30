@@ -125,6 +125,7 @@ export default function GeneradorMueble3D() {
 
     const preset = DIM_PRESETS[tipo];
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setM((prev) => {
       const next = { ...prev };
 

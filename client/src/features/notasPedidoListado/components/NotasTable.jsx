@@ -1,3 +1,5 @@
+import { getNotaClienteNombre, getNotaTotal } from "../../../utils/notaPedido";
+
 function toARS(n) {
   const x = Number(n || 0);
   return x.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -9,7 +11,7 @@ function fmtDate(yyyyMMdd) {
   return String(yyyyMMdd);
 }
 
-export default function NotasTable({ items, loading, onVerDetalle, onDeleted, onGuardarCaja }) {
+export default function NotasTable({ items, loading, onVerDetalle }) {
   return (
     <div className="npl-tableWrap">
       <table className="npl-table">
@@ -41,29 +43,14 @@ export default function NotasTable({ items, loading, onVerDetalle, onDeleted, on
                 <td>{n.numero || "-"}</td>
                 <td>{fmtDate(n.fecha)}</td>
                 <td>{n.entrega || "-"}</td>
-                <td>{n.cliente || "-"}</td>
+                <td>{getNotaClienteNombre(n)}</td>
                 <td>{n.vendedor || "-"}</td>
-                <td>${toARS(n.total)}</td>
+                <td>${toARS(getNotaTotal(n))}</td>
                 <td>{n?.caja?.guardada ? "Guardada" : "Pendiente"}</td>
 
                 <td className="npl-actions">
                   <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>
                     Ver
-                  </button>
-
-                  <button
-                    className="npl-btn"
-                    disabled={n?.caja?.guardada === true}
-                    onClick={async () => {
-                      try {
-                        await onGuardarCaja?.(n, { tipo: "pago", monto: n.total, metodo: "efectivo" });
-                        onDeleted?.(n._id); // opcional: ocultar
-                      } catch (e) {
-                        alert(e?.message || "Error guardando caja");
-                      }
-                    }}
-                  >
-                    Guardar caja
                   </button>
                 </td>
               </tr>

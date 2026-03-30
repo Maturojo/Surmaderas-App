@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   MATERIALES_POR_PIEZA_DEFAULT,
   defaultDeskSide,
@@ -32,9 +31,8 @@ export function usePieces(m) {
   const legsOn = soporte === "patas";
   const legH = (legsOn ? Math.max(0, Number(m.patas?.altura || 0)) : 0) * s;
 
-  return useMemo(() => {
-    const list = [];
-    const despiece = [];
+  const list = [];
+  const despiece = [];
 
     const materialesPorPieza = m.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT;
 
@@ -376,22 +374,5 @@ export function usePieces(m) {
       addBox([sLeg, legH, sLeg], [x2, yLegCenter, z2], "patas", "Pata global 4");
     }
 
-    return { pieces: list, despiece };
-  }, [
-    m.tipo,
-    m.ancho,
-    m.alto,
-    m.profundidad,
-    m.espesor,
-    m.estantes,
-    m.falda,
-    m.soporte,
-    m.zocalo?.altura,
-    m.zocalo?.retiro,
-    m.patas?.altura,
-    m.escritorio,
-    m.zonas,
-    m.material,
-    m.materialesPorPieza,
-  ]);
+  return { pieces: list, despiece };
 }

@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from "react";
-import { useThree } from "@react-three/fiber";
+import { useMemo } from "react";
 import {
   Bounds,
   ContactShadows,
@@ -39,45 +38,36 @@ export function Scene({ m }) {
 
   const texAll = useTexture(texUrls);
 
-  useEffect(() => {
-    for (const key of usedMatKeys) {
-      const cfg = MATERIALES[key] || MATERIALES.pino;
-      const [rx, ry] = cfg.repeat || [1, 1];
-
-      const map = texAll[`${key}__map`];
-      const normalMap = texAll[`${key}__normal`];
-      const roughnessMap = texAll[`${key}__rough`];
-
-      const setupMap = (t, isColorMap = false) => {
-        if (!t) return;
-        if (isColorMap) t.colorSpace = THREE.SRGBColorSpace;
-
-        t.wrapS = THREE.RepeatWrapping;
-        t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(rx, ry);
-
-        t.anisotropy = 8;
-        t.minFilter = THREE.LinearMipmapLinearFilter;
-        t.magFilter = THREE.LinearFilter;
-        t.needsUpdate = true;
-      };
-
-      setupMap(map, true);
-      setupMap(normalMap, false);
-      setupMap(roughnessMap, false);
-    }
-  }, [usedMatKeys, texAll]);
-
   const materialPropsByKey = useMemo(() => {
     const out = {};
+
+    const buildTexture = (texture, repeat, isColorMap = false) => {
+      if (!texture) return null;
+
+      const clone = texture.clone();
+      const [rx, ry] = repeat || [1, 1];
+
+      if (isColorMap) clone.colorSpace = THREE.SRGBColorSpace;
+      clone.wrapS = THREE.RepeatWrapping;
+      clone.wrapT = THREE.RepeatWrapping;
+      clone.repeat.set(rx, ry);
+      clone.anisotropy = 8;
+      clone.minFilter = THREE.LinearMipmapLinearFilter;
+      clone.magFilter = THREE.LinearFilter;
+      clone.needsUpdate = true;
+
+      return clone;
+    };
+
     for (const key of usedMatKeys) {
       const cfg = MATERIALES[key] || MATERIALES.pino;
+      const repeat = cfg.repeat || [1, 1];
 
       out[key] = {
         color: cfg.color,
         roughness: cfg.roughness,
         metalness: cfg.metalness,
-        map: texAll[`${key}__map`],
+        map: buildTexture(texAll[`${key}__map`], repeat, true),
 
         clearcoat: cfg.clearcoat ?? 0,
         clearcoatRoughness: cfg.clearcoatRoughness ?? 0.2,
@@ -87,39 +77,20 @@ export function Scene({ m }) {
 
         envMapIntensity: cfg.envMapIntensity ?? 1.0,
 
-        normalMap: cfg.normalUrl ? texAll[`${key}__normal`] : null,
-        roughnessMap: cfg.roughUrl ? texAll[`${key}__rough`] : null,
+        normalMap: cfg.normalUrl ? buildTexture(texAll[`${key}__normal`], repeat) : null,
+        roughnessMap: cfg.roughUrl ? buildTexture(texAll[`${key}__rough`], repeat) : null,
       };
     }
     return out;
   }, [usedMatKeys, texAll]);
 
-  // --- fondo fijo (scene.background) ---
-  const { scene } = useThree();
   const roomBg = useTexture("/fondos/habitacion.jpg");
-
-  useEffect(() => {
-    if (fondoModo === "gris") {
-      scene.background = new THREE.Color("#e9eaec");
-      return () => {
-        scene.background = null;
-      };
-    }
-
-    if (fondoModo === "habitacion") {
-      roomBg.colorSpace = THREE.SRGBColorSpace;
-      scene.background = roomBg; // <-- CLAVE: fondo fijo 2D
-      return () => {
-        scene.background = null;
-      };
-    }
-
-    // hdri (Environment background)
-    scene.background = null;
-    return () => {
-      scene.background = null;
-    };
-  }, [fondoModo, roomBg, scene]);
+  const roomBackground = useMemo(() => {
+    const clone = roomBg.clone();
+    clone.colorSpace = THREE.SRGBColorSpace;
+    clone.needsUpdate = true;
+    return clone;
+  }, [roomBg]);
 
   // Orbit target (centrar cámara en el mueble)
   const altoMm = Math.max(0, Number(m.alto || 1800));
@@ -132,6 +103,9 @@ export function Scene({ m }) {
 
   return (
     <>
+      {fondoModo === "gris" ? <color attach="background" args={["#e9eaec"]} /> : null}
+      {fondoModo === "habitacion" ? <primitive attach="background" object={roomBackground} /> : null}
+
       <Environment preset="warehouse" background={fondoModo === "hdri"} />
 
       <ambientLight intensity={0.18} />

@@ -1,5 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import { useMemo, useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
 import { crearNotaPedido } from "../../services/notasPedido";
@@ -17,33 +16,23 @@ import PrestamoFields from "./components/fields/PrestamoFields";
 
 import "../../css/NotasPedido.css";
 
-const vendedores = ["Matías", "Gustavo", "Ceci", "Guille"];
-const mediosPago = ["Efectivo", "Transferencia", "Débito", "Crédito", "Cuenta Corriente"];
+const vendedores = ["Matias", "Gustavo", "Ceci", "Guille"];
 
 const emptyItem = {
   tipo: DEFAULT_TIPO,
   data: {},
-
-  // producto (autocomplete)
   busqueda: "",
   productoId: "",
   descripcion: "",
-
-  // comunes
   cantidad: 1,
   precio: "",
   especial: false,
-
-  // autocomplete ux
   open: false,
   activeIndex: 0,
 };
 
 export default function NotasPedidoView() {
-  const navigate = useNavigate();
   const { productos } = useProductos();
-
-  // para scroll del item activo en la lista
   const acItemsRef = useRef({});
   const rootRef = useRef(null);
 
@@ -59,13 +48,11 @@ export default function NotasPedidoView() {
   const [cliente, setCliente] = useState("");
   const [telefono, setTelefono] = useState("");
   const [vendedor, setVendedor] = useState("");
-  const [medioPago, setMedioPago] = useState("");
 
   const [items, setItems] = useState([{ ...emptyItem }]);
   const [descuento, setDescuento] = useState("");
   const [adelanto, setAdelanto] = useState("");
 
-  /* -------------------- cerrar dropdowns al click afuera -------------------- */
   useEffect(() => {
     function handleClickOutside(e) {
       if (rootRef.current && !rootRef.current.contains(e.target)) {
@@ -76,7 +63,6 @@ export default function NotasPedidoView() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* -------------------- scroll al item activo del autocomplete -------------------- */
   useEffect(() => {
     items.forEach((it, idx) => {
       if (!it.open) return;
@@ -85,7 +71,6 @@ export default function NotasPedidoView() {
     });
   }, [items]);
 
-  /* -------------------- Totales -------------------- */
   const subtotal = useMemo(
     () =>
       items.reduce((acc, it) => {
@@ -106,7 +91,6 @@ export default function NotasPedidoView() {
     return Math.max(0, totalFinal - a);
   }, [totalFinal, adelanto]);
 
-  /* -------------------- Items helpers -------------------- */
   function updateItem(idx, patch) {
     setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
   }
@@ -143,13 +127,11 @@ export default function NotasPedidoView() {
           data: {},
         };
 
-        // si deja de ser producto: limpiar estado del autocomplete
         if (tipo !== "producto") {
           next.busqueda = "";
           next.productoId = "";
           next.open = false;
           next.activeIndex = 0;
-          // (descripcion la dejamos por si el usuario escribió algo manual)
         }
 
         return next;
@@ -181,7 +163,6 @@ export default function NotasPedidoView() {
     });
   }
 
-  /* -------------------- Guardar Nota -------------------- */
   async function onGuardarNota() {
     if (guardando) return;
     setGuardando(true);
@@ -214,18 +195,16 @@ export default function NotasPedidoView() {
         .filter(Boolean)
         .filter((it) => it.cantidad > 0);
 
-      if (itemsMapped.length === 0) throw new Error("Tenés que cargar al menos un ítem válido");
+      if (itemsMapped.length === 0) throw new Error("Tenes que cargar al menos un item valido");
 
       const payload = {
         numero,
         fecha,
         entrega: entregaDate,
         diasHabiles: Number(diasHabiles || 0),
-
         cliente: { nombre: cliente, telefono: telefono || "", direccion: "" },
         vendedor: vendedor || "",
-        medioPago: medioPago || "",
-
+        medioPago: "",
         items: itemsMapped,
         totales: {
           subtotal,
@@ -234,7 +213,6 @@ export default function NotasPedidoView() {
           adelanto: Number(String(adelanto).replace(",", ".") || 0),
           resta,
         },
-
         pdfBase64: "",
       };
 
@@ -243,7 +221,7 @@ export default function NotasPedidoView() {
       await Swal.fire({
         icon: "success",
         title: "Nota guardada",
-        text: `La nota ${numero} se guardó correctamente`,
+        text: `La nota ${numero} se guardo correctamente`,
         timer: 1600,
         showConfirmButton: false,
       });
@@ -256,10 +234,6 @@ export default function NotasPedidoView() {
     } finally {
       setGuardando(false);
     }
-  }
-
-  function onVerNotas() {
-    navigate("/notas-pedido/listado");
   }
 
   function renderFieldsByTipo(it, idx) {
@@ -303,7 +277,7 @@ export default function NotasPedidoView() {
             </div>
 
             <div className="np-field">
-              <label className="np-label">Teléfono:</label>
+              <label className="np-label">Telefono:</label>
               <input className="np-input" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Ej: 223..." />
             </div>
 
@@ -318,32 +292,20 @@ export default function NotasPedidoView() {
                 ))}
               </select>
             </div>
-
-            <div className="np-field">
-              <label className="np-label">Medio de pago:</label>
-              <select className="np-input" value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
-                <option value="">Seleccione una opción</option>
-                {mediosPago.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           <div className="np-col">
             <div className="np-field">
-              <label className="np-label">Entrega para el día:</label>
+              <label className="np-label">Entrega para el dia:</label>
               <input
                 className="np-input np-readonly"
                 readOnly
-                value={`${diasHabiles} días hábiles (${entregaDate.split("-").reverse().join("/")})`}
+                value={`${diasHabiles} dias habiles (${entregaDate.split("-").reverse().join("/")})`}
               />
             </div>
 
             <div className="np-field">
-              <label className="np-label">Días hábiles:</label>
+              <label className="np-label">Dias habiles:</label>
               <input className="np-input" type="number" min={0} value={diasHabiles} onChange={(e) => setDiasHabiles(e.target.value)} />
             </div>
 
@@ -359,55 +321,46 @@ export default function NotasPedidoView() {
         <div className="np-items">
           {items.map((it, idx) => {
             const opciones = it.tipo === "producto" ? buscarOpciones(it.busqueda) : [];
-
-            // reiniciamos refs por fila (para scroll)
             acItemsRef.current[idx] = [];
 
             return (
               <div className="np-item-row" key={idx}>
-                {/* Tipo */}
                 <select className="np-input" value={it.tipo || DEFAULT_TIPO} onChange={(e) => onChangeTipo(idx, e.target.value)}>
                   <option value="corte">Corte</option>
                   <option value="marco">Marco</option>
                   <option value="calado">Calado</option>
                   <option value="mueble">Mueble</option>
-                  <option value="producto">Producto estándar</option>
-                  <option value="prestamo">Préstamo</option>
+                  <option value="producto">Producto estandar</option>
+                  <option value="prestamo">Prestamo</option>
                 </select>
 
-                {/* Campos dinámicos / autocomplete */}
                 <div className="np-item-fields">
                   {it.tipo === "producto" ? (
                     <div className="np-autocomplete">
                       <input
                         className="np-input np-item-search"
-                        placeholder="Buscar producto por código o nombre..."
+                        placeholder="Buscar producto por codigo o nombre..."
                         value={it.busqueda}
                         onFocus={() => updateItem(idx, { open: true })}
                         onChange={(e) => updateItem(idx, { busqueda: e.target.value, open: true, activeIndex: 0 })}
                         onKeyDown={(e) => {
                           if (!it.open) return;
-
                           if (e.key === "Escape") {
                             e.preventDefault();
                             updateItem(idx, { open: false });
                             return;
                           }
-
                           if (opciones.length === 0) return;
-
                           if (e.key === "ArrowDown") {
                             e.preventDefault();
                             updateItem(idx, { activeIndex: Math.min(it.activeIndex + 1, opciones.length - 1) });
                             return;
                           }
-
                           if (e.key === "ArrowUp") {
                             e.preventDefault();
                             updateItem(idx, { activeIndex: Math.max(it.activeIndex - 1, 0) });
                             return;
                           }
-
                           if (e.key === "Enter") {
                             e.preventDefault();
                             const p = opciones[it.activeIndex] || opciones[0];
@@ -447,7 +400,6 @@ export default function NotasPedidoView() {
                   )}
                 </div>
 
-                {/* Cantidad / Precio / Especial / Quitar */}
                 <input
                   className="np-input np-item-qty"
                   type="number"
@@ -510,8 +462,6 @@ export default function NotasPedidoView() {
           <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar Nota"}
           </button>
-
-          
         </div>
       </div>
     </div>
