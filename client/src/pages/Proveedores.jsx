@@ -312,14 +312,9 @@ export default function Proveedores() {
                         {item.contacto || "Sin contacto"} {item.telefono ? `· ${item.telefono}` : ""}
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]" onClick={() => abrirEdicion(item)}>
-                        Editar
-                      </button>
-                      <button className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#8b2d2d]" onClick={() => borrar(item)}>
-                        Borrar
-                      </button>
-                    </div>
+                    <span className="rounded-full bg-[var(--sm-accent-soft)] px-3 py-1 text-xs font-bold text-[#5f4b34]">
+                      Activo
+                    </span>
                   </div>
 
                   <p className="mt-3 text-sm text-[#5b5249]">{item.nota || "Sin notas adicionales."}</p>
