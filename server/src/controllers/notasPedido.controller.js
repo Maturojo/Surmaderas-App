@@ -1,4 +1,4 @@
-import NotaPedido from "../models/NotaPedido.js";
+ï»¿import NotaPedido from "../models/NotaPedido.js";
 
 function getClienteNombre(doc) {
   if (typeof doc?.cliente === "string") return doc.cliente;
@@ -57,12 +57,18 @@ function enrichNota(doc) {
 
 export async function listarNotasPedido(req, res) {
   try {
-    const { q = "", page = 1, limit = 25 } = req.query;
+    const { q = "", page = 1, limit = 25, guardada } = req.query;
 
     const filter = {};
+    if (guardada === "true") {
+      filter["caja.guardada"] = true;
+    } else if (guardada === "false") {
+      filter.$or = [{ "caja.guardada": { $exists: false } }, { "caja.guardada": false }];
+    }
+
     if (q) {
       const rx = new RegExp(String(q), "i");
-      filter.$or = [
+      const searchClauses = [
         { numero: rx },
         { cliente: rx },
         { "cliente.nombre": rx },
@@ -71,6 +77,13 @@ export async function listarNotasPedido(req, res) {
         { entrega: rx },
         { estado: rx },
       ];
+
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or }, { $or: searchClauses }];
+        delete filter.$or;
+      } else {
+        filter.$or = searchClauses;
+      }
     }
 
     const p = Math.max(1, Number(page || 1));
@@ -126,14 +139,14 @@ export async function guardarCajaNota(req, res) {
     const { tipo = "pago", monto = 0, metodo = "", nota = "" } = req.body;
 
     const t = String(tipo).toLowerCase();
-    const esSena = t === "seña" || t === "sena" || t === "senia";
-    const estado = esSena ? "señada" : "pagada";
+    const esSena = t === "seÃ±a" || t === "sena" || t === "senia";
+    const estado = esSena ? "seÃ±ada" : "pagada";
 
     const update = {
       estado,
       caja: {
         guardada: true,
-        tipo: esSena ? "seña" : "pago",
+        tipo: esSena ? "seÃ±a" : "pago",
         monto: Number(monto || 0),
         metodo: String(metodo || ""),
         nota: String(nota || ""),

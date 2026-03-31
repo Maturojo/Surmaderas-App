@@ -20,6 +20,116 @@ export async function listarProductos({ q = "", page = 1, limit = 25 } = {}) {
   return data;
 }
 
+export async function obtenerProductosCatalogo({ q = "", categoria = "", subcategoria = "", limit = 500 } = {}) {
+  const url = new URL(`${API_URL}/api/productos`);
+  if (q) url.searchParams.set("q", q);
+  if (categoria) url.searchParams.set("categoria", categoria);
+  if (subcategoria) url.searchParams.set("subcategoria", subcategoria);
+  url.searchParams.set("page", "1");
+  url.searchParams.set("limit", String(limit));
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || `Error ${res.status}`);
+  return Array.isArray(data?.items) ? data.items : [];
+}
+
+export async function obtenerFiltrosProductos() {
+  const res = await fetch(`${API_URL}/api/productos/filtros`, {
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudieron obtener los filtros");
+  return data;
+}
+
+export async function crearCategoriaOSubcategoria(payload) {
+  const res = await fetch(`${API_URL}/api/productos/categorias`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo crear la categoria o subcategoria");
+  return data;
+}
+
+export async function actualizarClasificacionMultiple(ids, payload) {
+  const res = await fetch(`${API_URL}/api/productos/clasificacion-multiple`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ ids, ...payload }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo actualizar la clasificacion multiple");
+  return data;
+}
+
+export async function obtenerHistorialProductos() {
+  const res = await fetch(`${API_URL}/api/productos/historial`, {
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo obtener el historial");
+  return data;
+}
+
+export async function guardarAccionHistorial(payload) {
+  const res = await fetch(`${API_URL}/api/productos/historial`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo guardar la accion en el historial");
+  return data;
+}
+
+export async function limpiarHistorialProductos() {
+  const res = await fetch(`${API_URL}/api/productos/historial`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo limpiar el historial");
+  return data;
+}
+
+export async function eliminarCategoria(nombre) {
+  const res = await fetch(`${API_URL}/api/productos/categorias/${encodeURIComponent(nombre)}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo eliminar la categoria");
+  return data;
+}
+
+export async function eliminarSubcategoria(categoria, subcategoria) {
+  const res = await fetch(`${API_URL}/api/productos/subcategorias`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ categoria, subcategoria }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || "No se pudo eliminar la subcategoria");
+  return data;
+}
+
 export async function listarTodosLosProductos({ q = "", pageSize = 200 } = {}) {
   let page = 1;
   let all = [];

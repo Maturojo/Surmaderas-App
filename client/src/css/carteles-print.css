@@ -1,0 +1,172 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+}
+
+body.formato-a4 {
+  width: 210mm;
+}
+
+body.formato-media-a4 {
+  width: 148mm;
+}
+
+body.formato-a4 .cartel {
+  width: 100%;
+  min-height: 287mm;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
+}
+
+body.formato-media-a4 .cartel {
+  width: 100%;
+  min-height: 138mm;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
+}
+
+.cartel:last-child {
+  page-break-after: auto;
+}
+
+.cartel-header {
+  padding: 4mm 8mm 2mm;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+  text-align: center;
+}
+
+.subcategoria {
+  margin: 0;
+  font-size: 16mm;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.categoria {
+  margin: 0.5mm 0 0;
+  font-size: 5.5mm;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.cartel-info {
+  margin-top: 1mm;
+  font-size: 4mm;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cartel-tabla-wrap {
+  flex: 1;
+  padding: 2.5mm 8mm 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.cartel-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cartel-tabla th {
+  border: 1.5px solid #000;
+  font-size: 6mm;
+  font-weight: 700;
+  padding: 2mm 1.5mm;
+  line-height: 1;
+}
+
+.cartel-tabla td {
+  border: 1.5px solid #000;
+  font-size: 4.8mm;
+  padding: 1.5mm;
+  height: 10mm;
+  line-height: 1.05;
+  vertical-align: middle;
+}
+
+.cartel-tabla th:nth-child(1),
+.cartel-tabla td:nth-child(1) {
+  width: 20%;
+  text-align: center;
+}
+
+.cartel-tabla th:nth-child(2),
+.cartel-tabla td:nth-child(2) {
+  width: 56%;
+  text-align: center;
+}
+
+.cartel-tabla th:nth-child(3),
+.cartel-tabla td:nth-child(3) {
+  width: 24%;
+  text-align: center;
+  font-weight: 700;
+}
+
+.solo-categoria {
+  font-size: 18mm;
+}
+
+body.formato-media-a4 .cartel-header {
+  padding: 3mm 6mm 2mm;
+}
+
+body.formato-media-a4 .subcategoria {
+  font-size: 10mm;
+}
+
+body.formato-media-a4 .categoria {
+  font-size: 4mm;
+}
+
+body.formato-media-a4 .cartel-info {
+  font-size: 3mm;
+}
+
+body.formato-media-a4 .solo-categoria {
+  font-size: 12mm;
+}
+
+body.formato-media-a4 .cartel-tabla-wrap {
+  padding: 2mm 6mm 0;
+}
+
+body.formato-media-a4 .cartel-tabla th {
+  font-size: 4mm;
+  padding: 1.2mm 1mm;
+}
+
+body.formato-media-a4 .cartel-tabla td {
+  font-size: 3.5mm;
+  padding: 1mm;
+  height: 7mm;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+}
+
+@page {
+  margin: 5mm;
+}

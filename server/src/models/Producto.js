@@ -5,6 +5,8 @@ const ProductoSchema = new mongoose.Schema(
     codigo: { type: String, required: true, unique: true, index: true }, // AC1, BA1, etc.
     nombre: { type: String, required: true, index: true },
     precio: { type: Number, required: true, min: 0 },
+    categoria: { type: String, default: "", trim: true, index: true },
+    subcategoria: { type: String, default: "", trim: true, index: true },
     unidad: { type: String, default: "u" },
     activo: { type: Boolean, default: true },
   },

@@ -1,4 +1,4 @@
-import { getNotaClienteNombre, getNotaTotal } from "../../../utils/notaPedido";
+﻿import { getNotaClienteNombre, getNotaTotal } from "../../../utils/notaPedido";
 
 function toARS(n) {
   const x = Number(n || 0);
@@ -11,13 +11,13 @@ function fmtDate(yyyyMMdd) {
   return String(yyyyMMdd);
 }
 
-export default function NotasTable({ items, loading, onVerDetalle }) {
+export default function NotasTable({ items, loading, onVerDetalle, onEliminar }) {
   return (
     <div className="npl-tableWrap">
       <table className="npl-table">
         <thead>
           <tr>
-            <th>Número</th>
+            <th>Numero</th>
             <th>Fecha</th>
             <th>Entrega</th>
             <th>Cliente</th>
@@ -31,7 +31,7 @@ export default function NotasTable({ items, loading, onVerDetalle }) {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={8} className="npl-empty">Cargando…</td>
+              <td colSpan={8} className="npl-empty">Cargando...</td>
             </tr>
           ) : !items?.length ? (
             <tr>
@@ -51,6 +51,9 @@ export default function NotasTable({ items, loading, onVerDetalle }) {
                 <td className="npl-actions">
                   <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>
                     Ver
+                  </button>
+                  <button className="npl-btnGhost" onClick={() => onEliminar?.(n)}>
+                    Borrar
                   </button>
                 </td>
               </tr>

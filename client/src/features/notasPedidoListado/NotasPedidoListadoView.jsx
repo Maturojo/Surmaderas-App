@@ -1,6 +1,8 @@
-import "../../css/NotasPedidoListado.css";
+﻿import "../../css/NotasPedidoListado.css";
 
-import { guardarCajaNota } from "../../services/notasPedido";
+import { useEffect, useState } from "react";
+
+import { eliminarNotaPedido, guardarCajaNota } from "../../services/notasPedido";
 
 import { useNotasPedidoListado } from "./hooks/useNotasPedidoListado";
 import SearchBar from "./components/SearchBar";
@@ -8,6 +10,7 @@ import NotasTable from "./components/NotasTable";
 import NotaDetalleModal from "./components/NotaDetalleModal";
 
 export default function NotasPedidoListadoView() {
+  const [flash, setFlash] = useState(null);
   const {
     q,
     setQ,
@@ -27,36 +30,70 @@ export default function NotasPedidoListadoView() {
     cerrarDetalle,
   } = useNotasPedidoListado();
 
+  useEffect(() => {
+    if (!flash) return undefined;
+    const t = window.setTimeout(() => setFlash(null), 2600);
+    return () => window.clearTimeout(t);
+  }, [flash]);
+
   async function handleGuardarCaja(nota, payload) {
     await guardarCajaNota(nota._id, payload);
     await cargar(page);
-    if (openId === nota._id) {
-      await abrirDetalle(nota._id);
-    }
+    cerrarDetalle();
+    setFlash({
+      kind: "success",
+      message: `La nota ${nota?.numero || ""} se guardo en caja y paso a Notas guardadas.`,
+    });
+  }
+
+  async function handleEliminarNota(nota) {
+    const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
+    if (!ok) return;
+
+    await eliminarNotaPedido(nota._id);
+    await cargar(page);
+    if (openId === nota._id) cerrarDetalle();
+    setFlash({
+      kind: "info",
+      message: `La nota ${nota?.numero || ""} se borro del listado.`,
+    });
   }
 
   return (
     <div className="npl-page">
       <div className="npl-head">
         <div>
+          <div className="npl-eyebrow">Caja</div>
           <h1>Listado de notas</h1>
-          <p className="npl-sub">Busqueda, detalle y guardado en caja.</p>
+          <p className="npl-sub">Stand by de caja: solo se ven notas pendientes hasta guardar el pago o seña.</p>
+        </div>
+
+        <div className="npl-headStats">
+          <div className="npl-statCard">
+            <span className="npl-statLabel">Pendientes</span>
+            <strong className="npl-statValue">{data.items.length}</strong>
+          </div>
+          <div className="npl-statCard">
+            <span className="npl-statLabel">Pagina actual</span>
+            <strong className="npl-statValue">{page}</strong>
+          </div>
         </div>
       </div>
 
       <SearchBar q={q} setQ={setQ} onSearch={buscar} loading={loading} />
 
       {error ? <div className="npl-error">{error}</div> : null}
+      {flash ? <div className={`npl-flash npl-flash--${flash.kind}`}>{flash.message}</div> : null}
 
       <NotasTable
         items={data.items}
         loading={loading}
         onVerDetalle={abrirDetalle}
-        onGuardarCaja={handleGuardarCaja}
+        onEliminar={handleEliminarNota}
       />
 
       <div className="npl-footer">
-        <span>
+        <span className="npl-footerText">
           Pagina <b>{page}</b> de <b>{totalPages}</b>
         </span>
 

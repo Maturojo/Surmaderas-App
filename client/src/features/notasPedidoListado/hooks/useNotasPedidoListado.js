@@ -23,7 +23,7 @@ export function useNotasPedidoListado({ initialLimit = 25 } = {}) {
     setLoading(true);
     setError("");
     try {
-      const res = await listarNotasPedido({ q, page: p, limit });
+      const res = await listarNotasPedido({ q, page: p, limit, guardada: false });
       setData(res);
     } catch (e) {
       setError(e.message || "Error cargando notas");

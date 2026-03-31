@@ -1,10 +1,13 @@
 import { API_URL, authHeaders } from "./http";
 
-export async function listarNotasPedido({ q = "", page = 1, limit = 25 } = {}) {
+export async function listarNotasPedido({ q = "", page = 1, limit = 25, guardada } = {}) {
   const url = new URL(`${API_URL}/api/notas-pedido`);
   if (q) url.searchParams.set("q", q);
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
+  if (typeof guardada === "boolean") {
+    url.searchParams.set("guardada", String(guardada));
+  }
 
   const r = await fetch(url.toString(), {
     headers: { ...authHeaders() },

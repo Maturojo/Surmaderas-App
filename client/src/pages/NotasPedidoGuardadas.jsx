@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { listarNotasPedido, obtenerNotaPedido } from "../services/notasPedido";
+import { eliminarNotaPedido, listarNotasPedido, obtenerNotaPedido } from "../services/notasPedido";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
 
@@ -32,7 +32,7 @@ export default function NotasPedidoGuardadas() {
     setLoading(true);
     setErr("");
     try {
-      const data = await listarNotasPedido({ q: "", page: 1, limit: 300 });
+      const data = await listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true });
       const arr = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
       setItems(arr);
     } catch (e) {
@@ -72,7 +72,6 @@ export default function NotasPedidoGuardadas() {
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
     return items
-      .filter((n) => n?.caja?.guardada === true)
       .filter((n) => {
         if (!qq) return true;
         return (
@@ -89,6 +88,15 @@ export default function NotasPedidoGuardadas() {
         return db - da;
       });
   }, [items, q]);
+
+  async function borrarNota(nota) {
+    const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
+    if (!ok) return;
+
+    await eliminarNotaPedido(nota._id);
+    if (openId === nota._id) cerrarDetalle();
+    await load();
+  }
 
   return (
     <div className="p-2">
@@ -152,8 +160,11 @@ export default function NotasPedidoGuardadas() {
                   </td>
                   <td className="p-3">${toARS(getNotaTotal(n))}</td>
                   <td className="p-3">
-                    <button className="border rounded px-3 py-1" onClick={() => abrirDetalle(n._id)}>
+                    <button className="border rounded px-3 py-1 mr-2" onClick={() => abrirDetalle(n._id)}>
                       Ver
+                    </button>
+                    <button className="border rounded px-3 py-1" onClick={() => borrarNota(n)}>
+                      Borrar
                     </button>
                   </td>
                 </tr>
