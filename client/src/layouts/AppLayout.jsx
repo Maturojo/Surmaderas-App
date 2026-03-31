@@ -70,7 +70,7 @@ export default function AppLayout() {
                   >
                     <span className="app-linkIcon">{item.icon}</span>
                     <span className="app-linkText">{item.label}</span>
-                    <span className="app-linkCaret">⌄</span>
+                    <span className="app-linkCaret" aria-hidden="true" />
                   </button>
 
                   <div className="app-subnav" hidden={!isOpen}>

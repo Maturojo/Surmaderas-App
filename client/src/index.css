@@ -197,14 +197,19 @@ textarea {
 }
 
 .app-linkCaret {
+  width: 10px;
+  height: 10px;
   margin-left: auto;
-  font-size: 14px;
-  color: rgba(248,243,236,0.68);
+  border-right: 2px solid rgba(248,243,236,0.78);
+  border-bottom: 2px solid rgba(248,243,236,0.78);
+  transform: rotate(45deg);
+  transform-origin: center;
+  opacity: 0.9;
   transition: transform 0.15s ease;
 }
 
 .app-group.open .app-linkCaret {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
 
 .app-subnav {
