@@ -159,6 +159,10 @@ body.formato-media-a4 .cartel-tabla td {
 }
 
 @media print {
+  .no-print {
+    display: none !important;
+  }
+
   html,
   body {
     margin: 0;

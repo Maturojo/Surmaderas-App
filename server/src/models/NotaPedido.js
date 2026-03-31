@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+ï»¿import mongoose from "mongoose";
+
+const VENDEDORES = ["Ariel", "Cecilia", "Gustavo", "Juana", "Matias", "Patricia", "Valentina", "WhatsApp"];
 
 const ClienteSchema = new mongoose.Schema(
   {
@@ -23,7 +25,7 @@ const TotalesSchema = new mongoose.Schema(
 const CajaSchema = new mongoose.Schema(
   {
     guardada: { type: Boolean, default: false },
-    tipo: { type: String, enum: ["seña", "pago"], default: "pago" },
+    tipo: { type: String, enum: ["seÃ±a", "pago"], default: "pago" },
     monto: { type: Number, default: 0 },
     fecha: { type: Date },
     metodo: { type: String, default: "" },
@@ -39,13 +41,13 @@ const NotaPedidoSchema = new mongoose.Schema(
     entrega: { type: String, default: "" },
     diasHabiles: { type: Number, default: 0 },
     cliente: { type: ClienteSchema, default: () => ({}) },
-    vendedor: { type: String, default: "" },
+    vendedor: { type: String, enum: ["", ...VENDEDORES], default: "" },
     medioPago: { type: String, default: "" },
     items: { type: Array, default: [] },
     total: { type: Number, default: 0 },
     totales: { type: TotalesSchema, default: () => ({}) },
     pdfBase64: { type: String, default: "" },
-    estado: { type: String, enum: ["pendiente", "señada", "pagada"], default: "pendiente" },
+    estado: { type: String, enum: ["pendiente", "seÃ±ada", "pagada"], default: "pendiente" },
     caja: { type: CajaSchema, default: () => ({}) },
   },
   { timestamps: true }

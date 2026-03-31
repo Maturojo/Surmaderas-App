@@ -20,12 +20,12 @@ export async function listarProductos({ q = "", page = 1, limit = 25 } = {}) {
   return data;
 }
 
-export async function obtenerProductosCatalogo({ q = "", categoria = "", subcategoria = "", limit = 500 } = {}) {
+export async function obtenerProductosCatalogo({ q = "", categoria = "", subcategoria = "", page = 1, limit = 60 } = {}) {
   const url = new URL(`${API_URL}/api/productos`);
   if (q) url.searchParams.set("q", q);
   if (categoria) url.searchParams.set("categoria", categoria);
   if (subcategoria) url.searchParams.set("subcategoria", subcategoria);
-  url.searchParams.set("page", "1");
+  url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
 
   const res = await fetch(url.toString(), {
@@ -37,7 +37,12 @@ export async function obtenerProductosCatalogo({ q = "", categoria = "", subcate
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.message || `Error ${res.status}`);
-  return Array.isArray(data?.items) ? data.items : [];
+  return {
+    items: Array.isArray(data?.items) ? data.items : [],
+    total: Number(data?.total || 0),
+    page: Number(data?.page || page),
+    limit: Number(data?.limit || limit),
+  };
 }
 
 export async function obtenerFiltrosProductos() {

@@ -62,6 +62,9 @@ export function imprimirCarteles(productos, formato = "a4") {
         <link rel="stylesheet" href="${cartelPrintCssUrl}" />
       </head>
       <body class="${config.bodyClass}">
+        <div style="position:sticky;top:0;z-index:10;padding:10px 12px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:flex-end;gap:10px;" class="no-print">
+          <button onclick="window.print()" style="height:40px;padding:0 16px;border-radius:10px;border:1px solid #222;background:#222;color:#fff;font-weight:700;cursor:pointer;">Abrir menu de impresion</button>
+        </div>
         ${pagedGroups
           .map(
             (group) => `
@@ -124,10 +127,5 @@ export function imprimirCarteles(productos, formato = "a4") {
   popup.document.open();
   popup.document.write(html);
   popup.document.close();
-  popup.onload = () => {
-    setTimeout(() => {
-      popup.focus();
-      popup.print();
-    }, 350);
-  };
+  popup.focus();
 }

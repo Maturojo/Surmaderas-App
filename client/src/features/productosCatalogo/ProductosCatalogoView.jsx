@@ -20,6 +20,74 @@ const toast = {
   warning: (title) => Swal.fire({ toast: true, position: "top-end", timer: 2200, showConfirmButton: false, icon: "warning", title }),
 };
 
+const PAGE_SIZE = 60;
+
+const CATEGORY_THEMES = {
+  "Artística": {
+    bg: "#f3ecff",
+    border: "#a977ff",
+    chipBg: "#eadbff",
+    chipColor: "#6f35d6",
+    codeColor: "#6f35d6",
+  },
+  "Candy bar y LASER": {
+    bg: "#fff2f4",
+    border: "#f29aaa",
+    chipBg: "#fde3e8",
+    chipColor: "#bc4a61",
+    codeColor: "#c13f56",
+  },
+  Cortineria: {
+    bg: "#effcfc",
+    border: "#8ce3ea",
+    chipBg: "#daf6f4",
+    chipColor: "#2d7f86",
+    codeColor: "#2d7f86",
+  },
+  Listoneria: {
+    bg: "#fff8eb",
+    border: "#f2c46d",
+    chipBg: "#fde8bf",
+    chipColor: "#9d6a15",
+    codeColor: "#b57718",
+  },
+  Molduras: {
+    bg: "#eefdff",
+    border: "#6fc9d5",
+    chipBg: "#ccf1f7",
+    chipColor: "#2c7180",
+    codeColor: "#2c7180",
+  },
+  Muebles: {
+    bg: "#f3fff2",
+    border: "#7ce58a",
+    chipBg: "#ddf9db",
+    chipColor: "#3f8b45",
+    codeColor: "#4d8b30",
+  },
+  "TODO PARA INFANTILES": {
+    bg: "#fff6e6",
+    border: "#f4ae57",
+    chipBg: "#f8d39b",
+    chipColor: "#c1640a",
+    codeColor: "#dd6f16",
+  },
+  "TODO en accesorios para hogar": {
+    bg: "#f8f6f6",
+    border: "#c9bbbb",
+    chipBg: "#eee5e5",
+    chipColor: "#6f5858",
+    codeColor: "#4c4c4c",
+  },
+  "Sin clasificar": {
+    bg: "#eef4ff",
+    border: "#6a95ff",
+    chipBg: "#d9e5ff",
+    chipColor: "#4b6ec8",
+    codeColor: "#4b6ec8",
+  },
+};
+
 function normalizarTexto(texto) {
   return String(texto || "").trim().replace(/\s+/g, " ");
 }
@@ -28,8 +96,25 @@ function fmtDate(value) {
   return new Date(value).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
 }
 
+function getCardTheme(categoria) {
+  const categoriaNormalizada = normalizarTexto(categoria) || "Sin clasificar";
+  const theme = CATEGORY_THEMES[categoriaNormalizada] || CATEGORY_THEMES["Sin clasificar"];
+
+  return {
+    "--pc-card-bg": theme.bg,
+    "--pc-card-border": theme.border,
+    "--pc-chip-bg": theme.chipBg,
+    "--pc-chip-color": theme.chipColor,
+    "--pc-category-accent": theme.chipColor,
+    "--pc-subcategory-accent": theme.chipColor,
+    "--pc-code-color": theme.codeColor,
+  };
+}
+
 export default function ProductosCatalogoView() {
   const [productos, setProductos] = useState([]);
+  const [totalProductos, setTotalProductos] = useState(0);
+  const [page, setPage] = useState(1);
   const [categorias, setCategorias] = useState([]);
   const [subcategoriasPorCategoria, setSubcategoriasPorCategoria] = useState({});
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
@@ -73,6 +158,11 @@ export default function ProductosCatalogoView() {
     return subcategoriasPorCategoria[categoriaAEliminar] || [];
   }, [categoriaAEliminar, subcategoriasPorCategoria]);
 
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil((totalProductos || 0) / PAGE_SIZE)),
+    [totalProductos]
+  );
+
   const todosSeleccionados =
     productos.length > 0 && productos.every((producto) => seleccionados.some((sel) => sel._id === producto._id));
 
@@ -104,11 +194,16 @@ export default function ProductosCatalogoView() {
         categoria: categoriaSeleccionada,
         subcategoria: subcategoriaSeleccionada,
         q: busqueda,
+        page,
+        limit: PAGE_SIZE,
       });
-      setProductos(data);
+      setProductos(data.items || []);
+      setTotalProductos(Number(data.total || 0));
     } catch (err) {
       setError(err.message || "No se pudieron cargar los productos");
       toast.error("No se pudieron cargar los productos.");
+      setProductos([]);
+      setTotalProductos(0);
     } finally {
       setLoading(false);
     }
@@ -130,7 +225,15 @@ export default function ProductosCatalogoView() {
   useEffect(() => {
     cargarProductos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoriaSeleccionada, subcategoriaSeleccionada, busqueda, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [categoriaSeleccionada, subcategoriaSeleccionada, busqueda]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   useEffect(() => {
     setSeleccionados((prev) => prev.filter((sel) => productos.some((p) => p._id === sel._id)));
@@ -343,12 +446,16 @@ export default function ProductosCatalogoView() {
         </div>
         <div className="pc-heroMeta">
           <div className="pc-metaCard">
-            <span className="pc-metaLabel">Productos visibles</span>
-            <strong className="pc-metaValue">{productos.length}</strong>
+            <span className="pc-metaLabel">Productos filtrados</span>
+            <strong className="pc-metaValue">{totalProductos}</strong>
           </div>
           <div className="pc-metaCard">
             <span className="pc-metaLabel">Seleccionados</span>
             <strong className="pc-metaValue">{seleccionados.length}</strong>
+          </div>
+          <div className="pc-metaCard">
+            <span className="pc-metaLabel">Pagina</span>
+            <strong className="pc-metaValue">{page}</strong>
           </div>
         </div>
       </div>
@@ -380,6 +487,12 @@ export default function ProductosCatalogoView() {
             <option value="">Todas las subcategorias</option>
             {subcategoriasDisponibles.map((sub) => <option key={sub} value={sub}>{sub}</option>)}
           </select>
+        </div>
+
+        <div className="pc-filterSummary">
+          <span className="pc-filterChip">{categoriaSeleccionada || "Todas las categorias"}</span>
+          <span className="pc-filterChip">{subcategoriaSeleccionada || "Todas las subcategorias"}</span>
+          <span className="pc-filterChip">Mostrando {productos.length} de {totalProductos}</span>
         </div>
       </div>
 
@@ -489,7 +602,11 @@ export default function ProductosCatalogoView() {
           {productos.map((producto) => {
             const checked = seleccionados.some((item) => item._id === producto._id);
             return (
-              <article key={producto._id} className={`pc-card${checked ? " pc-card--selected" : ""}`}>
+              <article
+                key={producto._id}
+                className={`pc-card${checked ? " pc-card--selected" : ""}`}
+                style={getCardTheme(producto.categoria, producto.subcategoria)}
+              >
                 <label className="pc-check">
                   <input type="checkbox" checked={checked} onChange={() => toggleSeleccion(producto)} />
                   Seleccionar
@@ -506,6 +623,20 @@ export default function ProductosCatalogoView() {
               </article>
             );
           })}
+        </div>
+      ) : null}
+
+      {!loading && !error && totalPages > 1 ? (
+        <div className="pc-panel pc-pagination">
+          <div className="pc-state">
+            Pagina <strong>{page}</strong> de <strong>{totalPages}</strong>
+          </div>
+          <div className="pc-editActions">
+            <button className="pc-btn" onClick={() => setPage(1)} disabled={page === 1}>«</button>
+            <button className="pc-btn" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1}>Anterior</button>
+            <button className="pc-btn" onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>Siguiente</button>
+            <button className="pc-btn" onClick={() => setPage(totalPages)} disabled={page === totalPages}>»</button>
+          </div>
         </div>
       ) : null}
 
