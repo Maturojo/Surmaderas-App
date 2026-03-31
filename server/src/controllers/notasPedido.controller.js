@@ -70,6 +70,8 @@ function enrichNota(doc) {
   item.clienteNombre = getClienteNombre(item);
   item.clienteTelefono = getClienteTelefono(item);
   item.total = Number(item?.totales?.total ?? item?.total ?? 0);
+  item.estadoOperativo = item?.estadoOperativo || "Pendiente";
+  item.proveedores = Array.isArray(item?.proveedores) ? item.proveedores : [];
   return item;
 }
 
@@ -94,6 +96,8 @@ export async function listarNotasPedido(req, res) {
         { vendedor: rx },
         { entrega: rx },
         { estado: rx },
+        { estadoOperativo: rx },
+        { "proveedores.nombre": rx },
       ];
 
       if (filter.$or) {
@@ -200,5 +204,43 @@ export async function guardarCajaNota(req, res) {
     res.json(enrichNota(updated));
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error guardando caja" });
+  }
+}
+
+export async function actualizarOperacionNota(req, res) {
+  try {
+    const { id } = req.params;
+    const estadoOperativo = String(req.body?.estadoOperativo || "Pendiente").trim() || "Pendiente";
+    const proveedores = Array.isArray(req.body?.proveedores)
+      ? req.body.proveedores
+          .map((item) => ({
+            proveedorId: item?.proveedorId,
+            nombre: String(item?.nombre || "").trim(),
+            observacion: String(item?.observacion || "").trim(),
+            asignadoAt: item?.asignadoAt ? new Date(item.asignadoAt) : new Date(),
+          }))
+          .filter((item) => item.proveedorId && item.nombre)
+      : [];
+
+    const estadosPermitidos = new Set(["Pendiente", "En taller", "Enviado a proveedor", "Finalizado"]);
+    if (!estadosPermitidos.has(estadoOperativo)) {
+      return res.status(400).json({ message: "Estado operativo invalido" });
+    }
+
+    if (estadoOperativo === "Enviado a proveedor" && proveedores.length === 0) {
+      return res.status(400).json({ message: "Tenes que asignar al menos un proveedor" });
+    }
+
+    const updated = await NotaPedido.findByIdAndUpdate(
+      id,
+      { $set: { estadoOperativo, proveedores } },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
+
+    res.json(enrichNota(updated));
+  } catch (e) {
+    res.status(400).json({ message: e?.message || "Error actualizando operacion de la nota" });
   }
 }

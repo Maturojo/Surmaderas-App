@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   },
   { label: "Presupuestos", to: "/presupuestos", icon: "$" },
   { label: "Productos", to: "/productos", icon: "▣" },
+  { label: "Proveedores", to: "/proveedores", icon: "⛁" },
   { label: "Generador 3D", to: "/generador-3d", icon: "◇" },
 ];
 

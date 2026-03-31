@@ -73,3 +73,74 @@ export async function guardarCajaNota(id, payload) {
   if (!r.ok) throw new Error(data?.message || "Error guardando caja");
   return data;
 }
+
+export async function actualizarOperacionNota(id, payload) {
+  const r = await fetch(`${API_URL}/api/notas-pedido/${id}/operacion`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error actualizando operacion de la nota");
+  return data;
+}
+
+export async function listarProveedores() {
+  const r = await fetch(`${API_URL}/api/proveedores`, {
+    headers: { ...authHeaders() },
+    credentials: "include",
+  });
+
+  const data = await r.json().catch(() => ([]));
+  if (!r.ok) throw new Error(data?.message || "Error obteniendo proveedores");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function crearProveedor(payload) {
+  const r = await fetch(`${API_URL}/api/proveedores`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error creando proveedor");
+  return data;
+}
+
+export async function actualizarProveedor(id, payload) {
+  const r = await fetch(`${API_URL}/api/proveedores/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error actualizando proveedor");
+  return data;
+}
+
+export async function eliminarProveedor(id) {
+  const r = await fetch(`${API_URL}/api/proveedores/${id}`, {
+    method: "DELETE",
+    headers: { ...authHeaders() },
+    credentials: "include",
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error eliminando proveedor");
+  return data;
+}

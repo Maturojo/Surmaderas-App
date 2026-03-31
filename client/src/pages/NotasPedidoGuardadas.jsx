@@ -1,7 +1,17 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { eliminarNotaPedido, listarNotasPedido, obtenerNotaPedido } from "../services/notasPedido";
+import Swal from "sweetalert2";
+import {
+  actualizarOperacionNota,
+  eliminarNotaPedido,
+  listarNotasPedido,
+  listarProveedores,
+  obtenerNotaPedido,
+} from "../services/notasPedido";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
+import "../css/notas-guardadas.css";
+
+const ESTADOS_OPERATIVOS = ["Pendiente", "En taller", "Enviado a proveedor", "Finalizado"];
 
 function toARS(n) {
   const x = Number(n || 0);
@@ -18,23 +28,43 @@ function fmtDate(isoOrYmd) {
   return d.toLocaleDateString("es-AR");
 }
 
+function estadoOperativoClase(estado) {
+  if (estado === "Finalizado") return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (estado === "En taller") return "bg-amber-50 text-amber-700 border-amber-200";
+  if (estado === "Enviado a proveedor") return "bg-sky-50 text-sky-700 border-sky-200";
+  return "bg-slate-50 text-slate-700 border-slate-200";
+}
+
 export default function NotasPedidoGuardadas() {
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
   const [err, setErr] = useState("");
   const [openId, setOpenId] = useState(null);
   const [detalle, setDetalle] = useState(null);
   const [detalleLoading, setDetalleLoading] = useState(false);
   const [detalleError, setDetalleError] = useState("");
 
+  const [gestionOpen, setGestionOpen] = useState(false);
+  const [gestionNota, setGestionNota] = useState(null);
+  const [estadoOperativo, setEstadoOperativo] = useState("Pendiente");
+  const [asignaciones, setAsignaciones] = useState([]);
+  const [proveedorIdNuevo, setProveedorIdNuevo] = useState("");
+  const [observacionNueva, setObservacionNueva] = useState("");
+  const [savingGestion, setSavingGestion] = useState(false);
+
   async function load() {
     setLoading(true);
     setErr("");
     try {
-      const data = await listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true });
+      const [data, proveedoresData] = await Promise.all([
+        listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true }),
+        listarProveedores(),
+      ]);
       const arr = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
       setItems(arr);
+      setProveedores(proveedoresData);
     } catch (e) {
       setErr(e?.message || "Error cargando notas guardadas");
     } finally {
@@ -69,6 +99,38 @@ export default function NotasPedidoGuardadas() {
     setDetalleLoading(false);
   }
 
+  async function abrirGestion(nota) {
+    try {
+      const completa = await obtenerNotaPedido(nota._id);
+      setGestionNota(completa);
+      setEstadoOperativo(completa?.estadoOperativo || "Pendiente");
+      setAsignaciones(
+        Array.isArray(completa?.proveedores)
+          ? completa.proveedores.map((item) => ({
+              proveedorId: item.proveedorId,
+              nombre: item.nombre,
+              observacion: item.observacion || "",
+            }))
+          : []
+      );
+      setProveedorIdNuevo("");
+      setObservacionNueva("");
+      setGestionOpen(true);
+    } catch (e) {
+      setErr(e?.message || "No se pudo abrir la gestion operativa");
+    }
+  }
+
+  function cerrarGestion() {
+    setGestionOpen(false);
+    setGestionNota(null);
+    setEstadoOperativo("Pendiente");
+    setAsignaciones([]);
+    setProveedorIdNuevo("");
+    setObservacionNueva("");
+    setSavingGestion(false);
+  }
+
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
     return items
@@ -79,7 +141,9 @@ export default function NotasPedidoGuardadas() {
           getNotaClienteNombre(n).toLowerCase().includes(qq) ||
           String(n?.vendedor || "").toLowerCase().includes(qq) ||
           String(n?.entrega || "").toLowerCase().includes(qq) ||
-          String(n?.estado || "").toLowerCase().includes(qq)
+          String(n?.estado || "").toLowerCase().includes(qq) ||
+          String(n?.estadoOperativo || "").toLowerCase().includes(qq) ||
+          (Array.isArray(n?.proveedores) ? n.proveedores.some((p) => String(p?.nombre || "").toLowerCase().includes(qq)) : false)
         );
       })
       .sort((a, b) => {
@@ -89,90 +153,365 @@ export default function NotasPedidoGuardadas() {
       });
   }, [items, q]);
 
+  const resumen = useMemo(() => {
+    const totalNotas = guardadas.length;
+    const enTaller = guardadas.filter((item) => item?.estadoOperativo === "En taller").length;
+    const enProveedor = guardadas.filter((item) => item?.estadoOperativo === "Enviado a proveedor").length;
+    const finalizadas = guardadas.filter((item) => item?.estadoOperativo === "Finalizado").length;
+    return { totalNotas, enTaller, enProveedor, finalizadas };
+  }, [guardadas]);
+
   async function borrarNota(nota) {
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
     if (!ok) return;
 
     await eliminarNotaPedido(nota._id);
     if (openId === nota._id) cerrarDetalle();
+    if (gestionNota?._id === nota._id) cerrarGestion();
     await load();
   }
 
-  return (
-    <div className="p-2">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold">Notas guardadas</h1>
-          <p className="opacity-70">Pagadas o señadas (caja guardada)</p>
-        </div>
+  function agregarProveedorAsignado() {
+    const proveedor = proveedores.find((item) => String(item._id) === String(proveedorIdNuevo));
+    if (!proveedor) return;
 
-        <div className="flex gap-2 items-center">
+    setAsignaciones((prev) => {
+      const next = prev.filter((item) => String(item.proveedorId) !== String(proveedor._id));
+      return [
+        ...next,
+        {
+          proveedorId: proveedor._id,
+          nombre: proveedor.nombre,
+          observacion: observacionNueva.trim(),
+        },
+      ];
+    });
+    setProveedorIdNuevo("");
+    setObservacionNueva("");
+  }
+
+  function quitarProveedorAsignado(proveedorId) {
+    setAsignaciones((prev) => prev.filter((item) => String(item.proveedorId) !== String(proveedorId)));
+  }
+
+  async function guardarGestion() {
+    if (!gestionNota?._id) return;
+    if (estadoOperativo === "Enviado a proveedor" && asignaciones.length === 0) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Faltan proveedores",
+        text: "Si la nota va a proveedor, tenés que asignar al menos uno.",
+      });
+      return;
+    }
+
+    try {
+      setSavingGestion(true);
+      await actualizarOperacionNota(gestionNota._id, {
+        estadoOperativo,
+        proveedores: asignaciones,
+      });
+      await load();
+      cerrarGestion();
+      await Swal.fire({
+        icon: "success",
+        title: "Operacion actualizada",
+        text: "La nota se actualizo correctamente.",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e?.message || "No se pudo guardar la gestion operativa",
+      });
+    } finally {
+      setSavingGestion(false);
+    }
+  }
+
+  return (
+    <div className="ng-page">
+      <section className="ng-hero">
+        <div className="ng-heroCopy">
+          <span className="ng-kicker">Caja y planificación</span>
+          <h1 className="ng-title">Notas guardadas</h1>
+          <p className="ng-subtitle">
+            Organizá qué sale al taller, qué va a proveedores y qué ya quedó finalizado sin perder
+            de vista el estado comercial de cada pedido.
+          </p>
+        </div>
+        <div className="ng-stats">
+          <article className="ng-statCard">
+            <span className="ng-statLabel">Notas visibles</span>
+            <strong className="ng-statValue">{resumen.totalNotas}</strong>
+          </article>
+          <article className="ng-statCard">
+            <span className="ng-statLabel">En taller</span>
+            <strong className="ng-statValue">{resumen.enTaller}</strong>
+          </article>
+          <article className="ng-statCard">
+            <span className="ng-statLabel">A proveedor</span>
+            <strong className="ng-statValue">{resumen.enProveedor}</strong>
+          </article>
+          <article className="ng-statCard">
+            <span className="ng-statLabel">Finalizadas</span>
+            <strong className="ng-statValue">{resumen.finalizadas}</strong>
+          </article>
+        </div>
+      </section>
+
+      <section className="ng-toolbar">
+        <div className="ng-search">
+          <span className="ng-searchIcon" aria-hidden="true">
+            ⌕
+          </span>
           <input
-            className="border rounded px-3 py-2 w-[320px]"
-            placeholder="Buscar..."
+            className="ng-searchInput"
+            placeholder="Buscar por número, cliente, vendedor, estado o proveedor"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <button className="border rounded px-3 py-2" onClick={load} disabled={loading}>
-            {loading ? "Cargando..." : "Actualizar"}
-          </button>
         </div>
-      </div>
+        <button className="ng-refreshBtn" onClick={load} disabled={loading}>
+          {loading ? "Actualizando..." : "Actualizar"}
+        </button>
+      </section>
 
       {err ? (
-        <div className="mt-3 border border-red-300 bg-red-50 text-red-700 rounded p-3">
+        <div className="ng-error">
           {err}
         </div>
       ) : null}
 
-      <div className="mt-4 border rounded overflow-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b">
+      <section className="ng-tableCard">
+        <div className="ng-tableHead">
+          <div>
+            <h2 className="ng-sectionTitle">Plan del día</h2>
+            <p className="ng-sectionSub">Visualizá rápido destino, estado operativo y total de cada nota.</p>
+          </div>
+          <div className="ng-resultsPill">
+            {guardadas.length} {guardadas.length === 1 ? "nota" : "notas"}
+          </div>
+        </div>
+
+        <div className="ng-tableWrap">
+          <table className="ng-table">
+            <thead>
             <tr>
-              <th className="text-left p-3">Numero</th>
-              <th className="text-left p-3">Fecha</th>
-              <th className="text-left p-3">Entrega</th>
-              <th className="text-left p-3">Cliente</th>
-              <th className="text-left p-3">Vendedor</th>
-              <th className="text-left p-3">Estado</th>
-              <th className="text-left p-3">Caja</th>
-              <th className="text-left p-3">Total</th>
-              <th className="text-left p-3"></th>
+              <th>Numero</th>
+              <th>Fecha</th>
+              <th>Entrega</th>
+              <th>Cliente</th>
+              <th>Vendedor</th>
+              <th>Estado</th>
+              <th>Operativo</th>
+              <th>Destino</th>
+              <th>Total</th>
+              <th>Acciones</th>
             </tr>
           </thead>
 
           <tbody>
             {loading ? (
-              <tr><td className="p-4 opacity-70" colSpan={9}>Cargando...</td></tr>
+              <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
             ) : guardadas.length === 0 ? (
-              <tr><td className="p-4 opacity-70" colSpan={9}>No hay notas guardadas.</td></tr>
+              <tr><td className="ng-tableMessage" colSpan={10}>No hay notas guardadas.</td></tr>
             ) : (
               guardadas.map((n) => (
-                <tr key={n?._id || n?.id || n?.numero} className="border-b">
-                  <td className="p-3">{n?.numero ?? "-"}</td>
-                  <td className="p-3">{fmtDate(n?.fecha)}</td>
-                  <td className="p-3">{n?.entrega ?? "-"}</td>
-                  <td className="p-3">{getNotaClienteNombre(n)}</td>
-                  <td className="p-3">{n?.vendedor ?? "-"}</td>
-                  <td className="p-3 font-semibold">{n?.estado ?? "-"}</td>
-                  <td className="p-3">
-                    {n?.caja?.tipo ? `${n.caja.tipo} $${toARS(n?.caja?.monto)}` : "-"}
+                <tr key={n?._id || n?.id || n?.numero}>
+                  <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
+                  <td>{fmtDate(n?.fecha)}</td>
+                  <td>{n?.entrega ?? "-"}</td>
+                  <td>
+                    <div className="ng-clientCell">
+                      <strong>{getNotaClienteNombre(n)}</strong>
+                      <span>{n?.cliente?.telefono || "Sin telefono"}</span>
+                    </div>
                   </td>
-                  <td className="p-3">${toARS(getNotaTotal(n))}</td>
-                  <td className="p-3">
-                    <button className="border rounded px-3 py-1 mr-2" onClick={() => abrirDetalle(n._id)}>
+                  <td>{n?.vendedor ?? "-"}</td>
+                  <td>
+                    <span className="ng-statusPill ng-statusPill--comercial">{n?.estado ?? "-"}</span>
+                  </td>
+                  <td>
+                    <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
+                      {n?.estadoOperativo || "Pendiente"}
+                    </span>
+                  </td>
+                  <td>
+                    {Array.isArray(n?.proveedores) && n.proveedores.length > 0 ? (
+                      <div className="ng-destinos">
+                        {n.proveedores.map((prov, idx) => (
+                          <span key={`${prov?.proveedorId || prov?.nombre}-${idx}`} className="ng-destinoTag">
+                            {prov?.nombre}
+                          </span>
+                        ))}
+                      </div>
+                    ) : n?.estadoOperativo === "En taller" ? (
+                      <span className="ng-inlineBadge ng-inlineBadge--taller">Taller</span>
+                    ) : (
+                      <span className="ng-muted">-</span>
+                    )}
+                  </td>
+                  <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
+                  <td>
+                    <div className="ng-actions">
+                      <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                       Ver
-                    </button>
-                    <button className="border rounded px-3 py-1" onClick={() => borrarNota(n)}>
+                      </button>
+                      <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
+                      Gestionar
+                      </button>
+                      <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
                       Borrar
-                    </button>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
-        </table>
-      </div>
+          </table>
+        </div>
+      </section>
+
+      {gestionOpen && gestionNota ? (
+        <div className="ng-modalBack">
+          <div className="ng-modal">
+            <div className="ng-modalHeader">
+              <div>
+                <span className="ng-modalKicker">Seguimiento interno</span>
+                <h2 className="ng-modalTitle">Gestion operativa</h2>
+                <p className="ng-modalSub">
+                  {gestionNota.numero} - {getNotaClienteNombre(gestionNota)}
+                </p>
+              </div>
+              <button className="ng-modalClose" onClick={cerrarGestion}>Cerrar</button>
+            </div>
+
+            <div className="ng-modalGrid">
+              <div className="ng-panel">
+                <div className="ng-panelLabel">Estado operativo</div>
+                <select
+                  className="ng-select"
+                  value={estadoOperativo}
+                  onChange={(e) => setEstadoOperativo(e.target.value)}
+                >
+                  {ESTADOS_OPERATIVOS.map((estado) => (
+                    <option key={estado} value={estado}>
+                      {estado}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="ng-quickActions">
+                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("Pendiente")}>
+                    Pendiente
+                  </button>
+                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("En taller")}>
+                    Mandar a taller
+                  </button>
+                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("Enviado a proveedor")}>
+                    Mandar a proveedor
+                  </button>
+                </div>
+
+                <div className="ng-summaryCard">
+                  <div className="ng-summaryTitle">Resumen actual</div>
+                  <div className="ng-summaryGrid">
+                    <div>
+                      <span>Cliente</span>
+                      <strong>{getNotaClienteNombre(gestionNota)}</strong>
+                    </div>
+                    <div>
+                      <span>Entrega</span>
+                      <strong>{gestionNota.entrega || "-"}</strong>
+                    </div>
+                    <div>
+                      <span>Total</span>
+                      <strong>${toARS(getNotaTotal(gestionNota))}</strong>
+                    </div>
+                    <div>
+                      <span>Vendedor</span>
+                      <strong>{gestionNota.vendedor || "-"}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="ng-panel">
+                <div className="ng-panelLabel">Proveedores asignados</div>
+
+                {estadoOperativo !== "Enviado a proveedor" ? (
+                  <div className="ng-warningBox">
+                    Esta nota no esta marcada como enviada a proveedor. Podés dejar proveedores cargados igual o cambiar el estado antes de guardar.
+                  </div>
+                ) : null}
+
+                <div className="ng-providerList">
+                  {asignaciones.length === 0 ? (
+                    <div className="ng-emptyBox">Todavía no hay proveedores asignados.</div>
+                  ) : (
+                    asignaciones.map((item) => (
+                      <div key={String(item.proveedorId)} className="ng-providerCard">
+                        <div className="ng-providerCardRow">
+                          <div>
+                            <div className="ng-providerName">{item.nombre}</div>
+                            <div className="ng-providerObs">{item.observacion || "Sin observacion"}</div>
+                          </div>
+                          <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
+                            Quitar
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                <div className="ng-addCard">
+                  <div className="ng-addTitle">Agregar proveedor a la nota</div>
+                  <select
+                    className="ng-select"
+                    value={proveedorIdNuevo}
+                    onChange={(e) => setProveedorIdNuevo(e.target.value)}
+                  >
+                    <option value="">Seleccionar proveedor</option>
+                    {proveedores.map((prov) => (
+                      <option key={prov._id} value={prov._id}>
+                        {prov.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <textarea
+                    className="ng-textarea"
+                    rows={3}
+                    placeholder="Observacion para este proveedor"
+                    value={observacionNueva}
+                    onChange={(e) => setObservacionNueva(e.target.value)}
+                  />
+                  <button
+                    className="ng-addBtn"
+                    onClick={agregarProveedorAsignado}
+                    disabled={!proveedorIdNuevo}
+                  >
+                    Agregar proveedor
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="ng-modalActions">
+              <button className="ng-actionBtn ng-actionBtn--ghost" onClick={cerrarGestion}>
+                Cancelar
+              </button>
+              <button className="ng-actionBtn ng-actionBtn--primary" onClick={guardarGestion} disabled={savingGestion}>
+                {savingGestion ? "Guardando..." : "Guardar gestion"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <NotaDetalleModal
         open={Boolean(openId)}

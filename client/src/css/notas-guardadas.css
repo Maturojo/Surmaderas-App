@@ -1,0 +1,662 @@
+.ng-page {
+  display: grid;
+  gap: 18px;
+}
+
+.ng-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  padding: 26px 28px;
+  border-radius: 28px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(197, 176, 141, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255, 249, 239, 0.96) 0%, rgba(246, 241, 233, 0.9) 100%);
+  box-shadow: 0 18px 40px rgba(55, 43, 29, 0.08);
+}
+
+.ng-kicker {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: #8a765a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.ng-title {
+  margin: 0;
+  font-size: 40px;
+  line-height: 0.94;
+  font-weight: 900;
+  color: #2b2723;
+}
+
+.ng-subtitle {
+  max-width: 720px;
+  margin: 12px 0 0;
+  color: var(--sm-muted);
+  font-size: 14px;
+}
+
+.ng-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-content: center;
+}
+
+.ng-statCard {
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.ng-statLabel {
+  display: block;
+  color: #7a7065;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ng-statValue {
+  display: block;
+  margin-top: 8px;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+  color: #241f19;
+}
+
+.ng-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 32px rgba(55, 43, 29, 0.05);
+}
+
+.ng-search {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: #fcfaf7;
+}
+
+.ng-searchIcon {
+  color: #8f8171;
+  font-size: 18px;
+}
+
+.ng-searchInput {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #241f19;
+}
+
+.ng-searchInput::placeholder {
+  color: #9a9085;
+}
+
+.ng-refreshBtn {
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #31271f 0%, #534131 100%);
+  color: #fffaf4;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(55, 43, 29, 0.16);
+}
+
+.ng-refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ng-error {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid #efb1b1;
+  background: #fff3f3;
+  color: #962f2f;
+  font-weight: 700;
+}
+
+.ng-tableCard {
+  padding: 16px;
+  border-radius: 28px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 18px 42px rgba(55, 43, 29, 0.06);
+}
+
+.ng-tableHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.ng-sectionTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #28231e;
+}
+
+.ng-sectionSub {
+  margin: 6px 0 0;
+  color: var(--sm-muted);
+  font-size: 14px;
+}
+
+.ng-resultsPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #f0e8dc;
+  color: #5d4b38;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ng-tableWrap {
+  overflow: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.ng-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ng-table th,
+.ng-table td {
+  padding: 15px 14px;
+  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  text-align: left;
+  font-size: 13px;
+  color: #2b2723;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.ng-table th {
+  background: #f7f1e7;
+  color: #6f665d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ng-table tbody tr:hover td {
+  background: #fcfaf6;
+}
+
+.ng-tableMessage {
+  padding: 24px;
+  text-align: center;
+  color: #7a7065;
+}
+
+.ng-cellStrong {
+  font-weight: 800;
+  color: #1f1a15;
+}
+
+.ng-clientCell {
+  display: grid;
+  gap: 4px;
+}
+
+.ng-clientCell strong {
+  font-size: 14px;
+}
+
+.ng-clientCell span {
+  color: #7a7065;
+  font-size: 12px;
+}
+
+.ng-statusPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ng-statusPill--comercial {
+  background: #efe8db;
+  color: #65503d;
+  border-color: rgba(101, 80, 61, 0.12);
+}
+
+.ng-destinos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ng-destinoTag,
+.ng-inlineBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ng-destinoTag {
+  background: #eef6ff;
+  color: #35628e;
+}
+
+.ng-inlineBadge--taller {
+  background: #fff3de;
+  color: #9a6715;
+}
+
+.ng-muted {
+  color: #8a8178;
+}
+
+.ng-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ng-tableBtn {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fff;
+  color: #2b2723;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ng-tableBtn--dark {
+  background: #31271f;
+  color: #fffaf4;
+  border-color: #31271f;
+}
+
+.ng-tableBtn--danger {
+  background: #fff4f4;
+  color: #9a3131;
+  border-color: rgba(154, 49, 49, 0.16);
+}
+
+.ng-modalBack {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(28, 23, 18, 0.46);
+  backdrop-filter: blur(4px);
+}
+
+.ng-modal {
+  width: min(1100px, 100%);
+  max-height: calc(100vh - 44px);
+  overflow: auto;
+  padding: 22px;
+  border-radius: 28px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(197, 176, 141, 0.12), transparent 28%),
+    #fffcf7;
+  box-shadow: 0 26px 60px rgba(20, 15, 10, 0.22);
+}
+
+.ng-modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.ng-modalKicker {
+  display: inline-flex;
+  margin-bottom: 6px;
+  color: #8a765a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ng-modalTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #28231e;
+}
+
+.ng-modalSub {
+  margin: 8px 0 0;
+  color: #72695f;
+  font-size: 14px;
+}
+
+.ng-modalClose {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ng-modalGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.ng-panel {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.ng-panelLabel {
+  color: #7d7266;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.ng-select,
+.ng-textarea {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fcfaf7;
+  color: #241f19;
+  outline: none;
+}
+
+.ng-select {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.ng-textarea {
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.ng-quickActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ng-quickBtn,
+.ng-addBtn,
+.ng-actionBtn,
+.ng-miniBtn {
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ng-quickBtn {
+  min-height: 42px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: #fff;
+  color: #33281f;
+}
+
+.ng-summaryCard {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f7f1e7 0%, #fcfaf7 100%);
+  border: 1px solid rgba(73, 58, 38, 0.08);
+}
+
+.ng-summaryTitle {
+  font-size: 14px;
+  font-weight: 900;
+  color: #31271f;
+}
+
+.ng-summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.ng-summaryGrid span {
+  display: block;
+  color: #7b7267;
+  font-size: 12px;
+}
+
+.ng-summaryGrid strong {
+  display: block;
+  margin-top: 4px;
+  color: #241f19;
+}
+
+.ng-warningBox {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff4de;
+  color: #84561a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ng-providerList {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ng-emptyBox {
+  padding: 14px;
+  border-radius: 16px;
+  background: #f7f5f1;
+  color: #7a7065;
+  font-size: 13px;
+}
+
+.ng-providerCard {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: #fff;
+}
+
+.ng-providerCardRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ng-providerName {
+  font-weight: 900;
+  color: #28231e;
+}
+
+.ng-providerObs {
+  margin-top: 4px;
+  color: #746a60;
+  font-size: 13px;
+}
+
+.ng-miniBtn {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fff4f4;
+  color: #943939;
+}
+
+.ng-addCard {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px dashed rgba(73, 58, 38, 0.18);
+  background: rgba(252, 250, 247, 0.9);
+}
+
+.ng-addTitle {
+  font-size: 14px;
+  font-weight: 900;
+  color: #31271f;
+}
+
+.ng-addBtn {
+  margin-top: 12px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fff;
+  color: #31271f;
+}
+
+.ng-addBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ng-modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ng-actionBtn {
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+}
+
+.ng-actionBtn--ghost {
+  background: #fff;
+  color: #2f2821;
+}
+
+.ng-actionBtn--primary {
+  background: linear-gradient(135deg, #2f261e 0%, #4a3c2f 100%);
+  border-color: #2f261e;
+  color: #fffdf8;
+  box-shadow: 0 12px 24px rgba(47, 38, 30, 0.16);
+}
+
+.bg-emerald-50.text-emerald-700.border-emerald-200 {
+  background: #eaf7ef;
+  color: #226845;
+  border-color: #c7e8d5;
+}
+
+.bg-amber-50.text-amber-700.border-amber-200 {
+  background: #fff5e7;
+  color: #9b6514;
+  border-color: #f1d3a2;
+}
+
+.bg-sky-50.text-sky-700.border-sky-200 {
+  background: #eef6ff;
+  color: #2e648f;
+  border-color: #c7dcf2;
+}
+
+.bg-slate-50.text-slate-700.border-slate-200 {
+  background: #f2f3f5;
+  color: #5c6571;
+  border-color: #d7dbe2;
+}
+
+@media (max-width: 1080px) {
+  .ng-hero,
+  .ng-modalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .ng-toolbar,
+  .ng-tableHead,
+  .ng-modalHeader,
+  .ng-providerCardRow,
+  .ng-modalActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ng-stats,
+  .ng-summaryGrid,
+  .ng-quickActions {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-title {
+    font-size: 32px;
+  }
+
+  .ng-page {
+    gap: 14px;
+  }
+
+  .ng-hero,
+  .ng-tableCard,
+  .ng-modal {
+    padding: 18px;
+  }
+
+  .ng-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

@@ -5,6 +5,7 @@ import {
   obtenerNotaPedido,
   eliminarNotaPedido,
   guardarCajaNota,
+  actualizarOperacionNota,
 } from "../controllers/notasPedido.controller.js";
 import { requireAuth } from "../middleware/auth.js";
 
@@ -17,5 +18,6 @@ router.get("/:id", requireAuth, obtenerNotaPedido);
 router.delete("/:id", requireAuth, eliminarNotaPedido);
 
 router.patch("/:id/guardar-caja", requireAuth, guardarCajaNota);
+router.patch("/:id/operacion", requireAuth, actualizarOperacionNota);
 
 export default router;

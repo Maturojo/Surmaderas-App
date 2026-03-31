@@ -34,6 +34,16 @@ const CajaSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const ProveedorAsignadoSchema = new mongoose.Schema(
+  {
+    proveedorId: { type: mongoose.Schema.Types.ObjectId, ref: "Proveedor", required: true },
+    nombre: { type: String, default: "" },
+    observacion: { type: String, default: "" },
+    asignadoAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const NotaPedidoSchema = new mongoose.Schema(
   {
     numero: { type: String, default: "" },
@@ -49,6 +59,12 @@ const NotaPedidoSchema = new mongoose.Schema(
     pdfBase64: { type: String, default: "" },
     estado: { type: String, enum: ["pendiente", "señada", "pagada"], default: "pendiente" },
     caja: { type: CajaSchema, default: () => ({}) },
+    estadoOperativo: {
+      type: String,
+      enum: ["Pendiente", "En taller", "Enviado a proveedor", "Finalizado"],
+      default: "Pendiente",
+    },
+    proveedores: { type: [ProveedorAsignadoSchema], default: [] },
   },
   { timestamps: true }
 );

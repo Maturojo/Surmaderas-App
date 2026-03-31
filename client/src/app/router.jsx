@@ -7,6 +7,7 @@ import Calendar from "../pages/Calendar";
 import NotasPedido from "../pages/NotasPedido";
 import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
+import Proveedores from "../pages/Proveedores";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "presupuestos", element: <GeneradorPresupuestos /> },
 
       { path: "productos", element: <Productos /> },
+      { path: "proveedores", element: <Proveedores /> },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
     ],
   },
