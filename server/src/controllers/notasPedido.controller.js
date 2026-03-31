@@ -5,6 +5,24 @@ function getClienteNombre(doc) {
   return doc?.cliente?.nombre || "";
 }
 
+function telefonoValido(value) {
+  return /^\d{10}$/.test(String(value || "").replace(/\D/g, ""));
+}
+
+function formatearTelefono(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 10);
+
+  if (digits.startsWith("11")) {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 function getClienteTelefono(doc) {
   if (typeof doc?.cliente === "string") return "";
   return doc?.cliente?.telefono || "";
@@ -104,6 +122,16 @@ export async function listarNotasPedido(req, res) {
 export async function crearNotaPedido(req, res) {
   try {
     const payload = normalizeNotaPayload(req.body);
+    if (!String(payload?.cliente?.nombre || "").trim()) {
+      return res.status(400).json({ message: "Falta el nombre del cliente" });
+    }
+    if (!String(payload?.cliente?.telefono || "").trim()) {
+      return res.status(400).json({ message: "Falta el telefono del cliente" });
+    }
+    if (!telefonoValido(payload?.cliente?.telefono)) {
+      return res.status(400).json({ message: "El telefono debe tener formato valido, por ejemplo 223-595-4165" });
+    }
+    payload.cliente.telefono = formatearTelefono(payload.cliente.telefono);
     const doc = await NotaPedido.create(payload);
     res.status(201).json(enrichNota(doc));
   } catch (e) {

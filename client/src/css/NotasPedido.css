@@ -787,9 +787,30 @@
   box-shadow: 0 0 0 4px rgba(195, 162, 118, 0.18);
 }
 
+.np-input--error {
+  border-color: #d85b5b;
+  background: #fff6f6;
+}
+
+.np-input--error:focus {
+  border-color: #d85b5b;
+  box-shadow: 0 0 0 4px rgba(216, 91, 91, 0.16);
+}
+
 .np-readonly {
   background: #f7f0e8;
   color: #695744;
+}
+
+.np-helpText {
+  color: #8b7b6a;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.np-helpText.is-error {
+  color: #b93f3f;
+  font-weight: 700;
 }
 
 .np-items {

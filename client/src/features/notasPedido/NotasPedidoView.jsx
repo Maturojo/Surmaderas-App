@@ -31,6 +31,25 @@ const emptyItem = {
   activeIndex: 0,
 };
 
+function formatTelefono(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 10);
+
+  if (digits.startsWith("11")) {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function isTelefonoValido(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  return /^\d{10}$/.test(digits);
+}
+
 export default function NotasPedidoView() {
   const { productos } = useProductos();
   const acItemsRef = useRef({});
@@ -52,6 +71,7 @@ export default function NotasPedidoView() {
   const [items, setItems] = useState([{ ...emptyItem }]);
   const [descuento, setDescuento] = useState("");
   const [adelanto, setAdelanto] = useState("");
+  const telefonoValido = isTelefonoValido(telefono);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -169,6 +189,8 @@ export default function NotasPedidoView() {
 
     try {
       if (!String(cliente || "").trim()) throw new Error("Falta el nombre del cliente");
+      if (!String(telefono || "").trim()) throw new Error("Falta el telefono del cliente");
+      if (!telefonoValido) throw new Error("El telefono debe tener formato valido, por ejemplo 223-595-4165");
 
       const numero = `NP-${Date.now()}`;
 
@@ -307,7 +329,15 @@ export default function NotasPedidoView() {
 
               <div className="np-field">
                 <label className="np-label">Telefono:</label>
-                <input className="np-input" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Ej: 223..." />
+                <input
+                  className={`np-input${telefono && !telefonoValido ? " np-input--error" : ""}`}
+                  value={telefono}
+                  onChange={(e) => setTelefono(formatTelefono(e.target.value))}
+                  placeholder="Ej: 2235954165"
+                />
+                <span className={`np-helpText${telefono && !telefonoValido ? " is-error" : ""}`}>
+                  Escribí solo números. Se separa solo mientras tipeás. Ejemplos: 2235954165 o 1123456789.
+                </span>
               </div>
 
               <div className="np-field">
