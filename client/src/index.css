@@ -181,6 +181,72 @@ textarea {
   font-size: 14px;
 }
 
+.app-group {
+  display: grid;
+  gap: 6px;
+}
+
+.app-link--group {
+  width: 100%;
+  border: 0;
+  cursor: default;
+  justify-content: flex-start;
+  background: transparent;
+  color: rgba(248,243,236,0.8);
+  text-align: left;
+}
+
+.app-linkCaret {
+  margin-left: auto;
+  font-size: 14px;
+  color: rgba(248,243,236,0.68);
+  transition: transform 0.15s ease;
+}
+
+.app-group.open .app-linkCaret {
+  transform: rotate(180deg);
+}
+
+.app-subnav {
+  display: grid;
+  gap: 6px;
+  padding: 0 0 2px 20px;
+}
+
+.app-sublink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 14px;
+  color: rgba(248,243,236,0.72);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.app-sublink:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fffdf9;
+}
+
+.app-sublink.active {
+  background: rgba(255,255,255,0.1);
+  color: #fffdf9;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.app-sublinkDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(248,243,236,0.34);
+}
+
+.app-sublink.active .app-sublinkDot {
+  background: #fff2de;
+}
+
 .app-sidebarFooter {
   margin-top: auto;
   display: grid;

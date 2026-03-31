@@ -40,9 +40,16 @@ export default function NotasPedidoListadoView() {
     await guardarCajaNota(nota._id, payload);
     await cargar(page);
     cerrarDetalle();
+    const tipo = String(payload?.tipo || "").toLowerCase();
+    const message =
+      tipo === "pago"
+        ? `La nota ${nota?.numero || ""} se guardo en caja como pagada y paso a Notas guardadas.`
+        : tipo === "seña" || tipo === "sena" || tipo === "senia"
+          ? `La nota ${nota?.numero || ""} se guardo en caja como señada y paso a Notas guardadas.`
+          : `La nota ${nota?.numero || ""} se guardo sin pagar y paso a Notas guardadas como pendiente.`;
     setFlash({
       kind: "success",
-      message: `La nota ${nota?.numero || ""} se guardo en caja y paso a Notas guardadas.`,
+      message,
     });
   }
 

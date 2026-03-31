@@ -1,20 +1,32 @@
-﻿import { NavLink, Outlet } from "react-router-dom";
+﻿import { useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
 
 const NAV_ITEMS = [
   { label: "Dashboard", to: "/", icon: "◫" },
   { label: "Calendario", to: "/calendario", icon: "◷" },
-  { label: "Notas de pedido", to: "/notas-pedido", icon: "✎" },
-  { label: "Listado de notas", to: "/notas-pedido/listado", icon: "☰" },
-  { label: "Notas guardadas", to: "/notas-pedido/guardadas", icon: "✓" },
+  {
+    label: "Notas de pedido",
+    icon: "✎",
+    children: [
+      { label: "Generador", to: "/notas-pedido" },
+      { label: "Listado de notas", to: "/notas-pedido/listado" },
+      { label: "Notas guardadas", to: "/notas-pedido/guardadas" },
+    ],
+  },
   { label: "Presupuestos", to: "/presupuestos", icon: "$" },
   { label: "Productos", to: "/productos", icon: "▣" },
   { label: "Generador 3D", to: "/generador-3d", icon: "◇" },
 ];
 
 export default function AppLayout() {
+  const location = useLocation();
   const auth = getAuth();
   const userName = auth?.user?.username || auth?.user?.name || "Equipo Sur Maderas";
+  const notasGroupActive = NAV_ITEMS.find((item) => item.children)?.children.some(
+    (child) => location.pathname === child.to || location.pathname.startsWith(`${child.to}/`)
+  );
+  const [notasOpen, setNotasOpen] = useState(false);
 
   return (
     <div className="app-shell">
@@ -42,17 +54,54 @@ export default function AppLayout() {
 
         <nav className="app-nav">
           <div className="app-navLabel">Modulos</div>
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
-            >
-              <span className="app-linkIcon">{item.icon}</span>
-              <span className="app-linkText">{item.label}</span>
-            </NavLink>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            if (item.children) {
+              const isOpen = notasGroupActive || notasOpen;
+              const isActive = item.children.some(
+                (child) => location.pathname === child.to || location.pathname.startsWith(`${child.to}/`)
+              );
+
+              return (
+                <div key={item.label} className={`app-group${isOpen ? " open" : ""}`}>
+                  <button
+                    type="button"
+                    className={`app-link app-link--group${isActive ? " active" : ""}`}
+                    onClick={() => setNotasOpen((prev) => !prev)}
+                  >
+                    <span className="app-linkIcon">{item.icon}</span>
+                    <span className="app-linkText">{item.label}</span>
+                    <span className="app-linkCaret">⌄</span>
+                  </button>
+
+                  <div className="app-subnav" hidden={!isOpen}>
+                    {item.children.map((child) => (
+                      <NavLink
+                        key={child.to}
+                        to={child.to}
+                        end={child.to === "/notas-pedido"}
+                        className={({ isActive }) => `app-sublink${isActive ? " active" : ""}`}
+                      >
+                        <span className="app-sublinkDot" />
+                        <span>{child.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
+              >
+                <span className="app-linkIcon">{item.icon}</span>
+                <span className="app-linkText">{item.label}</span>
+              </NavLink>
+            );
+          })}
         </nav>
 
         <div className="app-sidebarFooter">

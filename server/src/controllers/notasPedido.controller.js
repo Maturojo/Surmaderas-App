@@ -131,6 +131,9 @@ export async function crearNotaPedido(req, res) {
     if (!telefonoValido(payload?.cliente?.telefono)) {
       return res.status(400).json({ message: "El telefono debe tener formato valido, por ejemplo 223-595-4165" });
     }
+    if (!String(payload?.vendedor || "").trim()) {
+      return res.status(400).json({ message: "Falta el vendedor de la nota" });
+    }
     payload.cliente.telefono = formatearTelefono(payload.cliente.telefono);
     const doc = await NotaPedido.create(payload);
     res.status(201).json(enrichNota(doc));
@@ -166,24 +169,33 @@ export async function guardarCajaNota(req, res) {
     const { id } = req.params;
     const { tipo = "pago", monto = 0, metodo = "", nota = "" } = req.body;
 
+    const notaActual = await NotaPedido.findById(id);
+    if (!notaActual) return res.status(404).json({ message: "Nota no encontrada" });
+
     const t = String(tipo).toLowerCase();
     const esSena = t === "seña" || t === "sena" || t === "senia";
-    const estado = esSena ? "señada" : "pagada";
+    const esPago = t === "pago";
+    const estado = esSena ? "señada" : esPago ? "pagada" : "pendiente";
+    const totalNota = Number(notaActual?.totales?.total ?? notaActual?.total ?? 0);
+    const montoNumero = esPago ? totalNota : Number(monto || 0);
+
+    if (esSena && !(montoNumero > 0)) {
+      return res.status(400).json({ message: "Si la nota queda señada, el monto debe ser mayor a 0" });
+    }
 
     const update = {
       estado,
       caja: {
         guardada: true,
-        tipo: esSena ? "seña" : "pago",
-        monto: Number(monto || 0),
-        metodo: String(metodo || ""),
+        tipo: esSena ? "seña" : esPago ? "pago" : "",
+        monto: esSena || esPago ? montoNumero : 0,
+        metodo: esSena || esPago ? String(metodo || "") : "",
         nota: String(nota || ""),
         fecha: new Date(),
       },
     };
 
     const updated = await NotaPedido.findByIdAndUpdate(id, update, { new: true });
-    if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
 
     res.json(enrichNota(updated));
   } catch (e) {

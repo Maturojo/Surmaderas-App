@@ -191,6 +191,7 @@ export default function NotasPedidoView() {
       if (!String(cliente || "").trim()) throw new Error("Falta el nombre del cliente");
       if (!String(telefono || "").trim()) throw new Error("Falta el telefono del cliente");
       if (!telefonoValido) throw new Error("El telefono debe tener formato valido, por ejemplo 223-595-4165");
+      if (!String(vendedor || "").trim()) throw new Error("Tenes que seleccionar un vendedor");
 
       const numero = `NP-${Date.now()}`;
 
@@ -342,7 +343,7 @@ export default function NotasPedidoView() {
 
               <div className="np-field">
                 <label className="np-label">Vendedor:</label>
-                <select className="np-input" value={vendedor} onChange={(e) => setVendedor(e.target.value)}>
+                <select className={`np-input${!vendedor ? " np-input--error" : ""}`} value={vendedor} onChange={(e) => setVendedor(e.target.value)}>
                   <option value="">Seleccione un vendedor</option>
                   {vendedores.map((v) => (
                     <option key={v} value={v}>
@@ -350,6 +351,9 @@ export default function NotasPedidoView() {
                     </option>
                   ))}
                 </select>
+                <span className={`np-helpText${!vendedor ? " is-error" : ""}`}>
+                  Elegí el vendedor responsable antes de guardar la nota.
+                </span>
               </div>
             </div>
 

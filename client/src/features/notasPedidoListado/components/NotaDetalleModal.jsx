@@ -6,6 +6,7 @@ import {
   getNotaClienteTelefono,
   getNotaTotal,
 } from "../../../utils/notaPedido";
+import Swal from "sweetalert2";
 
 function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
@@ -37,7 +38,7 @@ export default function NotaDetalleModal({
   onGuardarCaja,
   soloVistaPrevia = false,
 }) {
-  const [tipo, setTipo] = useState("pago");
+  const [tipo, setTipo] = useState("");
   const [monto, setMonto] = useState("");
   const [metodo, setMetodo] = useState("Efectivo");
   const [notaCaja, setNotaCaja] = useState("");
@@ -45,7 +46,7 @@ export default function NotaDetalleModal({
   useEffect(() => {
     if (!detalle) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTipo(detalle?.caja?.tipo || "pago");
+    setTipo(detalle?.caja?.tipo || "");
     setMonto(String(detalle?.caja?.monto ?? getNotaTotal(detalle)));
     setMetodo(detalle?.caja?.metodo || "Efectivo");
     setNotaCaja(detalle?.caja?.nota || "");
@@ -243,10 +244,28 @@ export default function NotaDetalleModal({
                         <div className="npl-v">{(
                           <>
                             <label>
-                              <input type="radio" name="tipoCaja" checked={tipo === "pago"} onChange={() => setTipo("pago")} /> Pago
+                              <input
+                                type="radio"
+                                name="tipoCaja"
+                                checked={tipo === "pago"}
+                                onChange={() => {
+                                  setTipo("pago");
+                                  setMonto(String(total));
+                                }}
+                              />{" "}
+                              Pago
                             </label>{" "}
                             <label>
-                              <input type="radio" name="tipoCaja" checked={tipo === "seña"} onChange={() => setTipo("seña")} /> Seña
+                              <input
+                                type="radio"
+                                name="tipoCaja"
+                                checked={tipo === "seña"}
+                                onChange={() => {
+                                  setTipo("seña");
+                                  setMonto("");
+                                }}
+                              />{" "}
+                              Seña
                             </label>
                           </>
                         )}</div>
@@ -254,7 +273,7 @@ export default function NotaDetalleModal({
                       <div className="npl-totalBox">
                         <div className="npl-k">Monto</div>
                         <div className="npl-v">
-                          <input value={monto} onChange={(e) => setMonto(e.target.value)} />
+                          <input value={monto} disabled={tipo === "pago"} onChange={(e) => setMonto(e.target.value)} />
                         </div>
                       </div>
                       <div className="npl-totalBox">
@@ -313,8 +332,70 @@ export default function NotaDetalleModal({
                       disabled={detalle?.caja?.guardada === true}
                       onClick={async () => {
                         try {
+                          let payloadTipo = tipo;
+
+                          if (!payloadTipo) {
+                            const result = await Swal.fire({
+                              title: "Guardar sin pago",
+                              text: "La nota no esta marcada como pagada ni señada. ¿Querés guardarla sin pagar?",
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Si, guardar pendiente",
+                              cancelButtonText: "Volver",
+                              reverseButtons: true,
+                            });
+
+                            if (!result.isConfirmed) return;
+                            payloadTipo = "";
+                          }
+
+                          if (payloadTipo === "pago") {
+                            await onGuardarCaja?.(detalle, {
+                              tipo: "pago",
+                              monto: Number(total || 0),
+                              metodo,
+                              nota: notaCaja,
+                            });
+                            return;
+                          }
+
+                          if (payloadTipo === "seña") {
+                            const montoSenia = Number(monto || 0);
+
+                            if (!(montoSenia > 0)) {
+                              await Swal.fire({
+                                title: "Monto obligatorio",
+                                text: "Si la nota queda señada tenés que ingresar un monto mayor a 0.",
+                                icon: "warning",
+                              });
+                              return;
+                            }
+
+                            if (montoSenia < total * 0.5) {
+                              await Swal.fire({
+                                title: "Seña baja",
+                                text: "Lo mejor es pedir al menos el 50% de seña. ¿Querés guardar igual?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Si, guardar igual",
+                                cancelButtonText: "Volver",
+                                reverseButtons: true,
+                              }).then(async (result) => {
+                                if (!result.isConfirmed) return;
+
+                                await onGuardarCaja?.(detalle, {
+                                  tipo: "seña",
+                                  monto: montoSenia,
+                                  metodo,
+                                  nota: notaCaja,
+                                });
+                              });
+                              return;
+                            }
+                          }
+
                           await onGuardarCaja?.(detalle, {
-                            tipo,
+                            tipo: payloadTipo,
                             monto: Number(monto || 0),
                             metodo,
                             nota: notaCaja,
