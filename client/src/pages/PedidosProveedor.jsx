@@ -21,6 +21,11 @@ const RESUMEN_ESTADOS = [
   { key: "Pedido", label: "Pedido", field: "pedidos" },
   { key: "Recibido", label: "Recibidos", field: "recibidos" },
 ];
+const SECCIONES_PEDIDO = [
+  "Cortadas de 137 x 183",
+  "Cortadas de 100 x 275",
+  "Placas enteras",
+];
 
 function hoyYmd() {
   const now = new Date();
@@ -30,8 +35,41 @@ function hoyYmd() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function itemVacio() {
-  return { descripcion: "", cantidad: 1, unidad: "u", precioEstimado: "" };
+function itemVacio(seccion = SECCIONES_PEDIDO[0]) {
+  return {
+    id: `${seccion}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    seccion,
+    descripcion: "",
+    cantidad: 1,
+    unidad: "u",
+    precioEstimado: "",
+  };
+}
+
+function itemsIniciales() {
+  return SECCIONES_PEDIDO.map((seccion) => itemVacio(seccion));
+}
+
+function descripcionConSeccion(item) {
+  const seccion = String(item?.seccion || "").trim();
+  const descripcion = String(item?.descripcion || "").trim();
+  if (!descripcion) return "";
+  return seccion ? `${seccion} | ${descripcion}` : descripcion;
+}
+
+function descripcionVisible(descripcion = "") {
+  const text = String(descripcion || "");
+  const parts = text.split("|");
+  if (parts.length < 2) return text;
+  return parts.slice(1).join("|").trim();
+}
+
+function normalizarTexto(value = "") {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
 }
 
 export default function PedidosProveedor() {
@@ -48,7 +86,7 @@ export default function PedidosProveedor() {
     tipo: "Material",
     fechaPedido: hoyYmd(),
     observacion: "",
-    items: [itemVacio()],
+    items: [itemVacio("")],
   });
 
   const load = useCallback(async () => {
@@ -88,23 +126,42 @@ export default function PedidosProveedor() {
     () => proveedores.find((item) => String(item._id) === String(form.proveedorId)),
     [proveedores, form.proveedorId]
   );
+  const usaBloquesEspeciales = useMemo(() => {
+    const nombre = normalizarTexto(proveedorSeleccionado?.nombre);
+    return nombre.includes("LAR") || nombre.includes("SAN FRANCISCO");
+  }, [proveedorSeleccionado]);
 
-  function updateItem(index, key, value) {
+  useEffect(() => {
+    setForm((prev) => {
+      const nextItems = usaBloquesEspeciales
+        ? itemsIniciales()
+        : [itemVacio("")];
+
+      return { ...prev, items: nextItems };
+    });
+  }, [usaBloquesEspeciales, form.proveedorId]);
+
+  function updateItem(itemId, key, value) {
     setForm((prev) => ({
       ...prev,
-      items: prev.items.map((item, idx) => (idx === index ? { ...item, [key]: value } : item)),
+      items: prev.items.map((item) => (item.id === itemId ? { ...item, [key]: value } : item)),
     }));
   }
 
-  function addItem() {
-    setForm((prev) => ({ ...prev, items: [...prev.items, itemVacio()] }));
+  function addItem(seccion) {
+    setForm((prev) => ({ ...prev, items: [...prev.items, itemVacio(seccion)] }));
   }
 
-  function removeItem(index) {
-    setForm((prev) => ({
-      ...prev,
-      items: prev.items.length === 1 ? prev.items : prev.items.filter((_, idx) => idx !== index),
-    }));
+  function removeItem(itemId, seccion) {
+    setForm((prev) => {
+      const itemsSeccion = prev.items.filter((item) => item.seccion === seccion);
+      if (itemsSeccion.length <= 1) return prev;
+
+      return {
+        ...prev,
+        items: prev.items.filter((item) => item.id !== itemId),
+      };
+    });
   }
 
   const hayFiltrosActivos = Boolean(q || filtroProveedor || filtroEstado);
@@ -119,7 +176,7 @@ export default function PedidosProveedor() {
     e.preventDefault();
     const items = form.items
       .map((item) => ({
-        descripcion: String(item.descripcion || "").trim(),
+        descripcion: usaBloquesEspeciales ? descripcionConSeccion(item) : String(item.descripcion || "").trim(),
         cantidad: Number(item.cantidad || 0),
         unidad: String(item.unidad || "").trim() || "u",
         precioEstimado: Number(item.precioEstimado || 0),
@@ -153,7 +210,7 @@ export default function PedidosProveedor() {
         tipo: "Material",
         fechaPedido: hoyYmd(),
         observacion: "",
-        items: [itemVacio()],
+        items: [itemVacio("")],
       });
       setIsFormOpen(false);
       await load();
@@ -314,26 +371,83 @@ export default function PedidosProveedor() {
 
           <div className="pp-itemsHead">
             <div>
-              <h3>Renglones del pedido</h3>
+              <h3>{usaBloquesEspeciales ? "Bloques del pedido" : "Renglones del pedido"}</h3>
               <p>
-                {form.items.length} rengl{form.items.length === 1 ? "on" : "ones"} en preparacion para este pedido.
+                Organizá el pedido en cortadas y placas enteras para que salga ordenado por proveedor.
               </p>
             </div>
-            <button type="button" className="pp-addBtn" onClick={addItem}>
+            <div className="pp-itemsLegend">
               Agregar renglón
-            </button>
+            </div>
           </div>
 
+          {usaBloquesEspeciales ? (
+          <div className="pp-sections">
+            {SECCIONES_PEDIDO.map((seccion) => {
+              const itemsSeccion = form.items.filter((item) => item.seccion === seccion);
+
+              return (
+                <section key={seccion} className="pp-sectionBlock">
+                  <div className="pp-sectionBlockHead">
+                    <div>
+                      <h4>{seccion}</h4>
+                      <p>
+                        {itemsSeccion.length} rengl{itemsSeccion.length === 1 ? "on" : "ones"} cargado
+                        {itemsSeccion.length === 1 ? "" : "s"}.
+                      </p>
+                    </div>
+                    <button type="button" className="pp-addBtn" onClick={() => addItem(seccion)}>
+                      Agregar material
+                    </button>
+                  </div>
+
+                  <div className="pp-items">
+                    {itemsSeccion.map((item, index) => (
+                      <div key={item.id} className="pp-itemRow">
+                        <div className="pp-itemIndex">#{index + 1}</div>
+                        <label className="pp-field pp-field--wide">
+                          <span>Detalle</span>
+                          <input
+                            value={item.descripcion}
+                            onChange={(e) => updateItem(item.id, "descripcion", e.target.value)}
+                            placeholder={form.tipo === "Material" ? "Ej: Fibrofacil 9mm" : "Ej: Perchero infantil"}
+                          />
+                        </label>
+                        <label className="pp-field">
+                          <span>Cantidad</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={item.cantidad}
+                            onChange={(e) => updateItem(item.id, "cantidad", e.target.value)}
+                          />
+                        </label>
+                        <label className="pp-field">
+                          <span>Unidad</span>
+                          <input value={item.unidad} onChange={(e) => updateItem(item.id, "unidad", e.target.value)} />
+                        </label>
+                        <button type="button" className="pp-removeBtn" onClick={() => removeItem(item.id, seccion)}>
+                          Quitar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+          ) : (
           <div className="pp-items">
             {form.items.map((item, index) => (
-              <div key={`item-${index}`} className="pp-itemRow">
+              <div key={item.id} className="pp-itemRow">
                 <div className="pp-itemIndex">#{index + 1}</div>
                 <label className="pp-field pp-field--wide">
                   <span>Detalle</span>
                   <input
                     value={item.descripcion}
-                    onChange={(e) => updateItem(index, "descripcion", e.target.value)}
-                    placeholder={form.tipo === "Material" ? "Ej: MDF blanco 18mm" : "Ej: Perchero infantil"}
+                    onChange={(e) => updateItem(item.id, "descripcion", e.target.value)}
+                    placeholder={form.tipo === "Material" ? "Ej: Fibrofacil 9mm" : "Ej: Perchero infantil"}
                   />
                 </label>
                 <label className="pp-field">
@@ -343,19 +457,23 @@ export default function PedidosProveedor() {
                     min="0"
                     step="1"
                     value={item.cantidad}
-                    onChange={(e) => updateItem(index, "cantidad", e.target.value)}
+                    onChange={(e) => updateItem(item.id, "cantidad", e.target.value)}
                   />
                 </label>
                 <label className="pp-field">
                   <span>Unidad</span>
-                  <input value={item.unidad} onChange={(e) => updateItem(index, "unidad", e.target.value)} />
+                  <input value={item.unidad} onChange={(e) => updateItem(item.id, "unidad", e.target.value)} />
                 </label>
-                <button type="button" className="pp-removeBtn" onClick={() => removeItem(index)}>
+                <button type="button" className="pp-removeBtn" onClick={() => removeItem(item.id, "")}>
                   Quitar
                 </button>
               </div>
             ))}
+            <button type="button" className="pp-addBtn pp-addBtn--inline" onClick={() => addItem("")}>
+              Agregar renglon
+            </button>
           </div>
+          )}
 
           <label className="pp-field">
             <span>Observación</span>
@@ -474,7 +592,7 @@ export default function PedidosProveedor() {
                     <div className="pp-orderItems">
                       {(pedido?.items || []).map((item, idx) => (
                         <div key={`${pedido._id}-${idx}`} className="pp-orderItem">
-                          <strong>{item?.descripcion}</strong>
+                          <strong>{descripcionVisible(item?.descripcion)}</strong>
                           <span>
                             {item?.cantidad} {item?.unidad}
                           </span>
