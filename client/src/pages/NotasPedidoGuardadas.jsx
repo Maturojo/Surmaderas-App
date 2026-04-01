@@ -9,6 +9,7 @@ import {
 } from "../services/notasPedido";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
+import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
 import "../css/notas-guardadas.css";
 
 const ESTADOS_OPERATIVOS = ["Pendiente", "En taller", "Enviado a proveedor", "Finalizado"];
@@ -35,6 +36,54 @@ function estadoOperativoClase(estado) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
+function normalizarWhatsapp(telefono = "") {
+  const digits = String(telefono || "").replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.startsWith("54") ? digits : `54${digits}`;
+}
+
+function construirMensajeProveedor(nota, proveedor, observacion) {
+  const items = Array.isArray(nota?.items) ? nota.items : [];
+  const detalle = items
+    .slice(0, 6)
+    .map((item) => {
+      const descripcion = item?.detalle || item?.descripcion || item?.nombre || item?.producto || "Item";
+      const cantidad = Number(item?.cantidad || 1);
+      return `- ${descripcion} x${cantidad}`;
+    })
+    .join("\n");
+
+  const extraItems = items.length > 6 ? `\n- ... y ${items.length - 6} item(s) más` : "";
+  const observacionTexto = observacion?.trim() ? `\n\nObservación:\n${observacion.trim()}` : "";
+
+  return [
+    `Hola ${proveedor?.contacto || proveedor?.nombre || ""}, te envío la nota de pedido ${nota?.numero || ""}.`,
+    "",
+    `Cliente: ${getNotaClienteNombre(nota)}`,
+    `Entrega: ${nota?.entrega || "-"}`,
+    `Vendedor: ${nota?.vendedor || "-"}`,
+    `Total: $${toARS(getNotaTotal(nota))}`,
+    "",
+    "Detalle:",
+    detalle || "- Sin items cargados",
+    `${extraItems}${observacionTexto}`.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function construirMensajeCliente(nota) {
+  return [
+    `Hola ${getNotaClienteNombre(nota)}, te compartimos la nota de pedido ${nota?.numero || ""}.`,
+    "",
+    `Entrega estimada: ${nota?.entrega || "-"}`,
+    `Vendedor: ${nota?.vendedor || "-"}`,
+    `Total: $${toARS(getNotaTotal(nota))}`,
+    "",
+    "Si necesitás alguna corrección o confirmación, respondé por este medio.",
+  ].join("\n");
+}
+
 export default function NotasPedidoGuardadas() {
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
@@ -45,6 +94,7 @@ export default function NotasPedidoGuardadas() {
   const [detalle, setDetalle] = useState(null);
   const [detalleLoading, setDetalleLoading] = useState(false);
   const [detalleError, setDetalleError] = useState("");
+  const [detalleAutoPrint, setDetalleAutoPrint] = useState(false);
 
   const [gestionOpen, setGestionOpen] = useState(false);
   const [gestionNota, setGestionNota] = useState(null);
@@ -52,6 +102,8 @@ export default function NotasPedidoGuardadas() {
   const [asignaciones, setAsignaciones] = useState([]);
   const [proveedorIdNuevo, setProveedorIdNuevo] = useState("");
   const [observacionNueva, setObservacionNueva] = useState("");
+  const [enviarWhatsappNuevo, setEnviarWhatsappNuevo] = useState(false);
+  const [proveedorPromptOpen, setProveedorPromptOpen] = useState(false);
   const [savingGestion, setSavingGestion] = useState(false);
 
   async function load() {
@@ -97,6 +149,7 @@ export default function NotasPedidoGuardadas() {
     setDetalle(null);
     setDetalleError("");
     setDetalleLoading(false);
+    setDetalleAutoPrint(false);
   }
 
   async function abrirGestion(nota) {
@@ -104,17 +157,21 @@ export default function NotasPedidoGuardadas() {
       const completa = await obtenerNotaPedido(nota._id);
       setGestionNota(completa);
       setEstadoOperativo(completa?.estadoOperativo || "Pendiente");
-      setAsignaciones(
+            setAsignaciones(
         Array.isArray(completa?.proveedores)
           ? completa.proveedores.map((item) => ({
               proveedorId: item.proveedorId,
               nombre: item.nombre,
+              color: item.color || colorProveedorPorNombre(item.nombre),
               observacion: item.observacion || "",
+              enviadoWhatsapp: Boolean(item?.enviadoWhatsapp),
             }))
           : []
       );
       setProveedorIdNuevo("");
       setObservacionNueva("");
+      setEnviarWhatsappNuevo(false);
+      setProveedorPromptOpen(false);
       setGestionOpen(true);
     } catch (e) {
       setErr(e?.message || "No se pudo abrir la gestion operativa");
@@ -128,6 +185,8 @@ export default function NotasPedidoGuardadas() {
     setAsignaciones([]);
     setProveedorIdNuevo("");
     setObservacionNueva("");
+    setEnviarWhatsappNuevo(false);
+    setProveedorPromptOpen(false);
     setSavingGestion(false);
   }
 
@@ -161,6 +220,16 @@ export default function NotasPedidoGuardadas() {
     return { totalNotas, enTaller, enProveedor, finalizadas };
   }, [guardadas]);
 
+  const guardadasPrincipales = useMemo(
+    () => guardadas.filter((item) => item?.estadoOperativo !== "Enviado a proveedor"),
+    [guardadas]
+  );
+
+  const guardadasProveedor = useMemo(
+    () => guardadas.filter((item) => item?.estadoOperativo === "Enviado a proveedor"),
+    [guardadas]
+  );
+
   async function borrarNota(nota) {
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
     if (!ok) return;
@@ -182,13 +251,73 @@ export default function NotasPedidoGuardadas() {
         {
           proveedorId: proveedor._id,
           nombre: proveedor.nombre,
+          color: proveedor.color || colorProveedorPorNombre(proveedor.nombre),
           observacion: observacionNueva.trim(),
+          enviadoWhatsapp: enviarWhatsappNuevo,
         },
       ];
     });
+    setEstadoOperativo("Enviado a proveedor");
+
+    if (enviarWhatsappNuevo) {
+      const telefonoWhatsapp = normalizarWhatsapp(proveedor?.telefono);
+      if (!telefonoWhatsapp) {
+        Swal.fire({
+          icon: "warning",
+          title: "Proveedor sin teléfono",
+          text: "Este proveedor no tiene teléfono cargado para enviarle la nota por WhatsApp.",
+        });
+      } else if (typeof window !== "undefined") {
+        const mensaje = construirMensajeProveedor(gestionNota, proveedor, observacionNueva);
+        const url = `https://wa.me/${telefonoWhatsapp}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    }
+
     setProveedorIdNuevo("");
     setObservacionNueva("");
+    setEnviarWhatsappNuevo(false);
+    setProveedorPromptOpen(false);
   }
+
+  function abrirPromptProveedor() {
+    setEstadoOperativo("Enviado a proveedor");
+    setEnviarWhatsappNuevo(false);
+    setProveedorPromptOpen(true);
+  }
+
+  function enviarClienteWhatsapp() {
+    const telefonoWhatsapp = normalizarWhatsapp(gestionNota?.cliente?.telefono);
+    if (!telefonoWhatsapp) {
+      Swal.fire({
+        icon: "warning",
+        title: "Cliente sin teléfono",
+        text: "La nota no tiene un teléfono válido para enviar por WhatsApp.",
+      });
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const mensaje = construirMensajeCliente(gestionNota);
+      const url = `https://wa.me/${telefonoWhatsapp}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  }
+
+  async function imprimirComprobanteCliente() {
+    if (!gestionNota?._id) return;
+    setDetalleAutoPrint(true);
+    await abrirDetalle(gestionNota._id);
+  }
+
+  useEffect(() => {
+    if (!detalleAutoPrint || detalleLoading || !detalle) return;
+    const timer = window.setTimeout(() => {
+      window.print();
+      setDetalleAutoPrint(false);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [detalleAutoPrint, detalleLoading, detalle]);
 
   function quitarProveedorAsignado(proveedorId) {
     setAsignaciones((prev) => prev.filter((item) => String(item.proveedorId) !== String(proveedorId)));
@@ -292,7 +421,7 @@ export default function NotasPedidoGuardadas() {
             <p className="ng-sectionSub">Visualizá rápido destino, estado operativo y total de cada nota.</p>
           </div>
           <div className="ng-resultsPill">
-            {guardadas.length} {guardadas.length === 1 ? "nota" : "notas"}
+            {guardadasPrincipales.length} {guardadasPrincipales.length === 1 ? "nota" : "notas"}
           </div>
         </div>
 
@@ -316,10 +445,10 @@ export default function NotasPedidoGuardadas() {
           <tbody>
             {loading ? (
               <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
-            ) : guardadas.length === 0 ? (
+            ) : guardadasPrincipales.length === 0 ? (
               <tr><td className="ng-tableMessage" colSpan={10}>No hay notas guardadas.</td></tr>
             ) : (
-              guardadas.map((n) => (
+              guardadasPrincipales.map((n) => (
                 <tr key={n?._id || n?.id || n?.numero}>
                   <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                   <td>{fmtDate(n?.fecha)}</td>
@@ -343,8 +472,12 @@ export default function NotasPedidoGuardadas() {
                     {Array.isArray(n?.proveedores) && n.proveedores.length > 0 ? (
                       <div className="ng-destinos">
                         {n.proveedores.map((prov, idx) => (
-                          <span key={`${prov?.proveedorId || prov?.nombre}-${idx}`} className="ng-destinoTag">
-                            {prov?.nombre}
+                          <span
+                            key={`${prov?.proveedorId || prov?.nombre}-${idx}`}
+                            className="ng-destinoTag"
+                            style={estiloProveedor(prov?.color || colorProveedorPorNombre(prov?.nombre))}
+                          >
+                            {prov?.nombre}{prov?.enviadoWhatsapp ? " · WhatsApp" : ""}
                           </span>
                         ))}
                       </div>
@@ -372,6 +505,88 @@ export default function NotasPedidoGuardadas() {
               ))
             )}
           </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="ng-tableCard ng-tableCard--provider">
+        <div className="ng-tableHead">
+          <div>
+            <h2 className="ng-sectionTitle">Enviadas a proveedor</h2>
+            <p className="ng-sectionSub">Las notas con proveedor asignado se agrupan acá para seguimiento.</p>
+          </div>
+          <div className="ng-resultsPill ng-resultsPill--provider">
+            {guardadasProveedor.length} {guardadasProveedor.length === 1 ? "nota" : "notas"}
+          </div>
+        </div>
+
+        <div className="ng-tableWrap">
+          <table className="ng-table">
+            <thead>
+              <tr>
+                <th>Numero</th>
+                <th>Cliente</th>
+                <th>Entrega</th>
+                <th>Proveedor</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr><td className="ng-tableMessage" colSpan={7}>Cargando...</td></tr>
+              ) : guardadasProveedor.length === 0 ? (
+                <tr><td className="ng-tableMessage" colSpan={7}>Todavía no hay notas enviadas a proveedor.</td></tr>
+              ) : (
+                guardadasProveedor.map((n) => (
+                  <tr key={`prov-${n?._id || n?.id || n?.numero}`}>
+                    <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
+                    <td>
+                      <div className="ng-clientCell">
+                        <strong>{getNotaClienteNombre(n)}</strong>
+                        <span>{n?.vendedor || "Sin vendedor"}</span>
+                      </div>
+                    </td>
+                    <td>{n?.entrega ?? "-"}</td>
+                    <td>
+                      <div className="ng-destinos">
+                        {Array.isArray(n?.proveedores) && n.proveedores.length > 0 ? (
+                          n.proveedores.map((prov, idx) => (
+                            <span
+                              key={`${prov?.proveedorId || prov?.nombre}-${idx}`}
+                              className="ng-destinoTag"
+                              style={estiloProveedor(prov?.color || colorProveedorPorNombre(prov?.nombre))}
+                            >
+                              {prov?.nombre}{prov?.enviadoWhatsapp ? " · WhatsApp" : ""}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="ng-muted">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
+                        {n?.estadoOperativo || "Enviado a proveedor"}
+                      </span>
+                    </td>
+                    <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
+                    <td>
+                      <div className="ng-actions">
+                        <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
+                          Ver
+                        </button>
+                        <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
+                          Gestionar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
         </div>
       </section>
@@ -412,7 +627,7 @@ export default function NotasPedidoGuardadas() {
                   <button className="ng-quickBtn" onClick={() => setEstadoOperativo("En taller")}>
                     Mandar a taller
                   </button>
-                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("Enviado a proveedor")}>
+                  <button className="ng-quickBtn" onClick={abrirPromptProveedor}>
                     Mandar a proveedor
                   </button>
                 </div>
@@ -438,6 +653,97 @@ export default function NotasPedidoGuardadas() {
                     </div>
                   </div>
                 </div>
+
+                <div className="ng-clientActionsCard">
+                  <div className="ng-clientActionsTitle">Comprobante para cliente</div>
+                  <div className="ng-clientActionsSub">
+                    Antes de derivar la nota, podés enviarla por WhatsApp o imprimirla como comprobante.
+                  </div>
+                  <div className="ng-clientActionsRow">
+                    <button className="ng-actionBtn ng-actionBtn--ghost" onClick={enviarClienteWhatsapp}>
+                      Enviar al cliente por WhatsApp
+                    </button>
+                    <button className="ng-actionBtn ng-actionBtn--primary" onClick={imprimirComprobanteCliente}>
+                      Imprimir comprobante
+                    </button>
+                  </div>
+                </div>
+
+                {proveedorPromptOpen ? (
+                  <div className="ng-inlinePrompt">
+                    <div className="ng-inlinePromptHead">
+                      <div>
+                        <div className="ng-inlinePromptTitle">Agregar proveedor</div>
+                        <div className="ng-inlinePromptSub">Elegí el proveedor y cargá la observación para esta nota.</div>
+                      </div>
+                      <button className="ng-inlinePromptClose" onClick={() => setProveedorPromptOpen(false)}>
+                        Cerrar
+                      </button>
+                    </div>
+
+                    <select
+                      className="ng-select"
+                      value={proveedorIdNuevo}
+                      onChange={(e) => setProveedorIdNuevo(e.target.value)}
+                    >
+                      <option value="">Seleccionar proveedor</option>
+                      {proveedores.map((prov) => (
+                        <option key={prov._id} value={prov._id}>
+                          {prov.nombre}
+                        </option>
+                      ))}
+                    </select>
+
+                    {proveedorIdNuevo ? (
+                      <div className="ng-selectedProviderPreview">
+                        {(() => {
+                          const proveedorSeleccionado = proveedores.find((prov) => String(prov._id) === String(proveedorIdNuevo));
+                          if (!proveedorSeleccionado) return null;
+                          return (
+                            <span
+                              className="ng-destinoTag"
+                              style={estiloProveedor(
+                                proveedorSeleccionado?.color || colorProveedorPorNombre(proveedorSeleccionado?.nombre)
+                              )}
+                            >
+                              {proveedorSeleccionado?.nombre}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    ) : null}
+
+                    <textarea
+                      className="ng-textarea"
+                      rows={3}
+                      placeholder="Observacion para este proveedor"
+                      value={observacionNueva}
+                      onChange={(e) => setObservacionNueva(e.target.value)}
+                    />
+
+                    <label className="ng-checkboxRow">
+                      <input
+                        type="checkbox"
+                        checked={enviarWhatsappNuevo}
+                        onChange={(e) => setEnviarWhatsappNuevo(e.target.checked)}
+                      />
+                      <span>Enviar por WhatsApp al agregar proveedor</span>
+                    </label>
+
+                    <div className="ng-inlinePromptActions">
+                      <button className="ng-actionBtn ng-actionBtn--ghost" onClick={() => setProveedorPromptOpen(false)}>
+                        Después lo cargo
+                      </button>
+                      <button
+                        className="ng-actionBtn ng-actionBtn--primary"
+                        onClick={agregarProveedorAsignado}
+                        disabled={!proveedorIdNuevo}
+                      >
+                        Agregar proveedor
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div className="ng-panel">
@@ -445,7 +751,7 @@ export default function NotasPedidoGuardadas() {
 
                 {estadoOperativo !== "Enviado a proveedor" ? (
                   <div className="ng-warningBox">
-                    Esta nota no esta marcada como enviada a proveedor. Podés dejar proveedores cargados igual o cambiar el estado antes de guardar.
+                    Si agregás un proveedor, la nota pasa automáticamente a la lista de enviados a proveedor.
                   </div>
                 ) : null}
 
@@ -454,11 +760,34 @@ export default function NotasPedidoGuardadas() {
                     <div className="ng-emptyBox">Todavía no hay proveedores asignados.</div>
                   ) : (
                     asignaciones.map((item) => (
-                      <div key={String(item.proveedorId)} className="ng-providerCard">
+                      <div
+                        key={String(item.proveedorId)}
+                        className="ng-providerCard"
+                        style={{
+                          borderLeft: `6px solid ${item?.color || colorProveedorPorNombre(item?.nombre)}`,
+                        }}
+                      >
                         <div className="ng-providerCardRow">
                           <div>
-                            <div className="ng-providerName">{item.nombre}</div>
+                            <div className="ng-providerNameRow">
+                              <span
+                                className="ng-providerColorDot"
+                                style={{
+                                  backgroundColor: item?.color || colorProveedorPorNombre(item?.nombre),
+                                }}
+                              />
+                              <div className="ng-providerName">{item.nombre}</div>
+                              <span
+                                className="ng-destinoTag"
+                                style={estiloProveedor(item?.color || colorProveedorPorNombre(item?.nombre))}
+                              >
+                                {item.nombre}
+                              </span>
+                            </div>
                             <div className="ng-providerObs">{item.observacion || "Sin observacion"}</div>
+                            {item?.enviadoWhatsapp ? (
+                              <div className="ng-providerMetaTag">Enviado por WhatsApp</div>
+                            ) : null}
                           </div>
                           <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
                             Quitar
@@ -469,35 +798,6 @@ export default function NotasPedidoGuardadas() {
                   )}
                 </div>
 
-                <div className="ng-addCard">
-                  <div className="ng-addTitle">Agregar proveedor a la nota</div>
-                  <select
-                    className="ng-select"
-                    value={proveedorIdNuevo}
-                    onChange={(e) => setProveedorIdNuevo(e.target.value)}
-                  >
-                    <option value="">Seleccionar proveedor</option>
-                    {proveedores.map((prov) => (
-                      <option key={prov._id} value={prov._id}>
-                        {prov.nombre}
-                      </option>
-                    ))}
-                  </select>
-                  <textarea
-                    className="ng-textarea"
-                    rows={3}
-                    placeholder="Observacion para este proveedor"
-                    value={observacionNueva}
-                    onChange={(e) => setObservacionNueva(e.target.value)}
-                  />
-                  <button
-                    className="ng-addBtn"
-                    onClick={agregarProveedorAsignado}
-                    disabled={!proveedorIdNuevo}
-                  >
-                    Agregar proveedor
-                  </button>
-                </div>
               </div>
             </div>
 

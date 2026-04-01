@@ -8,6 +8,7 @@ import {
   listarProveedores,
 } from "../services/notasPedido";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
+import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
 
 function fmtDate(value) {
   if (!value) return "-";
@@ -46,6 +47,7 @@ export default function Proveedores() {
   const [listQ, setListQ] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  const [openProveedorId, setOpenProveedorId] = useState("");
   const [formData, setFormData] = useState(emptyForm());
 
   async function load() {
@@ -89,7 +91,7 @@ export default function Proveedores() {
     return mapa;
   }, [items, notasGuardadas]);
 
-  const filteredCards = useMemo(() => {
+  const filteredRows = useMemo(() => {
     const qq = q.trim().toLowerCase();
     return items.filter((item) => {
       const notasDelProveedor = notasPorProveedor.get(String(item._id)) || [];
@@ -274,7 +276,7 @@ export default function Proveedores() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-[20px] font-extrabold text-[#2f261d]">Panel de proveedores</h2>
-            <p className="mt-1 text-sm text-[var(--sm-muted)]">Cada card resume sus notas asignadas y los pedidos que siguen pendientes.</p>
+            <p className="mt-1 text-sm text-[var(--sm-muted)]">Ahora se muestran en filas y podés desplegar las notas de cada proveedor cuando las necesitás.</p>
           </div>
 
           <input
@@ -289,37 +291,49 @@ export default function Proveedores() {
           <div className="rounded-[16px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
         ) : null}
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-3">
           {loading ? (
             <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[#faf8f4] p-4 text-sm text-[var(--sm-muted)]">
               Cargando proveedores...
             </div>
-          ) : filteredCards.length === 0 ? (
+          ) : filteredRows.length === 0 ? (
             <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[#faf8f4] p-4 text-sm text-[var(--sm-muted)]">
               No hay proveedores para mostrar.
             </div>
           ) : (
-            filteredCards.map((item) => {
+            filteredRows.map((item) => {
               const notas = notasPorProveedor.get(String(item._id)) || [];
               const pendientes = notas.filter((nota) => nota?.estadoOperativo !== "Finalizado");
+              const isOpen = openProveedorId === String(item._id);
+              const color = item?.color || colorProveedorPorNombre(item?.nombre);
 
               return (
-                <article key={item._id} className="rounded-[22px] border border-[var(--sm-line)] bg-[#fffdfa] p-5 shadow-[0_10px_24px_rgba(69,54,38,0.05)]">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
+                <article
+                  key={item._id}
+                  className="overflow-hidden rounded-[20px] border border-[var(--sm-line)] bg-[#fffdfa] shadow-[0_10px_24px_rgba(69,54,38,0.05)]"
+                  style={{
+                    borderLeft: `8px solid ${color}`,
+                    background: `linear-gradient(135deg, ${color}22 0%, #fffdfa 20%, #fffdfa 100%)`,
+                  }}
+                >
+                  <div className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(0,1.2fr)_140px_140px_140px_auto] lg:items-center">
                     <div>
-                      <h3 className="text-[20px] font-black text-[#241f19]">{item.nombre}</h3>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className="inline-block h-3 w-3 rounded-full border border-white/70 shadow-[0_0_0_1px_rgba(73,58,38,0.12)]"
+                          style={{ backgroundColor: color }}
+                        />
+                        <h3 className="text-[18px] font-black text-[#241f19]">{item.nombre}</h3>
+                        <span className="rounded-full border px-3 py-1 text-xs font-bold text-[#5f4b34]" style={estiloProveedor(color)}>
+                          {item.nombre}
+                        </span>
+                      </div>
                       <div className="mt-1 text-sm text-[var(--sm-muted)]">
                         {item.contacto || "Sin contacto"} {item.telefono ? `· ${item.telefono}` : ""}
                       </div>
+                      <div className="mt-1 text-sm text-[#5b5249]">{item.nota || "Sin notas adicionales."}</div>
                     </div>
-                    <span className="rounded-full bg-[var(--sm-accent-soft)] px-3 py-1 text-xs font-bold text-[#5f4b34]">
-                      Activo
-                    </span>
-                  </div>
 
-                  <p className="mt-3 text-sm text-[#5b5249]">{item.nota || "Sin notas adicionales."}</p>
-
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#faf6ef] px-4 py-3">
                       <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Notas</div>
                       <div className="mt-1 text-[24px] font-black text-[#231f1a]">{notas.length}</div>
@@ -332,68 +346,93 @@ export default function Proveedores() {
                       <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Finalizadas</div>
                       <div className="mt-1 text-[24px] font-black text-[#231f1a]">{notas.length - pendientes.length}</div>
                     </div>
+                    <div className="flex items-center justify-start gap-3 lg:justify-end">
+                      <span className="rounded-full border px-3 py-1 text-xs font-bold text-[#5f4b34]" style={estiloProveedor(color)}>
+                        Activo
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setOpenProveedorId(isOpen ? "" : String(item._id))}
+                        className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[#3b3026]"
+                      >
+                        {isOpen ? "Ocultar notas" : "Ver notas"}
+                      </button>
+                    </div>
                   </div>
 
-                  <section className="mt-4 rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[#faf7f2] p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos pendientes</div>
-                        <div className="mt-1 text-xs text-[var(--sm-muted)]">
-                          {pendientes.length === 0
-                            ? "No hay pedidos pendientes para este proveedor."
-                            : `${pendientes.length} ${pendientes.length === 1 ? "pedido pendiente" : "pedidos pendientes"}`}
+                  {isOpen ? (
+                    <section className="border-t border-[rgba(70,55,38,0.08)] bg-[#faf7f2] px-5 py-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos pendientes</div>
+                          <div className="mt-1 text-xs text-[var(--sm-muted)]">
+                            {pendientes.length === 0
+                              ? "No hay pedidos pendientes para este proveedor."
+                              : `${pendientes.length} ${pendientes.length === 1 ? "pedido pendiente" : "pedidos pendientes"}`}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="mt-3 grid gap-2">
-                      {pendientes.length === 0 ? (
-                        <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
-                          Este proveedor no tiene notas pendientes por ahora.
-                        </div>
-                      ) : (
-                        pendientes.map((nota) => {
-                          const asignacion = Array.isArray(nota?.proveedores)
-                            ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
-                            : null;
+                      <div className="mt-3 grid gap-2">
+                        {pendientes.length === 0 ? (
+                          <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
+                            Este proveedor no tiene notas pendientes por ahora.
+                          </div>
+                        ) : (
+                          pendientes.map((nota) => {
+                            const asignacion = Array.isArray(nota?.proveedores)
+                              ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
+                              : null;
 
-                          return (
-                            <article key={nota._id} className="rounded-[14px] border border-[rgba(70,55,38,0.08)] bg-white p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]">
-                              <div className="flex flex-wrap items-start justify-between gap-3">
-                                <div>
+                            return (
+                              <article key={nota._id} className="rounded-[14px] border border-[rgba(70,55,38,0.08)] bg-white p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]">
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                  <div>
                                   <div className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
                                     {nota?.numero || "Sin número"}
                                   </div>
-                                  <div className="mt-1 text-[15px] font-black text-[#241f19]">{getNotaClienteNombre(nota)}</div>
-                                  <div className="mt-1 text-sm text-[var(--sm-muted)]">
-                                    Entrega {fmtDate(nota?.entrega)} · Total ${Number(getNotaTotal(nota) || 0).toLocaleString("es-AR")}
+                                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                                    <span className="inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-[#5f4b34]" style={estiloProveedor(asignacion?.color || color)}>
+                                      {asignacion?.nombre || item?.nombre}
+                                    </span>
+                                    <div className="text-[15px] font-black text-[#241f19]">{getNotaClienteNombre(nota)}</div>
+                                  </div>
+                                    <div className="mt-1 text-sm text-[var(--sm-muted)]">
+                                      Entrega {fmtDate(nota?.entrega)} · Total ${Number(getNotaTotal(nota) || 0).toLocaleString("es-AR")}
+                                    </div>
+                                  </div>
+                                  <span
+                                    className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${estadoOperativoClase(
+                                      nota?.estadoOperativo || "Pendiente"
+                                    )}`}
+                                  >
+                                    {nota?.estadoOperativo || "Pendiente"}
+                                  </span>
+                                </div>
+
+                                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                                  <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Vendedor</span>
+                                    <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
+                                  </div>
+                                  <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
+                                    <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
+                                  </div>
+                                  <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
+                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Envío</span>
+                                    <strong className="mt-1 block text-[#2f5d89]">
+                                      {asignacion?.enviadoWhatsapp ? "Enviado por WhatsApp" : "Sin envío por WhatsApp"}
+                                    </strong>
                                   </div>
                                 </div>
-                                <span
-                                  className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${estadoOperativoClase(
-                                    nota?.estadoOperativo || "Pendiente"
-                                  )}`}
-                                >
-                                  {nota?.estadoOperativo || "Pendiente"}
-                                </span>
-                              </div>
-
-                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Vendedor</span>
-                                  <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
-                                </div>
-                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
-                                  <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
-                                </div>
-                              </div>
-                            </article>
-                          );
-                        })
-                      )}
-                    </div>
-                  </section>
+                              </article>
+                            );
+                          })
+                        )}
+                      </div>
+                    </section>
+                  ) : null}
                 </article>
               );
             })
@@ -532,7 +571,15 @@ export default function Proveedores() {
                   ) : (
                     filteredList.map((item) => (
                       <tr key={item._id} className="border-t border-[var(--sm-line)] bg-white">
-                        <td className="px-4 py-3 font-bold text-[#241f19]">{item.nombre}</td>
+                        <td className="px-4 py-3 font-bold text-[#241f19]">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className="inline-block h-3 w-3 rounded-full border border-white/70 shadow-[0_0_0_1px_rgba(73,58,38,0.12)]"
+                              style={{ backgroundColor: item?.color || colorProveedorPorNombre(item?.nombre) }}
+                            />
+                            <span>{item.nombre}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-[#5b5249]">{item.contacto || "-"}</td>
                         <td className="px-4 py-3 text-[#5b5249]">{item.telefono || "-"}</td>
                         <td className="px-4 py-3 text-[#5b5249]">{item.nota || "-"}</td>

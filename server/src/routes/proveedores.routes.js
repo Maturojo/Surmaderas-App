@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Proveedor from "../models/Proveedor.js";
 import { requireAuth } from "../middleware/auth.js";
+import { colorProveedorPorNombre } from "../utils/proveedorColor.js";
 
 const router = Router();
 
@@ -11,7 +12,12 @@ function limpiar(valor = "") {
 router.get("/", requireAuth, async (_req, res) => {
   try {
     const items = await Proveedor.find({ activo: true }).sort({ nombre: 1 }).lean();
-    res.json(items);
+    res.json(
+      items.map((item) => ({
+        ...item,
+        color: item?.color || colorProveedorPorNombre(item?.nombre),
+      }))
+    );
   } catch (error) {
     res.status(500).json({ message: error?.message || "Error obteniendo proveedores" });
   }
@@ -20,6 +26,7 @@ router.get("/", requireAuth, async (_req, res) => {
 router.post("/", requireAuth, async (req, res) => {
   try {
     const nombre = limpiar(req.body?.nombre);
+    const color = limpiar(req.body?.color) || colorProveedorPorNombre(nombre);
     const telefono = limpiar(req.body?.telefono);
     const contacto = limpiar(req.body?.contacto);
     const nota = limpiar(req.body?.nota);
@@ -30,7 +37,7 @@ router.post("/", requireAuth, async (req, res) => {
 
     const proveedor = await Proveedor.findOneAndUpdate(
       { nombre },
-      { $set: { telefono, contacto, nota, activo: true } },
+      { $set: { color, telefono, contacto, nota, activo: true } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
@@ -43,6 +50,7 @@ router.post("/", requireAuth, async (req, res) => {
 router.patch("/:id", requireAuth, async (req, res) => {
   try {
     const nombre = limpiar(req.body?.nombre);
+    const color = limpiar(req.body?.color) || colorProveedorPorNombre(nombre);
     const telefono = limpiar(req.body?.telefono);
     const contacto = limpiar(req.body?.contacto);
     const nota = limpiar(req.body?.nota);
@@ -53,7 +61,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
 
     const proveedor = await Proveedor.findByIdAndUpdate(
       req.params.id,
-      { $set: { nombre, telefono, contacto, nota } },
+      { $set: { nombre, color, telefono, contacto, nota } },
       { new: true, runValidators: true }
     );
 

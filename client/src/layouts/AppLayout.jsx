@@ -16,7 +16,14 @@ const NAV_ITEMS = [
   },
   { label: "Presupuestos", to: "/presupuestos", icon: "$" },
   { label: "Productos", to: "/productos", icon: "▣" },
-  { label: "Proveedores", to: "/proveedores", icon: "⛁" },
+  {
+    label: "Proveedores",
+    icon: "⛁",
+    children: [
+      { label: "Panel de proveedores", to: "/proveedores" },
+      { label: "Pedidos", to: "/pedidos-proveedor" },
+    ],
+  },
   { label: "Generador 3D", to: "/generador-3d", icon: "◇" },
 ];
 
@@ -24,10 +31,19 @@ export default function AppLayout() {
   const location = useLocation();
   const auth = getAuth();
   const userName = auth?.user?.username || auth?.user?.name || "Equipo Sur Maderas";
-  const notasGroupActive = NAV_ITEMS.find((item) => item.children)?.children.some(
-    (child) => location.pathname === child.to || location.pathname.startsWith(`${child.to}/`)
-  );
-  const [notasOpen, setNotasOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState({});
+
+  function isChildActive(child) {
+    return location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
+  }
+
+  function isGroupActive(item) {
+    return item.children?.some(isChildActive);
+  }
+
+  function toggleGroup(label) {
+    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  }
 
   return (
     <div className="app-shell">
@@ -57,17 +73,15 @@ export default function AppLayout() {
           <div className="app-navLabel">Modulos</div>
           {NAV_ITEMS.map((item) => {
             if (item.children) {
-              const isOpen = notasGroupActive || notasOpen;
-              const isActive = item.children.some(
-                (child) => location.pathname === child.to || location.pathname.startsWith(`${child.to}/`)
-              );
+              const isActive = isGroupActive(item);
+              const isOpen = isActive || Boolean(openGroups[item.label]);
 
               return (
                 <div key={item.label} className={`app-group${isOpen ? " open" : ""}`}>
                   <button
                     type="button"
                     className={`app-link app-link--group${isActive ? " active" : ""}`}
-                    onClick={() => setNotasOpen((prev) => !prev)}
+                    onClick={() => toggleGroup(item.label)}
                   >
                     <span className="app-linkIcon">{item.icon}</span>
                     <span className="app-linkText">{item.label}</span>

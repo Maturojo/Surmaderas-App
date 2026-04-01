@@ -8,6 +8,7 @@ import NotasPedido from "../pages/NotasPedido";
 import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
 import Proveedores from "../pages/Proveedores";
+import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
 
       { path: "productos", element: <Productos /> },
       { path: "proveedores", element: <Proveedores /> },
+      { path: "pedidos-proveedor", element: <PedidosProveedor /> },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
     ],
   },

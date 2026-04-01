@@ -827,19 +827,29 @@
   background: linear-gradient(180deg, #f3f0ea 0%, #f7f5f0 100%);
 }
 
+.npl-printSheet {
+  width: 100%;
+}
+
+.npl-printSheet--halfA4 {
+  width: min(100%, 154mm);
+  margin: 0 auto;
+  padding: 14px 0 18px;
+}
+
 .npl-brandSheet {
-  padding: 18px 20px 0;
+  padding: 10px 12px 0;
 }
 
 .npl-brandHeader {
   display: grid;
-  grid-template-columns: 150px 1fr 180px;
-  gap: 18px;
+  grid-template-columns: 94px 1fr 138px;
+  gap: 12px;
   align-items: center;
   background: linear-gradient(135deg, #ffffff 0%, #f3efe7 100%);
   border: 1px solid rgba(48, 41, 33, 0.08);
-  border-radius: 20px;
-  padding: 18px 20px;
+  border-radius: 16px;
+  padding: 12px 14px;
   box-shadow: 0 12px 28px rgba(51, 42, 31, 0.08);
 }
 
@@ -861,46 +871,46 @@
 }
 
 .npl-brandEyebrow {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #7b7469;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .npl-brandTitle {
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
   font-weight: 900;
   color: #2d2a26;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .npl-brandMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .npl-brandMeta span {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
+  min-height: 24px;
+  padding: 0 8px;
   border-radius: 999px;
   background: #ebe6dd;
   color: #5d5549;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .npl-brandNumber {
   justify-self: end;
   width: 100%;
-  max-width: 180px;
-  padding: 14px 16px;
-  border-radius: 18px;
+  max-width: 138px;
+  padding: 12px 14px;
+  border-radius: 14px;
   background: #2f2d2a;
   color: #fff;
 }
@@ -911,8 +921,10 @@
 
 .npl-brandNumber .npl-v {
   color: #fff;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 900;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .npl-topCard,
@@ -920,6 +932,80 @@
 .npl-bottomCard {
   background: #fffdf9;
   box-shadow: 0 10px 24px rgba(51, 42, 31, 0.05);
+}
+
+.npl-topCard {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.npl-docBlock {
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.npl-docBlockTitle {
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+
+.npl-grid {
+  gap: 10px;
+}
+
+.npl-kv .npl-k,
+.npl-totalBox .npl-k {
+  font-size: 10px;
+}
+
+.npl-kv .npl-v,
+.npl-totalBox .npl-v {
+  font-size: 13px;
+}
+
+.npl-scrollOnly {
+  padding: 12px 14px;
+}
+
+.npl-itemRow {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  grid-template-columns: minmax(0, 1fr) 230px;
+}
+
+.npl-itemDesc {
+  font-size: 14px;
+}
+
+.npl-itemMeta {
+  font-size: 12px;
+}
+
+.npl-itemNumbers > div {
+  padding: 8px 10px;
+}
+
+.npl-bottomCard {
+  padding: 10px 12px;
+}
+
+.npl-totalsGrid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.npl-noteBox {
+  padding: 10px 12px;
+}
+
+.npl-signRow {
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.npl-printFooter {
+  margin-top: 12px;
+  padding-top: 10px;
+  font-size: 11px;
 }
 
 @media (max-width: 900px) {
@@ -935,8 +1021,8 @@
 
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 10mm;
+    size: A5 portrait;
+    margin: 5mm;
   }
 
   body * {
@@ -953,19 +1039,18 @@
   }
 
   .npl-modalBack {
-    position: fixed !important;
-    inset: 0 !important;
+    position: static !important;
+    inset: auto !important;
     background: transparent !important;
     padding: 0 !important;
-    display: flex !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
+    display: block !important;
   }
 
   .npl-modal {
+    display: block !important;
     width: 148mm !important;
     max-width: 148mm !important;
-    min-height: 200mm !important;
+    min-height: auto !important;
     height: auto !important;
     margin: 0 auto !important;
     border: 0 !important;
@@ -973,6 +1058,7 @@
     border-radius: 0 !important;
     overflow: visible !important;
     background: #fff !important;
+    padding: 0 !important;
   }
 
   .npl-modalHeader {
@@ -980,16 +1066,21 @@
   }
 
   .npl-body {
+    display: block !important;
     overflow: visible !important;
     background: #fff !important;
     padding: 0 !important;
   }
 
   .npl-printSheet {
+    display: block !important;
     width: 148mm !important;
     max-width: 148mm !important;
-    min-height: 200mm !important;
+    min-height: auto !important;
     margin: 0 auto !important;
+    padding: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .npl-brandSheet,
@@ -999,24 +1090,28 @@
     box-shadow: none !important;
     background: #fff !important;
     border-color: rgba(0, 0, 0, 0.12) !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .npl-brandSheet {
-    padding: 0 0 6mm 0 !important;
+    padding: 0 0 2mm 0 !important;
   }
 
   .npl-brandHeader {
-    grid-template-columns: 32mm 1fr 42mm !important;
-    padding: 4mm 4mm 3mm !important;
+    grid-template-columns: 24mm 1fr 34mm !important;
+    gap: 3mm !important;
+    padding: 3mm !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   .npl-brandLogo {
-    max-width: 26mm !important;
+    max-width: 20mm !important;
   }
 
   .npl-brandTitle {
-    font-size: 16pt !important;
+    font-size: 13pt !important;
   }
 
   .npl-brandMeta span {
@@ -1026,23 +1121,58 @@
   }
 
   .npl-scrollOnly {
-    padding: 4mm !important;
+    padding: 3mm !important;
   }
 
   .npl-topCard,
   .npl-bottomCard {
-    padding: 4mm !important;
+    padding: 3mm !important;
     border-radius: 0 !important;
   }
 
+  .npl-topCard {
+    margin-bottom: 2mm !important;
+  }
+
   .npl-docHead,
-  .npl-itemRow,
   .npl-signRow {
     grid-template-columns: 1fr !important;
   }
 
+  .npl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 2.5mm !important;
+  }
+
+  .npl-itemRow {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2.5mm !important;
+    margin-bottom: 2mm !important;
+    padding: 2.5mm !important;
+    page-break-inside: avoid !important;
+  }
+
   .npl-itemNumbers {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .npl-docBlockTitle,
+  .npl-kv .npl-k,
+  .npl-totalBox .npl-k,
+  .npl-signLabel,
+  .npl-printFooter {
+    font-size: 8.5pt !important;
+  }
+
+  .npl-kv .npl-v,
+  .npl-totalBox .npl-v,
+  .npl-itemDesc {
+    font-size: 10pt !important;
+  }
+
+  .npl-itemMeta,
+  .npl-brandMeta span {
+    font-size: 8pt !important;
   }
 
   .npl-docBlock,
@@ -1050,10 +1180,18 @@
   .npl-totalBox,
   .npl-noteBox {
     border-radius: 0 !important;
+    padding: 2.5mm !important;
   }
 
-  .npl-itemRow {
-    page-break-inside: avoid !important;
+  .npl-signRow {
+    margin-top: 3mm !important;
+    gap: 3mm !important;
+  }
+
+  .npl-printFooter {
+    margin-top: 2.5mm !important;
+    padding-top: 2.5mm !important;
+    font-size: 8pt !important;
   }
 
   .npl-modalActions {

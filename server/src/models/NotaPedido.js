@@ -38,7 +38,9 @@ const ProveedorAsignadoSchema = new mongoose.Schema(
   {
     proveedorId: { type: mongoose.Schema.Types.ObjectId, ref: "Proveedor", required: true },
     nombre: { type: String, default: "" },
+    color: { type: String, default: "" },
     observacion: { type: String, default: "" },
+    enviadoWhatsapp: { type: Boolean, default: false },
     asignadoAt: { type: Date, default: Date.now },
   },
   { _id: false }

@@ -7,6 +7,7 @@ import productosRoutes from "./routes/productos.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import notasPedidoRoutes from "./routes/notasPedido.routes.js";
 import proveedoresRoutes from "./routes/proveedores.routes.js";
+import pedidosProveedorRoutes from "./routes/pedidosProveedor.routes.js";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/auth", authRouter);
 app.use("/api/productos", productosRoutes);
 app.use("/api/notas-pedido", notasPedidoRoutes);
 app.use("/api/proveedores", proveedoresRoutes);
+app.use("/api/pedidos-proveedor", pedidosProveedorRoutes);
 
 /* ================= HEALTH ================= */
 app.get("/api/health", (req, res) => res.json({ ok: true }));

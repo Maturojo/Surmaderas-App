@@ -67,7 +67,7 @@ export default function Calendar() {
   }, [cursor]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-[28px] border border-[rgba(102,72,140,0.18)] bg-[radial-gradient(circle_at_top_right,rgba(191,162,236,0.3),transparent_24%),linear-gradient(180deg,#f5efff_0%,#eee4ff_100%)] p-6 shadow-[0_18px_42px_rgba(90,59,130,0.08)]">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold capitalize">{monthLabel}</h2>
@@ -94,7 +94,7 @@ export default function Calendar() {
       </div>
 
       {/* SOLO CALENDARIO */}
-      <div className="border rounded-xl p-4">
+      <div className="rounded-2xl border border-[rgba(102,72,140,0.18)] bg-[rgba(255,255,255,0.72)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
         <div className="grid grid-cols-7 text-sm font-semibold opacity-80 mb-2">
           {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((w) => (
             <div key={w} className="p-2">

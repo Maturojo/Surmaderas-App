@@ -1,5 +1,7 @@
 ﻿import NotaPedido from "../models/NotaPedido.js";
 
+import { colorProveedorPorNombre } from "../utils/proveedorColor.js";
+
 function getClienteNombre(doc) {
   if (typeof doc?.cliente === "string") return doc.cliente;
   return doc?.cliente?.nombre || "";
@@ -216,7 +218,9 @@ export async function actualizarOperacionNota(req, res) {
           .map((item) => ({
             proveedorId: item?.proveedorId,
             nombre: String(item?.nombre || "").trim(),
+            color: String(item?.color || colorProveedorPorNombre(item?.nombre)).trim(),
             observacion: String(item?.observacion || "").trim(),
+            enviadoWhatsapp: Boolean(item?.enviadoWhatsapp),
             asignadoAt: item?.asignadoAt ? new Date(item.asignadoAt) : new Date(),
           }))
           .filter((item) => item.proveedorId && item.nombre)
