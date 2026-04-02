@@ -257,7 +257,7 @@ Elimina una nota.
 
 #### `PATCH /api/notas-pedido/:id/guardar-caja`
 
-Marca una nota como pagada o señada y guarda datos de caja.
+Marca una nota como pagada o seï¿½ada y guarda datos de caja.
 
 ## Modelos de datos
 
@@ -335,6 +335,8 @@ Marca una nota como pagada o señada y guarda datos de caja.
 - [ ] Eliminar duplicacion entre `notasPedido.js` y `notasPedidoService.js`
 - [ ] Normalizar URLs de API para que todo use `/api/...`
 - [ ] Corregir errores de lint del cliente
+- [ ] Hacer codigo por mueble y fecha
+
 
 ### Prioridad media
 

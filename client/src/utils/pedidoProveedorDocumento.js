@@ -99,7 +99,7 @@ function drawLarTable(doc, section, layout) {
   const firstColWidth = tableWidth * 0.58;
   const secondColWidth = tableWidth - firstColWidth;
   const rowHeight = 9;
-  const minRows = Math.max(6, section.rows.length);
+  const totalRows = Math.max(1, section.rows.length);
 
   const ensureSpace = (neededHeight) => {
     if (layout.y + neededHeight <= pageHeight - 18) return;
@@ -107,7 +107,7 @@ function drawLarTable(doc, section, layout) {
     layout.y = 18;
   };
 
-  ensureSpace(rowHeight * (minRows + 2) + 18);
+  ensureSpace(rowHeight * (totalRows + 2) + 18);
 
   doc.setDrawColor(34, 34, 34);
   doc.setLineWidth(0.5);
@@ -134,7 +134,7 @@ function drawLarTable(doc, section, layout) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
 
-  for (let index = 0; index < minRows; index += 1) {
+  for (let index = 0; index < totalRows; index += 1) {
     const row = section.rows[index];
     doc.rect(margin, layout.y, firstColWidth, rowHeight);
     doc.rect(margin + firstColWidth, layout.y, secondColWidth, rowHeight);
@@ -159,9 +159,46 @@ async function openPedidoProveedorPdfLar(pedido) {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
-  const layout = { y: 16, margin, pageWidth, pageHeight };
+  const layout = { y: 18, margin, pageWidth, pageHeight };
 
   const tableWidth = pageWidth - margin * 2;
+
+  doc.setFillColor(55, 44, 34);
+  doc.roundedRect(margin, layout.y, tableWidth, 34, 5, 5, "F");
+  doc.setFillColor(216, 196, 167);
+  doc.roundedRect(margin, layout.y + 27, tableWidth, 7, 0, 0, "F");
+
+  try {
+    const logoDataUrl = await loadImageAsDataUrl("/logo-sur-maderas.png");
+    doc.addImage(logoDataUrl, "PNG", margin + 6, layout.y + 4, 24, 24);
+  } catch {
+    doc.setFillColor(55, 44, 34);
+    doc.setDrawColor(255, 253, 248);
+    doc.circle(margin + 18, layout.y + 16, 9, "FD");
+    doc.setTextColor(255, 253, 248);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("SM", margin + 13.7, layout.y + 18.4);
+  }
+
+  doc.setTextColor(255, 253, 248);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("PEDIDO SUR MADERAS", margin + 34, layout.y + 10);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("Documento oficial de pedido para proveedor", margin + 34, layout.y + 16);
+  doc.setFontSize(8.5);
+  doc.text(`Fecha de pedido: ${formatFecha(pedido?.fechaPedido)}`, margin + 34, layout.y + 22);
+  doc.text(`Tipo: ${pedido?.tipo || "-"}`, pageWidth - margin - 4, layout.y + 22, { align: "right" });
+  doc.setTextColor(55, 44, 34);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text("SUR MADERAS", margin + 4, layout.y + 31.8);
+  doc.setFont("helvetica", "normal");
+  doc.text("Gestion interna", pageWidth - margin - 4, layout.y + 31.8, { align: "right" });
+
+  layout.y += 36;
 
   doc.setDrawColor(28, 28, 28);
   doc.setLineWidth(0.7);
@@ -174,9 +211,10 @@ async function openPedidoProveedorPdfLar(pedido) {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.text(`Pedido de Sur Maderas`, margin, layout.y);
-  doc.text(`Fecha de pedido: ${formatFecha(pedido?.fechaPedido)}`, pageWidth - margin, layout.y, { align: "right" });
-  layout.y += 8;
+  doc.setTextColor(90, 78, 66);
+  doc.text(`Proveedor: ${pedido?.proveedorNombre || "-"}`, margin, layout.y);
+  doc.text(`Estado: ${pedido?.estado || "Pendiente"}`, pageWidth - margin, layout.y, { align: "right" });
+  layout.y += 10;
 
   parseSectionedItems(pedido).forEach((section) => {
     drawLarTable(doc, section, layout);
@@ -187,15 +225,28 @@ async function openPedidoProveedorPdfLar(pedido) {
       doc.addPage();
       layout.y = 18;
     }
+    doc.setDrawColor(210, 201, 192);
+    doc.setFillColor(250, 246, 240);
+    doc.roundedRect(margin, layout.y - 2, tableWidth, 24, 4, 4, "FD");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text("OBSERVACIONES", margin, layout.y);
+    doc.setTextColor(55, 44, 34);
+    doc.text("OBSERVACIONES", margin + 3, layout.y + 3);
     layout.y += 6;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     const lines = doc.splitTextToSize(String(pedido.observacion), tableWidth);
-    doc.text(lines, margin, layout.y);
+    doc.setTextColor(85, 74, 63);
+    doc.text(lines, margin + 3, layout.y);
   }
+
+  doc.setDrawColor(190, 178, 166);
+  doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(110, 98, 87);
+  doc.text("Sur Maderas · Documento emitido desde gestion interna", margin, pageHeight - 9);
+  doc.text("Uso interno / Proveedor", pageWidth - margin, pageHeight - 9, { align: "right" });
 
   const fileName = `pedido-lar-${formatFecha(pedido?.fechaPedido).replace(/\//g, "-")}.pdf`.toLowerCase();
   const blob = doc.output("blob");

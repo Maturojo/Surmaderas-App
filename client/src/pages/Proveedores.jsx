@@ -7,8 +7,11 @@ import {
   listarNotasPedido,
   listarProveedores,
 } from "../services/notasPedido";
+import { listarPedidosProveedor } from "../services/pedidosProveedor";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
 import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
+
+const PROVEEDORES_OPERATIVOS = ["ARIEL", "MARCELO VILA", "SILVIA", "NATA", "MARTIN PONASSO"];
 
 function fmtDate(value) {
   if (!value) return "-";
@@ -18,6 +21,14 @@ function fmtDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
   return date.toLocaleDateString("es-AR");
+}
+
+function normalizarTexto(value = "") {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
 }
 
 function estadoOperativoClase(estado) {
@@ -40,6 +51,7 @@ function emptyForm() {
 export default function Proveedores() {
   const [items, setItems] = useState([]);
   const [notasGuardadas, setNotasGuardadas] = useState([]);
+  const [pedidosProveedor, setPedidosProveedor] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -54,13 +66,15 @@ export default function Proveedores() {
     setLoading(true);
     setError("");
     try {
-      const [proveedoresData, notasData] = await Promise.all([
+      const [proveedoresData, notasData, pedidosData] = await Promise.all([
         listarProveedores(),
         listarNotasPedido({ q: "", page: 1, limit: 500, guardada: true }),
+        listarPedidosProveedor(),
       ]);
 
       setItems(proveedoresData);
       setNotasGuardadas(Array.isArray(notasData?.items) ? notasData.items : Array.isArray(notasData) ? notasData : []);
+      setPedidosProveedor(Array.isArray(pedidosData) ? pedidosData : []);
     } catch (e) {
       setError(e?.message || "No se pudieron cargar los proveedores");
     } finally {
@@ -91,22 +105,46 @@ export default function Proveedores() {
     return mapa;
   }, [items, notasGuardadas]);
 
+  const pedidosPorProveedor = useMemo(() => {
+    const mapa = new Map();
+    items.forEach((item) => {
+      const relacionados = pedidosProveedor
+        .filter((pedido) => String(pedido?.proveedorId) === String(item?._id))
+        .sort((a, b) => {
+          const da = new Date(a?.updatedAt || a?.createdAt || 0).getTime();
+          const db = new Date(b?.updatedAt || b?.createdAt || 0).getTime();
+          return db - da;
+        });
+      mapa.set(String(item._id), relacionados);
+    });
+    return mapa;
+  }, [items, pedidosProveedor]);
+
   const filteredRows = useMemo(() => {
     const qq = q.trim().toLowerCase();
     return items.filter((item) => {
+      const esOperativo = PROVEEDORES_OPERATIVOS.includes(normalizarTexto(item?.nombre));
       const notasDelProveedor = notasPorProveedor.get(String(item._id)) || [];
+      const pedidosDelProveedor = pedidosPorProveedor.get(String(item._id)) || [];
       if (!qq) return true;
       return (
         String(item?.nombre || "").toLowerCase().includes(qq) ||
         String(item?.contacto || "").toLowerCase().includes(qq) ||
-        notasDelProveedor.some(
-          (nota) =>
-            String(nota?.numero || "").toLowerCase().includes(qq) ||
-            getNotaClienteNombre(nota).toLowerCase().includes(qq)
+        (esOperativo &&
+          notasDelProveedor.some(
+            (nota) =>
+              String(nota?.numero || "").toLowerCase().includes(qq) ||
+              getNotaClienteNombre(nota).toLowerCase().includes(qq)
+          )) ||
+        pedidosDelProveedor.some(
+          (pedido) =>
+            String(pedido?.tipo || "").toLowerCase().includes(qq) ||
+            String(pedido?.estado || "").toLowerCase().includes(qq) ||
+            String(pedido?.observacion || "").toLowerCase().includes(qq)
         )
       );
     });
-  }, [items, notasPorProveedor, q]);
+  }, [items, notasPorProveedor, pedidosPorProveedor, q]);
 
   const filteredList = useMemo(() => {
     const qq = listQ.trim().toLowerCase();
@@ -124,6 +162,11 @@ export default function Proveedores() {
   const totalAsignaciones = useMemo(
     () => items.reduce((acc, item) => acc + (notasPorProveedor.get(String(item._id))?.length || 0), 0),
     [items, notasPorProveedor]
+  );
+
+  const totalPedidosProveedor = useMemo(
+    () => items.reduce((acc, item) => acc + (pedidosPorProveedor.get(String(item._id))?.length || 0), 0),
+    [items, pedidosPorProveedor]
   );
 
   const pendientesTotales = useMemo(
@@ -244,6 +287,10 @@ export default function Proveedores() {
               <div className="mb-1 text-[12px] font-bold text-[#827669]">Pendientes</div>
               <div className="text-[24px] font-black text-[#231f1a]">{pendientesTotales}</div>
             </div>
+            <div className="min-w-[150px] rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
+              <div className="mb-1 text-[12px] font-bold text-[#827669]">Pedidos proveedor</div>
+              <div className="text-[24px] font-black text-[#231f1a]">{totalPedidosProveedor}</div>
+            </div>
           </div>
         </div>
 
@@ -276,12 +323,14 @@ export default function Proveedores() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-[20px] font-extrabold text-[#2f261d]">Panel de proveedores</h2>
-            <p className="mt-1 text-sm text-[var(--sm-muted)]">Ahora se muestran en filas y podés desplegar las notas de cada proveedor cuando las necesitás.</p>
+            <p className="mt-1 text-sm text-[var(--sm-muted)]">
+              Los proveedores operativos muestran notas y pedidos; el resto, por ahora, solo pedidos a proveedor.
+            </p>
           </div>
 
           <input
             className="min-h-[46px] w-full max-w-[360px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
-            placeholder="Buscar por proveedor, cliente o número de nota..."
+            placeholder="Buscar por proveedor, cliente, número de nota o pedido..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -302,8 +351,12 @@ export default function Proveedores() {
             </div>
           ) : (
             filteredRows.map((item) => {
+              const esOperativo = PROVEEDORES_OPERATIVOS.includes(normalizarTexto(item?.nombre));
               const notas = notasPorProveedor.get(String(item._id)) || [];
-              const pendientes = notas.filter((nota) => nota?.estadoOperativo !== "Finalizado");
+              const pedidos = pedidosPorProveedor.get(String(item._id)) || [];
+              const pendientes = esOperativo
+                ? notas.filter((nota) => nota?.estadoOperativo !== "Finalizado")
+                : [];
               const isOpen = openProveedorId === String(item._id);
               const color = item?.color || colorProveedorPorNombre(item?.nombre);
 
@@ -335,17 +388,27 @@ export default function Proveedores() {
                     </div>
 
                     <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#faf6ef] px-4 py-3">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Notas</div>
-                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">{notas.length}</div>
+                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">
+                        {esOperativo ? "Notas" : "Pedidos"}
+                      </div>
+                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">{esOperativo ? notas.length : pedidos.length}</div>
                     </div>
                     <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#fff7ea] px-4 py-3">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Pendientes</div>
-                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">{pendientes.length}</div>
+                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">
+                        Pendientes
+                      </div>
+                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">
+                        {esOperativo ? pendientes.length : pedidos.filter((pedido) => pedido?.estado !== "Recibido" && pedido?.estado !== "Cancelado").length}
+                      </div>
                     </div>
-                    <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#f4f7fb] px-4 py-3">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Finalizadas</div>
-                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">{notas.length - pendientes.length}</div>
-                    </div>
+                    {esOperativo ? (
+                      <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#f4f7fb] px-4 py-3">
+                        <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Pedidos</div>
+                        <div className="mt-1 text-[24px] font-black text-[#231f1a]">{pedidos.length}</div>
+                      </div>
+                    ) : (
+                      <div aria-hidden="true" className="hidden lg:block" />
+                    )}
                     <div className="flex items-center justify-start gap-3 lg:justify-end">
                       <span className="rounded-full border px-3 py-1 text-xs font-bold text-[#5f4b34]" style={estiloProveedor(color)}>
                         Activo
@@ -355,80 +418,156 @@ export default function Proveedores() {
                         onClick={() => setOpenProveedorId(isOpen ? "" : String(item._id))}
                         className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[#3b3026]"
                       >
-                        {isOpen ? "Ocultar notas" : "Ver notas"}
+                        {isOpen ? "Ocultar detalle" : "Ver detalle"}
                       </button>
                     </div>
                   </div>
 
                   {isOpen ? (
-                    <section className="border-t border-[rgba(70,55,38,0.08)] bg-[#faf7f2] px-5 py-4">
-                      <div className="flex items-center justify-between gap-3">
+                    <section
+                      className="border-t border-[rgba(70,55,38,0.08)] px-5 py-4"
+                      style={{
+                        background: `linear-gradient(180deg, ${color}42 0%, ${color}24 100%)`,
+                      }}
+                    >
+                      {esOperativo ? (
+                        <>
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos pendientes</div>
+                              <div className="mt-1 text-xs text-[var(--sm-muted)]">
+                                {pendientes.length === 0
+                                  ? "No hay pedidos pendientes para este proveedor."
+                                  : `${pendientes.length} ${pendientes.length === 1 ? "pedido pendiente" : "pedidos pendientes"}`}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-3 grid gap-2">
+                            {pendientes.length === 0 ? (
+                              <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
+                                Este proveedor no tiene notas pendientes por ahora.
+                              </div>
+                            ) : (
+                              pendientes.map((nota) => {
+                                const asignacion = Array.isArray(nota?.proveedores)
+                                  ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
+                                  : null;
+
+                                return (
+                                  <article
+                                    key={nota._id}
+                                    className="rounded-[14px] border border-[rgba(70,55,38,0.08)] p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
+                                    style={{
+                                      background: `linear-gradient(135deg, ${color}26 0%, #fffdfa 30%, #fffdfa 100%)`,
+                                    }}
+                                  >
+                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                      <div>
+                                        <div className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
+                                          {nota?.numero || "Sin número"}
+                                        </div>
+                                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                                          <span className="inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-[#5f4b34]" style={estiloProveedor(asignacion?.color || color)}>
+                                            {asignacion?.nombre || item?.nombre}
+                                          </span>
+                                          <div className="text-[15px] font-black text-[#241f19]">{getNotaClienteNombre(nota)}</div>
+                                        </div>
+                                        <div className="mt-1 text-sm text-[var(--sm-muted)]">
+                                          Entrega {fmtDate(nota?.entrega)} · Total ${Number(getNotaTotal(nota) || 0).toLocaleString("es-AR")}
+                                        </div>
+                                      </div>
+                                      <span
+                                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${estadoOperativoClase(
+                                          nota?.estadoOperativo || "Pendiente"
+                                        )}`}
+                                      >
+                                        {nota?.estadoOperativo || "Pendiente"}
+                                      </span>
+                                    </div>
+
+                                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Vendedor</span>
+                                        <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
+                                      </div>
+                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
+                                        <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
+                                      </div>
+                                      <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
+                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Envío</span>
+                                        <strong className="mt-1 block text-[#2f5d89]">
+                                          {asignacion?.enviadoWhatsapp ? "Enviado por WhatsApp" : "Sin envío por WhatsApp"}
+                                        </strong>
+                                      </div>
+                                    </div>
+                                  </article>
+                                );
+                              })
+                            )}
+                          </div>
+                        </>
+                      ) : null}
+
+                      <div className="mt-5 flex items-center justify-between gap-3">
                         <div>
-                          <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos pendientes</div>
+                          <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos a proveedor</div>
                           <div className="mt-1 text-xs text-[var(--sm-muted)]">
-                            {pendientes.length === 0
-                              ? "No hay pedidos pendientes para este proveedor."
-                              : `${pendientes.length} ${pendientes.length === 1 ? "pedido pendiente" : "pedidos pendientes"}`}
+                            {pedidos.length === 0
+                              ? "No hay pedidos cargados para este proveedor."
+                              : `${pedidos.length} ${pedidos.length === 1 ? "pedido cargado" : "pedidos cargados"}`}
                           </div>
                         </div>
                       </div>
 
                       <div className="mt-3 grid gap-2">
-                        {pendientes.length === 0 ? (
+                        {pedidos.length === 0 ? (
                           <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
-                            Este proveedor no tiene notas pendientes por ahora.
+                            Este proveedor no tiene pedidos cargados por ahora.
                           </div>
                         ) : (
-                          pendientes.map((nota) => {
-                            const asignacion = Array.isArray(nota?.proveedores)
-                              ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
-                              : null;
-
-                            return (
-                              <article key={nota._id} className="rounded-[14px] border border-[rgba(70,55,38,0.08)] bg-white p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]">
-                                <div className="flex flex-wrap items-start justify-between gap-3">
-                                  <div>
-                                  <div className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
-                                    {nota?.numero || "Sin número"}
-                                  </div>
+                          pedidos.map((pedido) => (
+                            <article
+                              key={pedido._id}
+                              className="rounded-[14px] border border-[rgba(70,55,38,0.08)] p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
+                              style={{
+                                background: `linear-gradient(135deg, ${color}26 0%, #fffdfa 30%, #fffdfa 100%)`,
+                              }}
+                            >
+                              <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div>
                                   <div className="mt-1 flex flex-wrap items-center gap-2">
-                                    <span className="inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-[#5f4b34]" style={estiloProveedor(asignacion?.color || color)}>
-                                      {asignacion?.nombre || item?.nombre}
+                                    <span className="inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-[#5f4b34]" style={estiloProveedor(color)}>
+                                      {item?.nombre}
                                     </span>
-                                    <div className="text-[15px] font-black text-[#241f19]">{getNotaClienteNombre(nota)}</div>
+                                    <div className="text-[15px] font-black text-[#241f19]">{pedido?.tipo || "Pedido"}</div>
                                   </div>
-                                    <div className="mt-1 text-sm text-[var(--sm-muted)]">
-                                      Entrega {fmtDate(nota?.entrega)} · Total ${Number(getNotaTotal(nota) || 0).toLocaleString("es-AR")}
-                                    </div>
+                                  <div className="mt-1 text-sm text-[var(--sm-muted)]">
+                                    Fecha {fmtDate(pedido?.fechaPedido)} · {Array.isArray(pedido?.items) ? pedido.items.length : 0} renglón(es)
                                   </div>
-                                  <span
-                                    className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${estadoOperativoClase(
-                                      nota?.estadoOperativo || "Pendiente"
-                                    )}`}
-                                  >
-                                    {nota?.estadoOperativo || "Pendiente"}
-                                  </span>
                                 </div>
+                                <span className="inline-flex rounded-full border border-[#d9e5f4] bg-[#eef6ff] px-3 py-1 text-xs font-semibold text-[#2f5d89]">
+                                  {pedido?.estado || "Pendiente"}
+                                </span>
+                              </div>
 
-                                <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                                  <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Vendedor</span>
-                                    <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
-                                  </div>
-                                  <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
-                                    <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
-                                  </div>
-                                  <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
-                                    <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Envío</span>
-                                    <strong className="mt-1 block text-[#2f5d89]">
-                                      {asignacion?.enviadoWhatsapp ? "Enviado por WhatsApp" : "Sin envío por WhatsApp"}
-                                    </strong>
-                                  </div>
+                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle</span>
+                                  <strong className="mt-1 block text-[#2a241e]">
+                                    {Array.isArray(pedido?.items) && pedido.items.length > 0
+                                      ? pedido.items.map((detalle) => detalle?.descripcion).filter(Boolean).slice(0, 3).join(" · ")
+                                      : "Sin renglones"}
+                                  </strong>
                                 </div>
-                              </article>
-                            );
-                          })
+                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
+                                  <strong className="mt-1 block text-[#2a241e]">{pedido?.observacion || "Sin observación"}</strong>
+                                </div>
+                              </div>
+                            </article>
+                          ))
                         )}
                       </div>
                     </section>

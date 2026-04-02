@@ -7,6 +7,7 @@ import {
   eliminarPedidoProveedor,
   listarPedidosProveedor,
 } from "../services/pedidosProveedor";
+import { listarTodosLosProductos } from "../services/productosService";
 import {
   openPedidoProveedorPdf,
   openPedidoProveedorWhatsapp,
@@ -73,6 +74,7 @@ function normalizarTexto(value = "") {
 }
 
 export default function PedidosProveedor() {
+  const [materialesOptions, setMaterialesOptions] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,6 +114,34 @@ export default function PedidosProveedor() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMateriales() {
+      try {
+        const productos = await listarTodosLosProductos({ pageSize: 300 });
+        if (cancelled) return;
+
+        const materiales = productos
+          .filter((item) => normalizarTexto(item?.categoria) === "MATERIALES")
+          .map((item) => ({
+            value: item.nombre,
+            label: item.codigo ? `${item.nombre} (${item.codigo})` : item.nombre,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label, "es"));
+
+        setMaterialesOptions(materiales);
+      } catch {
+        if (!cancelled) setMaterialesOptions([]);
+      }
+    }
+
+    loadMateriales();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const resumen = useMemo(() => {
     return {
@@ -407,11 +437,14 @@ export default function PedidosProveedor() {
                         <div className="pp-itemIndex">#{index + 1}</div>
                         <label className="pp-field pp-field--wide">
                           <span>Detalle</span>
-                          <input
-                            value={item.descripcion}
-                            onChange={(e) => updateItem(item.id, "descripcion", e.target.value)}
-                            placeholder={form.tipo === "Material" ? "Ej: Fibrofacil 9mm" : "Ej: Perchero infantil"}
-                          />
+                          <select value={item.descripcion} onChange={(e) => updateItem(item.id, "descripcion", e.target.value)}>
+                            <option value="">Seleccionar material</option>
+                            {materialesOptions.map((material) => (
+                              <option key={`${seccion}-${material.value}`} value={material.value}>
+                                {material.label}
+                              </option>
+                            ))}
+                          </select>
                         </label>
                         <label className="pp-field">
                           <span>Cantidad</span>
