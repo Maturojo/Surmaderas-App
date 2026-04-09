@@ -418,6 +418,26 @@
   min-width: 0;
 }
 
+.np-corte-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.np-corte-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.np-corte-price {
+  max-width: 220px;
+  font-weight: 700;
+}
+
+.np-corte-dims {
+  max-width: 360px;
+}
+
 .np-item-row{
   align-items: center; /* mejor alineación general */
 }

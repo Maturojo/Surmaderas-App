@@ -11,8 +11,8 @@ export default function CorteFields({ it, setData }) {
   const materialSeleccionado = getCorteMaterialByCode(d.materialCode);
 
   return (
-    <div style={{ display: "grid", gap: 10 }}>
-      <div className="np-fields-grid-2">
+    <div className="np-corte-fields">
+      <div className="np-corte-top">
         <select
           className="np-input"
           value={d.materialCode || ""}
@@ -32,24 +32,15 @@ export default function CorteFields({ it, setData }) {
             </option>
           ))}
         </select>
-
-        <input
-          className="np-input"
-          type="number"
-          min={0}
-          value={numOrEmpty(d.cortes)}
-          onChange={(e) => setData({ cortes: e.target.value })}
-          placeholder="Cantidad de cortes"
-        />
       </div>
 
       <input
-        className="np-input np-readonly"
+        className="np-input np-readonly np-corte-price"
         readOnly
         value={materialSeleccionado ? `Precio m2: $${toARS(materialSeleccionado.precioM2)}` : "Precio m2: -"}
       />
 
-      <div className="np-fields-grid-3">
+      <div className="np-fields-grid-2 np-corte-dims">
         <input
           className="np-input"
           type="number"
