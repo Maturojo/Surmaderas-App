@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", to: "/", icon: "◫" },
+  { label: "Dashboard", to: "/dashboard", icon: "◫" },
   { label: "Calendario", to: "/calendario", icon: "◷" },
   {
     label: "Notas de pedido",
@@ -109,7 +109,7 @@ export default function AppLayout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === "/"}
+                end={item.to === "/dashboard"}
                 className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
               >
                 <span className="app-linkIcon">{item.icon}</span>

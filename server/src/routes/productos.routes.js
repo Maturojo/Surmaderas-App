@@ -3,7 +3,6 @@ import Producto from "../models/Producto.js";
 import Categoria from "../models/Categoria.js";
 import Subcategoria from "../models/Subcategoria.js";
 import HistorialAccion from "../models/HistorialAccion.js";
-import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -19,7 +18,7 @@ function normalizarProducto(p) {
   };
 }
 
-router.get("/", requireAuth, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const q = limpiarValor(req.query.q);
     const categoria = limpiarValor(req.query.categoria);
@@ -71,7 +70,7 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/filtros", requireAuth, async (_req, res) => {
+router.get("/filtros", async (_req, res) => {
   try {
     const [categoriasDb, subcategoriasDb, productos] = await Promise.all([
       Categoria.find({}).lean(),
@@ -122,7 +121,7 @@ router.get("/filtros", requireAuth, async (_req, res) => {
   }
 });
 
-router.post("/categorias", requireAuth, async (req, res) => {
+router.post("/categorias", async (req, res) => {
   try {
     const categoria = limpiarValor(req.body?.categoria);
     const subcategoria = limpiarValor(req.body?.subcategoria);
@@ -151,7 +150,7 @@ router.post("/categorias", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/historial", requireAuth, async (_req, res) => {
+router.get("/historial", async (_req, res) => {
   try {
     const historial = await HistorialAccion.find({}).sort({ createdAt: -1 }).limit(100).lean();
     res.json(
@@ -170,7 +169,7 @@ router.get("/historial", requireAuth, async (_req, res) => {
   }
 });
 
-router.post("/historial", requireAuth, async (req, res) => {
+router.post("/historial", async (req, res) => {
   try {
     const tipo = limpiarValor(req.body?.tipo);
     const descripcion = limpiarValor(req.body?.descripcion);
@@ -197,7 +196,7 @@ router.post("/historial", requireAuth, async (req, res) => {
   }
 });
 
-router.delete("/historial", requireAuth, async (_req, res) => {
+router.delete("/historial", async (_req, res) => {
   try {
     const result = await HistorialAccion.deleteMany({});
     res.json({ ok: true, deletedCount: result.deletedCount || 0 });
@@ -206,7 +205,7 @@ router.delete("/historial", requireAuth, async (_req, res) => {
   }
 });
 
-router.patch("/clasificacion-multiple", requireAuth, async (req, res) => {
+router.patch("/clasificacion-multiple", async (req, res) => {
   try {
     const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
     if (!ids.length) return res.status(400).json({ message: "No se enviaron productos" });
@@ -229,7 +228,7 @@ router.patch("/clasificacion-multiple", requireAuth, async (req, res) => {
   }
 });
 
-router.patch("/:id/clasificacion", requireAuth, async (req, res) => {
+router.patch("/:id/clasificacion", async (req, res) => {
   try {
     const categoria = limpiarValor(req.body?.categoria);
     const subcategoria = limpiarValor(req.body?.subcategoria);
@@ -247,7 +246,7 @@ router.patch("/:id/clasificacion", requireAuth, async (req, res) => {
   }
 });
 
-router.delete("/categorias/:nombre", requireAuth, async (req, res) => {
+router.delete("/categorias/:nombre", async (req, res) => {
   try {
     const nombre = limpiarValor(decodeURIComponent(req.params.nombre || ""));
     if (!nombre || nombre.toLowerCase() === "sin clasificar") {
@@ -268,7 +267,7 @@ router.delete("/categorias/:nombre", requireAuth, async (req, res) => {
   }
 });
 
-router.delete("/subcategorias", requireAuth, async (req, res) => {
+router.delete("/subcategorias", async (req, res) => {
   try {
     const categoria = limpiarValor(req.body?.categoria);
     const subcategoria = limpiarValor(req.body?.subcategoria);

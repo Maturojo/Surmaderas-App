@@ -45,7 +45,8 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
-    return res.status(500).json({ message: "Error en login" });
+    console.error("Error en login:", err?.message || err);
+    return res.status(500).json({ message: "No se pudo iniciar sesion" });
   }
 });
 

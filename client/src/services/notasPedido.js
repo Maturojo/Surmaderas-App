@@ -1,4 +1,4 @@
-import { API_URL, authHeaders } from "./http";
+import { API_URL, apiFetch, authHeaders } from "./http";
 
 export async function listarNotasPedido({ q = "", page = 1, limit = 25, guardada } = {}) {
   const url = new URL(`${API_URL}/api/notas-pedido`);
@@ -9,7 +9,7 @@ export async function listarNotasPedido({ q = "", page = 1, limit = 25, guardada
     url.searchParams.set("guardada", String(guardada));
   }
 
-  const r = await fetch(url.toString(), {
+  const r = await apiFetch(url.toString(), {
     headers: { ...authHeaders() },
     credentials: "include",
   });
@@ -20,7 +20,7 @@ export async function listarNotasPedido({ q = "", page = 1, limit = 25, guardada
 }
 
 export async function crearNotaPedido(payload) {
-  const r = await fetch(`${API_URL}/api/notas-pedido`, {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export async function crearNotaPedido(payload) {
 }
 
 export async function obtenerNotaPedido(id) {
-  const r = await fetch(`${API_URL}/api/notas-pedido/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}`, {
     headers: { ...authHeaders() },
     credentials: "include",
   });
@@ -47,7 +47,7 @@ export async function obtenerNotaPedido(id) {
 }
 
 export async function eliminarNotaPedido(id) {
-  const r = await fetch(`${API_URL}/api/notas-pedido/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}`, {
     method: "DELETE",
     headers: { ...authHeaders() },
     credentials: "include",
@@ -59,7 +59,7 @@ export async function eliminarNotaPedido(id) {
 }
 
 export async function guardarCajaNota(id, payload) {
-  const r = await fetch(`${API_URL}/api/notas-pedido/${id}/guardar-caja`, {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}/guardar-caja`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export async function guardarCajaNota(id, payload) {
 }
 
 export async function actualizarOperacionNota(id, payload) {
-  const r = await fetch(`${API_URL}/api/notas-pedido/${id}/operacion`, {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}/operacion`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export async function actualizarOperacionNota(id, payload) {
 }
 
 export async function listarProveedores() {
-  const r = await fetch(`${API_URL}/api/proveedores`, {
+  const r = await apiFetch(`${API_URL}/api/proveedores`, {
     headers: { ...authHeaders() },
     credentials: "include",
   });
@@ -102,7 +102,7 @@ export async function listarProveedores() {
 }
 
 export async function crearProveedor(payload) {
-  const r = await fetch(`${API_URL}/api/proveedores`, {
+  const r = await apiFetch(`${API_URL}/api/proveedores`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export async function crearProveedor(payload) {
 }
 
 export async function actualizarProveedor(id, payload) {
-  const r = await fetch(`${API_URL}/api/proveedores/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/proveedores/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -134,7 +134,7 @@ export async function actualizarProveedor(id, payload) {
 }
 
 export async function eliminarProveedor(id) {
-  const r = await fetch(`${API_URL}/api/proveedores/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/proveedores/${id}`, {
     method: "DELETE",
     headers: { ...authHeaders() },
     credentials: "include",

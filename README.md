@@ -2,6 +2,15 @@
 
 Aplicacion web interna para Sur Maderas orientada a la gestion comercial y operativa del negocio.
 
+## Proyecto activo
+
+El proyecto que se usa y se desarrolla hoy es:
+
+- `client/`
+- `server/`
+
+La carpeta `external_creadorPrecios/` queda solo como referencia legacy de donde se tomo originalmente el modulo de productos. No forma parte del flujo diario, no hace falta levantarla y no se considera fuente activa del sistema.
+
 Hoy el sistema cubre autenticacion, consulta de productos, carga y listado de notas de pedido, seguimiento de notas guardadas en caja, un calendario local, un generador simple de presupuestos y un modulo 3D para armado de muebles.
 
 ## Estado actual
@@ -77,6 +86,7 @@ Surmaderas-gestion/
 |   |   `-- utils/
 |   |-- package.json
 |   `-- .env
+|-- external_creadorPrecios/   # referencia legacy, fuera del flujo activo
 `-- README.md
 ```
 
@@ -178,6 +188,22 @@ App esperada en:
 ```text
 http://localhost:5173
 ```
+
+## Flujo de trabajo recomendado
+
+Para trabajar todos los dias usar solo estas dos terminales:
+
+```bash
+cd server
+npm run dev
+```
+
+```bash
+cd client
+npm run dev
+```
+
+No hace falta levantar `external_creadorPrecios/`.
 
 ## Scripts
 

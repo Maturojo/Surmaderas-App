@@ -61,9 +61,14 @@ export default function Login() {
                 setLoading(true);
                 const data = await loginRequest({ username, password });
                 login({ token: data.token, role: data.user.role, user: data.user });
-                window.location.href = "/";
+                window.location.href = "/productos";
               } catch (e) {
-                alert(e.message || "Error al ingresar");
+                const rawMessage = String(e?.message || "");
+                const message =
+                  rawMessage.includes("Credenciales") || rawMessage.includes("Faltan credenciales")
+                    ? "Usuario o clave incorrectos."
+                    : "No se pudo iniciar sesion. Intenta nuevamente en unos segundos.";
+                alert(message);
               } finally {
                 setLoading(false);
               }

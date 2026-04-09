@@ -1,4 +1,4 @@
-import { API_URL, authHeaders } from "./http";
+import { API_URL, apiFetch, authHeaders } from "./http";
 
 export async function listarPedidosProveedor({ q = "", proveedorId = "", estado = "" } = {}) {
   const url = new URL(`${API_URL}/api/pedidos-proveedor`);
@@ -6,7 +6,7 @@ export async function listarPedidosProveedor({ q = "", proveedorId = "", estado 
   if (proveedorId) url.searchParams.set("proveedorId", proveedorId);
   if (estado) url.searchParams.set("estado", estado);
 
-  const r = await fetch(url.toString(), {
+  const r = await apiFetch(url.toString(), {
     headers: { ...authHeaders() },
     credentials: "include",
   });
@@ -17,7 +17,7 @@ export async function listarPedidosProveedor({ q = "", proveedorId = "", estado 
 }
 
 export async function crearPedidoProveedor(payload) {
-  const r = await fetch(`${API_URL}/api/pedidos-proveedor`, {
+  const r = await apiFetch(`${API_URL}/api/pedidos-proveedor`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export async function crearPedidoProveedor(payload) {
 }
 
 export async function actualizarPedidoProveedor(id, payload) {
-  const r = await fetch(`${API_URL}/api/pedidos-proveedor/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/pedidos-proveedor/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export async function actualizarPedidoProveedor(id, payload) {
 }
 
 export async function eliminarPedidoProveedor(id) {
-  const r = await fetch(`${API_URL}/api/pedidos-proveedor/${id}`, {
+  const r = await apiFetch(`${API_URL}/api/pedidos-proveedor/${id}`, {
     method: "DELETE",
     headers: { ...authHeaders() },
     credentials: "include",

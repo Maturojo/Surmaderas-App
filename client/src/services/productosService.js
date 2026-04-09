@@ -1,4 +1,4 @@
-import { API_URL, authHeaders } from "./http";
+import { API_URL, apiFetch, authHeaders } from "./http";
 
 export async function listarProductos({ q = "", page = 1, limit = 25 } = {}) {
   const url = new URL(`${API_URL}/api/productos`);
@@ -6,7 +6,7 @@ export async function listarProductos({ q = "", page = 1, limit = 25 } = {}) {
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
 
-  const res = await fetch(url.toString(), {
+  const res = await apiFetch(url.toString(), {
     headers: {
       "Content-Type": "application/json",
       ...authHeaders(),
@@ -28,7 +28,7 @@ export async function obtenerProductosCatalogo({ q = "", categoria = "", subcate
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
 
-  const res = await fetch(url.toString(), {
+  const res = await apiFetch(url.toString(), {
     headers: {
       "Content-Type": "application/json",
       ...authHeaders(),
@@ -46,7 +46,7 @@ export async function obtenerProductosCatalogo({ q = "", categoria = "", subcate
 }
 
 export async function obtenerFiltrosProductos() {
-  const res = await fetch(`${API_URL}/api/productos/filtros`, {
+  const res = await apiFetch(`${API_URL}/api/productos/filtros`, {
     headers: { "Content-Type": "application/json", ...authHeaders() },
   });
 
@@ -56,7 +56,7 @@ export async function obtenerFiltrosProductos() {
 }
 
 export async function crearCategoriaOSubcategoria(payload) {
-  const res = await fetch(`${API_URL}/api/productos/categorias`, {
+  const res = await apiFetch(`${API_URL}/api/productos/categorias`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(payload),
@@ -68,7 +68,7 @@ export async function crearCategoriaOSubcategoria(payload) {
 }
 
 export async function actualizarClasificacionMultiple(ids, payload) {
-  const res = await fetch(`${API_URL}/api/productos/clasificacion-multiple`, {
+  const res = await apiFetch(`${API_URL}/api/productos/clasificacion-multiple`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify({ ids, ...payload }),
@@ -80,7 +80,7 @@ export async function actualizarClasificacionMultiple(ids, payload) {
 }
 
 export async function obtenerHistorialProductos() {
-  const res = await fetch(`${API_URL}/api/productos/historial`, {
+  const res = await apiFetch(`${API_URL}/api/productos/historial`, {
     headers: { "Content-Type": "application/json", ...authHeaders() },
   });
 
@@ -90,7 +90,7 @@ export async function obtenerHistorialProductos() {
 }
 
 export async function guardarAccionHistorial(payload) {
-  const res = await fetch(`${API_URL}/api/productos/historial`, {
+  const res = await apiFetch(`${API_URL}/api/productos/historial`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(payload),
@@ -102,7 +102,7 @@ export async function guardarAccionHistorial(payload) {
 }
 
 export async function limpiarHistorialProductos() {
-  const res = await fetch(`${API_URL}/api/productos/historial`, {
+  const res = await apiFetch(`${API_URL}/api/productos/historial`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json", ...authHeaders() },
   });
@@ -113,7 +113,7 @@ export async function limpiarHistorialProductos() {
 }
 
 export async function eliminarCategoria(nombre) {
-  const res = await fetch(`${API_URL}/api/productos/categorias/${encodeURIComponent(nombre)}`, {
+  const res = await apiFetch(`${API_URL}/api/productos/categorias/${encodeURIComponent(nombre)}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json", ...authHeaders() },
   });
@@ -124,7 +124,7 @@ export async function eliminarCategoria(nombre) {
 }
 
 export async function eliminarSubcategoria(categoria, subcategoria) {
-  const res = await fetch(`${API_URL}/api/productos/subcategorias`, {
+  const res = await apiFetch(`${API_URL}/api/productos/subcategorias`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify({ categoria, subcategoria }),

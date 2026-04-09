@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
@@ -7,6 +7,7 @@ import Calendar from "../pages/Calendar";
 import NotasPedido from "../pages/NotasPedido";
 import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
+import ProductosInterno from "../pages/ProductosInterno";
 import Proveedores from "../pages/Proveedores";
 import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
@@ -25,7 +26,8 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Dashboard /> },
+      { index: true, element: <Navigate to="/productos" replace /> },
+      { path: "dashboard", element: <Dashboard /> },
       { path: "calendario", element: <Calendar /> },
 
       { path: "notas-pedido", element: <NotasPedido /> },
@@ -38,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "presupuestos", element: <GeneradorPresupuestos /> },
 
       { path: "productos", element: <Productos /> },
+      { path: "productos-interno", element: <ProductosInterno /> },
       { path: "proveedores", element: <Proveedores /> },
       { path: "pedidos-proveedor", element: <PedidosProveedor /> },
       { path: "generador-3d", element: <GeneradorMueble3D /> },

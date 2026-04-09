@@ -217,6 +217,15 @@ export default function ProductosCatalogoView() {
     }
   }
 
+  async function refrescarVista() {
+    try {
+      await Promise.all([cargarFiltros(), cargarProductos(), cargarHistorial()]);
+      toast.success("Productos actualizados.");
+    } catch {
+      toast.error("No se pudo actualizar la vista de productos.");
+    }
+  }
+
   useEffect(() => {
     cargarFiltros().catch(() => toast.error("No se pudieron cargar los filtros."));
     cargarHistorial();
@@ -225,6 +234,53 @@ export default function ProductosCatalogoView() {
   useEffect(() => {
     cargarProductos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoriaSeleccionada, subcategoriaSeleccionada, busqueda, page]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refrescarSilencioso() {
+      try {
+        const [filtros, productosData] = await Promise.all([
+          obtenerFiltrosProductos(),
+          obtenerProductosCatalogo({
+            categoria: categoriaSeleccionada,
+            subcategoria: subcategoriaSeleccionada,
+            q: busqueda,
+            page,
+            limit: PAGE_SIZE,
+          }),
+        ]);
+
+        if (cancelled) return;
+
+        setCategorias(filtros.categorias || []);
+        setSubcategoriasPorCategoria(filtros.subcategorias || {});
+        setProductos(productosData.items || []);
+        setTotalProductos(Number(productosData.total || 0));
+      } catch {
+        // Evitamos ruido visual en refrescos automaticos.
+      }
+    }
+
+    function onFocus() {
+      refrescarSilencioso();
+    }
+
+    function onVisibilityChange() {
+      if (!document.hidden) refrescarSilencioso();
+    }
+
+    const intervalId = window.setInterval(refrescarSilencioso, 15000);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [categoriaSeleccionada, subcategoriaSeleccionada, busqueda, page]);
 
   useEffect(() => {
@@ -469,6 +525,7 @@ export default function ProductosCatalogoView() {
           <button className="pc-btn" onClick={() => setEditandoMultiple(true)} disabled={!seleccionados.length}>Editar clasificacion ({seleccionados.length})</button>
           <button className="pc-btn" onClick={() => setMostrandoEditorCategorias(true)}>Nueva categoria / subcategoria</button>
           <button className="pc-btn pc-btn--danger" onClick={() => setMostrandoEliminar(true)}>Eliminar categoria / subcategoria</button>
+          <button className="pc-btn" onClick={refrescarVista}>Actualizar</button>
           <button className="pc-btn" onClick={() => setMostrandoHistorial((prev) => !prev)}>{mostrandoHistorial ? "Ocultar historial" : "Ver historial"}</button>
           <select className="pc-select" value={formatoImpresion} onChange={(e) => setFormatoImpresion(e.target.value)}>
             <option value="a4">Cartel A4</option>
