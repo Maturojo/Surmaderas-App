@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="/productos" replace /> },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "calendario", element: <Calendar /> },
 

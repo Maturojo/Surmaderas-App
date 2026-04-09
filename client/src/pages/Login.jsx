@@ -61,7 +61,7 @@ export default function Login() {
                 setLoading(true);
                 const data = await loginRequest({ username, password });
                 login({ token: data.token, role: data.user.role, user: data.user });
-                window.location.href = "/productos";
+                window.location.href = "/dashboard";
               } catch (e) {
                 const rawMessage = String(e?.message || "");
                 const message =
