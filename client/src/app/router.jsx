@@ -11,6 +11,8 @@ import ProductosInterno from "../pages/ProductosInterno";
 import Proveedores from "../pages/Proveedores";
 import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
+import UserManagement from "../pages/UserManagement.jsx";
+import TurneroSettings from "../pages/TurneroSettings.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
@@ -44,6 +46,8 @@ export const router = createBrowserRouter([
       { path: "proveedores", element: <Proveedores /> },
       { path: "pedidos-proveedor", element: <PedidosProveedor /> },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
+      { path: "configuracion/usuarios", element: <UserManagement /> },
+      { path: "configuracion/turnero", element: <TurneroSettings /> },
     ],
   },
 ]);

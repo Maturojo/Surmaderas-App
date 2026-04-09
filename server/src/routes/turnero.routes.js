@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, requireRole } from "../middleware/auth.js";
 import Turnero from "../models/Turnero.js";
 
 const router = Router();
@@ -68,6 +68,35 @@ router.post("/take", requireAuth, async (req, res) => {
   } catch (error) {
     console.error("Error tomando turno:", error?.message || error);
     return res.status(500).json({ message: "No se pudo tomar el turno" });
+  }
+});
+
+router.patch("/", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const nextNumber = Number(req.body?.currentNumber);
+
+    if (!Number.isInteger(nextNumber) || nextNumber <= 0) {
+      return res.status(400).json({ message: "El numero del turnero debe ser un entero mayor a 0" });
+    }
+
+    const turnero = await ensureTurnero();
+    const updated = await Turnero.findByIdAndUpdate(
+      turnero._id,
+      {
+        $set: {
+          currentNumber: nextNumber,
+          lastTakenNumber: null,
+          lastTakenBy: "",
+          takenAt: null,
+        },
+      },
+      { new: true }
+    );
+
+    return res.json(updated);
+  } catch (error) {
+    console.error("Error actualizando turnero:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo actualizar el turnero" });
   }
 });
 

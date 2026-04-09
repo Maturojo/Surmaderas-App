@@ -31,7 +31,24 @@ export default function AppLayout() {
   const location = useLocation();
   const auth = getAuth();
   const userName = auth?.user?.username || auth?.user?.name || "Equipo Sur Maderas";
+  const userRole = auth?.user?.role;
   const [openGroups, setOpenGroups] = useState({});
+
+  const navItems = [
+    ...NAV_ITEMS,
+    ...(userRole === "admin"
+      ? [
+          {
+            label: "Configuracion",
+            icon: "⚙",
+            children: [
+              { label: "Usuarios", to: "/configuracion/usuarios" },
+              { label: "Turnero", to: "/configuracion/turnero" },
+            ],
+          },
+        ]
+      : []),
+  ];
 
   function isChildActive(child) {
     return location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
@@ -71,7 +88,7 @@ export default function AppLayout() {
 
         <nav className="app-nav">
           <div className="app-navLabel">Modulos</div>
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             if (item.children) {
               const isActive = isGroupActive(item);
               const isOpen = isActive || Boolean(openGroups[item.label]);

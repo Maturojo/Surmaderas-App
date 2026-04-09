@@ -28,3 +28,22 @@ export async function takeTurno() {
 
   return response.json();
 }
+
+export async function updateTurnero(currentNumber) {
+  const response = await apiFetch(`${API_URL}/api/turnero`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    body: JSON.stringify({ currentNumber }),
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "No se pudo actualizar el turnero");
+  }
+
+  return data;
+}
