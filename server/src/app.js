@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.routes.js";
 import notasPedidoRoutes from "./routes/notasPedido.routes.js";
 import proveedoresRoutes from "./routes/proveedores.routes.js";
 import pedidosProveedorRoutes from "./routes/pedidosProveedor.routes.js";
+import turneroRoutes from "./routes/turnero.routes.js";
 
 function getAllowedOrigins() {
   const extraOrigins = String(process.env.CORS_ORIGINS || "")
@@ -44,6 +45,7 @@ export function createApp() {
   app.use("/api/notas-pedido", notasPedidoRoutes);
   app.use("/api/proveedores", proveedoresRoutes);
   app.use("/api/pedidos-proveedor", pedidosProveedorRoutes);
+  app.use("/api/turnero", turneroRoutes);
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
