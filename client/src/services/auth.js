@@ -22,6 +22,14 @@ export function isAuthenticated() {
   return Boolean(a?.token);
 }
 
+export function getUserRole() {
+  return getAuth()?.user?.role || "";
+}
+
+export function getDefaultHomeByRole(role = getUserRole()) {
+  return role === "ventas" ? "/notas-pedido" : "/dashboard";
+}
+
 export async function loginRequest({ username, password }) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",

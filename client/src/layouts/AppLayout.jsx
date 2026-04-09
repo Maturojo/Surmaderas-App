@@ -36,6 +36,14 @@ const NAV_ITEMS = [
   { label: "Generador 3D", to: "/generador-3d", icon: "cube" },
 ];
 
+const VENTAS_ALLOWED_PATHS = new Set([
+  "/calendario",
+  "/notas-pedido",
+  "/presupuestos/cargar",
+  "/productos",
+  "/generador-3d",
+]);
+
 function SidebarIcon({ name }) {
   const common = {
     viewBox: "0 0 24 24",
@@ -130,8 +138,22 @@ export default function AppLayout() {
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
 
+  const baseNavItems =
+    userRole === "ventas"
+      ? NAV_ITEMS
+          .map((item) => {
+            if (item.children) {
+              const children = item.children.filter((child) => VENTAS_ALLOWED_PATHS.has(child.to));
+              return children.length > 0 ? { ...item, children } : null;
+            }
+
+            return VENTAS_ALLOWED_PATHS.has(item.to) ? item : null;
+          })
+          .filter(Boolean)
+      : NAV_ITEMS;
+
   const navItems = [
-    ...NAV_ITEMS,
+    ...baseNavItems,
     ...(userRole === "admin"
       ? [
           {
@@ -324,7 +346,9 @@ export default function AppLayout() {
         </div>
       </main>
 
-      <ChatInternoWidget unreadCount={chatUnreadCount} onUnreadChange={setChatUnreadCount} />
+      {userRole !== "ventas" ? (
+        <ChatInternoWidget unreadCount={chatUnreadCount} onUnreadChange={setChatUnreadCount} />
+      ) : null}
     </div>
   );
 }

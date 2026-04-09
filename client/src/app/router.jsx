@@ -20,6 +20,7 @@ import PresupuestosGenerar from "../pages/PresupuestosGenerar";
 import PresupuestosEnviar from "../pages/PresupuestosEnviar";
 import PresupuestosGuardadas from "../pages/PresupuestosGuardadas";
 import ProtectedRoute from "./ProtectedRoute";
+import { getDefaultHomeByRole, getUserRole } from "../services/auth";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -31,29 +32,109 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", element: <Dashboard /> },
+      { index: true, element: <Navigate to={getDefaultHomeByRole(getUserRole())} replace /> },
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
       { path: "calendario", element: <CalendarOperativo /> },
 
       { path: "notas-pedido", element: <NotasPedido /> },
-      { path: "notas-pedido/listado", element: <NotasPedidoListado /> },
+      {
+        path: "notas-pedido/listado",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <NotasPedidoListado />
+          </ProtectedRoute>
+        ),
+      },
 
       // NUEVA: Notas guardadas
-      { path: "notas-pedido/guardadas", element: <NotasPedidoGuardadas /> },
+      {
+        path: "notas-pedido/guardadas",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <NotasPedidoGuardadas />
+          </ProtectedRoute>
+        ),
+      },
 
-      { path: "presupuestos", element: <Navigate to="/presupuestos/generar" replace /> },
-      { path: "presupuestos/generar", element: <PresupuestosGenerar /> },
+      {
+        path: "presupuestos",
+        element: <Navigate to={getUserRole() === "ventas" ? "/presupuestos/cargar" : "/presupuestos/generar"} replace />,
+      },
+      {
+        path: "presupuestos/generar",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <PresupuestosGenerar />
+          </ProtectedRoute>
+        ),
+      },
       { path: "presupuestos/cargar", element: <PresupuestosEnviar /> },
-      { path: "presupuestos/guardadas", element: <PresupuestosGuardadas /> },
-      { path: "chat", element: <ChatInterno /> },
+      {
+        path: "presupuestos/guardadas",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <PresupuestosGuardadas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "chat",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <ChatInterno />
+          </ProtectedRoute>
+        ),
+      },
 
       { path: "productos", element: <Productos /> },
-      { path: "productos-interno", element: <ProductosInterno /> },
-      { path: "proveedores", element: <Proveedores /> },
-      { path: "pedidos-proveedor", element: <PedidosProveedor /> },
+      {
+        path: "productos-interno",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <ProductosInterno />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "proveedores",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <Proveedores />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "pedidos-proveedor",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <PedidosProveedor />
+          </ProtectedRoute>
+        ),
+      },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
-      { path: "configuracion/usuarios", element: <UserManagement /> },
-      { path: "configuracion/turnero", element: <TurneroSettings /> },
+      {
+        path: "configuracion/usuarios",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <UserManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "configuracion/turnero",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <TurneroSettings />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);
