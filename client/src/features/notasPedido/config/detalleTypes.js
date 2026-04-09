@@ -15,10 +15,9 @@ export function buildDescripcionFromItem(item) {
 
   if (tipo === "corte") {
     const mat = d.material || "Material";
-    const largo = d.largoMm ? `${d.largoMm}mm` : "";
-    const ancho = d.anchoMm ? `${d.anchoMm}mm` : "";
-    const esp = d.espesorMm ? `${d.espesorMm}mm` : "";
-    const dims = [largo, ancho, esp].filter(Boolean).join(" x ");
+    const largo = d.largoMm ? `${d.largoMm}cm` : "";
+    const ancho = d.anchoMm ? `${d.anchoMm}cm` : "";
+    const dims = [largo, ancho].filter(Boolean).join(" x ");
     const cantCortes = d.cortes ? ` (${d.cortes} cortes)` : "";
     const obs = d.obs ? ` - ${d.obs}` : "";
     return `${mat}${dims ? " " + dims : ""}${cantCortes}${obs}`.trim();

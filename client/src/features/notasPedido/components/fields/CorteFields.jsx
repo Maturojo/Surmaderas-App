@@ -56,7 +56,7 @@ export default function CorteFields({ it, setData }) {
           min={0}
           value={numOrEmpty(d.largoMm)}
           onChange={(e) => setData({ largoMm: e.target.value })}
-          placeholder="Largo (mm)"
+          placeholder="Largo (cm)"
         />
 
         <input
@@ -65,16 +65,7 @@ export default function CorteFields({ it, setData }) {
           min={0}
           value={numOrEmpty(d.anchoMm)}
           onChange={(e) => setData({ anchoMm: e.target.value })}
-          placeholder="Ancho (mm)"
-        />
-
-        <input
-          className="np-input"
-          type="number"
-          min={0}
-          value={numOrEmpty(d.espesorMm)}
-          onChange={(e) => setData({ espesorMm: e.target.value })}
-          placeholder="Espesor (mm)"
+          placeholder="Ancho (cm)"
         />
       </div>
 

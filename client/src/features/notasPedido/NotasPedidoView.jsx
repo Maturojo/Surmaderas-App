@@ -59,12 +59,12 @@ function formatPriceInput(value) {
 function calcularPrecioUnitarioCorte(item) {
   const data = item?.data || {};
   const material = getCorteMaterialByCode(data.materialCode);
-  const largoMm = Number(data.largoMm || 0);
-  const anchoMm = Number(data.anchoMm || 0);
+  const largoCm = Number(data.largoMm || 0);
+  const anchoCm = Number(data.anchoMm || 0);
 
-  if (!material || largoMm <= 0 || anchoMm <= 0) return "";
+  if (!material || largoCm <= 0 || anchoCm <= 0) return "";
 
-  const areaM2 = (largoMm / 1000) * (anchoMm / 1000);
+  const areaM2 = (largoCm / 100) * (anchoCm / 100);
   return formatPriceInput(areaM2 * material.precioM2);
 }
 
