@@ -449,7 +449,7 @@
   max-width: 360px;
 }
 
-.np-item-row--corte {
+.np-item-row--detalle {
   grid-template-columns: 220px minmax(0, 1fr) 120px 150px 120px 80px;
   grid-template-areas:
     "tipo fields fields fields special remove"
@@ -457,31 +457,31 @@
   align-items: start;
 }
 
-.np-item-row--corte > :nth-child(1) {
+.np-item-row--detalle > :nth-child(1) {
   grid-area: tipo;
   align-self: start;
 }
 
-.np-item-row--corte > :nth-child(2) {
+.np-item-row--detalle > :nth-child(2) {
   grid-area: fields;
 }
 
-.np-item-row--corte > :nth-child(3) {
+.np-item-row--detalle > :nth-child(3) {
   grid-area: qty;
   align-self: start;
 }
 
-.np-item-row--corte > :nth-child(4) {
+.np-item-row--detalle > :nth-child(4) {
   grid-area: price;
   align-self: start;
 }
 
-.np-item-row--corte > :nth-child(5) {
+.np-item-row--detalle > :nth-child(5) {
   grid-area: special;
   align-self: stretch;
 }
 
-.np-item-row--corte > :nth-child(6) {
+.np-item-row--detalle > :nth-child(6) {
   grid-area: remove;
   align-self: start;
 }
