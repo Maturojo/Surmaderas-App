@@ -53,7 +53,7 @@ function isTelefonoValido(value) {
 
 function formatPriceInput(value) {
   if (!Number.isFinite(value) || value <= 0) return "";
-  return value.toFixed(2);
+  return String(Math.round(value));
 }
 
 function calcularPrecioUnitarioCorte(item) {
