@@ -24,13 +24,12 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "marco") {
-    const mat = d.material || "Material";
     const a = d.anchoMm ? `${d.anchoMm}mm` : "";
     const h = d.altoMm ? `${d.altoMm}mm` : "";
-    const perfil = d.perfil || "";
+    const perfil = d.perfil || "Moldura";
     const dims = [a, h].filter(Boolean).join(" x ");
     const obs = d.obs ? ` - ${d.obs}` : "";
-    return `Marco${perfil ? " " + perfil : ""} - ${mat}${dims ? " " + dims : ""}${obs}`.trim();
+    return `Marco ${perfil}${dims ? " - " + dims : ""}${obs}`.trim();
   }
 
   if (tipo === "calado") {

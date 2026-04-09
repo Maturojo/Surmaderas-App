@@ -10,18 +10,12 @@ export default function MarcoFields({ it, setData }) {
 
   return (
     <div className="np-detail-fields">
-      <div className="np-fields-grid-2 np-detail-top">
-        <input
-          className="np-input"
-          value={d.material || ""}
-          onChange={(e) => setData({ material: e.target.value })}
-          placeholder="Material"
-        />
+      <div className="np-detail-top">
         <input
           className="np-input"
           value={d.perfil || ""}
           onChange={(e) => setData({ perfil: e.target.value })}
-          placeholder="Perfil / Moldura"
+          placeholder="Moldura"
         />
       </div>
 
