@@ -423,6 +423,17 @@
   gap: 10px;
 }
 
+.np-detail-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.np-detail-top,
+.np-detail-mid,
+.np-detail-wide {
+  max-width: 540px;
+}
+
 .np-corte-top {
   display: grid;
   grid-template-columns: minmax(220px, 1fr) minmax(180px, 220px);

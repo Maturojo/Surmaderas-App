@@ -9,8 +9,8 @@ export default function CaladoFields({ it, setData }) {
   const d = it.data || {};
 
   return (
-    <div style={{ display: "grid", gap: 10 }}>
-      <div className="np-fields-grid-2">
+    <div className="np-detail-fields">
+      <div className="np-fields-grid-2 np-detail-top">
         <input
           className="np-input"
           value={d.material || ""}
@@ -29,14 +29,14 @@ export default function CaladoFields({ it, setData }) {
       </div>
 
       <input
-        className="np-input"
+        className="np-input np-detail-wide"
         value={d.diseno || ""}
         onChange={(e) => setData({ diseno: e.target.value })}
         placeholder="Diseño / Archivo"
       />
 
       <input
-        className="np-input"
+        className="np-input np-detail-wide"
         value={d.obs || ""}
         onChange={(e) => setData({ obs: e.target.value })}
         placeholder="Observaciones"

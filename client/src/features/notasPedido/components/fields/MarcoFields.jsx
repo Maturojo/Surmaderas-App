@@ -9,8 +9,8 @@ export default function MarcoFields({ it, setData }) {
   const d = it.data || {};
 
   return (
-    <div style={{ display: "grid", gap: 10 }}>
-      <div className="np-fields-grid-2">
+    <div className="np-detail-fields">
+      <div className="np-fields-grid-2 np-detail-top">
         <input
           className="np-input"
           value={d.material || ""}
@@ -25,7 +25,7 @@ export default function MarcoFields({ it, setData }) {
         />
       </div>
 
-      <div className="np-fields-grid-2">
+      <div className="np-fields-grid-2 np-detail-mid">
         <input
           className="np-input"
           type="number"
@@ -45,7 +45,7 @@ export default function MarcoFields({ it, setData }) {
       </div>
 
       <input
-        className="np-input"
+        className="np-input np-detail-wide"
         value={d.obs || ""}
         onChange={(e) => setData({ obs: e.target.value })}
         placeholder="Observaciones"

@@ -4,15 +4,15 @@ export default function PrestamoFields({ it, setData }) {
   const d = it.data || {};
 
   return (
-    <div style={{ display: "grid", gap: 10 }}>
+    <div className="np-detail-fields">
       <input
-        className="np-input"
+        className="np-input np-detail-wide"
         value={d.descripcion || ""}
         onChange={(e) => setData({ descripcion: e.target.value })}
         placeholder="Descripción del préstamo"
       />
 
-      <div className="np-fields-grid-2">
+      <div className="np-fields-grid-2 np-detail-mid">
         <input
           className="np-input"
           type="date"
