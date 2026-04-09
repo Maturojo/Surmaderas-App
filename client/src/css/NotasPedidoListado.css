@@ -167,6 +167,13 @@
   align-items: center;
 }
 
+.npl-toolbarMain {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
 .npl-searchField {
   flex: 1;
   min-width: 0;
@@ -196,6 +203,25 @@
 
 .npl-input::placeholder {
   color: #9a9085;
+}
+
+.npl-searchClear {
+  border: 0;
+  background: rgba(61, 49, 39, 0.08);
+  color: #4d4135;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.npl-toolbarHint {
+  color: #7a7065;
+  font-size: 12px;
+  font-weight: 700;
+  padding-left: 4px;
 }
 
 .npl-searchRow input {
@@ -250,6 +276,57 @@
   background: #fbf8f2;
 }
 
+.npl-row td {
+  vertical-align: middle;
+}
+
+.npl-cellTitle {
+  color: #201c19;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.npl-cellSub {
+  margin-top: 3px;
+  color: #7b7167;
+  font-size: 12px;
+}
+
+.npl-cellMoney {
+  color: #2d241c;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.npl-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #efe6d9;
+  color: #5f4d3a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.npl-statusBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #fff2dc;
+  color: #8a5a1a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.npl-statusBadge.ok {
+  background: #e8f5ea;
+  color: #2e6d37;
+}
+
 .npl-empty {
   padding: 18px;
   text-align: center;
@@ -261,6 +338,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  white-space: nowrap;
 }
 
 /* Pager */
@@ -775,6 +853,10 @@
     align-items: stretch;
   }
 
+  .npl-actions {
+    justify-content: flex-start;
+  }
+
   .npl-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -843,8 +925,8 @@
 
 .npl-brandHeader {
   display: grid;
-  grid-template-columns: 94px 1fr 138px;
-  gap: 12px;
+  grid-template-columns: 110px minmax(0, 1fr) 172px;
+  gap: 16px;
   align-items: center;
   background: linear-gradient(135deg, #ffffff 0%, #f3efe7 100%);
   border: 1px solid rgba(48, 41, 33, 0.08);
@@ -857,7 +939,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 96px;
+  min-height: 116px;
   border-radius: 16px;
   background: #fff;
   border: 1px solid rgba(48, 41, 33, 0.08);
@@ -880,7 +962,7 @@
 }
 
 .npl-brandTitle {
-  font-size: 24px;
+  font-size: 26px;
   line-height: 1;
   font-weight: 900;
   color: #2d2a26;
@@ -908,8 +990,8 @@
 .npl-brandNumber {
   justify-self: end;
   width: 100%;
-  max-width: 138px;
-  padding: 12px 14px;
+  max-width: 172px;
+  padding: 16px 18px;
   border-radius: 14px;
   background: #2f2d2a;
   color: #fff;
@@ -921,7 +1003,7 @@
 
 .npl-brandNumber .npl-v {
   color: #fff;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1.1;
   overflow-wrap: anywhere;
@@ -935,12 +1017,12 @@
 }
 
 .npl-topCard {
-  padding: 12px 14px;
+  padding: 14px 16px;
   margin-bottom: 10px;
 }
 
 .npl-docBlock {
-  padding: 12px;
+  padding: 16px;
   border-radius: 14px;
 }
 
@@ -950,17 +1032,19 @@
 }
 
 .npl-grid {
-  gap: 10px;
+  gap: 14px;
 }
 
 .npl-kv .npl-k,
 .npl-totalBox .npl-k {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .npl-kv .npl-v,
 .npl-totalBox .npl-v {
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-word;
 }
 
 .npl-scrollOnly {
@@ -968,33 +1052,69 @@
 }
 
 .npl-itemRow {
-  padding: 10px 12px;
+  padding: 12px 14px;
   margin-bottom: 8px;
-  grid-template-columns: minmax(0, 1fr) 230px;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: center;
 }
 
 .npl-itemDesc {
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .npl-itemMeta {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .npl-itemNumbers > div {
-  padding: 8px 10px;
+  padding: 10px 12px;
+  min-height: 82px;
+  display: grid;
+  align-content: center;
 }
 
 .npl-bottomCard {
-  padding: 10px 12px;
+  padding: 14px 16px;
 }
 
 .npl-totalsGrid {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
 }
 
 .npl-noteBox {
-  padding: 10px 12px;
+  padding: 14px 16px;
+}
+
+.npl-radioRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.npl-radioOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #1f1c19;
+}
+
+.npl-noteTextarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(48, 41, 33, 0.12);
+  resize: vertical;
+  font: inherit;
+  background: #fff;
+  outline: none;
+}
+
+.npl-noteTextarea:focus {
+  border-color: rgba(48, 41, 33, 0.28);
 }
 
 .npl-signRow {

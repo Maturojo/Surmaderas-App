@@ -4,6 +4,7 @@ import {
   createDirectConversation,
   getChatOverview,
   getConversationMessages,
+  markConversationAsRead,
   sendConversationMessage,
 } from "../services/chat";
 
@@ -28,7 +29,7 @@ function formatRelativeDate(value) {
 export default function ChatInterno() {
   const auth = getAuth();
   const currentUserId = auth?.user?.id || "";
-  const [overview, setOverview] = useState({ conversations: [], users: [] });
+  const [overview, setOverview] = useState({ conversations: [], users: [], totalUnread: 0 });
   const [selectedConversationId, setSelectedConversationId] = useState("");
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
@@ -39,6 +40,7 @@ export default function ChatInterno() {
   const [messageError, setMessageError] = useState("");
   const messagesEndRef = useRef(null);
   const previousMessageCountRef = useRef(0);
+  const readSyncTimeoutRef = useRef(null);
 
   const selectedConversation = useMemo(
     () =>
@@ -60,7 +62,10 @@ export default function ChatInterno() {
           return;
         }
 
-        setOverview(data);
+        setOverview((current) => ({
+          ...current,
+          ...data,
+        }));
         setSelectedConversationId((currentId) => {
           if (currentId && data.conversations.some((conversation) => conversation.id === currentId)) {
             return currentId;
@@ -109,6 +114,23 @@ export default function ChatInterno() {
         }
 
         setMessages(data.messages || []);
+        if (data.conversation) {
+          setOverview((current) => {
+            const previousUnread =
+              current.conversations.find((conversation) => conversation.id === data.conversation.id)
+                ?.unreadCount || 0;
+
+            return {
+              ...current,
+              conversations: current.conversations.map((conversation) =>
+                conversation.id === data.conversation.id
+                  ? { ...conversation, ...data.conversation, unreadCount: 0 }
+                  : conversation
+              ),
+              totalUnread: Math.max(0, (current.totalUnread || 0) - previousUnread),
+            };
+          });
+        }
         setMessageError("");
       } catch (loadError) {
         if (!cancelled) {
@@ -138,6 +160,44 @@ export default function ChatInterno() {
     previousMessageCountRef.current = messages.length;
   }, [messages]);
 
+  useEffect(() => {
+    if (!selectedConversationId) {
+      return undefined;
+    }
+
+    window.clearTimeout(readSyncTimeoutRef.current);
+    readSyncTimeoutRef.current = window.setTimeout(async () => {
+      try {
+        const data = await markConversationAsRead(selectedConversationId);
+        if (!data?.conversation) {
+          return;
+        }
+
+        setOverview((current) => {
+          const previousUnread =
+            current.conversations.find((conversation) => conversation.id === data.conversation.id)
+              ?.unreadCount || 0;
+
+          return {
+            ...current,
+            conversations: current.conversations.map((conversation) =>
+              conversation.id === data.conversation.id
+                ? { ...conversation, ...data.conversation, unreadCount: 0 }
+                : conversation
+            ),
+            totalUnread: Math.max(0, (current.totalUnread || 0) - previousUnread),
+          };
+        });
+      } catch {
+        return;
+      }
+    }, 350);
+
+    return () => {
+      window.clearTimeout(readSyncTimeoutRef.current);
+    };
+  }, [selectedConversationId, messages.length]);
+
   async function handleStartDirectConversation(userId) {
     try {
       const data = await createDirectConversation(userId);
@@ -148,6 +208,7 @@ export default function ChatInterno() {
 
         return {
           ...current,
+          totalUnread: current.totalUnread || 0,
           conversations: [data.conversation, ...existing],
         };
       });
@@ -180,10 +241,17 @@ export default function ChatInterno() {
           ...(data.conversation || {}),
           lastMessageText: data.message.text,
           lastMessageAt: data.message.createdAt,
+          unreadCount: 0,
         };
 
         return {
           ...current,
+          totalUnread: Math.max(
+            0,
+            (current.totalUnread || 0) -
+              (current.conversations.find((conversation) => conversation.id === selectedConversationId)
+                ?.unreadCount || 0)
+          ),
           conversations: [
             updatedConversation,
             ...current.conversations.filter((conversation) => conversation.id !== selectedConversationId),
@@ -230,7 +298,12 @@ export default function ChatInterno() {
                 onClick={() => setSelectedConversationId(conversation.id)}
               >
                 <div className="chat-conversationTop">
-                  <span className="chat-conversationName">{conversation.title}</span>
+                  <span className="chat-conversationName">
+                    {conversation.title}
+                    {conversation.unreadCount ? (
+                      <span className="chat-unreadBadge">{conversation.unreadCount}</span>
+                    ) : null}
+                  </span>
                   <span className="chat-conversationTime">
                     {formatRelativeDate(conversation.lastMessageAt)}
                   </span>

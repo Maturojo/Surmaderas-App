@@ -11,6 +11,11 @@ function fmtDate(yyyyMMdd) {
   return String(yyyyMMdd);
 }
 
+function getEntregaLabel(value) {
+  if (!value) return "Sin definir";
+  return String(value);
+}
+
 export default function NotasTable({ items, loading, onVerDetalle, onEliminar }) {
   return (
     <div className="npl-tableWrap">
@@ -39,14 +44,34 @@ export default function NotasTable({ items, loading, onVerDetalle, onEliminar })
             </tr>
           ) : (
             items.map((n) => (
-              <tr key={n._id}>
-                <td>{n.numero || "-"}</td>
-                <td>{fmtDate(n.fecha)}</td>
-                <td>{n.entrega || "-"}</td>
-                <td>{getNotaClienteNombre(n)}</td>
-                <td>{n.vendedor || "-"}</td>
-                <td>${toARS(getNotaTotal(n))}</td>
-                <td>{n?.caja?.guardada ? "Guardada" : "Pendiente"}</td>
+              <tr key={n._id} className="npl-row">
+                <td>
+                  <div className="npl-cellTitle">#{n.numero || "-"}</div>
+                  <div className="npl-cellSub">Nota activa</div>
+                </td>
+                <td>
+                  <div className="npl-cellTitle">{fmtDate(n.fecha)}</div>
+                  <div className="npl-cellSub">Fecha de carga</div>
+                </td>
+                <td>
+                  <span className="npl-chip">{getEntregaLabel(n.entrega)}</span>
+                </td>
+                <td>
+                  <div className="npl-cellTitle">{getNotaClienteNombre(n)}</div>
+                  <div className="npl-cellSub">{n?.cliente?.telefono || n?.telefono || "Sin telefono"}</div>
+                </td>
+                <td>
+                  <div className="npl-cellTitle">{n.vendedor || "-"}</div>
+                  <div className="npl-cellSub">Responsable</div>
+                </td>
+                <td>
+                  <div className="npl-cellMoney">${toARS(getNotaTotal(n))}</div>
+                </td>
+                <td>
+                  <span className={`npl-statusBadge${n?.caja?.guardada ? " ok" : ""}`}>
+                    {n?.caja?.guardada ? "Guardada" : "Pendiente"}
+                  </span>
+                </td>
 
                 <td className="npl-actions">
                   <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>

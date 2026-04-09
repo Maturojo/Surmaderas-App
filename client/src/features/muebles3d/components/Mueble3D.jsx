@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { MM_TO_UNITS } from "../constants/medidas";
 import { usePieces } from "../hooks/usePiece";
+import { MATERIALES_POR_PIEZA_DEFAULT } from "../constants/defaults";
 import { Piece } from "./Piece";
 
 export function Mueble3D({ m, materialPropsByKey }) {
@@ -16,21 +17,27 @@ export function Mueble3D({ m, materialPropsByKey }) {
 
   const rootRef = useRef(null);
 
-  // ✅ bodyRef mide SOLO el cuerpo (sin patas/zócalo) para no “volar” el mueble
+  // ✅ bodyRef mide SOLO el cuerpo del mueble
   const bodyRef = useRef(null);
+  const supportRef = useRef(null);
 
-  // Auto-ground: solo con el CUERPO del mueble (no patas/zócalo)
+  const bodyPieces = pieces.filter((p) => p.pieza !== "patas" && p.pieza !== "zocalo");
+  const soportePieces = pieces.filter((p) => p.pieza === "patas" || p.pieza === "zocalo");
+  const supportGroundMode = soportePieces.length > 0;
+
+  // Auto-ground: si hay soporte real, el piso lo define el soporte; si no, el cuerpo.
   useLayoutEffect(() => {
     const root = rootRef.current;
-    const body = bodyRef.current;
-    if (!root || !body) return;
+    const anchor = supportGroundMode ? supportRef.current : bodyRef.current;
+    if (!root || !anchor) return;
 
-    body.updateWorldMatrix(true, true);
-    const box = new THREE.Box3().setFromObject(body);
+    anchor.updateWorldMatrix(true, true);
+    const box = new THREE.Box3().setFromObject(anchor);
     if (!Number.isFinite(box.min.y)) return;
 
     root.position.y = root.position.y - box.min.y;
   }, [
+    supportGroundMode,
     pieces,
     m.tipo,
     m.ancho,
@@ -52,17 +59,16 @@ export function Mueble3D({ m, materialPropsByKey }) {
     m.zonas?.altoSuperior,
   ]);
 
-  // ✅ Global: fuerza el material de TODO el mueble
-  const globalMatKey = m.material;
+  const materialesPorPieza = m.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT;
 
-  // ✅ Para evitar “cache” visual: incluimos globalMatKey en la key
   const renderPiece = (p, k) => {
+    const pieceMatKey = materialesPorPieza[p.pieza] || m.material;
     const materialProps =
-      materialPropsByKey?.[globalMatKey] || materialPropsByKey?.[m.material];
+      materialPropsByKey?.[pieceMatKey] || materialPropsByKey?.[m.material];
 
     return (
       <Piece
-        key={`${k}-${globalMatKey}`}
+        key={`${k}-${pieceMatKey}`}
         size={p.size}
         position={p.pos}
         materialProps={materialProps}
@@ -70,19 +76,15 @@ export function Mueble3D({ m, materialPropsByKey }) {
     );
   };
 
-  // ✅ body = todo menos patas/zócalo (para medir piso)
-  const bodyPieces = pieces.filter((p) => p.pieza !== "patas" && p.pieza !== "zocalo");
-  const soportePieces = pieces.filter((p) => p.pieza === "patas" || p.pieza === "zocalo");
-
   return (
     <group ref={rootRef} position={[0, 0, zPegadoAPared + zFondoOffset]}>
-      {/* CUERPO (define el apoyo al piso) */}
+      {/* CUERPO */}
       <group ref={bodyRef}>
         {bodyPieces.map((p, idx) => renderPiece(p, `b-${idx}`))}
       </group>
 
-      {/* SOPORTES (no afectan el auto-ground) */}
-      <group>
+      {/* SOPORTES */}
+      <group ref={supportRef}>
         {soportePieces.map((p, idx) => renderPiece(p, `s-${idx}`))}
       </group>
     </group>

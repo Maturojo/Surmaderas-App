@@ -10,6 +10,27 @@ const router = Router();
 
 router.use(requireAuth);
 
+function getConversationReadAt(conversation, userId) {
+  const readEntry = (conversation.lastReadBy || []).find(
+    (entry) => String(entry.user) === String(userId)
+  );
+
+  return readEntry?.readAt || null;
+}
+
+function setConversationReadAt(conversation, userId, readAt = new Date()) {
+  const existingEntry = (conversation.lastReadBy || []).find(
+    (entry) => String(entry.user) === String(userId)
+  );
+
+  if (existingEntry) {
+    existingEntry.readAt = readAt;
+    return;
+  }
+
+  conversation.lastReadBy.push({ user: userId, readAt });
+}
+
 async function ensureGeneralConversation() {
   let conversation = await ChatConversation.findOne({ type: "general" });
 
@@ -43,6 +64,7 @@ function normalizeConversation(conversation, currentUserId) {
     type: conversation.type,
     title: conversation.type === "general" ? conversation.title || "Canal general" : directTitle || "Chat directo",
     participants,
+    unreadCount: conversation.unreadCount || 0,
     lastMessageText: conversation.lastMessageText || "",
     lastMessageAt: conversation.lastMessageAt || conversation.updatedAt || conversation.createdAt,
   };
@@ -86,10 +108,36 @@ router.get("/overview", async (req, res) => {
       ).sort({ name: 1, username: 1 }),
     ]);
 
+    const conversationsWithUnread = await Promise.all(
+      conversations.map(async (conversation) => {
+        const readAt = getConversationReadAt(conversation, req.user.id);
+        const unreadCount = await ChatMessage.countDocuments({
+          conversation: conversation._id,
+          "sender.id": { $ne: req.user.id },
+          ...(readAt ? { createdAt: { $gt: readAt } } : {}),
+        });
+
+        const normalizedConversation = conversation.toObject
+          ? conversation.toObject()
+          : conversation;
+
+        return {
+          ...normalizedConversation,
+          unreadCount,
+        };
+      })
+    );
+
+    const totalUnread = conversationsWithUnread.reduce(
+      (accumulator, conversation) => accumulator + (conversation.unreadCount || 0),
+      0
+    );
+
     return res.json({
-      conversations: conversations.map((conversation) =>
+      conversations: conversationsWithUnread.map((conversation) =>
         normalizeConversation(conversation, currentUserId)
       ),
+      totalUnread,
       users: users.map((user) => ({
         id: String(user._id),
         name: user.name,
@@ -159,8 +207,17 @@ router.get("/conversations/:id/messages", async (req, res) => {
       .sort({ createdAt: 1 })
       .limit(150);
 
+    setConversationReadAt(conversation, req.user.id, new Date());
+    await conversation.save();
+
     return res.json({
-      conversation: normalizeConversation(conversation, req.user.id),
+      conversation: normalizeConversation(
+        {
+          ...(conversation.toObject ? conversation.toObject() : conversation),
+          unreadCount: 0,
+        },
+        req.user.id
+      ),
       messages: messages.map((message) => ({
         id: String(message._id),
         text: message.text,
@@ -176,6 +233,31 @@ router.get("/conversations/:id/messages", async (req, res) => {
   } catch (error) {
     console.error("Error cargando mensajes del chat:", error?.message || error);
     return res.status(500).json({ message: "No se pudieron cargar los mensajes" });
+  }
+});
+
+router.post("/conversations/:id/read", async (req, res) => {
+  try {
+    const { conversation, error } = await assertConversationAccess(req.params.id, req.user.id);
+    if (error) {
+      return res.status(error.status).json({ message: error.message });
+    }
+
+    setConversationReadAt(conversation, req.user.id, new Date());
+    await conversation.save();
+
+    return res.json({
+      conversation: normalizeConversation(
+        {
+          ...(conversation.toObject ? conversation.toObject() : conversation),
+          unreadCount: 0,
+        },
+        req.user.id
+      ),
+    });
+  } catch (error) {
+    console.error("Error marcando conversacion como leida:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo actualizar la lectura del chat" });
   }
 });
 
@@ -209,6 +291,7 @@ router.post("/conversations/:id/messages", async (req, res) => {
 
     conversation.lastMessageText = text;
     conversation.lastMessageAt = message.createdAt;
+    setConversationReadAt(conversation, req.user.id, message.createdAt);
     await conversation.save();
 
     return res.status(201).json({
@@ -223,7 +306,13 @@ router.post("/conversations/:id/messages", async (req, res) => {
           role: message.sender.role,
         },
       },
-      conversation: normalizeConversation(conversation, req.user.id),
+      conversation: normalizeConversation(
+        {
+          ...(conversation.toObject ? conversation.toObject() : conversation),
+          unreadCount: 0,
+        },
+        req.user.id
+      ),
     });
   } catch (error) {
     console.error("Error enviando mensaje interno:", error?.message || error);

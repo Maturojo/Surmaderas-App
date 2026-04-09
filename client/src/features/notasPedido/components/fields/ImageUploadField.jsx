@@ -9,6 +9,7 @@ export default function ImageUploadField({
   value, // { dataUrl, name, type, size }
   onChange, // (newValue|null) => void
   maxMB = 1.5,
+  capture,
 }) {
   const inputRef = useRef(null);
 
@@ -71,6 +72,7 @@ export default function ImageUploadField({
         className="np-input"
         type="file"
         accept="image/*"
+        capture={capture}
         onChange={handlePick}
       />
 

@@ -142,7 +142,7 @@ export default function NotaDetalleModal({
                       </div>
                       <div className="npl-kv">
                         <div className="npl-k">Fecha de entrega</div>
-                        <div className="npl-v">{detalle.entrega || "-"}</div>
+                        <div className="npl-v">{fmtDate(detalle.entrega)}</div>
                       </div>
                       <div className="npl-kv">
                         <div className="npl-k">Valor del pedido</div>
@@ -241,9 +241,9 @@ export default function NotaDetalleModal({
                     <div className="npl-cajaResumen npl-totalsGrid">
                       <div className="npl-totalBox">
                         <div className="npl-k">Tipo en caja</div>
-                        <div className="npl-v">{(
-                          <>
-                            <label>
+                        <div className="npl-v">
+                          <div className="npl-radioRow">
+                            <label className="npl-radioOption">
                               <input
                                 type="radio"
                                 name="tipoCaja"
@@ -252,10 +252,10 @@ export default function NotaDetalleModal({
                                   setTipo("pago");
                                   setMonto(String(total));
                                 }}
-                              />{" "}
-                              Pago
-                            </label>{" "}
-                            <label>
+                              />
+                              <span>Pago</span>
+                            </label>
+                            <label className="npl-radioOption">
                               <input
                                 type="radio"
                                 name="tipoCaja"
@@ -264,11 +264,11 @@ export default function NotaDetalleModal({
                                   setTipo("seña");
                                   setMonto("");
                                 }}
-                              />{" "}
-                              Seña
+                              />
+                              <span>Seña</span>
                             </label>
-                          </>
-                        )}</div>
+                          </div>
+                        </div>
                       </div>
                       <div className="npl-totalBox">
                         <div className="npl-k">Monto</div>
@@ -297,7 +297,12 @@ export default function NotaDetalleModal({
                     <div className="npl-noteBox">
                       <div className="npl-k">Observaciones</div>
                       <div>
-                        <textarea value={notaCaja} onChange={(e) => setNotaCaja(e.target.value)} rows={3} style={{ width: "100%" }} />
+                        <textarea
+                          className="npl-noteTextarea"
+                          value={notaCaja}
+                          onChange={(e) => setNotaCaja(e.target.value)}
+                          rows={4}
+                        />
                       </div>
                     </div>
                   </>

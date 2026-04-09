@@ -189,24 +189,140 @@ export default function GeneradorMueble3D() {
 
   const [shotApi, setShotApi] = useState(null);
   const mWithShot = useMemo(() => ({ ...m, __shotApi: shotApi }), [m, shotApi]);
+  const materialLabel = (m.material || "material").replaceAll("_", " ");
+  const fondoLabel = (m.fondoModo || "habitacion").replaceAll("_", " ");
 
   return (
-    <div style={{ display: "flex", width: "100%", height: "100vh", overflow: "hidden" }}>
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100vh",
+        overflow: "hidden",
+        background:
+          "radial-gradient(circle at top right, rgba(205, 182, 146, 0.18), transparent 24%), linear-gradient(180deg, #f7f1e8 0%, #ece7df 100%)",
+      }}
+    >
       <Panel m={mWithShot} setM={setM} despiece={despiece} />
 
-      <div style={{ flex: 1, height: "100vh", background: "#f2f2f2" }}>
-        <Canvas
-          shadows
-          camera={{ position: [0, 2.4, 7.5], fov: 45, near: 0.1, far: 200 }}
-          gl={{ antialias: true, physicallyCorrectLights: true, preserveDrawingBuffer: true }}
-          onCreated={({ gl }) => {
-            gl.toneMapping = THREE.ACESFilmicToneMapping;
-            gl.toneMappingExposure = 1.15;
+      <div style={{ flex: 1, height: "100vh", padding: 18 }}>
+        <div
+          style={{
+            position: "relative",
+            height: "100%",
+            borderRadius: 28,
+            overflow: "hidden",
+            border: "1px solid rgba(80, 60, 35, 0.12)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(245,240,232,0.82) 100%)",
+            boxShadow: "0 24px 60px rgba(55, 40, 20, 0.12)",
+            backdropFilter: "blur(6px)",
           }}
         >
-          <ScreenshotRig onReady={setShotApi} />
-          <Scene m={m} />
-        </Canvas>
+          <Canvas
+            shadows
+            camera={{ position: [0, 2.4, 7.5], fov: 45, near: 0.1, far: 200 }}
+            gl={{ antialias: true, physicallyCorrectLights: true, preserveDrawingBuffer: true }}
+            onCreated={({ gl }) => {
+              gl.toneMapping = THREE.ACESFilmicToneMapping;
+              gl.toneMappingExposure = 1.15;
+            }}
+          >
+            <ScreenshotRig onReady={setShotApi} />
+            <Scene m={m} />
+          </Canvas>
+
+          <div
+            style={{
+              position: "absolute",
+              top: 18,
+              left: 18,
+              display: "grid",
+              gap: 10,
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              style={{
+                width: "fit-content",
+                padding: "10px 14px",
+                borderRadius: 16,
+                background: "rgba(255,255,255,0.86)",
+                border: "1px solid rgba(80, 60, 35, 0.12)",
+                boxShadow: "0 10px 26px rgba(55, 40, 20, 0.12)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  fontWeight: 800,
+                  color: "#8a7457",
+                  marginBottom: 4,
+                }}
+              >
+                Generador 3D
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: "#2d241c", lineHeight: 1.05 }}>
+                Vista interactiva del mueble
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {[
+                `Material ${materialLabel}`,
+                `Fondo ${fondoLabel}`,
+                `${m.ancho} x ${m.alto} x ${m.profundidad} mm`,
+              ].map((item) => (
+                <span
+                  key={item}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    minHeight: 32,
+                    padding: "0 12px",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.82)",
+                    border: "1px solid rgba(80, 60, 35, 0.12)",
+                    color: "#4e4032",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    boxShadow: "0 8px 18px rgba(55, 40, 20, 0.08)",
+                  }}
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              position: "absolute",
+              right: 18,
+              bottom: 18,
+              display: "grid",
+              gap: 8,
+              padding: "12px 14px",
+              borderRadius: 18,
+              background: "rgba(31, 25, 20, 0.72)",
+              color: "#fffaf3",
+              border: "1px solid rgba(255,255,255,0.12)",
+              boxShadow: "0 16px 32px rgba(20, 14, 8, 0.24)",
+              pointerEvents: "none",
+            }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Controles
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.92 }}>Arrastrá para rotar</div>
+            <div style={{ fontSize: 13, opacity: 0.92 }}>Usá la rueda para hacer zoom</div>
+            <div style={{ fontSize: 13, opacity: 0.92 }}>
+              Capturas {shotApi ? "listas" : "disponibles al cargar la escena"}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

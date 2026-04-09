@@ -51,3 +51,12 @@ export async function sendConversationMessage(conversationId, text) {
 
   return parseResponse(response, "No se pudo enviar el mensaje");
 }
+
+export async function markConversationAsRead(conversationId) {
+  const response = await apiFetch(`${API_URL}/api/chat/conversations/${conversationId}/read`, {
+    method: "POST",
+    headers: authHeaders(),
+  });
+
+  return parseResponse(response, "No se pudo actualizar la lectura del chat");
+}

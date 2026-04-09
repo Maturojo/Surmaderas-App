@@ -30,6 +30,9 @@ export default function NotasPedidoListadoView() {
     cerrarDetalle,
   } = useNotasPedidoListado();
 
+  const totalPendientes = data.total || 0;
+  const visibles = data.items.length;
+
   useEffect(() => {
     if (!flash) return undefined;
     const t = window.setTimeout(() => setFlash(null), 2600);
@@ -78,16 +81,20 @@ export default function NotasPedidoListadoView() {
         <div className="npl-headStats">
           <div className="npl-statCard">
             <span className="npl-statLabel">Pendientes</span>
-            <strong className="npl-statValue">{data.items.length}</strong>
+            <strong className="npl-statValue">{totalPendientes}</strong>
           </div>
           <div className="npl-statCard">
             <span className="npl-statLabel">Pagina actual</span>
             <strong className="npl-statValue">{page}</strong>
           </div>
+          <div className="npl-statCard">
+            <span className="npl-statLabel">Mostrando</span>
+            <strong className="npl-statValue">{visibles}</strong>
+          </div>
         </div>
       </div>
 
-      <SearchBar q={q} setQ={setQ} onSearch={buscar} loading={loading} />
+      <SearchBar q={q} setQ={setQ} onSearch={buscar} loading={loading} total={totalPendientes} />
 
       {error ? <div className="npl-error">{error}</div> : null}
       {flash ? <div className={`npl-flash npl-flash--${flash.kind}`}>{flash.message}</div> : null}
@@ -101,7 +108,7 @@ export default function NotasPedidoListadoView() {
 
       <div className="npl-footer">
         <span className="npl-footerText">
-          Pagina <b>{page}</b> de <b>{totalPages}</b>
+          Pagina <b>{page}</b> de <b>{totalPages}</b> · <b>{totalPendientes}</b> notas pendientes
         </span>
 
         <div className="npl-pager">

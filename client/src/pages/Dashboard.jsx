@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { obtenerCalendario } from "../services/calendar";
 import { getTurnero, takeTurno } from "../services/turnero";
 
 const CARDS = [
@@ -32,15 +33,15 @@ const heroTopStyle = {
 };
 
 const turneroCardStyle = {
-  width: "min(290px, 100%)",
-  padding: "18px",
+  width: "min(260px, 100%)",
+  padding: "16px",
   borderRadius: "24px",
   border: "1px solid rgba(73, 58, 38, 0.14)",
   background: "rgba(255,255,255,0.74)",
   boxShadow: "0 14px 30px rgba(56, 44, 29, 0.08)",
-  textAlign: "right",
+  textAlign: "center",
   marginLeft: "auto",
-  flex: "1 1 290px",
+  flex: "1 1 260px",
 };
 
 const turneroLabelStyle = {
@@ -52,8 +53,8 @@ const turneroLabelStyle = {
 };
 
 const turneroNumberStyle = {
-  marginTop: "10px",
-  fontSize: "54px",
+  marginTop: "8px",
+  fontSize: "48px",
   lineHeight: 0.95,
   fontWeight: 900,
   color: "#2f241a",
@@ -68,8 +69,8 @@ const turneroStatusStyle = {
 
 const turneroButtonStyle = {
   width: "100%",
-  minHeight: "46px",
-  marginTop: "14px",
+  minHeight: "42px",
+  marginTop: "12px",
   border: 0,
   borderRadius: "16px",
   background: "linear-gradient(135deg, #372c22 0%, #5d4734 100%)",
@@ -82,7 +83,7 @@ const turneroErrorStyle = {
   marginTop: "10px",
   color: "#9d2f2f",
   fontSize: "12px",
-  textAlign: "left",
+  textAlign: "center",
 };
 
 export default function Dashboard() {
@@ -90,6 +91,11 @@ export default function Dashboard() {
   const [isLoadingTurnero, setIsLoadingTurnero] = useState(true);
   const [isTakingTurno, setIsTakingTurno] = useState(false);
   const [turneroError, setTurneroError] = useState("");
+  const [todayEvents, setTodayEvents] = useState([]);
+
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todayNumber = today.getDate();
 
   useEffect(() => {
     let cancelled = false;
@@ -129,6 +135,28 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTodayEvents() {
+      try {
+        const data = await obtenerCalendario({ fecha: todayKey });
+        if (!cancelled) {
+          setTodayEvents(Array.isArray(data?.byDay?.[todayKey]) ? data.byDay[todayKey] : []);
+        }
+      } catch {
+        if (!cancelled) {
+          setTodayEvents([]);
+        }
+      }
+    }
+
+    loadTodayEvents();
+    return () => {
+      cancelled = true;
+    };
+  }, [todayKey]);
+
   async function handleTakeTurno() {
     try {
       setIsTakingTurno(true);
@@ -145,16 +173,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard-shell">
       <section className="dashboard-hero">
-        <div style={heroTopStyle}>
-          <div>
-            <div className="dashboard-kicker">Sur Maderas</div>
-            <h1 className="dashboard-title">Centro de gestion comercial</h1>
-            <p className="dashboard-copy">
-              Organiza ventas, pedidos, caja y seguimiento diario desde una sola base visual.
-              La idea es que el vendedor cargue, caja confirme y la informacion quede ordenada para consultar o imprimir.
-            </p>
-          </div>
-
+        <div className="dashboard-heroLayout" style={heroTopStyle}>
           <aside style={turneroCardStyle}>
             <div style={turneroLabelStyle}>Turnero</div>
             <div style={turneroNumberStyle}>
@@ -181,6 +200,40 @@ export default function Dashboard() {
 
             {turneroError ? <div style={turneroErrorStyle}>{turneroError}</div> : null}
           </aside>
+
+          <div className="dashboard-heroCenter">
+            <div className="dashboard-kicker">Sur Maderas</div>
+            <h1 className="dashboard-title">Centro de gestion comercial</h1>
+            <p className="dashboard-copy">
+              Organiza ventas, pedidos, caja y seguimiento diario desde una sola base visual.
+              La idea es que el vendedor cargue, caja confirme y la informacion quede ordenada para consultar o imprimir.
+            </p>
+          </div>
+
+          <article className="dashboard-todayCard dashboard-todayCard--hero">
+            <div className="dashboard-todayBox">
+              <span className="dashboard-todayBadge">Hoy</span>
+              <span className="dashboard-todayNumber">{todayNumber}</span>
+              <div className="dashboard-todayEvents">
+                {todayEvents.slice(0, 2).map((item) => (
+                  <span
+                    key={item.id}
+                    className={`dashboard-todayEvent${item.type === "nota-pedido" ? " is-note" : ""}${item.completado ? " is-done" : ""}`}
+                  >
+                    {item.type === "nota-pedido" ? item.numero : item.titulo}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="dashboard-todayCopy">
+              {todayEvents.length > 0
+                ? `${todayEvents.length} evento${todayEvents.length === 1 ? "" : "s"} para hoy.`
+                : "No hay eventos para hoy."}
+            </p>
+            <Link className="dashboard-todayLink" to="/calendario">
+              Ir a calendario
+            </Link>
+          </article>
         </div>
       </section>
 

@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import AppLayout from "../layouts/AppLayout";
-import Calendar from "../pages/Calendar";
+import CalendarOperativo from "../pages/CalendarOperativo";
 import NotasPedido from "../pages/NotasPedido";
 import NotasPedidoListado from "../pages/NotasPedidoListado";
 import Productos from "../pages/Productos";
@@ -16,7 +16,9 @@ import TurneroSettings from "../pages/TurneroSettings.jsx";
 import ChatInterno from "../pages/ChatInterno.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
-import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
+import PresupuestosGenerar from "../pages/PresupuestosGenerar";
+import PresupuestosEnviar from "../pages/PresupuestosEnviar";
+import PresupuestosGuardadas from "../pages/PresupuestosGuardadas";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -31,7 +33,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <Dashboard /> },
-      { path: "calendario", element: <Calendar /> },
+      { path: "calendario", element: <CalendarOperativo /> },
 
       { path: "notas-pedido", element: <NotasPedido /> },
       { path: "notas-pedido/listado", element: <NotasPedidoListado /> },
@@ -39,8 +41,10 @@ export const router = createBrowserRouter([
       // NUEVA: Notas guardadas
       { path: "notas-pedido/guardadas", element: <NotasPedidoGuardadas /> },
 
-      // NUEVA: Presupuestos
-      { path: "presupuestos", element: <GeneradorPresupuestos /> },
+      { path: "presupuestos", element: <Navigate to="/presupuestos/generar" replace /> },
+      { path: "presupuestos/generar", element: <PresupuestosGenerar /> },
+      { path: "presupuestos/cargar", element: <PresupuestosEnviar /> },
+      { path: "presupuestos/guardadas", element: <PresupuestosGuardadas /> },
       { path: "chat", element: <ChatInterno /> },
 
       { path: "productos", element: <Productos /> },

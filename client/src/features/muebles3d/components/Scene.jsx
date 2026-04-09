@@ -9,6 +9,7 @@ import {
 import * as THREE from "three";
 
 import { MATERIALES_POR_PIEZA_DEFAULT } from "../constants/defaults";
+import { MM_TO_UNITS } from "../constants/medidas";
 import { MATERIALES, WHITE_PIXEL, NORMAL_NEUTRAL } from "../constants/materiales";
 
 import { Mueble3D } from "./Mueble3D";
@@ -92,14 +93,16 @@ export function Scene({ m }) {
     return clone;
   }, [roomBg]);
 
-  // Orbit target (centrar cámara en el mueble)
-  const altoMm = Math.max(0, Number(m.alto || 1800));
-  const altoM = altoMm * 0.001;
-  const targetY = Math.max(0.6, Math.min(1.2, altoM * 0.5));
+  // El mueble se desplaza hacia adelante dentro de Mueble3D para respirar del fondo.
+  const Z_FONDO_OFFSET_MM = 250;
 
-  // Si en Mueble3D lo pegás a pared con z = D/2, conviene targetear también a ese centro.
-  const profundidadMm = Math.max(0, Number(m.profundidad || 350));
-  const zTarget = (profundidadMm * 0.001) / 2;
+  const profundidadUnits = Math.max(0, Number(m.profundidad || 350)) * MM_TO_UNITS;
+  const zCenter = profundidadUnits / 2 + Z_FONDO_OFFSET_MM * MM_TO_UNITS;
+
+  // Orbit target (centrar cámara en el mueble real)
+  const altoMm = Math.max(0, Number(m.alto || 1800));
+  const altoUnits = altoMm * MM_TO_UNITS;
+  const targetY = Math.max(2.4, Math.min(12, altoUnits * 0.5));
 
   return (
     <>
@@ -127,10 +130,10 @@ export function Scene({ m }) {
 
       {/* Sombra suave de contacto (muy buen “apoyo” visual) */}
       <ContactShadows
-        position={[0, 0.001, zTarget]}
+        position={[0, 0.02, zCenter]}
         scale={18}
         blur={2.6}
-        opacity={0.55}
+        opacity={0.62}
         far={10}
       />
 
@@ -140,7 +143,7 @@ export function Scene({ m }) {
 
       <OrbitControls
         makeDefault
-        target={[0, targetY, zTarget]}
+        target={[0, targetY, zCenter]}
         enableDamping
         dampingFactor={0.08}
         rotateSpeed={0.6}

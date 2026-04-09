@@ -1,31 +1,40 @@
-﻿import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
+import { getChatOverview } from "../services/chat";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", to: "/dashboard", icon: "◫" },
-  { label: "Calendario", to: "/calendario", icon: "◷" },
+  { label: "Dashboard", to: "/dashboard", icon: "D" },
+  { label: "Calendario", to: "/calendario", icon: "C" },
   {
     label: "Notas de pedido",
-    icon: "✎",
+    icon: "N",
     children: [
       { label: "Generador", to: "/notas-pedido" },
       { label: "Listado de notas", to: "/notas-pedido/listado" },
       { label: "Notas guardadas", to: "/notas-pedido/guardadas" },
     ],
   },
-  { label: "Presupuestos", to: "/presupuestos", icon: "$" },
-  { label: "Chat interno", to: "/chat", icon: "◉" },
-  { label: "Productos", to: "/productos", icon: "▣" },
+  {
+    label: "Presupuestos",
+    icon: "$",
+    children: [
+      { label: "Generar presupuesto", to: "/presupuestos/generar" },
+      { label: "Cargar", to: "/presupuestos/cargar" },
+      { label: "Guardadas", to: "/presupuestos/guardadas" },
+    ],
+  },
+  { label: "Chat interno", to: "/chat", icon: "M" },
+  { label: "Productos", to: "/productos", icon: "P" },
   {
     label: "Proveedores",
-    icon: "⛁",
+    icon: "V",
     children: [
       { label: "Panel de proveedores", to: "/proveedores" },
       { label: "Pedidos", to: "/pedidos-proveedor" },
     ],
   },
-  { label: "Generador 3D", to: "/generador-3d", icon: "◇" },
+  { label: "Generador 3D", to: "/generador-3d", icon: "3D" },
 ];
 
 export default function AppLayout() {
@@ -34,6 +43,9 @@ export default function AppLayout() {
   const userName = auth?.user?.username || auth?.user?.name || "Equipo Sur Maderas";
   const userRole = auth?.user?.role;
   const [openGroups, setOpenGroups] = useState({});
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
+  const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
+  const previousUnreadRef = useRef(null);
 
   const navItems = [
     ...NAV_ITEMS,
@@ -41,7 +53,7 @@ export default function AppLayout() {
       ? [
           {
             label: "Configuracion",
-            icon: "⚙",
+            icon: "CFG",
             children: [
               { label: "Usuarios", to: "/configuracion/usuarios" },
               { label: "Turnero", to: "/configuracion/turnero" },
@@ -62,6 +74,98 @@ export default function AppLayout() {
   function toggleGroup(label) {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadChatUnread() {
+      try {
+        const data = await getChatOverview();
+        if (!cancelled) {
+          setChatUnreadCount(data?.totalUnread || 0);
+        }
+      } catch {
+        if (!cancelled) {
+          setChatUnreadCount(0);
+        }
+      }
+    }
+
+    loadChatUnread();
+    const intervalId = window.setInterval(loadChatUnread, 5000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    function unlockSound() {
+      setHasUnlockedSound(true);
+    }
+
+    window.addEventListener("pointerdown", unlockSound, { once: true });
+    window.addEventListener("keydown", unlockSound, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", unlockSound);
+      window.removeEventListener("keydown", unlockSound);
+    };
+  }, []);
+
+  useEffect(() => {
+    const baseTitle = "Sur Maderas";
+    document.title = chatUnreadCount > 0 ? `(${chatUnreadCount}) ${baseTitle}` : baseTitle;
+
+    return () => {
+      document.title = baseTitle;
+    };
+  }, [chatUnreadCount]);
+
+  useEffect(() => {
+    if (!hasUnlockedSound) {
+      return;
+    }
+
+    if (previousUnreadRef.current === null) {
+      previousUnreadRef.current = chatUnreadCount;
+      return;
+    }
+
+    const previousUnread = previousUnreadRef.current;
+    previousUnreadRef.current = chatUnreadCount;
+
+    if (chatUnreadCount <= previousUnread) {
+      return;
+    }
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      return;
+    }
+
+    const audioContext = new AudioContextClass();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.18);
+
+    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.22);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.24);
+
+    oscillator.onended = () => {
+      audioContext.close().catch(() => {});
+    };
+  }, [chatUnreadCount, hasUnlockedSound]);
 
   return (
     <div className="app-shell">
@@ -131,7 +235,12 @@ export default function AppLayout() {
                 className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
               >
                 <span className="app-linkIcon">{item.icon}</span>
-                <span className="app-linkText">{item.label}</span>
+                <span className="app-linkText">
+                  {item.label}
+                  {item.to === "/chat" && chatUnreadCount > 0 ? (
+                    <span className="app-linkBadge">{chatUnreadCount}</span>
+                  ) : null}
+                </span>
               </NavLink>
             );
           })}
