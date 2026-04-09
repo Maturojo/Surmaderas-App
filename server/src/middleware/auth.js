@@ -7,7 +7,11 @@ export function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ message: "No autorizado" });
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      ...payload,
+      id: payload.id || payload.sub,
+    };
     return next();
   } catch {
     return res.status(401).json({ message: "Token inválido" });

@@ -13,6 +13,7 @@ import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 import UserManagement from "../pages/UserManagement.jsx";
 import TurneroSettings from "../pages/TurneroSettings.jsx";
+import ChatInterno from "../pages/ChatInterno.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import GeneradorPresupuestos from "../pages/GeneradorPresupuestos";
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
 
       // NUEVA: Presupuestos
       { path: "presupuestos", element: <GeneradorPresupuestos /> },
+      { path: "chat", element: <ChatInterno /> },
 
       { path: "productos", element: <Productos /> },
       { path: "productos-interno", element: <ProductosInterno /> },

@@ -15,6 +15,7 @@ const NAV_ITEMS = [
     ],
   },
   { label: "Presupuestos", to: "/presupuestos", icon: "$" },
+  { label: "Chat interno", to: "/chat", icon: "◉" },
   { label: "Productos", to: "/productos", icon: "▣" },
   {
     label: "Proveedores",
