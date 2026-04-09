@@ -172,8 +172,17 @@ textarea {
 
 .app-linkIcon {
   width: 28px;
-  text-align: center;
-  font-size: 16px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  color: currentColor;
+}
+
+.app-linkIcon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .app-linkText {

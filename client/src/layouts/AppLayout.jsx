@@ -4,11 +4,11 @@ import { getAuth, logout } from "../services/auth";
 import { getChatOverview } from "../services/chat";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", to: "/dashboard", icon: "D" },
-  { label: "Calendario", to: "/calendario", icon: "C" },
+  { label: "Dashboard", to: "/dashboard", icon: "dashboard" },
+  { label: "Calendario", to: "/calendario", icon: "calendar" },
   {
     label: "Notas de pedido",
-    icon: "N",
+    icon: "notes",
     children: [
       { label: "Generador", to: "/notas-pedido" },
       { label: "Listado de notas", to: "/notas-pedido/listado" },
@@ -17,25 +17,109 @@ const NAV_ITEMS = [
   },
   {
     label: "Presupuestos",
-    icon: "$",
+    icon: "budget",
     children: [
       { label: "Generar presupuesto", to: "/presupuestos/generar" },
       { label: "Cargar", to: "/presupuestos/cargar" },
       { label: "Guardadas", to: "/presupuestos/guardadas" },
     ],
   },
-  { label: "Chat interno", to: "/chat", icon: "M" },
-  { label: "Productos", to: "/productos", icon: "P" },
+  { label: "Chat interno", to: "/chat", icon: "chat" },
+  { label: "Productos", to: "/productos", icon: "products" },
   {
     label: "Proveedores",
-    icon: "V",
+    icon: "suppliers",
     children: [
       { label: "Panel de proveedores", to: "/proveedores" },
       { label: "Pedidos", to: "/pedidos-proveedor" },
     ],
   },
-  { label: "Generador 3D", to: "/generador-3d", icon: "3D" },
+  { label: "Generador 3D", to: "/generador-3d", icon: "cube" },
 ];
+
+function SidebarIcon({ name }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.9",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true",
+  };
+
+  switch (name) {
+    case "dashboard":
+      return (
+        <svg {...common}>
+          <rect x="3" y="3" width="8" height="8" rx="2" />
+          <rect x="13" y="3" width="8" height="5" rx="2" />
+          <rect x="13" y="10" width="8" height="11" rx="2" />
+          <rect x="3" y="13" width="8" height="8" rx="2" />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg {...common}>
+          <rect x="3" y="5" width="18" height="16" rx="3" />
+          <path d="M16 3v4M8 3v4M3 10h18" />
+        </svg>
+      );
+    case "notes":
+      return (
+        <svg {...common}>
+          <path d="M7 4.5h8l3 3V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-12a2 2 0 0 1 2-2Z" />
+          <path d="M15 4.5V8h3" />
+          <path d="M8 12h8M8 16h6" />
+        </svg>
+      );
+    case "budget":
+      return (
+        <svg {...common}>
+          <path d="M12 3v18" />
+          <path d="M17 7.5c0-2-2.24-3.5-5-3.5S7 5.3 7 7.1c0 4.2 10 2.3 10 7 0 2-2.24 3.9-5 3.9S7 16.6 7 14.5" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg {...common}>
+          <path d="M5 18.5 3.5 21l.9-3.6A8.5 8.5 0 1 1 20.5 12 8.5 8.5 0 0 1 5 18.5Z" />
+          <path d="M8 12h8M8 9h5" />
+        </svg>
+      );
+    case "products":
+      return (
+        <svg {...common}>
+          <path d="M4 7.5 12 3l8 4.5-8 4.5-8-4.5Z" />
+          <path d="M4 7.5V16.5L12 21l8-4.5V7.5" />
+          <path d="M12 12v9" />
+        </svg>
+      );
+    case "suppliers":
+      return (
+        <svg {...common}>
+          <path d="M4 20V9l8-5 8 5v11" />
+          <path d="M9 20v-5h6v5M9 10h.01M15 10h.01" />
+        </svg>
+      );
+    case "cube":
+      return (
+        <svg {...common}>
+          <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
+          <path d="M12 12 20 7.5M12 12 4 7.5M12 12v9" />
+        </svg>
+      );
+    case "settings":
+      return (
+        <svg {...common}>
+          <path d="M12 8.5A3.5 3.5 0 1 1 8.5 12 3.5 3.5 0 0 1 12 8.5Z" />
+          <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V20a2 2 0 1 1-4 0v-.2a1 1 0 0 0-.6-.9 1 1 0 0 0-1.1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4a2 2 0 1 1 0-4h.2a1 1 0 0 0 .9-.6 1 1 0 0 0-.2-1.1l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V4a2 2 0 1 1 4 0v.2a1 1 0 0 0 .6.9 1 1 0 0 0 1.1-.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6H20a2 2 0 1 1 0 4h-.2a1 1 0 0 0-.4 1.9Z" />
+        </svg>
+      );
+    default:
+      return <span>{name}</span>;
+  }
+}
 
 export default function AppLayout() {
   const location = useLocation();
@@ -53,7 +137,7 @@ export default function AppLayout() {
       ? [
           {
             label: "Configuracion",
-            icon: "CFG",
+            icon: "settings",
             children: [
               { label: "Usuarios", to: "/configuracion/usuarios" },
               { label: "Turnero", to: "/configuracion/turnero" },
@@ -205,7 +289,9 @@ export default function AppLayout() {
                     className={`app-link app-link--group${isActive ? " active" : ""}`}
                     onClick={() => toggleGroup(item.label)}
                   >
-                    <span className="app-linkIcon">{item.icon}</span>
+                    <span className="app-linkIcon">
+                      <SidebarIcon name={item.icon} />
+                    </span>
                     <span className="app-linkText">{item.label}</span>
                     <span className="app-linkCaret" aria-hidden="true" />
                   </button>
@@ -234,7 +320,9 @@ export default function AppLayout() {
                 end={item.to === "/dashboard"}
                 className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
               >
-                <span className="app-linkIcon">{item.icon}</span>
+                <span className="app-linkIcon">
+                  <SidebarIcon name={item.icon} />
+                </span>
                 <span className="app-linkText">
                   {item.label}
                   {item.to === "/chat" && chatUnreadCount > 0 ? (
