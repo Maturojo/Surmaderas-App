@@ -7,6 +7,7 @@ import { addBusinessDays, formatDateYYYYMMDD } from "./utils/dates";
 import { toARS } from "./utils/money";
 
 import { DEFAULT_TIPO, buildDescripcionFromItem } from "./config/detalleTypes";
+import { getCorteMaterialByCode } from "./config/corteMateriales";
 
 import CorteFields from "./components/fields/CorteFields";
 import MarcoFields from "./components/fields/MarcoFields";
@@ -50,6 +51,23 @@ function isTelefonoValido(value) {
   return /^\d{10}$/.test(digits);
 }
 
+function formatPriceInput(value) {
+  if (!Number.isFinite(value) || value <= 0) return "";
+  return value.toFixed(2);
+}
+
+function calcularPrecioUnitarioCorte(item) {
+  const data = item?.data || {};
+  const material = getCorteMaterialByCode(data.materialCode);
+  const largoMm = Number(data.largoMm || 0);
+  const anchoMm = Number(data.anchoMm || 0);
+
+  if (!material || largoMm <= 0 || anchoMm <= 0) return "";
+
+  const areaM2 = (largoMm / 1000) * (anchoMm / 1000);
+  return formatPriceInput(areaM2 * material.precioM2);
+}
+
 export default function NotasPedidoView() {
   const { productos } = useProductos();
   const acItemsRef = useRef({});
@@ -88,6 +106,24 @@ export default function NotasPedidoView() {
       if (!it.open) return;
       const el = acItemsRef.current[idx]?.[it.activeIndex];
       el?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+    });
+  }, [items]);
+
+  useEffect(() => {
+    setItems((prev) => {
+      let changed = false;
+
+      const next = prev.map((item) => {
+        if (item.tipo !== "corte") return item;
+
+        const precioCalculado = calcularPrecioUnitarioCorte(item);
+        if (String(item.precio || "") === String(precioCalculado || "")) return item;
+
+        changed = true;
+        return { ...item, precio: precioCalculado };
+      });
+
+      return changed ? next : prev;
     });
   }, [items]);
 
@@ -481,6 +517,7 @@ export default function NotasPedidoView() {
                     placeholder="Precio"
                     value={it.precio}
                     onChange={(e) => updateItem(idx, { precio: e.target.value })}
+                    readOnly={it.tipo === "corte"}
                   />
 
                   <label className="np-check">
