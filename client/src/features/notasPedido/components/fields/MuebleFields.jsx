@@ -1,5 +1,5 @@
 import React from "react";
-import ImageUploadField from "./ImageUploadField";
+import CameraImageUploadField from "../../../presupuestos/components/CameraImageUploadField";
 
 export default function MuebleFields({ it, setData }) {
   const d = it.data || {};
@@ -36,7 +36,7 @@ export default function MuebleFields({ it, setData }) {
         placeholder="Observaciones"
       />
 
-      <ImageUploadField
+      <CameraImageUploadField
         label="Imagen del mueble"
         value={d.imagen || null}
         onChange={(img) => setData({ imagen: img })}

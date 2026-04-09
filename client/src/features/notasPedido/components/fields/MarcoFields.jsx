@@ -1,5 +1,5 @@
 import React from "react";
-import ImageUploadField from "./ImageUploadField";
+import CameraImageUploadField from "../../../presupuestos/components/CameraImageUploadField";
 
 function numOrEmpty(v) {
   return v === 0 ? 0 : v || "";
@@ -45,7 +45,7 @@ export default function MarcoFields({ it, setData }) {
         placeholder="Observaciones"
       />
 
-      <ImageUploadField
+      <CameraImageUploadField
         label="Imagen del marco"
         value={d.imagen || null}
         onChange={(img) => setData({ imagen: img })}

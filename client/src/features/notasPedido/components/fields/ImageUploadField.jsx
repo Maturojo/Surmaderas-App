@@ -11,7 +11,8 @@ export default function ImageUploadField({
   maxMB = 1.5,
   capture,
 }) {
-  const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   async function fileToDataUrl(file) {
     return new Promise((resolve, reject) => {
@@ -22,20 +23,25 @@ export default function ImageUploadField({
     });
   }
 
+  function resetInputs() {
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+  }
+
   async function handlePick(e) {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type?.startsWith("image/")) {
       alert("El archivo debe ser una imagen.");
-      if (inputRef.current) inputRef.current.value = "";
+      resetInputs();
       return;
     }
 
     const sizeMB = bytesToMB(file.size);
     if (sizeMB > maxMB) {
       alert(`La imagen pesa ${sizeMB}MB. Máximo permitido: ${maxMB}MB.`);
-      if (inputRef.current) inputRef.current.value = "";
+      resetInputs();
       return;
     }
 
@@ -52,7 +58,7 @@ export default function ImageUploadField({
 
   function clear() {
     onChange(null);
-    if (inputRef.current) inputRef.current.value = "";
+    resetInputs();
   }
 
   return (
@@ -67,14 +73,46 @@ export default function ImageUploadField({
         ) : null}
       </div>
 
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+        <button
+          type="button"
+          className="np-btn"
+          onClick={() => cameraInputRef.current?.click()}
+          style={{ minHeight: 42, padding: "0 14px" }}
+        >
+          Sacar foto
+        </button>
+
+        <button
+          type="button"
+          className="np-btn-secondary"
+          onClick={() => fileInputRef.current?.click()}
+          style={{ minHeight: 42, padding: "0 14px" }}
+        >
+          Elegir imagen
+        </button>
+      </div>
+
       <input
-        ref={inputRef}
-        className="np-input"
+        ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture={capture}
         onChange={handlePick}
+        style={{ display: "none" }}
       />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handlePick}
+        style={{ display: "none" }}
+      />
+
+      <div style={{ fontSize: 12, color: "#666" }}>
+        Podes sacar una foto en el momento o subir una imagen ya guardada. Maximo: {maxMB}MB.
+      </div>
 
       {value?.dataUrl ? (
         <div style={{ display: "grid", gap: 6 }}>

@@ -23,6 +23,12 @@ function addMonths(date, n) {
   return new Date(date.getFullYear(), date.getMonth() + n, 1);
 }
 
+function addDays(date, n) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + n);
+  return next;
+}
+
 function buildMonthCells(cursor) {
   const start = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
   const firstWeekday = start.getDay();
@@ -34,6 +40,34 @@ function buildMonthCells(cursor) {
     cell.setDate(firstCell.getDate() + index);
     return cell;
   });
+}
+
+function buildWeekCells(cursor) {
+  const start = new Date(cursor);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay());
+
+  return Array.from({ length: 7 }, (_, index) => addDays(start, index));
+}
+
+function formatRangeLabel(start, end) {
+  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+
+  if (sameMonth) {
+    return `${start.getDate()} al ${end.getDate()} de ${end.toLocaleDateString("es-AR", {
+      month: "long",
+      year: "numeric",
+    })}`;
+  }
+
+  return `${start.toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+  })} al ${end.toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })}`;
 }
 
 function formatDayLabel(value) {
@@ -71,6 +105,7 @@ const emptyForm = {
 export default function CalendarOperativo() {
   const today = ymd(new Date());
   const [cursor, setCursor] = useState(() => new Date());
+  const [viewMode, setViewMode] = useState("month");
   const [selectedDay, setSelectedDay] = useState(today);
   const [calendarData, setCalendarData] = useState({ byDay: {}, eventos: [] });
   const [loading, setLoading] = useState(true);
@@ -87,7 +122,13 @@ export default function CalendarOperativo() {
     async function loadCalendar() {
       setLoading(true);
       try {
-        const data = await obtenerCalendario({ month: monthKey(cursor) });
+        const data =
+          viewMode === "week"
+            ? await obtenerCalendario({
+                desde: ymd(buildWeekCells(cursor)[0]),
+                hasta: ymd(buildWeekCells(cursor)[6]),
+              })
+            : await obtenerCalendario({ month: monthKey(cursor) });
         if (cancelled) return;
         setCalendarData(data || { byDay: {}, eventos: [] });
         setError("");
@@ -106,13 +147,19 @@ export default function CalendarOperativo() {
     return () => {
       cancelled = true;
     };
-  }, [cursor]);
+  }, [cursor, viewMode]);
 
-  const gridDays = useMemo(() => buildMonthCells(cursor), [cursor]);
+  const weekDays = useMemo(() => buildWeekCells(cursor), [cursor]);
+  const gridDays = useMemo(
+    () => (viewMode === "week" ? weekDays : buildMonthCells(cursor)),
+    [cursor, viewMode, weekDays]
+  );
   const monthLabel = useMemo(
     () => cursor.toLocaleDateString("es-AR", { month: "long", year: "numeric" }),
     [cursor]
   );
+  const weekLabel = useMemo(() => formatRangeLabel(weekDays[0], weekDays[6]), [weekDays]);
+  const currentLabel = viewMode === "week" ? weekLabel : monthLabel;
   const selectedItems = calendarData?.byDay?.[selectedDay] || [];
   const monthSummary = useMemo(() => summaryByType(calendarData?.eventos || []), [calendarData]);
 
@@ -138,8 +185,14 @@ export default function CalendarOperativo() {
     setForm({ ...emptyForm, fecha: selectedDay });
   }
 
-  async function refreshMonth(nextCursor = cursor) {
-    const data = await obtenerCalendario({ month: monthKey(nextCursor) });
+  async function refreshCalendar(nextCursor = cursor, nextViewMode = viewMode) {
+    const data =
+      nextViewMode === "week"
+        ? await obtenerCalendario({
+            desde: ymd(buildWeekCells(nextCursor)[0]),
+            hasta: ymd(buildWeekCells(nextCursor)[6]),
+          })
+        : await obtenerCalendario({ month: monthKey(nextCursor) });
     setCalendarData(data || { byDay: {}, eventos: [] });
   }
 
@@ -173,12 +226,17 @@ export default function CalendarOperativo() {
         await crearRecordatorio({ ...payload, completado: false });
       }
 
-      if (form.fecha.slice(0, 7) !== monthKey(cursor)) {
-        const nextCursor = new Date(`${form.fecha}T00:00:00`);
+      const nextCursor = new Date(`${form.fecha}T00:00:00`);
+      const shouldMoveCursor =
+        viewMode === "week"
+          ? !gridDays.some((day) => ymd(day) === form.fecha)
+          : form.fecha.slice(0, 7) !== monthKey(cursor);
+
+      if (shouldMoveCursor) {
         setCursor(nextCursor);
-        await refreshMonth(nextCursor);
+        await refreshCalendar(nextCursor);
       } else {
-        await refreshMonth();
+        await refreshCalendar();
       }
 
       setSelectedDay(form.fecha);
@@ -206,7 +264,7 @@ export default function CalendarOperativo() {
 
     try {
       await eliminarRecordatorio(item._id);
-      await refreshMonth();
+      await refreshCalendar();
     } catch (deleteError) {
       setError(deleteError.message || "No se pudo eliminar el recordatorio");
     }
@@ -221,10 +279,14 @@ export default function CalendarOperativo() {
         prioridad: item.prioridad,
         completado: !item.completado,
       });
-      await refreshMonth();
+      await refreshCalendar();
     } catch (toggleError) {
       setError(toggleError.message || "No se pudo actualizar el recordatorio");
     }
+  }
+
+  function moveCursor(step) {
+    setCursor((prev) => (viewMode === "week" ? addDays(prev, step * 7) : addMonths(prev, step)));
   }
 
   return (
@@ -242,7 +304,7 @@ export default function CalendarOperativo() {
         <div className="calendar-heroActions">
           <div className="calendar-heroStats">
             <div className="calendar-statCard">
-              <span>Notas del mes</span>
+              <span>{viewMode === "week" ? "Notas de la semana" : "Notas del mes"}</span>
               <strong>{monthSummary.notas}</strong>
             </div>
             <div className="calendar-statCard">
@@ -263,12 +325,30 @@ export default function CalendarOperativo() {
       <section className="calendar-board calendar-board--full">
         <div className="calendar-toolbar">
           <div>
-            <h2 className="calendar-monthLabel">{monthLabel}</h2>
-            <p className="calendar-muted">Vista mensual con agenda operativa real</p>
+            <h2 className="calendar-monthLabel">{currentLabel}</h2>
+            <p className="calendar-muted">
+              {viewMode === "week" ? "Vista semanal para seguir entregas y pendientes día por día" : "Vista mensual con agenda operativa real"}
+            </p>
           </div>
 
           <div className="calendar-toolbarActions">
-            <button type="button" className="calendar-ghostBtn" onClick={() => setCursor(addMonths(cursor, -1))}>
+            <div className="calendar-viewSwitch" role="tablist" aria-label="Elegir vista del calendario">
+              <button
+                type="button"
+                className={`calendar-viewBtn${viewMode === "month" ? " is-active" : ""}`}
+                onClick={() => setViewMode("month")}
+              >
+                Mensual
+              </button>
+              <button
+                type="button"
+                className={`calendar-viewBtn${viewMode === "week" ? " is-active" : ""}`}
+                onClick={() => setViewMode("week")}
+              >
+                Semanal
+              </button>
+            </div>
+            <button type="button" className="calendar-ghostBtn" onClick={() => moveCursor(-1)}>
               ←
             </button>
             <button
@@ -282,7 +362,7 @@ export default function CalendarOperativo() {
             >
               Hoy
             </button>
-            <button type="button" className="calendar-ghostBtn" onClick={() => setCursor(addMonths(cursor, 1))}>
+            <button type="button" className="calendar-ghostBtn" onClick={() => moveCursor(1)}>
               →
             </button>
           </div>
@@ -290,13 +370,15 @@ export default function CalendarOperativo() {
 
         {error ? <div className="calendar-error">{error}</div> : null}
 
-        <div className="calendar-weekdays">
-          {["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"].map((label) => (
-            <div key={label}>{label}</div>
-          ))}
-        </div>
+        {viewMode === "month" ? (
+          <div className="calendar-weekdays">
+            {["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"].map((label) => (
+              <div key={label}>{label}</div>
+            ))}
+          </div>
+        ) : null}
 
-        <div className="calendar-grid">
+        <div className={`calendar-grid${viewMode === "week" ? " calendar-grid--week" : ""}`}>
           {gridDays.map((day) => {
             const key = ymd(day);
             const items = calendarData?.byDay?.[key] || [];
@@ -315,12 +397,15 @@ export default function CalendarOperativo() {
                 }}
               >
                 <div className="calendar-cellTop">
-                  <span className="calendar-cellDay">{day.getDate()}</span>
+                  <div className="calendar-cellDate">
+                    {viewMode === "week" ? <span className="calendar-cellWeekday">{day.toLocaleDateString("es-AR", { weekday: "short" })}</span> : null}
+                    <span className="calendar-cellDay">{day.getDate()}</span>
+                  </div>
                   {items.length > 0 ? <span className="calendar-pill">{items.length}</span> : null}
                 </div>
 
                 <div className="calendar-cellList">
-                  {items.slice(0, 3).map((item) => (
+                  {items.slice(0, viewMode === "week" ? 5 : 3).map((item) => (
                     <span
                       key={item.id}
                       className={`calendar-miniEvent${item.type === "nota-pedido" ? " is-note" : ""}${item.completado ? " is-done" : ""}`}

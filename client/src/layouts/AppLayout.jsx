@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
-import { getChatOverview } from "../services/chat";
+import ChatInternoWidget from "../features/chat/components/ChatInternoWidget";
 
 const NAV_ITEMS = [
   { label: "Dashboard", to: "/dashboard", icon: "dashboard" },
@@ -24,7 +24,6 @@ const NAV_ITEMS = [
       { label: "Guardadas", to: "/presupuestos/guardadas" },
     ],
   },
-  { label: "Chat interno", to: "/chat", icon: "chat" },
   { label: "Productos", to: "/productos", icon: "products" },
   {
     label: "Proveedores",
@@ -158,31 +157,6 @@ export default function AppLayout() {
   function toggleGroup(label) {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   }
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadChatUnread() {
-      try {
-        const data = await getChatOverview();
-        if (!cancelled) {
-          setChatUnreadCount(data?.totalUnread || 0);
-        }
-      } catch {
-        if (!cancelled) {
-          setChatUnreadCount(0);
-        }
-      }
-    }
-
-    loadChatUnread();
-    const intervalId = window.setInterval(loadChatUnread, 5000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, []);
 
   useEffect(() => {
     function unlockSound() {
@@ -325,9 +299,6 @@ export default function AppLayout() {
                 </span>
                 <span className="app-linkText">
                   {item.label}
-                  {item.to === "/chat" && chatUnreadCount > 0 ? (
-                    <span className="app-linkBadge">{chatUnreadCount}</span>
-                  ) : null}
                 </span>
               </NavLink>
             );
@@ -352,6 +323,8 @@ export default function AppLayout() {
           <Outlet />
         </div>
       </main>
+
+      <ChatInternoWidget unreadCount={chatUnreadCount} onUnreadChange={setChatUnreadCount} />
     </div>
   );
 }

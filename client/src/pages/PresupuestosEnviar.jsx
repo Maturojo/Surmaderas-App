@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
-import ImageUploadField from "../features/notasPedido/components/fields/ImageUploadField";
+import CameraImageUploadField from "../features/presupuestos/components/CameraImageUploadField";
 import { listPresupuestoDrafts, savePresupuestoDraft } from "../services/presupuestos";
 
 function formatDateYYYYMMDD(date) {
@@ -222,7 +222,7 @@ export default function PresupuestosEnviar() {
             <label style={{ display: "block", marginBottom: 6, fontSize: 12, color: "#5f574d", fontWeight: 700 }}>
               Foto o adjunto
             </label>
-            <ImageUploadField
+            <CameraImageUploadField
               label="Tomar foto o adjuntar imagen"
               value={form.imagen}
               onChange={(value) => setField("imagen", value)}
