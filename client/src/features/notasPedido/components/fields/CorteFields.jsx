@@ -32,13 +32,12 @@ export default function CorteFields({ it, setData }) {
             </option>
           ))}
         </select>
+        <input
+          className="np-input np-readonly np-corte-price"
+          readOnly
+          value={materialSeleccionado ? `Precio m2: $${toARS(materialSeleccionado.precioM2)}` : "Precio m2: -"}
+        />
       </div>
-
-      <input
-        className="np-input np-readonly np-corte-price"
-        readOnly
-        value={materialSeleccionado ? `Precio m2: $${toARS(materialSeleccionado.precioM2)}` : "Precio m2: -"}
-      />
 
       <div className="np-fields-grid-2 np-corte-dims">
         <input

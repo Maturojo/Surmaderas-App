@@ -428,7 +428,7 @@ export default function NotasPedidoView() {
               acItemsRef.current[idx] = [];
 
               return (
-                <div className="np-item-row" key={idx}>
+                <div className={`np-item-row${it.tipo === "corte" ? " np-item-row--corte" : ""}`} key={idx}>
                   <select className="np-input" value={it.tipo || DEFAULT_TIPO} onChange={(e) => onChangeTipo(idx, e.target.value)}>
                     <option value="corte">Corte</option>
                     <option value="marco">Marco</option>
