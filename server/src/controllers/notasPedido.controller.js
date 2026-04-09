@@ -44,6 +44,14 @@ function normalizeNotaPayload(body = {}) {
   const totalesBody = body?.totales || {};
   const total = Number(totalesBody?.total ?? body?.total ?? 0);
 
+  const items = Array.isArray(body?.items)
+    ? body.items.map((item = {}) => ({
+        ...item,
+        data: item?.data && typeof item.data === "object" ? item.data : {},
+        imagen: item?.imagen || item?.data?.imagen || null,
+      }))
+    : [];
+
   return {
     numero: String(body?.numero || ""),
     fecha: String(body?.fecha || ""),
@@ -52,7 +60,7 @@ function normalizeNotaPayload(body = {}) {
     cliente,
     vendedor: String(body?.vendedor || ""),
     medioPago: String(body?.medioPago || ""),
-    items: Array.isArray(body?.items) ? body.items : [],
+    items,
     total,
     totales: {
       subtotal: Number(totalesBody?.subtotal || 0),

@@ -249,6 +249,7 @@ export default function NotasPedidoView() {
             precioUnit,
             especial: Boolean(it.especial),
             data: it.data || {},
+            imagen: it?.data?.imagen || null,
           };
         })
         .filter(Boolean)

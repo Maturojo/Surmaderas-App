@@ -174,6 +174,7 @@ export default function NotaDetalleModal({
                     const itemPrecio = Number(item.precioUnit ?? item.precio ?? 0);
                     const itemCantidad = Number(item.cantidad || 0);
                     const itemTotal = itemCantidad * itemPrecio;
+                    const itemImagen = item?.imagen?.dataUrl || item?.data?.imagen?.dataUrl || "";
 
                     return (
                       <div className="npl-itemRow npl-itemRow--nice" key={`${item.descripcion || item.nombre || "item"}-${idx}`}>
@@ -183,6 +184,11 @@ export default function NotaDetalleModal({
                             <span>{item.tipo || "Producto"}</span>
                             {item.especial ? <span>Especial</span> : null}
                           </div>
+                          {itemImagen ? (
+                            <div className="npl-itemPhotoWrap">
+                              <img className="npl-itemPhoto" src={itemImagen} alt={item.descripcion || item.nombre || "Referencia del item"} />
+                            </div>
+                          ) : null}
                         </div>
                         <div className="npl-itemNumbers">
                           <div>

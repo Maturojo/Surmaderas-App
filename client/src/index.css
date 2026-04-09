@@ -1693,6 +1693,20 @@ textarea {
   color: #4f473f;
 }
 
+.calendar-noteItemInfo {
+  display: grid;
+  gap: 8px;
+}
+
+.calendar-noteItemImage {
+  width: min(180px, 100%);
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fff;
+}
+
 .calendar-noteItemsEmpty {
   font-size: 13px;
   color: var(--sm-muted);

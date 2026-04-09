@@ -490,9 +490,18 @@ export default function CalendarOperativo() {
                           <ul className="calendar-noteItemsList">
                             {item.items.map((detalle, index) => (
                               <li key={`${item.id}-detalle-${index}`} className="calendar-noteItem">
-                                <span>
-                                  {Number(detalle?.cantidad || 0) > 0 ? `${detalle.cantidad} x ` : ""}
-                                  {detalle?.descripcion || "Ítem sin descripción"}
+                                <span className="calendar-noteItemInfo">
+                                  <span>
+                                    {Number(detalle?.cantidad || 0) > 0 ? `${detalle.cantidad} x ` : ""}
+                                    {detalle?.descripcion || "Ítem sin descripción"}
+                                  </span>
+                                  {detalle?.imagen?.dataUrl || detalle?.data?.imagen?.dataUrl ? (
+                                    <img
+                                      className="calendar-noteItemImage"
+                                      src={detalle?.imagen?.dataUrl || detalle?.data?.imagen?.dataUrl}
+                                      alt={detalle?.descripcion || "Referencia del item"}
+                                    />
+                                  ) : null}
                                 </span>
                                 <span>
                                   ${Number(detalle?.precioUnit || 0).toLocaleString("es-AR")}

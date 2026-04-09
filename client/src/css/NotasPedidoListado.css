@@ -637,6 +637,20 @@
   min-width: 0;
 }
 
+.npl-itemPhotoWrap {
+  margin-top: 10px;
+}
+
+.npl-itemPhoto {
+  display: block;
+  width: min(220px, 100%);
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f7f7f7;
+}
+
 .npl-itemDesc {
   font-weight: 900;
   color: #111;
