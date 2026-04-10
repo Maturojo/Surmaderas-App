@@ -11,9 +11,10 @@ import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDeta
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
 import {
   buildNotaPedidoPrintData,
+  copyFileToClipboard,
+  downloadFile,
   generateNotaPedidoImageFile,
   openWhatsappText,
-  shareFileWithText,
 } from "../utils/notaPedidoPrint";
 import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
 import "../css/notas-guardadas.css";
@@ -45,7 +46,9 @@ function estadoOperativoClase(estado) {
 function normalizarWhatsapp(telefono = "") {
   const digits = String(telefono || "").replace(/\D/g, "");
   if (!digits) return "";
-  return digits.startsWith("54") ? digits : `54${digits}`;
+  if (digits.startsWith("549")) return digits;
+  if (digits.startsWith("54")) return `549${digits.slice(2)}`;
+  return `549${digits}`;
 }
 
 function construirMensajeProveedor(nota, proveedor, observacion) {
@@ -91,26 +94,19 @@ function construirMensajeCliente(nota) {
 }
 
 async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, etiquetaDestino }) {
-  const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(nota));
-  const resultado = await shareFileWithText({
-    file,
-    title: `Nota de pedido ${nota?.numero || ""}`,
-    text: mensaje,
-  });
-
-  if (resultado === "shared") {
-    return;
-  }
-
   openWhatsappText(telefonoWhatsapp, mensaje);
+
+  const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(nota));
+  const copied = await copyFileToClipboard(file);
+  downloadFile(file);
 
   await Swal.fire({
     icon: "info",
     title: "WhatsApp abierto",
     text:
-      resultado === "downloaded_and_copied"
-        ? `Abrimos WhatsApp con el mensaje y copiamos la imagen de la nota para pegarla en el chat de ${etiquetaDestino}.`
-        : `Abrimos WhatsApp con el mensaje y descargamos la imagen de la nota para adjuntarla en el chat de ${etiquetaDestino}.`,
+      copied
+        ? `Abrimos el chat de ${etiquetaDestino} y dejamos la nota copiada al portapapeles. Pegala en WhatsApp con Ctrl+V. También la descargamos como respaldo.`
+        : `Abrimos el chat de ${etiquetaDestino} y descargamos la imagen de la nota para adjuntarla en WhatsApp.`,
   });
 }
 

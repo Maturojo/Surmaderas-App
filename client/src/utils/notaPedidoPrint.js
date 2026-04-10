@@ -1,5 +1,9 @@
 import html2canvas from "html2canvas";
 
+const NOTE_WIDTH_MM = 200;
+const NOTE_HEIGHT_MM = 145;
+const CSS_PX_PER_MM = 96 / 25.4;
+
 export function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
     minimumFractionDigits: 2,
@@ -279,11 +283,16 @@ async function waitForImages(root) {
 }
 
 export async function generateNotaPedidoImageFile(data) {
+  const widthPx = Math.round(NOTE_WIDTH_MM * CSS_PX_PER_MM);
+  const heightPx = Math.round(NOTE_HEIGHT_MM * CSS_PX_PER_MM);
+  const renderScale = Math.max(3, Math.min(4, Math.ceil(window.devicePixelRatio || 1)));
+
   const host = document.createElement("div");
   host.style.position = "fixed";
   host.style.left = "-10000px";
   host.style.top = "0";
-  host.style.width = "200mm";
+  host.style.width = `${widthPx}px`;
+  host.style.height = `${heightPx}px`;
   host.style.background = "#fff";
   host.style.zIndex = "-1";
   host.innerHTML = `<style>${buildStyles()}</style>${buildNotaPedidoPrintMarkup(data)}`;
@@ -291,17 +300,19 @@ export async function generateNotaPedidoImageFile(data) {
 
   try {
     const node = host.querySelector(".npw-doc");
+    node.style.width = `${widthPx}px`;
+    node.style.height = `${heightPx}px`;
     await waitForImages(host);
 
     const canvas = await html2canvas(node, {
       backgroundColor: "#ffffff",
-      scale: 2,
+      scale: renderScale,
       useCORS: true,
       logging: false,
-      width: node.scrollWidth,
-      height: node.scrollHeight,
-      windowWidth: node.scrollWidth,
-      windowHeight: node.scrollHeight,
+      width: widthPx,
+      height: heightPx,
+      windowWidth: widthPx,
+      windowHeight: heightPx,
     });
 
     const blob = await new Promise((resolve, reject) => {
