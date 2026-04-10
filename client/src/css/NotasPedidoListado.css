@@ -1159,20 +1159,20 @@
     margin: 5mm;
   }
 
-  body * {
+  body.npl-printing-note * {
     visibility: hidden !important;
   }
 
-  .npl-modalBack,
-  .npl-modalBack * {
+  body.npl-printing-note .npl-modalBack,
+  body.npl-printing-note .npl-modalBack * {
     visibility: visible !important;
   }
 
-  body {
+  body.npl-printing-note {
     background: #fff !important;
   }
 
-  .npl-modalBack {
+  body.npl-printing-note .npl-modalBack {
     position: static !important;
     inset: auto !important;
     background: transparent !important;
@@ -1180,7 +1180,7 @@
     display: block !important;
   }
 
-  .npl-modal {
+  body.npl-printing-note .npl-modal {
     display: block !important;
     width: 148mm !important;
     max-width: 148mm !important;
@@ -1195,18 +1195,18 @@
     padding: 0 !important;
   }
 
-  .npl-modalHeader {
+  body.npl-printing-note .npl-modalHeader {
     display: none !important;
   }
 
-  .npl-body {
+  body.npl-printing-note .npl-body {
     display: block !important;
     overflow: visible !important;
     background: #fff !important;
     padding: 0 !important;
   }
 
-  .npl-printSheet {
+  body.npl-printing-note .npl-printSheet {
     display: block !important;
     width: 148mm !important;
     max-width: 148mm !important;
@@ -1217,10 +1217,10 @@
     page-break-inside: avoid !important;
   }
 
-  .npl-brandSheet,
-  .npl-topCard,
-  .npl-scrollOnly,
-  .npl-bottomCard {
+  body.npl-printing-note .npl-brandSheet,
+  body.npl-printing-note .npl-topCard,
+  body.npl-printing-note .npl-scrollOnly,
+  body.npl-printing-note .npl-bottomCard {
     box-shadow: none !important;
     background: #fff !important;
     border-color: rgba(0, 0, 0, 0.12) !important;
@@ -1228,11 +1228,11 @@
     page-break-inside: avoid !important;
   }
 
-  .npl-brandSheet {
+  body.npl-printing-note .npl-brandSheet {
     padding: 0 0 2mm 0 !important;
   }
 
-  .npl-brandHeader {
+  body.npl-printing-note .npl-brandHeader {
     grid-template-columns: 24mm 1fr 34mm !important;
     gap: 3mm !important;
     padding: 3mm !important;
@@ -1240,21 +1240,21 @@
     box-shadow: none !important;
   }
 
-  .npl-brandLogo {
+  body.npl-printing-note .npl-brandLogo {
     max-width: 20mm !important;
   }
 
-  .npl-brandTitle {
+  body.npl-printing-note .npl-brandTitle {
     font-size: 13pt !important;
   }
 
-  .npl-brandMeta span {
+  body.npl-printing-note .npl-brandMeta span {
     background: transparent !important;
     border: 1px solid rgba(0,0,0,0.12) !important;
     color: #444 !important;
   }
 
-  .npl-scrollOnly {
+  body.npl-printing-note .npl-scrollOnly {
     padding: 3mm !important;
   }
 
@@ -1688,11 +1688,11 @@
     margin: 6mm;
   }
 
-  .npl-modalBack,
-  .npl-modal,
-  .npl-body,
-  .npl-printSheet--landscape,
-  .npl-previewDoc {
+  body.npl-printing-note .npl-modalBack,
+  body.npl-printing-note .npl-modal,
+  body.npl-printing-note .npl-body,
+  body.npl-printing-note .npl-printSheet--landscape,
+  body.npl-printing-note .npl-previewDoc {
     width: auto !important;
     max-width: none !important;
     height: auto !important;
@@ -1704,98 +1704,98 @@
     background: #fff !important;
   }
 
-  .npl-previewDoc {
+  body.npl-printing-note .npl-previewDoc {
     padding: 0 !important;
   }
 
-  .npl-printSheet--landscape {
+  body.npl-printing-note .npl-printSheet--landscape {
     width: 136mm !important;
     margin: 0 auto !important;
   }
 
-  .npl-previewDoc {
+  body.npl-printing-note .npl-previewDoc {
     padding: 2mm 2mm 1.5mm !important;
   }
 
-  .npl-previewWatermark {
+  body.npl-printing-note .npl-previewWatermark {
     opacity: 0.07;
     inset: 20mm auto auto 10mm !important;
   }
 
-  .npl-previewWatermark span:first-child {
+  body.npl-printing-note .npl-previewWatermark span:first-child {
     font-size: 130mm !important;
   }
 
-  .npl-previewWatermark span:last-child {
+  body.npl-printing-note .npl-previewWatermark span:last-child {
     margin-left: 28mm !important;
     margin-top: -10mm !important;
     font-size: 42mm !important;
   }
 
-  .npl-previewHeader {
+  body.npl-printing-note .npl-previewHeader {
     grid-template-columns: minmax(0, 1fr) 26mm minmax(0, 1fr) !important;
     gap: 4mm !important;
   }
 
-  .npl-previewSerial {
+  body.npl-printing-note .npl-previewSerial {
     font-size: 8.5pt !important;
   }
 
-  .npl-previewTitle {
+  body.npl-printing-note .npl-previewTitle {
     font-size: 21pt !important;
   }
 
-  .npl-previewDateLine {
+  body.npl-printing-note .npl-previewDateLine {
     gap: 2.5mm !important;
     margin-top: 2.5mm !important;
   }
 
-  .npl-previewAlert {
+  body.npl-printing-note .npl-previewAlert {
     width: 11mm !important;
     height: 11mm !important;
     font-size: 22pt !important;
   }
 
-  .npl-previewDate {
+  body.npl-printing-note .npl-previewDate {
     font-size: 24pt !important;
   }
 
-  .npl-previewPedidoDia {
+  body.npl-printing-note .npl-previewPedidoDia {
     margin-top: 1.5mm !important;
     font-size: 10pt !important;
   }
 
-  .npl-previewLogoFrame {
+  body.npl-printing-note .npl-previewLogoFrame {
     width: 24mm !important;
     height: 24mm !important;
     border-width: 1mm !important;
     border-radius: 3mm !important;
   }
 
-  .npl-previewLogo {
+  body.npl-printing-note .npl-previewLogo {
     width: 16mm !important;
   }
 
-  .npl-previewClientLabel {
+  body.npl-printing-note .npl-previewClientLabel {
     font-size: 10pt !important;
   }
 
-  .npl-previewClientName {
+  body.npl-printing-note .npl-previewClientName {
     margin-top: 1mm !important;
     font-size: 18pt !important;
   }
 
-  .npl-previewClientMeta,
-  .npl-previewClientAddress {
+  body.npl-printing-note .npl-previewClientMeta,
+  body.npl-printing-note .npl-previewClientAddress {
     margin-top: 2mm !important;
     font-size: 9pt !important;
   }
 
-  .npl-previewTableWrap {
+  body.npl-printing-note .npl-previewTableWrap {
     margin-top: 5mm !important;
   }
 
-  .npl-previewTable thead th {
+  body.npl-printing-note .npl-previewTable thead th {
     background: #494746 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -1803,59 +1803,59 @@
     font-size: 7.5pt !important;
   }
 
-  .npl-previewTable tbody td {
+  body.npl-printing-note .npl-previewTable tbody td {
     padding: 2.5mm 2mm !important;
     font-size: 8.5pt !important;
     border-bottom-width: 2mm !important;
   }
 
-  .npl-previewEmpty {
+  body.npl-printing-note .npl-previewEmpty {
     padding: 4mm !important;
   }
 
-  .npl-previewTable tbody tr.is-alt td,
-  .npl-previewSummaryTotal {
+  body.npl-printing-note .npl-previewTable tbody tr.is-alt td,
+  body.npl-printing-note .npl-previewSummaryTotal {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  .npl-previewSummary {
+  body.npl-printing-note .npl-previewSummary {
     width: 72mm !important;
     margin-top: 2mm !important;
   }
 
-  .npl-previewSummaryRow {
+  body.npl-printing-note .npl-previewSummaryRow {
     padding: 1mm 0 !important;
     font-size: 8.5pt !important;
     gap: 2mm !important;
   }
 
-  .npl-previewSummaryRow strong {
+  body.npl-printing-note .npl-previewSummaryRow strong {
     font-size: 8.5pt !important;
   }
 
-  .npl-previewSummaryRow--discount {
+  body.npl-printing-note .npl-previewSummaryRow--discount {
     font-size: 6.5pt !important;
   }
 
-  .npl-previewSummaryDivider {
+  body.npl-printing-note .npl-previewSummaryDivider {
     margin: 1mm 0 1.5mm !important;
   }
 
-  .npl-previewSummaryTotal {
+  body.npl-printing-note .npl-previewSummaryTotal {
     margin-top: 1.5mm !important;
     padding: 2.5mm 3mm !important;
     font-size: 11pt !important;
     gap: 2mm !important;
   }
 
-  .npl-previewFooter {
+  body.npl-printing-note .npl-previewFooter {
     margin-top: 3mm !important;
     font-size: 7pt !important;
   }
 
-  .npl-cajaPanel,
-  .npl-modalActions--preview {
+  body.npl-printing-note .npl-cajaPanel,
+  body.npl-printing-note .npl-modalActions--preview {
     display: none !important;
   }
 }

@@ -57,6 +57,18 @@ export default function NotaDetalleModal({
   const [notaCaja, setNotaCaja] = useState("");
 
   useEffect(() => {
+    function clearPrintMode() {
+      document.body.classList.remove("npl-printing-note");
+    }
+
+    window.addEventListener("afterprint", clearPrintMode);
+    return () => {
+      window.removeEventListener("afterprint", clearPrintMode);
+      clearPrintMode();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!detalle) return;
     setTipo(detalle?.caja?.tipo || "");
     setMonto(String(detalle?.caja?.monto ?? getNotaTotal(detalle)));
@@ -92,6 +104,13 @@ export default function NotaDetalleModal({
         : [],
     [detalle?.items]
   );
+
+  function handlePrint() {
+    document.body.classList.add("npl-printing-note");
+    window.setTimeout(() => {
+      window.print();
+    }, 50);
+  }
 
   if (!open) return null;
 
@@ -302,7 +321,7 @@ export default function NotaDetalleModal({
 
                 <div className="npl-modalActions npl-modalActions--nice">
                   <button className="npl-btnGhost" onClick={onRefresh}>Refrescar</button>
-                  <button className="npl-btnGhost" onClick={() => window.print()}>Imprimir</button>
+                  <button className="npl-btnGhost" onClick={handlePrint}>Imprimir</button>
 
                   <button
                     className="npl-btn"
@@ -388,7 +407,7 @@ export default function NotaDetalleModal({
               </div>
             ) : (
               <div className="npl-modalActions npl-modalActions--preview">
-                <button className="npl-btnGhost" onClick={() => window.print()}>Imprimir</button>
+                <button className="npl-btnGhost" onClick={handlePrint}>Imprimir</button>
               </div>
             )}
           </div>
