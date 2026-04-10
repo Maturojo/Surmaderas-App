@@ -9,6 +9,12 @@ import {
 } from "../services/notasPedido";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
+import {
+  buildNotaPedidoPrintData,
+  generateNotaPedidoImageFile,
+  openWhatsappText,
+  shareFileWithText,
+} from "../utils/notaPedidoPrint";
 import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
 import "../css/notas-guardadas.css";
 
@@ -82,6 +88,30 @@ function construirMensajeCliente(nota) {
     "",
     "Si necesitás alguna corrección o confirmación, respondé por este medio.",
   ].join("\n");
+}
+
+async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, etiquetaDestino }) {
+  const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(nota));
+  const resultado = await shareFileWithText({
+    file,
+    title: `Nota de pedido ${nota?.numero || ""}`,
+    text: mensaje,
+  });
+
+  if (resultado === "shared") {
+    return;
+  }
+
+  openWhatsappText(telefonoWhatsapp, mensaje);
+
+  await Swal.fire({
+    icon: "info",
+    title: "WhatsApp abierto",
+    text:
+      resultado === "downloaded_and_copied"
+        ? `Abrimos WhatsApp con el mensaje y copiamos la imagen de la nota para pegarla en el chat de ${etiquetaDestino}.`
+        : `Abrimos WhatsApp con el mensaje y descargamos la imagen de la nota para adjuntarla en el chat de ${etiquetaDestino}.`,
+  });
 }
 
 export default function NotasPedidoGuardadas() {
@@ -269,8 +299,19 @@ export default function NotasPedidoGuardadas() {
         });
       } else if (typeof window !== "undefined") {
         const mensaje = construirMensajeProveedor(gestionNota, proveedor, observacionNueva);
-        const url = `https://wa.me/${telefonoWhatsapp}?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, "_blank", "noopener,noreferrer");
+        enviarNotaWhatsappConAdjunto({
+          nota: gestionNota,
+          telefonoWhatsapp,
+          mensaje,
+          etiquetaDestino: proveedor?.nombre || "proveedor",
+        }).catch(async () => {
+          openWhatsappText(telefonoWhatsapp, mensaje);
+          await Swal.fire({
+            icon: "info",
+            title: "WhatsApp abierto",
+            text: "No pudimos preparar la imagen automáticamente, pero dejamos el mensaje listo para enviar.",
+          });
+        });
       }
     }
 
@@ -299,8 +340,19 @@ export default function NotasPedidoGuardadas() {
 
     if (typeof window !== "undefined") {
       const mensaje = construirMensajeCliente(gestionNota);
-      const url = `https://wa.me/${telefonoWhatsapp}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, "_blank", "noopener,noreferrer");
+      enviarNotaWhatsappConAdjunto({
+        nota: gestionNota,
+        telefonoWhatsapp,
+        mensaje,
+        etiquetaDestino: getNotaClienteNombre(gestionNota),
+      }).catch(async () => {
+        openWhatsappText(telefonoWhatsapp, mensaje);
+        await Swal.fire({
+          icon: "info",
+          title: "WhatsApp abierto",
+          text: "No pudimos preparar la imagen automáticamente, pero dejamos el mensaje listo para enviar.",
+        });
+      });
     }
   }
 
