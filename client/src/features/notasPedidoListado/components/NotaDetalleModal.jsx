@@ -88,82 +88,83 @@ function buildPrintHtml({
       <meta charset="utf-8" />
       <title>Nota de pedido ${escapeHtml(numero)}</title>
       <style>
-        @page { size: A5 portrait; margin: 6mm; }
+        @page { size: A4 portrait; margin: 0; }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #111; }
         body { width: 100%; margin: 0; }
         .doc {
           position: relative;
           overflow: hidden;
-          width: 100%;
-          min-height: auto;
-          padding: 2mm 1.5mm 2mm;
+          width: 200mm;
+          height: 145mm;
+          margin: 0;
+          padding: 4mm 5mm 3mm;
           background: #fff;
         }
         .watermark {
           position: absolute;
-          inset: 16mm auto auto 6mm;
+          inset: 15mm auto auto 8mm;
           color: rgba(90, 90, 90, 0.08);
           line-height: 0.8;
           font-weight: 800;
           user-select: none;
           pointer-events: none;
         }
-        .watermark .year { font-size: 138mm; letter-spacing: -0.07em; }
-        .watermark .brand { margin-left: 34mm; margin-top: -12mm; font-size: 46mm; font-family: "Brush Script MT", "Segoe Script", cursive; }
+        .watermark .year { font-size: 132mm; letter-spacing: -0.07em; }
+        .watermark .brand { margin-left: 48mm; margin-top: -12mm; font-size: 40mm; font-family: "Brush Script MT", "Segoe Script", cursive; }
         .header {
           position: relative;
           z-index: 1;
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 26mm minmax(0, 1fr);
-          gap: 3mm;
+          grid-template-columns: minmax(0, 1fr) 30mm minmax(0, 1fr);
+          gap: 6mm;
           align-items: start;
         }
-        .serial { font-size: 9.5pt; color: #3f3f3f; margin-bottom: 1mm; }
-        .title { margin: 0; font-size: 22pt; line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; }
-        .date-line { display: flex; align-items: center; gap: 2.5mm; margin-top: 1.5mm; }
+        .serial { font-size: 10.5pt; color: #3f3f3f; margin-bottom: 1mm; }
+        .title { margin: 0; font-size: 25pt; line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; }
+        .date-line { display: flex; align-items: center; gap: 3mm; margin-top: 1.5mm; }
         .alert {
-          width: 11.5mm; height: 11.5mm; border-radius: 50%;
+          width: 13mm; height: 13mm; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
-          background: #111; color: #fff; font-size: 22pt; font-weight: 900;
+          background: #111; color: #fff; font-size: 24pt; font-weight: 900;
         }
-        .delivery { font-size: 26pt; line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
-        .pedido-dia { margin-top: 1.5mm; font-size: 11pt; line-height: 1.2; }
+        .delivery { font-size: 30pt; line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
+        .pedido-dia { margin-top: 2mm; font-size: 12pt; line-height: 1.2; }
         .logo-wrap { display: flex; justify-content: center; }
         .logo-frame {
-          width: 26mm; height: 26mm; border: 1mm solid #111; border-radius: 3mm;
+          width: 30mm; height: 30mm; border: 1mm solid #111; border-radius: 3mm;
           display: flex; align-items: center; justify-content: center; background: #fff;
         }
-        .logo-frame img { width: 16.5mm; object-fit: contain; filter: grayscale(1); }
-        .client-label { font-size: 11pt; letter-spacing: 0.08em; color: #2f2f2f; }
-        .client-name { margin-top: 1mm; font-size: 19pt; line-height: 1; font-weight: 900; }
-        .client-meta, .client-address { margin-top: 1.5mm; font-size: 10pt; line-height: 1.2; }
+        .logo-frame img { width: 19mm; object-fit: contain; filter: grayscale(1); }
+        .client-label { font-size: 12pt; letter-spacing: 0.08em; color: #2f2f2f; }
+        .client-name { margin-top: 1mm; font-size: 21pt; line-height: 1; font-weight: 900; }
+        .client-meta, .client-address { margin-top: 1.5mm; font-size: 11pt; line-height: 1.2; }
         .client-address { font-weight: 700; }
-        table { position: relative; z-index: 1; width: 100%; border-collapse: collapse; margin-top: 4mm; }
+        table { position: relative; z-index: 1; width: 100%; border-collapse: collapse; margin-top: 5mm; }
         thead th {
-          background: #4b4948; color: #fff; padding: 2.8mm 2mm; font-size: 8pt;
+          background: #4b4948; color: #fff; padding: 3.2mm 2.5mm; font-size: 9pt;
           font-weight: 800; letter-spacing: 0.06em; text-align: center;
         }
         thead th:nth-child(2), tbody td:nth-child(2) { text-align: left; }
         tbody td {
-          padding: 2.8mm 2mm; font-size: 9.4pt; font-weight: 700; color: #464646;
-          text-align: center; border-bottom: 1.8mm solid transparent;
+          padding: 3mm 2.5mm; font-size: 10pt; font-weight: 700; color: #464646;
+          text-align: center; border-bottom: 1.6mm solid transparent;
         }
         tbody tr.is-alt td { background: #f1f1f1; }
         .empty { text-align: center !important; background: #f7f7f7; padding: 4mm !important; }
-        .summary { position: relative; z-index: 1; width: 82mm; margin-left: auto; margin-top: 2mm; }
+        .summary { position: relative; z-index: 1; width: 95mm; margin-left: auto; margin-top: 2mm; }
         .summary-row, .summary-total { display: grid; align-items: center; }
-        .summary-row { grid-template-columns: 1fr auto; gap: 2mm; padding: 1.1mm 0; font-size: 9.3pt; color: #414141; }
-        .summary-row strong { font-size: 9.3pt; }
-        .summary-row.discount { grid-template-columns: 1fr auto auto; font-size: 7pt; }
+        .summary-row { grid-template-columns: 1fr auto; gap: 2.5mm; padding: 1.2mm 0; font-size: 10pt; color: #414141; }
+        .summary-row strong { font-size: 10pt; }
+        .summary-row.discount { grid-template-columns: 1fr auto auto; font-size: 7.6pt; }
         .divider { border-top: 0.5mm solid #626262; margin: 1mm 0 1.5mm; }
         .summary-total {
-          grid-template-columns: 1fr auto; gap: 2mm; margin-top: 1.5mm;
-          padding: 3mm 3.2mm; background: #4b4948; color: #fff; font-size: 13pt; font-weight: 900;
+          grid-template-columns: 1fr auto; gap: 2.5mm; margin-top: 1.8mm;
+          padding: 3.4mm 3.6mm; background: #4b4948; color: #fff; font-size: 15pt; font-weight: 900;
         }
         .footer {
-          position: relative; z-index: 1; margin-top: 3.5mm; text-align: center;
-          font-size: 7.8pt; letter-spacing: 0.05em; color: #595959;
+          position: relative; z-index: 1; margin-top: 4mm; text-align: center;
+          font-size: 8.5pt; letter-spacing: 0.05em; color: #595959;
         }
       </style>
     </head>
