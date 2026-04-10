@@ -14,6 +14,7 @@ import {
   copyFileToClipboard,
   downloadFile,
   generateNotaPedidoImageFile,
+  openNotaPedidoPrintWindow,
   openWhatsappText,
 } from "../utils/notaPedidoPrint";
 import { colorProveedorPorNombre, estiloProveedor } from "../utils/proveedorColor";
@@ -120,7 +121,6 @@ export default function NotasPedidoGuardadas() {
   const [detalle, setDetalle] = useState(null);
   const [detalleLoading, setDetalleLoading] = useState(false);
   const [detalleError, setDetalleError] = useState("");
-  const [detalleAutoPrint, setDetalleAutoPrint] = useState(false);
 
   const [gestionOpen, setGestionOpen] = useState(false);
   const [gestionNota, setGestionNota] = useState(null);
@@ -175,7 +175,6 @@ export default function NotasPedidoGuardadas() {
     setDetalle(null);
     setDetalleError("");
     setDetalleLoading(false);
-    setDetalleAutoPrint(false);
   }
 
   async function abrirGestion(nota) {
@@ -353,19 +352,9 @@ export default function NotasPedidoGuardadas() {
   }
 
   async function imprimirComprobanteCliente() {
-    if (!gestionNota?._id) return;
-    setDetalleAutoPrint(true);
-    await abrirDetalle(gestionNota._id);
+    if (!gestionNota) return;
+    openNotaPedidoPrintWindow(buildNotaPedidoPrintData(gestionNota));
   }
-
-  useEffect(() => {
-    if (!detalleAutoPrint || detalleLoading || !detalle) return;
-    const timer = window.setTimeout(() => {
-      window.print();
-      setDetalleAutoPrint(false);
-    }, 150);
-    return () => window.clearTimeout(timer);
-  }, [detalleAutoPrint, detalleLoading, detalle]);
 
   function quitarProveedorAsignado(proveedorId) {
     setAsignaciones((prev) => prev.filter((item) => String(item.proveedorId) !== String(proveedorId)));
