@@ -131,6 +131,9 @@ export default function NotasPedidoGuardadas() {
   const [enviarWhatsappNuevo, setEnviarWhatsappNuevo] = useState(false);
   const [proveedorPromptOpen, setProveedorPromptOpen] = useState(false);
   const [savingGestion, setSavingGestion] = useState(false);
+  const [comprobantePreviewUrl, setComprobantePreviewUrl] = useState("");
+  const [comprobantePreviewFile, setComprobantePreviewFile] = useState(null);
+  const [comprobantePreviewLoading, setComprobantePreviewLoading] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -204,6 +207,9 @@ export default function NotasPedidoGuardadas() {
   }
 
   function cerrarGestion() {
+    if (comprobantePreviewUrl) {
+      URL.revokeObjectURL(comprobantePreviewUrl);
+    }
     setGestionOpen(false);
     setGestionNota(null);
     setEstadoOperativo("Pendiente");
@@ -213,7 +219,48 @@ export default function NotasPedidoGuardadas() {
     setEnviarWhatsappNuevo(false);
     setProveedorPromptOpen(false);
     setSavingGestion(false);
+    setComprobantePreviewUrl("");
+    setComprobantePreviewFile(null);
+    setComprobantePreviewLoading(false);
   }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function prepararPreview() {
+      if (!gestionOpen || !gestionNota) {
+        setComprobantePreviewLoading(false);
+        return;
+      }
+
+      setComprobantePreviewLoading(true);
+
+      try {
+        const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(gestionNota));
+        if (cancelled) return;
+
+        const nextUrl = URL.createObjectURL(file);
+        setComprobantePreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return nextUrl;
+        });
+        setComprobantePreviewFile(file);
+      } catch {
+        if (!cancelled) {
+          setComprobantePreviewUrl("");
+          setComprobantePreviewFile(null);
+        }
+      } finally {
+        if (!cancelled) setComprobantePreviewLoading(false);
+      }
+    }
+
+    prepararPreview();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gestionOpen, gestionNota]);
 
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
@@ -354,6 +401,36 @@ export default function NotasPedidoGuardadas() {
   async function imprimirComprobanteCliente() {
     if (!gestionNota) return;
     openNotaPedidoPrintWindow(buildNotaPedidoPrintData(gestionNota));
+  }
+
+  async function copiarComprobanteCliente() {
+    if (!comprobantePreviewFile) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Comprobante no listo",
+        text: "Esperá un segundo a que se genere la imagen y volvé a intentar.",
+      });
+      return;
+    }
+
+    const copied = await copyFileToClipboard(comprobantePreviewFile);
+    if (copied) {
+      await Swal.fire({
+        icon: "success",
+        title: "Imagen copiada",
+        text: "Ya podés pegar el comprobante con Ctrl+V.",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    downloadFile(comprobantePreviewFile);
+    await Swal.fire({
+      icon: "info",
+      title: "No se pudo copiar",
+      text: "Tu navegador no permitió copiar la imagen. La descargamos para que la uses igual.",
+    });
   }
 
   function quitarProveedorAsignado(proveedorId) {
@@ -696,13 +773,28 @@ export default function NotasPedidoGuardadas() {
                   <div className="ng-clientActionsSub">
                     Antes de derivar la nota, podés enviarla por WhatsApp o imprimirla como comprobante.
                   </div>
-                  <div className="ng-clientActionsRow">
-                    <button className="ng-actionBtn ng-actionBtn--ghost" onClick={enviarClienteWhatsapp}>
-                      Enviar al cliente por WhatsApp
-                    </button>
-                    <button className="ng-actionBtn ng-actionBtn--primary" onClick={imprimirComprobanteCliente}>
-                      Imprimir comprobante
-                    </button>
+                  <div className="ng-clientProofRow">
+                    <div className="ng-clientProofThumb">
+                      {comprobantePreviewLoading ? (
+                        <div className="ng-clientProofPlaceholder">Generando comprobante...</div>
+                      ) : comprobantePreviewUrl ? (
+                        <img src={comprobantePreviewUrl} alt="Vista previa del comprobante" />
+                      ) : (
+                        <div className="ng-clientProofPlaceholder">Sin vista previa</div>
+                      )}
+                    </div>
+
+                    <div className="ng-clientProofActions">
+                      <button className="ng-actionBtn ng-actionBtn--ghost" onClick={copiarComprobanteCliente} disabled={comprobantePreviewLoading}>
+                        Copiar
+                      </button>
+                      <button className="ng-actionBtn ng-actionBtn--primary" onClick={imprimirComprobanteCliente}>
+                        Imprimir
+                      </button>
+                      <button className="ng-actionBtn ng-actionBtn--ghost" onClick={enviarClienteWhatsapp}>
+                        WhatsApp
+                      </button>
+                    </div>
                   </div>
                 </div>
 

@@ -508,6 +508,47 @@
   margin-top: 14px;
 }
 
+.ng-clientProofRow {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.ng-clientProofThumb {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: #fff;
+  min-height: 150px;
+  box-shadow: 0 10px 20px rgba(55, 43, 29, 0.06);
+}
+
+.ng-clientProofThumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ng-clientProofPlaceholder {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+  color: #7a7065;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff8ef 0%, #fcfaf7 100%);
+}
+
+.ng-clientProofActions {
+  display: grid;
+  gap: 10px;
+}
+
 .ng-inlinePromptHead {
   display: flex;
   align-items: flex-start;
@@ -774,6 +815,10 @@
   .ng-clientActionsRow {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .ng-clientProofRow {
+    grid-template-columns: 1fr;
   }
 
   .ng-stats,
