@@ -85,6 +85,19 @@ function clampPositiveNumber(value, fallback = 0) {
   return parsed;
 }
 
+function normalizeDimensionsByOrientation(firstValue, secondValue, orientacion) {
+  const first = clampPositiveNumber(firstValue, 0);
+  const second = clampPositiveNumber(secondValue, 0);
+  const shortSide = Math.min(first, second);
+  const longSide = Math.max(first, second);
+
+  if (orientacion === "horizontal") {
+    return { ancho: longSide, alto: shortSide };
+  }
+
+  return { ancho: shortSide, alto: longSide };
+}
+
 function getArmadoSuggestion(anchoMm, altoMm) {
   const areaM2 = (clampPositiveNumber(anchoMm) * clampPositiveNumber(altoMm)) / 1000000;
 
@@ -256,6 +269,10 @@ function FramePreview3D({
 
 export default function CotizadorMarcos() {
   const [form, setForm] = useState(INITIAL_FORM);
+  const normalizedDimensions = useMemo(
+    () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
+    [form.anchoMm, form.altoMm, form.orientacion]
+  );
 
   const selectedProfile = useMemo(
     () => INITIAL_PROFILES.find((profile) => profile.id === form.profileId) || INITIAL_PROFILES[0],
@@ -272,8 +289,8 @@ export default function CotizadorMarcos() {
   const frameColor = selectedPintado.color || selectedProfile.color;
 
   const quote = useMemo(() => {
-    const anchoMm = clampPositiveNumber(form.anchoMm, 0);
-    const altoMm = clampPositiveNumber(form.altoMm, 0);
+    const anchoMm = normalizedDimensions.ancho;
+    const altoMm = normalizedDimensions.alto;
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
@@ -321,7 +338,7 @@ export default function CotizadorMarcos() {
       subtotalArmado,
       total,
     };
-  }, [form, selectedFondo, selectedPintado, selectedProfile]);
+  }, [form, normalizedDimensions, selectedFondo, selectedPintado, selectedProfile]);
 
   function setField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -452,24 +469,57 @@ export default function CotizadorMarcos() {
                 </label>
               </div>
 
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <NumberField
-                  label={form.orientacion === "horizontal" ? "Ancho (lado largo)" : "Ancho"}
-                  value={form.anchoMm}
-                  onChange={(e) => setField("anchoMm", e.target.value)}
-                  min={50}
-                  step={1}
-                  suffix="mm"
-                />
+              <div style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  Medidas
+                </span>
+                <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
+                  <div style={{ display: "grid", gap: 6 }}>
+                    <input
+                      type="number"
+                      min="50"
+                      step="1"
+                      value={form.anchoMm}
+                      onChange={(e) => setField("anchoMm", e.target.value)}
+                      placeholder="Medida 1"
+                      style={{
+                        width: "100%",
+                        minHeight: 48,
+                        padding: "0 64px 0 14px",
+                        borderRadius: 14,
+                        border: "1px solid rgba(73, 58, 38, 0.14)",
+                        background: "#fcfbf8",
+                        outline: "none",
+                      }}
+                    />
+                    <span style={{ fontSize: 12, color: "#7a7067" }}>Se ordena automaticamente segun la orientacion.</span>
+                  </div>
 
-                <NumberField
-                  label={form.orientacion === "horizontal" ? "Alto (lado corto)" : "Alto"}
-                  value={form.altoMm}
-                  onChange={(e) => setField("altoMm", e.target.value)}
-                  min={50}
-                  step={1}
-                  suffix="mm"
-                />
+                  <div style={{ display: "grid", gap: 6 }}>
+                    <input
+                      type="number"
+                      min="50"
+                      step="1"
+                      value={form.altoMm}
+                      onChange={(e) => setField("altoMm", e.target.value)}
+                      placeholder="Medida 2"
+                      style={{
+                        width: "100%",
+                        minHeight: 48,
+                        padding: "0 64px 0 14px",
+                        borderRadius: 14,
+                        border: "1px solid rgba(73, 58, 38, 0.14)",
+                        background: "#fcfbf8",
+                        outline: "none",
+                      }}
+                    />
+                    <span style={{ fontSize: 12, color: "#7a7067" }}>
+                      {form.orientacion === "horizontal"
+                        ? `Horizontal: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`
+                        : `Vertical: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
@@ -592,8 +642,8 @@ export default function CotizadorMarcos() {
             <div style={{ height: 470, marginTop: 12 }}>
               <Canvas camera={{ position: [0, 0, 2.2], fov: 40 }}>
                 <FramePreview3D
-                  anchoMm={form.anchoMm}
-                  altoMm={form.altoMm}
+                  anchoMm={normalizedDimensions.ancho}
+                  altoMm={normalizedDimensions.alto}
                   faceMm={selectedProfile.frenteMm}
                   depthMm={selectedProfile.profundidadMm}
                   color={frameColor}
@@ -617,6 +667,7 @@ export default function CotizadorMarcos() {
             <div style={{ marginTop: 12 }}>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile.nombre} />
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
+              <SummaryRow label="Medidas aplicadas" value={`${normalizedDimensions.ancho} x ${normalizedDimensions.alto} mm`} />
               <SummaryRow label="Precio por metro" value={formatCurrency(selectedProfile.precioMetro)} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
