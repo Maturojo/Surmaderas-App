@@ -55,6 +55,7 @@ const INITIAL_FORM = {
   altoMm: 1000,
   cantidad: 1,
   orientacion: "vertical",
+  tipoMedida: "exterior",
   vidrio: "si",
   fondoId: "fibrofacil",
   paspartuMm: 0,
@@ -296,11 +297,20 @@ export default function CotizadorMarcos() {
     [form.pintadoId]
   );
   const frameColor = selectedPintado.color || selectedProfile.color;
+  const normalizedFaceMm = clampPositiveNumber(selectedProfile.frenteMm, 0);
 
   const quote = useMemo(() => {
-    const anchoMm = normalizedDimensions.ancho;
-    const altoMm = normalizedDimensions.alto;
+    const inputAnchoMm = normalizedDimensions.ancho;
+    const inputAltoMm = normalizedDimensions.alto;
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
+    const anchoMm =
+      form.tipoMedida === "interior"
+        ? inputAnchoMm + normalizedFaceMm * 2
+        : inputAnchoMm;
+    const altoMm =
+      form.tipoMedida === "interior"
+        ? inputAltoMm + normalizedFaceMm * 2
+        : inputAltoMm;
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
@@ -346,8 +356,12 @@ export default function CotizadorMarcos() {
       armadoSugerido,
       subtotalArmado,
       total,
+      inputAnchoMm,
+      inputAltoMm,
+      anchoFinalMm: anchoMm,
+      altoFinalMm: altoMm,
     };
-  }, [form, normalizedDimensions, selectedFondo, selectedPintado, selectedProfile]);
+  }, [form, normalizedDimensions, normalizedFaceMm, selectedFondo, selectedPintado, selectedProfile]);
 
   function setField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -501,7 +515,24 @@ export default function CotizadorMarcos() {
                   </select>
                   <span style={helperTextStyle}> </span>
                 </label>
-                <div />
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Tipo de medida
+                  </span>
+                  <select
+                    value={form.tipoMedida}
+                    onChange={(e) => setField("tipoMedida", e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    <option value="exterior">Exterior</option>
+                    <option value="interior">Interior</option>
+                  </select>
+                  <span style={helperTextStyle}>
+                    {form.tipoMedida === "interior"
+                      ? "La app suma automaticamente el frente de la varilla para obtener la medida final."
+                      : "La medida cargada se toma como total exterior del marco."}
+                  </span>
+                </label>
               </div>
 
               <div style={{ display: "grid", gap: 6 }}>
@@ -669,7 +700,15 @@ export default function CotizadorMarcos() {
             <div style={{ marginTop: 12 }}>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile.nombre} />
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
-              <SummaryRow label="Medidas aplicadas" value={`${normalizedDimensions.ancho} x ${normalizedDimensions.alto} mm`} />
+              <SummaryRow label="Tipo de medida" value={form.tipoMedida === "interior" ? "Interior" : "Exterior"} />
+              <SummaryRow
+                label="Medida cargada"
+                value={`${quote.inputAnchoMm} x ${quote.inputAltoMm} mm`}
+              />
+              <SummaryRow
+                label="Medidas aplicadas"
+                value={`${quote.anchoFinalMm} x ${quote.altoFinalMm} mm`}
+              />
               <SummaryRow label="Precio por metro" value={formatCurrency(selectedProfile.precioMetro)} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
