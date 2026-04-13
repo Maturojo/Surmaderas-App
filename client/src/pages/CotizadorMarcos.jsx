@@ -6,6 +6,7 @@ const BAR_LENGTH_METERS = 3.05;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
+const GLASS_PRICE_M2 = 33582;
 
 const INITIAL_PROFILES = [
   {
@@ -345,7 +346,7 @@ export default function CotizadorMarcos() {
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
     const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(selectedProfile.precioMetro, 0);
 
-    const subtotalVidrio = form.vidrio === "si" ? areaM2 * cantidad * 28500 : 0;
+    const subtotalVidrio = form.vidrio === "si" ? areaM2 * cantidad * GLASS_PRICE_M2 : 0;
     const subtotalFondo = selectedFondo.precioM2 > 0 ? areaM2 * cantidad * selectedFondo.precioM2 : 0;
     const subtotalPaspartu = paspartuAreaM2 * cantidad * PASPARTU_PRICE_M2;
     const subtotalPintado = selectedPintado.extra * cantidad;
