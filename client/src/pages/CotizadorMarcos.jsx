@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 
 const BAR_LENGTH_METERS = 3.05;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
@@ -10,12 +11,23 @@ const GLASS_PRICE_M2 = 33582;
 
 const INITIAL_PROFILES = [
   {
+    id: "chata-4cm-pino",
+    nombre: "Chata 4 cm pino",
+    precioMetro: 19600,
+    frenteMm: 40,
+    profundidadMm: 18,
+    color: "#c59257",
+    shape: "pine-chata",
+    veta: "#e2bf86",
+  },
+  {
     id: "box-20-negro",
     nombre: "Varilla Box 20 negro",
     precioMetro: 14800,
     frenteMm: 20,
     profundidadMm: 22,
     color: "#2c2f36",
+    shape: "box",
   },
   {
     id: "box-25-natural",
@@ -24,6 +36,7 @@ const INITIAL_PROFILES = [
     frenteMm: 25,
     profundidadMm: 24,
     color: "#9d9c96",
+    shape: "box",
   },
   {
     id: "madera-roble",
@@ -32,6 +45,7 @@ const INITIAL_PROFILES = [
     frenteMm: 30,
     profundidadMm: 24,
     color: "#8b5e3c",
+    shape: "box",
   },
 ];
 
@@ -208,16 +222,72 @@ function SummaryRow({ label, value, strong = false }) {
   );
 }
 
+function createProfileShape(face, depth, shapeType) {
+  const safeFace = Math.max(face, 0.01);
+  const safeDepth = Math.max(depth, 0.01);
+  const shape = new THREE.Shape();
+
+  if (shapeType === "pine-chata") {
+    shape.moveTo(0, 0);
+    shape.lineTo(safeFace, 0);
+    shape.lineTo(safeFace, safeDepth * 0.28);
+    shape.lineTo(safeFace * 0.76, safeDepth * 0.34);
+    shape.lineTo(safeFace * 0.68, safeDepth * 0.54);
+    shape.lineTo(safeFace * 0.48, safeDepth * 0.66);
+    shape.lineTo(safeFace * 0.22, safeDepth * 0.82);
+    shape.lineTo(0, safeDepth);
+    shape.closePath();
+    return shape;
+  }
+
+  shape.moveTo(0, 0);
+  shape.lineTo(safeFace, 0);
+  shape.lineTo(safeFace, safeDepth);
+  shape.lineTo(0, safeDepth);
+  shape.closePath();
+  return shape;
+}
+
+function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
+  const geometry = useMemo(() => {
+    const profileShape = createProfileShape(face, depth, shapeType);
+    const extrudeSettings = {
+      steps: 1,
+      depth: Math.max(length, 0.01),
+      bevelEnabled: false,
+    };
+
+    const extruded = new THREE.ExtrudeGeometry(profileShape, extrudeSettings);
+    extruded.translate(-face / 2, -depth / 2, -length / 2);
+    extruded.computeVertexNormals();
+
+    return extruded;
+  }, [depth, face, length, shapeType]);
+
+  return (
+    <mesh geometry={geometry} position={position} rotation={rotation} castShadow receiveShadow>
+      <meshStandardMaterial
+        color={veta || color}
+        roughness={shapeType === "pine-chata" ? 0.72 : 0.5}
+        metalness={shapeType === "pine-chata" ? 0.02 : 0.35}
+        emissive={shapeType === "pine-chata" ? color : "#000000"}
+        emissiveIntensity={shapeType === "pine-chata" ? 0.1 : 0}
+      />
+    </mesh>
+  );
+}
+
 function FramePreview3D({
   anchoMm,
   altoMm,
   faceMm,
   depthMm,
   color,
-  orientacion,
   vidrio,
   fondoColor,
   paspartuMm,
+  shapeType,
+  veta,
 }) {
   const outerWidth = clampPositiveNumber(anchoMm, 700) * MM_TO_SCENE;
   const outerHeight = clampPositiveNumber(altoMm, 1000) * MM_TO_SCENE;
@@ -236,22 +306,46 @@ function FramePreview3D({
       <directionalLight position={[-2, -1, 3]} intensity={0.5} />
 
       <group>
-        <mesh position={[0, outerHeight / 2 - face / 2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[outerWidth, face, depth]} />
-          <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
-        </mesh>
-        <mesh position={[0, -outerHeight / 2 + face / 2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[outerWidth, face, depth]} />
-          <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
-        </mesh>
-        <mesh position={[-outerWidth / 2 + face / 2, 0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[face, outerHeight - face * 2, depth]} />
-          <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
-        </mesh>
-        <mesh position={[outerWidth / 2 - face / 2, 0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[face, outerHeight - face * 2, depth]} />
-          <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
-        </mesh>
+        <ProfileFramePiece
+          length={outerWidth}
+          face={face}
+          depth={depth}
+          position={[0, outerHeight / 2 - face / 2, 0]}
+          rotation={[Math.PI / 2, 0, Math.PI / 2]}
+          color={color}
+          shapeType={shapeType}
+          veta={veta}
+        />
+        <ProfileFramePiece
+          length={outerWidth}
+          face={face}
+          depth={depth}
+          position={[0, -outerHeight / 2 + face / 2, 0]}
+          rotation={[Math.PI / 2, 0, Math.PI / 2]}
+          color={color}
+          shapeType={shapeType}
+          veta={veta}
+        />
+        <ProfileFramePiece
+          length={outerHeight - face * 2}
+          face={face}
+          depth={depth}
+          position={[-outerWidth / 2 + face / 2, 0, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          color={color}
+          shapeType={shapeType}
+          veta={veta}
+        />
+        <ProfileFramePiece
+          length={outerHeight - face * 2}
+          face={face}
+          depth={depth}
+          position={[outerWidth / 2 - face / 2, 0, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          color={color}
+          shapeType={shapeType}
+          veta={veta}
+        />
 
         {vidrio ? (
           <mesh position={[0, 0, 0.002]} receiveShadow>
@@ -702,10 +796,11 @@ export default function CotizadorMarcos() {
                   faceMm={selectedProfile.frenteMm}
                   depthMm={selectedProfile.profundidadMm}
                   color={frameColor}
-                  orientacion={form.orientacion}
                   vidrio={form.vidrio === "si"}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
                   paspartuMm={form.paspartuMm}
+                  shapeType={selectedProfile.shape}
+                  veta={selectedProfile.veta}
                 />
               </Canvas>
             </div>
