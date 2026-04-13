@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
 
 const BAR_LENGTH_METERS = 3.05;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
@@ -222,58 +221,43 @@ function SummaryRow({ label, value, strong = false }) {
   );
 }
 
-function createProfileShape(face, depth, shapeType) {
-  const safeFace = Math.max(face, 0.01);
-  const safeDepth = Math.max(depth, 0.01);
-  const shape = new THREE.Shape();
-
-  if (shapeType === "pine-chata") {
-    shape.moveTo(0, 0);
-    shape.lineTo(safeFace, 0);
-    shape.lineTo(safeFace, safeDepth * 0.28);
-    shape.lineTo(safeFace * 0.76, safeDepth * 0.34);
-    shape.lineTo(safeFace * 0.68, safeDepth * 0.54);
-    shape.lineTo(safeFace * 0.48, safeDepth * 0.66);
-    shape.lineTo(safeFace * 0.22, safeDepth * 0.82);
-    shape.lineTo(0, safeDepth);
-    shape.closePath();
-    return shape;
-  }
-
-  shape.moveTo(0, 0);
-  shape.lineTo(safeFace, 0);
-  shape.lineTo(safeFace, safeDepth);
-  shape.lineTo(0, safeDepth);
-  shape.closePath();
-  return shape;
-}
-
 function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
-  const geometry = useMemo(() => {
-    const profileShape = createProfileShape(face, depth, shapeType);
-    const extrudeSettings = {
-      steps: 1,
-      depth: Math.max(length, 0.01),
-      bevelEnabled: false,
-    };
-
-    const extruded = new THREE.ExtrudeGeometry(profileShape, extrudeSettings);
-    extruded.translate(-face / 2, -depth / 2, -length / 2);
-    extruded.computeVertexNormals();
-
-    return extruded;
-  }, [depth, face, length, shapeType]);
+  const safeLength = Math.max(length, 0.01);
+  const baseColor = veta || color;
+  const frontColor = color;
+  const isPineChata = shapeType === "pine-chata";
+  const baseThickness = isPineChata ? depth * 0.72 : depth;
+  const frontLipThickness = isPineChata ? depth * 0.18 : 0;
+  const innerStepThickness = isPineChata ? depth * 0.12 : 0;
+  const frontLipHeight = isPineChata ? face * 0.32 : 0;
+  const innerStepHeight = isPineChata ? face * 0.18 : 0;
+  const innerStepWidth = isPineChata ? face * 0.56 : 0;
 
   return (
-    <mesh geometry={geometry} position={position} rotation={rotation} castShadow receiveShadow>
-      <meshStandardMaterial
-        color={veta || color}
-        roughness={shapeType === "pine-chata" ? 0.72 : 0.5}
-        metalness={shapeType === "pine-chata" ? 0.02 : 0.35}
-        emissive={shapeType === "pine-chata" ? color : "#000000"}
-        emissiveIntensity={shapeType === "pine-chata" ? 0.1 : 0}
-      />
-    </mesh>
+    <group position={position} rotation={rotation}>
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[safeLength, face, baseThickness]} />
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={isPineChata ? 0.78 : 0.5}
+          metalness={isPineChata ? 0.02 : 0.35}
+        />
+      </mesh>
+
+      {isPineChata ? (
+        <>
+          <mesh position={[0, face * 0.22, baseThickness / 2 - frontLipThickness / 2]} castShadow receiveShadow>
+            <boxGeometry args={[safeLength, frontLipHeight, frontLipThickness]} />
+            <meshStandardMaterial color={frontColor} roughness={0.7} metalness={0.02} />
+          </mesh>
+
+          <mesh position={[0, -face * 0.08, baseThickness / 2 - frontLipThickness - innerStepThickness / 2]} castShadow receiveShadow>
+            <boxGeometry args={[safeLength, innerStepWidth, innerStepThickness]} />
+            <meshStandardMaterial color="#e7c992" roughness={0.72} metalness={0.01} />
+          </mesh>
+        </>
+      ) : null}
+    </group>
   );
 }
 
@@ -311,7 +295,7 @@ function FramePreview3D({
           face={face}
           depth={depth}
           position={[0, outerHeight / 2 - face / 2, 0]}
-          rotation={[Math.PI / 2, 0, Math.PI / 2]}
+          rotation={[0, 0, 0]}
           color={color}
           shapeType={shapeType}
           veta={veta}
@@ -321,7 +305,7 @@ function FramePreview3D({
           face={face}
           depth={depth}
           position={[0, -outerHeight / 2 + face / 2, 0]}
-          rotation={[Math.PI / 2, 0, Math.PI / 2]}
+          rotation={[0, 0, 0]}
           color={color}
           shapeType={shapeType}
           veta={veta}
@@ -331,7 +315,7 @@ function FramePreview3D({
           face={face}
           depth={depth}
           position={[-outerWidth / 2 + face / 2, 0, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
+          rotation={[0, 0, Math.PI / 2]}
           color={color}
           shapeType={shapeType}
           veta={veta}
@@ -341,7 +325,7 @@ function FramePreview3D({
           face={face}
           depth={depth}
           position={[outerWidth / 2 - face / 2, 0, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
+          rotation={[0, 0, Math.PI / 2]}
           color={color}
           shapeType={shapeType}
           veta={veta}
