@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
 const BAR_LENGTH_METERS = 3.05;
+const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 16500;
 
@@ -122,6 +123,26 @@ function getArmadoSuggestion(anchoMm, altoMm) {
   }
 
   return { etiqueta: "Grande", precio: 34500 };
+}
+
+function calculateChargedBars(requiredMeters) {
+  const safeMeters = clampPositiveNumber(requiredMeters, 0);
+
+  if (safeMeters <= 0) {
+    return {
+      chargedHalfBars: 0,
+      chargedBars: 0,
+      chargedMeters: 0,
+    };
+  }
+
+  const chargedHalfBars = Math.ceil(safeMeters / HALF_BAR_LENGTH_METERS);
+
+  return {
+    chargedHalfBars,
+    chargedBars: chargedHalfBars / 2,
+    chargedMeters: chargedHalfBars * HALF_BAR_LENGTH_METERS,
+  };
 }
 
 function NumberField({ label, value, onChange, min = 0, step = 1, suffix, helper }) {
@@ -321,9 +342,8 @@ export default function CotizadorMarcos() {
 
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
-    const varillasNecesarias = Math.ceil(metrosMarcoTotales / BAR_LENGTH_METERS);
-    const metrosFacturados = varillasNecesarias * BAR_LENGTH_METERS;
-    const subtotalVarilla = metrosFacturados * clampPositiveNumber(selectedProfile.precioMetro, 0);
+    const chargedBars = calculateChargedBars(metrosMarcoTotales);
+    const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(selectedProfile.precioMetro, 0);
 
     const subtotalVidrio = form.vidrio === "si" ? areaM2 * cantidad * 28500 : 0;
     const subtotalFondo = selectedFondo.precioM2 > 0 ? areaM2 * cantidad * selectedFondo.precioM2 : 0;
@@ -346,8 +366,9 @@ export default function CotizadorMarcos() {
       paspartuAreaM2,
       metrosMarcoUnitarios,
       metrosMarcoTotales,
-      varillasNecesarias,
-      metrosFacturados,
+      mediasVarillasCobradas: chargedBars.chargedHalfBars,
+      varillasCobradas: chargedBars.chargedBars,
+      metrosFacturados: chargedBars.chargedMeters,
       subtotalVarilla,
       subtotalVidrio,
       subtotalFondo,
@@ -458,7 +479,7 @@ export default function CotizadorMarcos() {
             </div>
             <div style={{ fontSize: 30, lineHeight: 1, fontWeight: 900 }}>{formatCurrency(quote.total)}</div>
             <div style={{ fontSize: 14, opacity: 0.84 }}>
-              {quote.varillasNecesarias} varilla{quote.varillasNecesarias === 1 ? "" : "s"} de {BAR_LENGTH_METERS.toFixed(2)} m
+              {formatNumber(quote.varillasCobradas, 1)} varilla{quote.varillasCobradas === 1 ? "" : "s"} cobradas
             </div>
             <div style={{ fontSize: 14, opacity: 0.84 }}>
               {formatNumber(quote.areaM2 * Math.max(clampPositiveNumber(form.cantidad, 1), 1), 2)} m2 totales de cuadro
@@ -712,7 +733,8 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Precio por metro" value={formatCurrency(selectedProfile.precioMetro)} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
-              <SummaryRow label="Varillas de 3.05 m" value={`${quote.varillasNecesarias}`} />
+              <SummaryRow label="Medias varillas cobradas" value={`${quote.mediasVarillasCobradas}`} />
+              <SummaryRow label="Varillas cobradas" value={`${formatNumber(quote.varillasCobradas, 1)}`} />
               <SummaryRow label="Metros facturados" value={`${formatNumber(quote.metrosFacturados)} m`} />
               <SummaryRow label="Subtotal varilla" value={formatCurrency(quote.subtotalVarilla)} />
               <SummaryRow label="Subtotal vidrio" value={formatCurrency(quote.subtotalVidrio)} />
