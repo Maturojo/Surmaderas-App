@@ -114,7 +114,7 @@ function getArmadoSuggestion(anchoMm, altoMm) {
 
 function NumberField({ label, value, onChange, min = 0, step = 1, suffix, helper }) {
   return (
-    <label style={{ display: "grid", gap: 6 }}>
+    <label style={{ display: "grid", gap: 6, alignContent: "start" }}>
       <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
         {label}
       </span>
@@ -151,7 +151,7 @@ function NumberField({ label, value, onChange, min = 0, step = 1, suffix, helper
           </span>
         ) : null}
       </div>
-      {helper ? <span style={{ fontSize: 12, color: "#7a7067" }}>{helper}</span> : null}
+      <span style={{ fontSize: 12, color: "#7a7067", minHeight: 18 }}>{helper || " "}</span>
     </label>
   );
 }
@@ -358,6 +358,39 @@ export default function CotizadorMarcos() {
     boxShadow: "0 18px 42px rgba(55, 43, 29, 0.08)",
     backdropFilter: "blur(10px)",
   };
+  const twoColumnGridStyle = {
+    display: "grid",
+    gap: 12,
+    gridTemplateColumns: "repeat(2, minmax(0,1fr))",
+    alignItems: "start",
+  };
+  const selectFieldStyle = {
+    width: "100%",
+    minHeight: 48,
+    padding: "0 14px",
+    borderRadius: 14,
+    border: "1px solid rgba(73, 58, 38, 0.14)",
+    background: "#fcfbf8",
+  };
+  const selectWrapperStyle = {
+    display: "grid",
+    gap: 6,
+    alignContent: "start",
+  };
+  const helperTextStyle = {
+    fontSize: 12,
+    color: "#7a7067",
+    minHeight: 18,
+  };
+  const rawMeasureInputStyle = {
+    width: "100%",
+    minHeight: 48,
+    padding: "0 14px",
+    borderRadius: 14,
+    border: "1px solid rgba(73, 58, 38, 0.14)",
+    background: "#fcfbf8",
+    outline: "none",
+  };
 
   return (
     <div style={pageStyle}>
@@ -413,22 +446,15 @@ export default function CotizadorMarcos() {
             <div style={{ display: "grid", gap: 18 }}>
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Configuracion del marco</div>
 
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <label style={{ display: "grid", gap: 6 }}>
+              <div style={twoColumnGridStyle}>
+                <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Tipo de varilla
                   </span>
                   <select
                     value={form.profileId}
                     onChange={(e) => setField("profileId", e.target.value)}
-                    style={{
-                      width: "100%",
-                      minHeight: 48,
-                      padding: "0 14px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
-                      background: "#fcfbf8",
-                    }}
+                    style={selectFieldStyle}
                   >
                     {INITIAL_PROFILES.map((profile) => (
                       <option key={profile.id} value={profile.id}>
@@ -436,6 +462,7 @@ export default function CotizadorMarcos() {
                       </option>
                     ))}
                   </select>
+                  <span style={helperTextStyle}> </span>
                 </label>
 
                 <NumberField
@@ -447,34 +474,29 @@ export default function CotizadorMarcos() {
                   suffix="u"
                 />
 
-                <label style={{ display: "grid", gap: 6 }}>
+                <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Orientacion
                   </span>
                   <select
                     value={form.orientacion}
                     onChange={(e) => setField("orientacion", e.target.value)}
-                    style={{
-                      width: "100%",
-                      minHeight: 48,
-                      padding: "0 14px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
-                      background: "#fcfbf8",
-                    }}
+                    style={selectFieldStyle}
                   >
                     <option value="vertical">Vertical</option>
                     <option value="horizontal">Horizontal</option>
                   </select>
+                  <span style={helperTextStyle}> </span>
                 </label>
+                <div />
               </div>
 
               <div style={{ display: "grid", gap: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                   Medidas
                 </span>
-                <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                  <div style={{ display: "grid", gap: 6 }}>
+                <div style={twoColumnGridStyle}>
+                  <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
                     <input
                       type="number"
                       min="50"
@@ -482,20 +504,12 @@ export default function CotizadorMarcos() {
                       value={form.anchoMm}
                       onChange={(e) => setField("anchoMm", e.target.value)}
                       placeholder="Medida 1"
-                      style={{
-                        width: "100%",
-                        minHeight: 48,
-                        padding: "0 64px 0 14px",
-                        borderRadius: 14,
-                        border: "1px solid rgba(73, 58, 38, 0.14)",
-                        background: "#fcfbf8",
-                        outline: "none",
-                      }}
+                      style={rawMeasureInputStyle}
                     />
-                    <span style={{ fontSize: 12, color: "#7a7067" }}>Se ordena automaticamente segun la orientacion.</span>
+                    <span style={helperTextStyle}>Se ordena automaticamente segun la orientacion.</span>
                   </div>
 
-                  <div style={{ display: "grid", gap: 6 }}>
+                  <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
                     <input
                       type="number"
                       min="50"
@@ -503,17 +517,9 @@ export default function CotizadorMarcos() {
                       value={form.altoMm}
                       onChange={(e) => setField("altoMm", e.target.value)}
                       placeholder="Medida 2"
-                      style={{
-                        width: "100%",
-                        minHeight: 48,
-                        padding: "0 64px 0 14px",
-                        borderRadius: 14,
-                        border: "1px solid rgba(73, 58, 38, 0.14)",
-                        background: "#fcfbf8",
-                        outline: "none",
-                      }}
+                      style={rawMeasureInputStyle}
                     />
-                    <span style={{ fontSize: 12, color: "#7a7067" }}>
+                    <span style={helperTextStyle}>
                       {form.orientacion === "horizontal"
                         ? `Horizontal: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`
                         : `Vertical: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
@@ -522,7 +528,7 @@ export default function CotizadorMarcos() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
+              <div style={twoColumnGridStyle}>
                 <NumberField
                   label="Paspartu"
                   value={form.paspartuMm}
@@ -532,42 +538,29 @@ export default function CotizadorMarcos() {
                   suffix="mm"
                   helper="Ingresa el ancho visible del paspartu."
                 />
-                <label style={{ display: "grid", gap: 6 }}>
+                <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Vidrio
                   </span>
                   <select
                     value={form.vidrio}
                     onChange={(e) => setField("vidrio", e.target.value)}
-                    style={{
-                      width: "100%",
-                      minHeight: 48,
-                      padding: "0 14px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
-                      background: "#fcfbf8",
-                    }}
+                    style={selectFieldStyle}
                   >
                     <option value="si">Si</option>
                     <option value="no">No</option>
                   </select>
+                  <span style={helperTextStyle}> </span>
                 </label>
 
-                <label style={{ display: "grid", gap: 6 }}>
+                <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Fondo
                   </span>
                   <select
                     value={form.fondoId}
                     onChange={(e) => setField("fondoId", e.target.value)}
-                    style={{
-                      width: "100%",
-                      minHeight: 48,
-                      padding: "0 14px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
-                      background: "#fcfbf8",
-                    }}
+                    style={selectFieldStyle}
                   >
                     {FONDO_OPTIONS.map((option) => (
                       <option key={option.id} value={option.id}>
@@ -575,25 +568,19 @@ export default function CotizadorMarcos() {
                       </option>
                     ))}
                   </select>
+                  <span style={helperTextStyle}> </span>
                 </label>
               </div>
 
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <label style={{ display: "grid", gap: 6 }}>
+              <div style={twoColumnGridStyle}>
+                <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Pintado
                   </span>
                   <select
                     value={form.pintadoId}
                     onChange={(e) => setField("pintadoId", e.target.value)}
-                    style={{
-                      width: "100%",
-                      minHeight: 48,
-                      padding: "0 14px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
-                      background: "#fcfbf8",
-                    }}
+                    style={selectFieldStyle}
                   >
                     {PINTADO_OPTIONS.map((option) => (
                       <option key={option.id} value={option.id}>
@@ -601,7 +588,9 @@ export default function CotizadorMarcos() {
                       </option>
                     ))}
                   </select>
+                  <span style={helperTextStyle}> </span>
                 </label>
+                <div />
               </div>
 
               <label style={{ display: "grid", gap: 6 }}>
