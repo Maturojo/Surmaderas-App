@@ -98,6 +98,17 @@ function normalizeDimensionsByOrientation(firstValue, secondValue, orientacion) 
   return { ancho: shortSide, alto: longSide };
 }
 
+function reorderFormDimensions(form, orientacion) {
+  const normalized = normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, orientacion);
+
+  return {
+    ...form,
+    orientacion,
+    anchoMm: normalized.ancho,
+    altoMm: normalized.alto,
+  };
+}
+
 function getArmadoSuggestion(anchoMm, altoMm) {
   const areaM2 = (clampPositiveNumber(anchoMm) * clampPositiveNumber(altoMm)) / 1000000;
 
@@ -194,8 +205,6 @@ function FramePreview3D({
   const paspartuScene = Math.min(clampPositiveNumber(paspartuMm, 0) * MM_TO_SCENE, innerWidth / 2.2, innerHeight / 2.2);
   const openingWidth = Math.max(innerWidth - paspartuScene * 2, face * 0.45);
   const openingHeight = Math.max(innerHeight - paspartuScene * 2, face * 0.45);
-  const frameRotation = orientacion === "horizontal" ? [0, 0, Math.PI / 2] : [0, 0, 0];
-
   return (
     <>
       <color attach="background" args={["#f3ede4"]} />
@@ -203,7 +212,7 @@ function FramePreview3D({
       <directionalLight position={[2, 3, 4]} intensity={1.5} castShadow />
       <directionalLight position={[-2, -1, 3]} intensity={0.5} />
 
-      <group rotation={frameRotation}>
+      <group>
         <mesh position={[0, outerHeight / 2 - face / 2, 0]} castShadow receiveShadow>
           <boxGeometry args={[outerWidth, face, depth]} />
           <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
@@ -344,6 +353,10 @@ export default function CotizadorMarcos() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handleOrientationChange(nextOrientation) {
+    setForm((prev) => reorderFormDimensions(prev, nextOrientation));
+  }
+
   const pageStyle = {
     maxWidth: 1380,
     margin: "0 auto",
@@ -480,7 +493,7 @@ export default function CotizadorMarcos() {
                   </span>
                   <select
                     value={form.orientacion}
-                    onChange={(e) => setField("orientacion", e.target.value)}
+                    onChange={(e) => handleOrientationChange(e.target.value)}
                     style={selectFieldStyle}
                   >
                     <option value="vertical">Vertical</option>
