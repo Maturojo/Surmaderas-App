@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 
 const BAR_LENGTH_METERS = 3.05;
 const MM_TO_SCENE = 0.0015;
@@ -37,12 +38,10 @@ const INITIAL_FORM = {
   anchoMm: 700,
   altoMm: 1000,
   cantidad: 1,
+  orientacion: "vertical",
   vidrio: true,
   fondo: true,
-  cableHorizontal: false,
-  cableVertical: false,
-  lineasHorizontales: 2,
-  lineasVerticales: 2,
+  cableColgante: true,
   precioVidrioM2: 28500,
   precioFondoM2: 12800,
   precioCableMetro: 3200,
@@ -72,24 +71,6 @@ function clampPositiveNumber(value, fallback = 0) {
     return fallback;
   }
   return parsed;
-}
-
-function getSafeCount(value) {
-  return Math.max(Math.floor(clampPositiveNumber(value, 0)), 0);
-}
-
-function buildCableOffsets(count, span) {
-  const safeCount = getSafeCount(count);
-
-  if (safeCount <= 0) {
-    return [];
-  }
-
-  if (safeCount === 1) {
-    return [0];
-  }
-
-  return Array.from({ length: safeCount }, (_, index) => ((index + 1) / (safeCount + 1) - 0.5) * span);
 }
 
 function getArmadoSuggestion(anchoMm, altoMm) {
@@ -190,18 +171,44 @@ function SummaryRow({ label, value, strong = false }) {
   );
 }
 
+function CableCylinder({ start, end, radius, color }) {
+  const { position, quaternion, length } = useMemo(() => {
+    const startVector = new THREE.Vector3(...start);
+    const endVector = new THREE.Vector3(...end);
+    const direction = new THREE.Vector3().subVectors(endVector, startVector);
+    const safeLength = Math.max(direction.length(), 0.0001);
+    const midpoint = new THREE.Vector3().addVectors(startVector, endVector).multiplyScalar(0.5);
+    const normalizedDirection = direction.clone().normalize();
+    const rotation = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      normalizedDirection
+    );
+
+    return {
+      position: midpoint.toArray(),
+      quaternion: rotation,
+      length: safeLength,
+    };
+  }, [start, end]);
+
+  return (
+    <mesh position={position} quaternion={quaternion}>
+      <cylinderGeometry args={[radius, radius, length, 18]} />
+      <meshStandardMaterial color={color} metalness={0.35} roughness={0.45} />
+    </mesh>
+  );
+}
+
 function FramePreview3D({
   anchoMm,
   altoMm,
   faceMm,
   depthMm,
   color,
+  orientacion,
   vidrio,
   fondo,
-  cableHorizontal,
-  cableVertical,
-  lineasHorizontales,
-  lineasVerticales,
+  cableColgante,
 }) {
   const outerWidth = clampPositiveNumber(anchoMm, 700) * MM_TO_SCENE;
   const outerHeight = clampPositiveNumber(altoMm, 1000) * MM_TO_SCENE;
@@ -209,10 +216,16 @@ function FramePreview3D({
   const depth = Math.max(clampPositiveNumber(depthMm, 20) * MM_TO_SCENE, 0.028);
   const innerWidth = Math.max(outerWidth - face * 2, face * 0.75);
   const innerHeight = Math.max(outerHeight - face * 2, face * 0.75);
-  const cableRadius = 0.005;
-
-  const horizontalOffsets = cableHorizontal ? buildCableOffsets(lineasHorizontales, innerHeight) : [];
-  const verticalOffsets = cableVertical ? buildCableOffsets(lineasVerticales, innerWidth) : [];
+  const soporteRadius = 0.014;
+  const cableRadius = 0.0035;
+  const backZ = -depth * 0.48;
+  const supportY = outerHeight * 0.1;
+  const supportX = outerWidth / 2 - face * 0.7;
+  const cableDrop = Math.min(outerHeight * 0.18, 0.14);
+  const leftSupport = [-supportX, supportY, backZ];
+  const rightSupport = [supportX, supportY, backZ];
+  const cablePeak = [0, supportY + cableDrop, backZ];
+  const frameRotation = orientacion === "horizontal" ? [0, 0, Math.PI / 2] : [0, 0, 0];
 
   return (
     <>
@@ -221,7 +234,7 @@ function FramePreview3D({
       <directionalLight position={[2, 3, 4]} intensity={1.5} castShadow />
       <directionalLight position={[-2, -1, 3]} intensity={0.5} />
 
-      <group>
+      <group rotation={frameRotation}>
         <mesh position={[0, outerHeight / 2 - face / 2, 0]} castShadow receiveShadow>
           <boxGeometry args={[outerWidth, face, depth]} />
           <meshStandardMaterial color={color} metalness={0.35} roughness={0.5} />
@@ -253,20 +266,37 @@ function FramePreview3D({
           </mesh>
         ) : null}
 
-        {horizontalOffsets.map((offset) => (
-          <mesh key={`h-${offset}`} position={[0, offset, depth * 0.14]}>
-            <boxGeometry args={[innerWidth, cableRadius, cableRadius]} />
-            <meshStandardMaterial color="#d0d4dc" metalness={0.85} roughness={0.2} />
-          </mesh>
-        ))}
+        {cableColgante ? (
+          <>
+            <mesh position={leftSupport}>
+              <cylinderGeometry args={[soporteRadius, soporteRadius, 0.016, 24]} />
+              <meshStandardMaterial color="#b7bcc6" metalness={0.9} roughness={0.2} />
+            </mesh>
+            <mesh position={rightSupport}>
+              <cylinderGeometry args={[soporteRadius, soporteRadius, 0.016, 24]} />
+              <meshStandardMaterial color="#b7bcc6" metalness={0.9} roughness={0.2} />
+            </mesh>
 
-        {verticalOffsets.map((offset) => (
-          <mesh key={`v-${offset}`} position={[offset, 0, depth * 0.14]}>
-            <boxGeometry args={[cableRadius, innerHeight, cableRadius]} />
-            <meshStandardMaterial color="#d0d4dc" metalness={0.85} roughness={0.2} />
-          </mesh>
-        ))}
+            <CableCylinder start={leftSupport} end={cablePeak} radius={cableRadius} color="#9ea6b2" />
+            <CableCylinder start={cablePeak} end={rightSupport} radius={cableRadius} color="#9ea6b2" />
+          </>
+        ) : null}
       </group>
+
+      {cableColgante ? (
+        <group position={[0, 0, -0.22]}>
+          <mesh position={[-0.06, 0, 0]}>
+            <cylinderGeometry args={[0.014, 0.014, 0.02, 24]} />
+            <meshStandardMaterial color="#8e96a3" metalness={0.9} roughness={0.25} />
+          </mesh>
+          <mesh position={[0.06, 0, 0]}>
+            <cylinderGeometry args={[0.014, 0.014, 0.02, 24]} />
+            <meshStandardMaterial color="#8e96a3" metalness={0.9} roughness={0.25} />
+          </mesh>
+          <CableCylinder start={[-0.06, 0, 0]} end={[0, 0.04, 0]} radius={0.003} color="#8e96a3" />
+          <CableCylinder start={[0, 0.04, 0]} end={[0.06, 0, 0]} radius={0.003} color="#8e96a3" />
+        </group>
+      ) : null}
 
       <mesh position={[0, 0, -0.12]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[3.2, 3.2]} />
@@ -300,13 +330,10 @@ export default function CotizadorMarcos() {
     const metrosFacturados = varillasNecesarias * BAR_LENGTH_METERS;
     const subtotalVarilla = metrosFacturados * clampPositiveNumber(selectedProfile.precioMetro, 0);
 
-    const metrosCableHorizontal = form.cableHorizontal
-      ? anchoM * Math.max(clampPositiveNumber(form.lineasHorizontales, 0), 0) * cantidad
-      : 0;
-    const metrosCableVertical = form.cableVertical
-      ? altoM * Math.max(clampPositiveNumber(form.lineasVerticales, 0), 0) * cantidad
-      : 0;
-    const metrosCableTotales = metrosCableHorizontal + metrosCableVertical;
+    const caidaCableM = Math.min(altoM * 0.18, 0.18);
+    const cableLadoM = Math.sqrt(Math.pow(anchoM * 0.42, 2) + Math.pow(caidaCableM, 2));
+    const metrosCableUnitarios = form.cableColgante ? cableLadoM * 2 : 0;
+    const metrosCableTotales = metrosCableUnitarios * cantidad;
     const subtotalCable = metrosCableTotales * clampPositiveNumber(form.precioCableMetro, 0);
 
     const subtotalVidrio = form.vidrio ? areaM2 * cantidad * clampPositiveNumber(form.precioVidrioM2, 0) : 0;
@@ -334,8 +361,7 @@ export default function CotizadorMarcos() {
       varillasNecesarias,
       metrosFacturados,
       subtotalVarilla,
-      metrosCableHorizontal,
-      metrosCableVertical,
+      metrosCableUnitarios,
       metrosCableTotales,
       subtotalCable,
       subtotalVidrio,
@@ -453,6 +479,27 @@ export default function CotizadorMarcos() {
                   suffix="u"
                 />
 
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Orientacion
+                  </span>
+                  <select
+                    value={form.orientacion}
+                    onChange={(e) => setField("orientacion", e.target.value)}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      padding: "0 14px",
+                      borderRadius: 14,
+                      border: "1px solid rgba(73, 58, 38, 0.14)",
+                      background: "#fcfbf8",
+                    }}
+                  >
+                    <option value="vertical">Vertical</option>
+                    <option value="horizontal">Horizontal</option>
+                  </select>
+                </label>
+
                 <NumberField
                   label="Ancho"
                   value={form.anchoMm}
@@ -486,16 +533,10 @@ export default function CotizadorMarcos() {
                   description="Agrega el respaldo interior del marco."
                 />
                 <ToggleCard
-                  checked={form.cableHorizontal}
-                  onChange={(e) => setField("cableHorizontal", e.target.checked)}
-                  title="Cable horizontal"
-                  description="Permite sumar la cantidad de tiras horizontales."
-                />
-                <ToggleCard
-                  checked={form.cableVertical}
-                  onChange={(e) => setField("cableVertical", e.target.checked)}
-                  title="Cable vertical"
-                  description="Permite sumar la cantidad de tiras verticales."
+                  checked={form.cableColgante}
+                  onChange={(e) => setField("cableColgante", e.target.checked)}
+                  title="Cable para colgar"
+                  description="Agrega dos fijaciones laterales y el cable trasero de colgado."
                 />
               </div>
 
@@ -522,27 +563,9 @@ export default function CotizadorMarcos() {
 
           <article style={panelStyle}>
             <div style={{ display: "grid", gap: 18 }}>
-              <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Cables y armado</div>
+              <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Colgado y armado</div>
 
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(3, minmax(0,1fr))" }}>
-                <NumberField
-                  label="Lineas horizontales"
-                  value={form.lineasHorizontales}
-                  onChange={(e) => setField("lineasHorizontales", e.target.value)}
-                  min={0}
-                  step={1}
-                  suffix="u"
-                  helper={form.cableHorizontal ? "Se usan para calcular los metros de cable horizontal." : "Activa el cable horizontal para que impacte en el total."}
-                />
-                <NumberField
-                  label="Lineas verticales"
-                  value={form.lineasVerticales}
-                  onChange={(e) => setField("lineasVerticales", e.target.value)}
-                  min={0}
-                  step={1}
-                  suffix="u"
-                  helper={form.cableVertical ? "Se usan para calcular los metros de cable vertical." : "Activa el cable vertical para que impacte en el total."}
-                />
+              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <NumberField
                   label="Precio cable"
                   value={form.precioCableMetro}
@@ -550,7 +573,32 @@ export default function CotizadorMarcos() {
                   min={0}
                   step={100}
                   suffix="/m"
+                  helper={
+                    form.cableColgante
+                      ? "Se calcula automaticamente segun el ancho del cuadro y la caida del cable."
+                      : "Activa el cable para incluirlo en el total."
+                  }
                 />
+                <div
+                  style={{
+                    display: "grid",
+                    alignContent: "center",
+                    padding: 16,
+                    borderRadius: 18,
+                    background: "rgba(247, 243, 236, 0.95)",
+                    border: "1px solid rgba(73, 58, 38, 0.1)",
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7d7267" }}>
+                    Cable estimado por cuadro
+                  </div>
+                  <div style={{ marginTop: 6, fontSize: 24, fontWeight: 900, color: "#2d241c" }}>
+                    {formatNumber(quote.metrosCableUnitarios)} m
+                  </div>
+                  <div style={{ marginTop: 4, fontSize: 13, color: "#6f665d" }}>
+                    Incluye dos laterales y una panza central para colgado.
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
@@ -621,7 +669,7 @@ export default function CotizadorMarcos() {
               </div>
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Render 3D del marco</div>
               <div style={{ fontSize: 14, color: "#6f665d" }}>
-                Esta vista ya responde a medida, vidrio, fondo y cables. Luego podemos reemplazar este perfil por la geometria real de cada varilla.
+                Esta vista ya responde a medida, orientacion, vidrio, fondo y al cable trasero de colgado con sus fijaciones laterales.
               </div>
             </div>
 
@@ -633,12 +681,10 @@ export default function CotizadorMarcos() {
                   faceMm={selectedProfile.frenteMm}
                   depthMm={selectedProfile.profundidadMm}
                   color={selectedProfile.color}
+                  orientacion={form.orientacion}
                   vidrio={form.vidrio}
                   fondo={form.fondo}
-                  cableHorizontal={form.cableHorizontal}
-                  cableVertical={form.cableVertical}
-                  lineasHorizontales={form.lineasHorizontales}
-                  lineasVerticales={form.lineasVerticales}
+                  cableColgante={form.cableColgante}
                 />
               </Canvas>
             </div>
@@ -654,6 +700,7 @@ export default function CotizadorMarcos() {
 
             <div style={{ marginTop: 12 }}>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile.nombre} />
+              <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
               <SummaryRow label="Precio por metro" value={formatCurrency(selectedProfile.precioMetro)} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
@@ -663,7 +710,7 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Subtotal vidrio" value={formatCurrency(quote.subtotalVidrio)} />
               <SummaryRow label="Subtotal fondo" value={formatCurrency(quote.subtotalFondo)} />
               <SummaryRow
-                label="Cableado"
+                label="Cable colgante"
                 value={`${formatNumber(quote.metrosCableTotales)} m · ${formatCurrency(quote.subtotalCable)}`}
               />
               <SummaryRow
