@@ -74,6 +74,24 @@ function clampPositiveNumber(value, fallback = 0) {
   return parsed;
 }
 
+function getSafeCount(value) {
+  return Math.max(Math.floor(clampPositiveNumber(value, 0)), 0);
+}
+
+function buildCableOffsets(count, span) {
+  const safeCount = getSafeCount(count);
+
+  if (safeCount <= 0) {
+    return [];
+  }
+
+  if (safeCount === 1) {
+    return [0];
+  }
+
+  return Array.from({ length: safeCount }, (_, index) => ((index + 1) / (safeCount + 1) - 0.5) * span);
+}
+
 function getArmadoSuggestion(anchoMm, altoMm) {
   const areaM2 = (clampPositiveNumber(anchoMm) * clampPositiveNumber(altoMm)) / 1000000;
 
@@ -193,15 +211,8 @@ function FramePreview3D({
   const innerHeight = Math.max(outerHeight - face * 2, face * 0.75);
   const cableRadius = 0.005;
 
-  const horizontalOffsets = Array.from({ length: cableHorizontal ? clampPositiveNumber(lineasHorizontales, 0) : 0 }, (_, index, arr) => {
-    const total = arr.length;
-    return total === 1 ? 0 : ((index + 1) / (total + 1) - 0.5) * innerHeight;
-  });
-
-  const verticalOffsets = Array.from({ length: cableVertical ? clampPositiveNumber(lineasVerticales, 0) : 0 }, (_, index, arr) => {
-    const total = arr.length;
-    return total === 1 ? 0 : ((index + 1) / (total + 1) - 0.5) * innerWidth;
-  });
+  const horizontalOffsets = cableHorizontal ? buildCableOffsets(lineasHorizontales, innerHeight) : [];
+  const verticalOffsets = cableVertical ? buildCableOffsets(lineasVerticales, innerWidth) : [];
 
   return (
     <>
