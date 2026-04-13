@@ -24,6 +24,7 @@ const NAV_ITEMS = [
       { label: "Guardadas", to: "/presupuestos/guardadas" },
     ],
   },
+  { label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
   { label: "Productos", to: "/productos", icon: "products" },
   {
     label: "Proveedores",
@@ -37,11 +38,13 @@ const NAV_ITEMS = [
 ];
 
 const VENTAS_ALLOWED_PATHS = new Set([
+  "/dashboard",
   "/calendario",
   "/notas-pedido",
   "/presupuestos/cargar",
   "/productos",
   "/generador-3d",
+  "/marcos",
 ]);
 
 function SidebarIcon({ name }) {
@@ -114,6 +117,13 @@ function SidebarIcon({ name }) {
         <svg {...common}>
           <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
           <path d="M12 12 20 7.5M12 12 4 7.5M12 12v9" />
+        </svg>
+      );
+    case "frame":
+      return (
+        <svg {...common}>
+          <rect x="4" y="4" width="16" height="16" rx="2" />
+          <rect x="8" y="8" width="8" height="8" rx="1.5" />
         </svg>
       );
     case "settings":

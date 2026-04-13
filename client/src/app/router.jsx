@@ -11,6 +11,7 @@ import ProductosInterno from "../pages/ProductosInterno";
 import Proveedores from "../pages/Proveedores";
 import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
+import CotizadorMarcos from "../pages/CotizadorMarcos.jsx";
 import UserManagement from "../pages/UserManagement.jsx";
 import TurneroSettings from "../pages/TurneroSettings.jsx";
 import ChatInterno from "../pages/ChatInterno.jsx";
@@ -36,7 +37,7 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+          <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -119,6 +120,7 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
+      { path: "marcos", element: <CotizadorMarcos /> },
       {
         path: "configuracion/usuarios",
         element: (

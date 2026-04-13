@@ -1,9 +1,16 @@
 ﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { obtenerCalendario } from "../services/calendar";
+import { getUserRole } from "../services/auth";
 import { getTurnero, takeTurno } from "../services/turnero";
 
 const CARDS = [
+  {
+    label: "Marcos",
+    title: "Cotizador de marcos",
+    copy: "Calcula varillas, vidrio, fondo, cables y armado con una vista 3D preliminar.",
+    to: "/marcos",
+  },
   {
     label: "Caja",
     title: "Listado de notas en espera",
@@ -21,6 +28,33 @@ const CARDS = [
     title: "Notas guardadas",
     copy: "Consulta, imprime o comparte pedidos ya cerrados en caja.",
     to: "/notas-pedido/guardadas",
+  },
+];
+
+const VENTAS_CARDS = [
+  {
+    label: "Marcos",
+    title: "Cotizador de marcos",
+    copy: "Arma una cotizacion rapida del marco con extras y visualizacion previa.",
+    to: "/marcos",
+  },
+  {
+    label: "Ventas",
+    title: "Nueva nota de pedido",
+    copy: "Genera pedidos en mostrador con cliente, entrega, detalle e importe.",
+    to: "/notas-pedido",
+  },
+  {
+    label: "Presupuestos",
+    title: "Nuevo presupuesto",
+    copy: "Carga rapido los datos, fotos y detalles para retomarlos despues.",
+    to: "/presupuestos/cargar",
+  },
+  {
+    label: "Productos",
+    title: "Consultar productos",
+    copy: "Busca referencias, materiales y articulos disponibles sin salir del panel.",
+    to: "/productos",
   },
 ];
 
@@ -87,6 +121,7 @@ const turneroErrorStyle = {
 };
 
 export default function Dashboard() {
+  const userRole = getUserRole();
   const [turnero, setTurnero] = useState(null);
   const [isLoadingTurnero, setIsLoadingTurnero] = useState(true);
   const [isTakingTurno, setIsTakingTurno] = useState(false);
@@ -96,6 +131,7 @@ export default function Dashboard() {
   const today = new Date();
   const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const todayNumber = today.getDate();
+  const cards = userRole === "ventas" ? VENTAS_CARDS : CARDS;
 
   useEffect(() => {
     let cancelled = false;
@@ -238,7 +274,7 @@ export default function Dashboard() {
       </section>
 
       <section className="dashboard-grid">
-        {CARDS.map((card) => (
+        {cards.map((card) => (
           <article key={card.to} className="dashboard-card">
             <span className="dashboard-cardLabel">{card.label}</span>
             <h2 className="dashboard-cardTitle">{card.title}</h2>
