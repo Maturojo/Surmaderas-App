@@ -5,7 +5,7 @@ import { OrbitControls } from "@react-three/drei";
 const BAR_LENGTH_METERS = 3.05;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
-const PASPARTU_PRICE_M2 = 16500;
+const PASPARTU_PRICE_M2 = 19640;
 
 const INITIAL_PROFILES = [
   {
