@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
 
 const BAR_LENGTH_METERS = 3.05;
 const MM_TO_SCENE = 0.0015;
+const PASPARTU_PRICE_M2 = 16500;
 
 const INITIAL_PROFILES = [
   {
@@ -33,20 +33,32 @@ const INITIAL_PROFILES = [
   },
 ];
 
+const FONDO_OPTIONS = [
+  { id: "sin-fondo", nombre: "Sin fondo", precioM2: 0, color: "#000000" },
+  { id: "fibrofacil", nombre: "Fibro facil", precioM2: 9800, color: "#b69777" },
+  { id: "fibroplus-blanco", nombre: "Fibro plus blanco", precioM2: 13200, color: "#e9e5dc" },
+  { id: "fibroplus-negro", nombre: "Fibro plus negro", precioM2: 13800, color: "#2a2d33" },
+];
+
+const PINTADO_OPTIONS = [
+  { id: "sin-pintar", nombre: "Sin pintar", color: null, extra: 0 },
+  { id: "negro-mate", nombre: "Negro mate", color: "#23252b", extra: 9500 },
+  { id: "blanco-mate", nombre: "Blanco mate", color: "#f2eee6", extra: 9200 },
+  { id: "roble-claro", nombre: "Roble claro", color: "#b68458", extra: 11800 },
+  { id: "nogal", nombre: "Nogal", color: "#6f4c34", extra: 11800 },
+  { id: "dorado", nombre: "Dorado", color: "#c7a459", extra: 14200 },
+];
+
 const INITIAL_FORM = {
   profileId: INITIAL_PROFILES[0].id,
   anchoMm: 700,
   altoMm: 1000,
   cantidad: 1,
   orientacion: "vertical",
-  vidrio: true,
-  fondo: true,
-  cableColgante: true,
-  precioVidrioM2: 28500,
-  precioFondoM2: 12800,
-  precioCableMetro: 3200,
-  armadoModo: "automatico",
-  armadoManual: 0,
+  vidrio: "si",
+  fondoId: "fibrofacil",
+  paspartuMm: 0,
+  pintadoId: "sin-pintar",
   observaciones: "",
 };
 
@@ -171,34 +183,6 @@ function SummaryRow({ label, value, strong = false }) {
   );
 }
 
-function CableCylinder({ start, end, radius, color }) {
-  const { position, quaternion, length } = useMemo(() => {
-    const startVector = new THREE.Vector3(...start);
-    const endVector = new THREE.Vector3(...end);
-    const direction = new THREE.Vector3().subVectors(endVector, startVector);
-    const safeLength = Math.max(direction.length(), 0.0001);
-    const midpoint = new THREE.Vector3().addVectors(startVector, endVector).multiplyScalar(0.5);
-    const normalizedDirection = direction.clone().normalize();
-    const rotation = new THREE.Quaternion().setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      normalizedDirection
-    );
-
-    return {
-      position: midpoint.toArray(),
-      quaternion: rotation,
-      length: safeLength,
-    };
-  }, [start, end]);
-
-  return (
-    <mesh position={position} quaternion={quaternion}>
-      <cylinderGeometry args={[radius, radius, length, 18]} />
-      <meshStandardMaterial color={color} metalness={0.35} roughness={0.45} />
-    </mesh>
-  );
-}
-
 function FramePreview3D({
   anchoMm,
   altoMm,
@@ -207,8 +191,8 @@ function FramePreview3D({
   color,
   orientacion,
   vidrio,
-  fondo,
-  cableColgante,
+  fondoColor,
+  paspartuMm,
 }) {
   const outerWidth = clampPositiveNumber(anchoMm, 700) * MM_TO_SCENE;
   const outerHeight = clampPositiveNumber(altoMm, 1000) * MM_TO_SCENE;
@@ -216,15 +200,9 @@ function FramePreview3D({
   const depth = Math.max(clampPositiveNumber(depthMm, 20) * MM_TO_SCENE, 0.028);
   const innerWidth = Math.max(outerWidth - face * 2, face * 0.75);
   const innerHeight = Math.max(outerHeight - face * 2, face * 0.75);
-  const soporteRadius = 0.014;
-  const cableRadius = 0.0035;
-  const backZ = -depth * 0.48;
-  const supportY = outerHeight * 0.1;
-  const supportX = outerWidth / 2 - face * 0.7;
-  const cableDrop = Math.min(outerHeight * 0.18, 0.14);
-  const leftSupport = [-supportX, supportY, backZ];
-  const rightSupport = [supportX, supportY, backZ];
-  const cablePeak = [0, supportY + cableDrop, backZ];
+  const paspartuScene = Math.min(clampPositiveNumber(paspartuMm, 0) * MM_TO_SCENE, innerWidth / 2.2, innerHeight / 2.2);
+  const openingWidth = Math.max(innerWidth - paspartuScene * 2, face * 0.45);
+  const openingHeight = Math.max(innerHeight - paspartuScene * 2, face * 0.45);
   const frameRotation = orientacion === "horizontal" ? [0, 0, Math.PI / 2] : [0, 0, 0];
 
   return (
@@ -259,44 +237,34 @@ function FramePreview3D({
           </mesh>
         ) : null}
 
-        {fondo ? (
+        {fondoColor ? (
           <mesh position={[0, 0, -depth * 0.28]} receiveShadow>
             <boxGeometry args={[innerWidth, innerHeight, 0.01]} />
-            <meshStandardMaterial color="#d8cbb7" roughness={0.95} />
+            <meshStandardMaterial color={fondoColor} roughness={0.95} />
           </mesh>
         ) : null}
 
-        {cableColgante ? (
+        {paspartuScene > 0 ? (
           <>
-            <mesh position={leftSupport}>
-              <cylinderGeometry args={[soporteRadius, soporteRadius, 0.016, 24]} />
-              <meshStandardMaterial color="#b7bcc6" metalness={0.9} roughness={0.2} />
+            <mesh position={[0, innerHeight / 2 - paspartuScene / 2, 0.008]}>
+              <boxGeometry args={[innerWidth, paspartuScene, 0.012]} />
+              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
             </mesh>
-            <mesh position={rightSupport}>
-              <cylinderGeometry args={[soporteRadius, soporteRadius, 0.016, 24]} />
-              <meshStandardMaterial color="#b7bcc6" metalness={0.9} roughness={0.2} />
+            <mesh position={[0, -innerHeight / 2 + paspartuScene / 2, 0.008]}>
+              <boxGeometry args={[innerWidth, paspartuScene, 0.012]} />
+              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
             </mesh>
-
-            <CableCylinder start={leftSupport} end={cablePeak} radius={cableRadius} color="#9ea6b2" />
-            <CableCylinder start={cablePeak} end={rightSupport} radius={cableRadius} color="#9ea6b2" />
+            <mesh position={[-innerWidth / 2 + paspartuScene / 2, 0, 0.008]}>
+              <boxGeometry args={[paspartuScene, openingHeight, 0.012]} />
+              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+            </mesh>
+            <mesh position={[innerWidth / 2 - paspartuScene / 2, 0, 0.008]}>
+              <boxGeometry args={[paspartuScene, openingHeight, 0.012]} />
+              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+            </mesh>
           </>
         ) : null}
       </group>
-
-      {cableColgante ? (
-        <group position={[0, 0, -0.22]}>
-          <mesh position={[-0.06, 0, 0]}>
-            <cylinderGeometry args={[0.014, 0.014, 0.02, 24]} />
-            <meshStandardMaterial color="#8e96a3" metalness={0.9} roughness={0.25} />
-          </mesh>
-          <mesh position={[0.06, 0, 0]}>
-            <cylinderGeometry args={[0.014, 0.014, 0.02, 24]} />
-            <meshStandardMaterial color="#8e96a3" metalness={0.9} roughness={0.25} />
-          </mesh>
-          <CableCylinder start={[-0.06, 0, 0]} end={[0, 0.04, 0]} radius={0.003} color="#8e96a3" />
-          <CableCylinder start={[0, 0.04, 0]} end={[0.06, 0, 0]} radius={0.003} color="#8e96a3" />
-        </group>
-      ) : null}
 
       <mesh position={[0, 0, -0.12]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[3.2, 3.2]} />
@@ -315,6 +283,15 @@ export default function CotizadorMarcos() {
     () => INITIAL_PROFILES.find((profile) => profile.id === form.profileId) || INITIAL_PROFILES[0],
     [form.profileId]
   );
+  const selectedFondo = useMemo(
+    () => FONDO_OPTIONS.find((option) => option.id === form.fondoId) || FONDO_OPTIONS[0],
+    [form.fondoId]
+  );
+  const selectedPintado = useMemo(
+    () => PINTADO_OPTIONS.find((option) => option.id === form.pintadoId) || PINTADO_OPTIONS[0],
+    [form.pintadoId]
+  );
+  const frameColor = selectedPintado.color || selectedProfile.color;
 
   const quote = useMemo(() => {
     const anchoMm = clampPositiveNumber(form.anchoMm, 0);
@@ -323,6 +300,10 @@ export default function CotizadorMarcos() {
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
+    const paspartuM = clampPositiveNumber(form.paspartuMm, 0) / 1000;
+    const openingWidthM = Math.max(anchoM - paspartuM * 2, 0);
+    const openingHeightM = Math.max(altoM - paspartuM * 2, 0);
+    const paspartuAreaM2 = paspartuM > 0 ? Math.max(areaM2 - openingWidthM * openingHeightM, 0) : 0;
 
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
@@ -330,47 +311,39 @@ export default function CotizadorMarcos() {
     const metrosFacturados = varillasNecesarias * BAR_LENGTH_METERS;
     const subtotalVarilla = metrosFacturados * clampPositiveNumber(selectedProfile.precioMetro, 0);
 
-    const caidaCableM = Math.min(altoM * 0.18, 0.18);
-    const cableLadoM = Math.sqrt(Math.pow(anchoM * 0.42, 2) + Math.pow(caidaCableM, 2));
-    const metrosCableUnitarios = form.cableColgante ? cableLadoM * 2 : 0;
-    const metrosCableTotales = metrosCableUnitarios * cantidad;
-    const subtotalCable = metrosCableTotales * clampPositiveNumber(form.precioCableMetro, 0);
-
-    const subtotalVidrio = form.vidrio ? areaM2 * cantidad * clampPositiveNumber(form.precioVidrioM2, 0) : 0;
-    const subtotalFondo = form.fondo ? areaM2 * cantidad * clampPositiveNumber(form.precioFondoM2, 0) : 0;
+    const subtotalVidrio = form.vidrio === "si" ? areaM2 * cantidad * 28500 : 0;
+    const subtotalFondo = selectedFondo.precioM2 > 0 ? areaM2 * cantidad * selectedFondo.precioM2 : 0;
+    const subtotalPaspartu = paspartuAreaM2 * cantidad * PASPARTU_PRICE_M2;
+    const subtotalPintado = selectedPintado.extra * cantidad;
 
     const armadoSugerido = getArmadoSuggestion(anchoMm, altoMm);
-    const subtotalArmado =
-      form.armadoModo === "manual"
-        ? clampPositiveNumber(form.armadoManual, 0)
-        : armadoSugerido.precio * cantidad;
+    const subtotalArmado = armadoSugerido.precio * cantidad;
 
     const total =
       subtotalVarilla +
-      subtotalCable +
       subtotalVidrio +
       subtotalFondo +
+      subtotalPaspartu +
+      subtotalPintado +
       subtotalArmado;
 
     return {
-      anchoM,
-      altoM,
       areaM2,
+      paspartuAreaM2,
       metrosMarcoUnitarios,
       metrosMarcoTotales,
       varillasNecesarias,
       metrosFacturados,
       subtotalVarilla,
-      metrosCableUnitarios,
-      metrosCableTotales,
-      subtotalCable,
       subtotalVidrio,
       subtotalFondo,
+      subtotalPaspartu,
+      subtotalPintado,
       armadoSugerido,
       subtotalArmado,
       total,
     };
-  }, [form, selectedProfile]);
+  }, [form, selectedFondo, selectedPintado, selectedProfile]);
 
   function setField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -433,7 +406,7 @@ export default function CotizadorMarcos() {
               {quote.varillasNecesarias} varilla{quote.varillasNecesarias === 1 ? "" : "s"} de {BAR_LENGTH_METERS.toFixed(2)} m
             </div>
             <div style={{ fontSize: 14, opacity: 0.84 }}>
-              {formatNumber(quote.areaM2 * Math.max(clampPositiveNumber(form.cantidad, 1), 1), 2)} m2 totales a cubrir
+              {formatNumber(quote.areaM2 * Math.max(clampPositiveNumber(form.cantidad, 1), 1), 2)} m2 totales de cuadro
             </div>
           </div>
         </div>
@@ -499,9 +472,11 @@ export default function CotizadorMarcos() {
                     <option value="horizontal">Horizontal</option>
                   </select>
                 </label>
+              </div>
 
+              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <NumberField
-                  label="Ancho"
+                  label={form.orientacion === "horizontal" ? "Ancho (lado largo)" : "Ancho"}
                   value={form.anchoMm}
                   onChange={(e) => setField("anchoMm", e.target.value)}
                   min={50}
@@ -510,7 +485,7 @@ export default function CotizadorMarcos() {
                 />
 
                 <NumberField
-                  label="Alto"
+                  label={form.orientacion === "horizontal" ? "Alto (lado corto)" : "Alto"}
                   value={form.altoMm}
                   onChange={(e) => setField("altoMm", e.target.value)}
                   min={50}
@@ -563,52 +538,16 @@ export default function CotizadorMarcos() {
 
           <article style={panelStyle}>
             <div style={{ display: "grid", gap: 18 }}>
-              <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Colgado y armado</div>
-
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <NumberField
-                  label="Precio cable"
-                  value={form.precioCableMetro}
-                  onChange={(e) => setField("precioCableMetro", e.target.value)}
-                  min={0}
-                  step={100}
-                  suffix="/m"
-                  helper={
-                    form.cableColgante
-                      ? "Se calcula automaticamente segun el ancho del cuadro y la caida del cable."
-                      : "Activa el cable para incluirlo en el total."
-                  }
-                />
-                <div
-                  style={{
-                    display: "grid",
-                    alignContent: "center",
-                    padding: 16,
-                    borderRadius: 18,
-                    background: "rgba(247, 243, 236, 0.95)",
-                    border: "1px solid rgba(73, 58, 38, 0.1)",
-                  }}
-                >
-                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7d7267" }}>
-                    Cable estimado por cuadro
-                  </div>
-                  <div style={{ marginTop: 6, fontSize: 24, fontWeight: 900, color: "#2d241c" }}>
-                    {formatNumber(quote.metrosCableUnitarios)} m
-                  </div>
-                  <div style={{ marginTop: 4, fontSize: 13, color: "#6f665d" }}>
-                    Incluye dos laterales y una panza central para colgado.
-                  </div>
-                </div>
-              </div>
+              <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Vidrio, fondo y terminacion</div>
 
               <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <label style={{ display: "grid", gap: 6 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Armado
+                    Vidrio
                   </span>
                   <select
-                    value={form.armadoModo}
-                    onChange={(e) => setField("armadoModo", e.target.value)}
+                    value={form.vidrio}
+                    onChange={(e) => setField("vidrio", e.target.value)}
                     style={{
                       width: "100%",
                       minHeight: 48,
@@ -618,24 +557,70 @@ export default function CotizadorMarcos() {
                       background: "#fcfbf8",
                     }}
                   >
-                    <option value="automatico">Predeterminado por tamano</option>
-                    <option value="manual">Precio manual</option>
+                    <option value="si">Si</option>
+                    <option value="no">No</option>
                   </select>
                 </label>
 
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Fondo
+                  </span>
+                  <select
+                    value={form.fondoId}
+                    onChange={(e) => setField("fondoId", e.target.value)}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      padding: "0 14px",
+                      borderRadius: 14,
+                      border: "1px solid rgba(73, 58, 38, 0.14)",
+                      background: "#fcfbf8",
+                    }}
+                  >
+                    {FONDO_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <NumberField
-                  label="Armado manual"
-                  value={form.armadoManual}
-                  onChange={(e) => setField("armadoManual", e.target.value)}
+                  label="Paspartu"
+                  value={form.paspartuMm}
+                  onChange={(e) => setField("paspartuMm", e.target.value)}
                   min={0}
-                  step={100}
-                  suffix="$"
-                  helper={
-                    form.armadoModo === "automatico"
-                      ? `Se esta usando el armado ${quote.armadoSugerido.etiqueta.toLowerCase()} automaticamente.`
-                      : "Este valor reemplaza el armado automatico."
-                  }
+                  step={1}
+                  suffix="mm"
+                  helper="Ingresa el ancho visible del paspartu."
                 />
+
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Pintado
+                  </span>
+                  <select
+                    value={form.pintadoId}
+                    onChange={(e) => setField("pintadoId", e.target.value)}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      padding: "0 14px",
+                      borderRadius: 14,
+                      border: "1px solid rgba(73, 58, 38, 0.14)",
+                      background: "#fcfbf8",
+                    }}
+                  >
+                    {PINTADO_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
 
               <label style={{ display: "grid", gap: 6 }}>
@@ -669,7 +654,7 @@ export default function CotizadorMarcos() {
               </div>
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Render 3D del marco</div>
               <div style={{ fontSize: 14, color: "#6f665d" }}>
-                Esta vista ya responde a medida, orientacion, vidrio, fondo y al cable trasero de colgado con sus fijaciones laterales.
+                Esta vista ya responde a medida, orientacion, vidrio, fondo, paspartu y al color de pintado.
               </div>
             </div>
 
@@ -680,11 +665,11 @@ export default function CotizadorMarcos() {
                   altoMm={form.altoMm}
                   faceMm={selectedProfile.frenteMm}
                   depthMm={selectedProfile.profundidadMm}
-                  color={selectedProfile.color}
+                  color={frameColor}
                   orientacion={form.orientacion}
-                  vidrio={form.vidrio}
-                  fondo={form.fondo}
-                  cableColgante={form.cableColgante}
+                  vidrio={form.vidrio === "si"}
+                  fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
+                  paspartuMm={form.paspartuMm}
                 />
               </Canvas>
             </div>
@@ -708,13 +693,14 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Metros facturados" value={`${formatNumber(quote.metrosFacturados)} m`} />
               <SummaryRow label="Subtotal varilla" value={formatCurrency(quote.subtotalVarilla)} />
               <SummaryRow label="Subtotal vidrio" value={formatCurrency(quote.subtotalVidrio)} />
-              <SummaryRow label="Subtotal fondo" value={formatCurrency(quote.subtotalFondo)} />
+              <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={formatCurrency(quote.subtotalFondo)} />
               <SummaryRow
-                label="Cable colgante"
-                value={`${formatNumber(quote.metrosCableTotales)} m · ${formatCurrency(quote.subtotalCable)}`}
+                label={`Paspartu (${formatNumber(clampPositiveNumber(form.paspartuMm, 0), 0)} mm)`}
+                value={`${formatNumber(quote.paspartuAreaM2)} m2 · ${formatCurrency(quote.subtotalPaspartu)}`}
               />
+              <SummaryRow label={`Pintado (${selectedPintado.nombre})`} value={formatCurrency(quote.subtotalPintado)} />
               <SummaryRow
-                label={`Armado ${form.armadoModo === "automatico" ? `(${quote.armadoSugerido.etiqueta})` : "(manual)"}`}
+                label={`Armado (${quote.armadoSugerido.etiqueta})`}
                 value={formatCurrency(quote.subtotalArmado)}
               />
               <SummaryRow label="Total estimado" value={formatCurrency(quote.total)} strong />
