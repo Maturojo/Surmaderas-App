@@ -143,28 +143,6 @@ function NumberField({ label, value, onChange, min = 0, step = 1, suffix, helper
   );
 }
 
-function ToggleCard({ checked, onChange, title, description }) {
-  return (
-    <label
-      style={{
-        display: "grid",
-        gap: 6,
-        padding: 16,
-        borderRadius: 18,
-        border: checked ? "1px solid rgba(61, 49, 39, 0.24)" : "1px solid rgba(73, 58, 38, 0.1)",
-        background: checked ? "linear-gradient(135deg, rgba(240, 231, 217, 0.9), rgba(255,255,255,0.96))" : "rgba(255,255,255,0.84)",
-        cursor: "pointer",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span style={{ fontWeight: 900, color: "#2d241c" }}>{title}</span>
-        <input type="checkbox" checked={checked} onChange={onChange} />
-      </div>
-      <span style={{ fontSize: 13, color: "#6f665d" }}>{description}</span>
-    </label>
-  );
-}
-
 function SummaryRow({ label, value, strong = false }) {
   return (
     <div
@@ -495,52 +473,15 @@ export default function CotizadorMarcos() {
               </div>
 
               <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <ToggleCard
-                  checked={form.vidrio}
-                  onChange={(e) => setField("vidrio", e.target.checked)}
-                  title="Con vidrio"
-                  description="Suma el costo por m2 del vidrio interior."
-                />
-                <ToggleCard
-                  checked={form.fondo}
-                  onChange={(e) => setField("fondo", e.target.checked)}
-                  title="Con fondo"
-                  description="Agrega el respaldo interior del marco."
-                />
-                <ToggleCard
-                  checked={form.cableColgante}
-                  onChange={(e) => setField("cableColgante", e.target.checked)}
-                  title="Cable para colgar"
-                  description="Agrega dos fijaciones laterales y el cable trasero de colgado."
-                />
-              </div>
-
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <NumberField
-                  label="Precio vidrio"
-                  value={form.precioVidrioM2}
-                  onChange={(e) => setField("precioVidrioM2", e.target.value)}
+                  label="Paspartu"
+                  value={form.paspartuMm}
+                  onChange={(e) => setField("paspartuMm", e.target.value)}
                   min={0}
-                  step={100}
-                  suffix="/m2"
+                  step={1}
+                  suffix="mm"
+                  helper="Ingresa el ancho visible del paspartu."
                 />
-                <NumberField
-                  label="Precio fondo"
-                  value={form.precioFondoM2}
-                  onChange={(e) => setField("precioFondoM2", e.target.value)}
-                  min={0}
-                  step={100}
-                  suffix="/m2"
-                />
-              </div>
-            </div>
-          </article>
-
-          <article style={panelStyle}>
-            <div style={{ display: "grid", gap: 18 }}>
-              <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Vidrio, fondo y terminacion</div>
-
-              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
                 <label style={{ display: "grid", gap: 6 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Vidrio
@@ -588,16 +529,6 @@ export default function CotizadorMarcos() {
               </div>
 
               <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(2, minmax(0,1fr))" }}>
-                <NumberField
-                  label="Paspartu"
-                  value={form.paspartuMm}
-                  onChange={(e) => setField("paspartuMm", e.target.value)}
-                  min={0}
-                  step={1}
-                  suffix="mm"
-                  helper="Ingresa el ancho visible del paspartu."
-                />
-
                 <label style={{ display: "grid", gap: 6 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Pintado
