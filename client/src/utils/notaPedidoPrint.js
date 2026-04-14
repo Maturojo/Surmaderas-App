@@ -71,7 +71,7 @@ export function buildNotaPedidoPrintData(nota) {
     entrega: nota?.entrega || "",
     clienteNombre: cliente?.nombre || "Consumidor final",
     clienteTelefono: cliente?.telefono || "",
-    clienteDireccion: cliente?.direccion || "Todos los datos que sean necesarios",
+    vendedor: nota?.vendedor || "",
     subtotal,
     descuentoMonto,
     descuentoPct,
@@ -140,14 +140,9 @@ function buildStyles() {
     }
     .npw-serial { font-size: 10.5pt; color: #3f3f3f; margin-bottom: 1mm; }
     .npw-title { margin: 0; font-size: 25pt; line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; }
-    .npw-date-line { display: flex; align-items: center; gap: 3mm; margin-top: 1.5mm; }
-    .npw-alert {
-      width: 13mm; height: 13mm; border-radius: 50%;
-      display: inline-flex; align-items: center; justify-content: center;
-      background: #111; color: #fff; font-size: 24pt; font-weight: 900;
-    }
-    .npw-delivery { font-size: 30pt; line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
-    .npw-order-day { margin-top: 2mm; font-size: 12pt; line-height: 1.2; }
+    .npw-order-day { margin-top: 1.5mm; font-size: 11pt; line-height: 1.3; }
+    .npw-date-line { margin-top: 1mm; font-size: 11pt; line-height: 1.3; }
+    .npw-delivery { font-size: 22pt; font-weight: 900; letter-spacing: -0.04em; }
     .npw-logo-wrap { display: flex; justify-content: center; }
     .npw-logo-frame {
       width: 30mm; height: 30mm; border: 1mm solid #111; border-radius: 3mm;
@@ -200,11 +195,8 @@ export function buildNotaPedidoPrintMarkup(data) {
         <div>
           <div class="npw-serial">N° ${escapeHtml(getPreviewNumber(data.numero))}</div>
           <h1 class="npw-title">Nota de Pedido</h1>
-          <div class="npw-date-line">
-            <span class="npw-alert">!</span>
-            <span class="npw-delivery">${escapeHtml(fmtDate(data.entrega))}</span>
-          </div>
-          <div class="npw-order-day">DIA DEL PEDIDO:<br />${escapeHtml(fmtDate(data.fecha))}</div>
+          <div class="npw-order-day">FECHA: ${escapeHtml(fmtDate(data.fecha))}</div>
+          <div class="npw-date-line">ENTREGA: <strong class="npw-delivery">${escapeHtml(fmtDate(data.entrega))}</strong></div>
         </div>
 
         <div class="npw-logo-wrap">
@@ -216,9 +208,8 @@ export function buildNotaPedidoPrintMarkup(data) {
         <div>
           <div class="npw-client-label">CLIENTE</div>
           <div class="npw-client-name">${escapeHtml(data.clienteNombre || "Consumidor final")}</div>
-          <div class="npw-client-meta"><strong>Teléfono:</strong> ${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>
-          <div class="npw-client-meta"><strong>Dirección:</strong></div>
-          <div class="npw-client-address">${escapeHtml(data.clienteDireccion || "Todos los datos que sean necesarios")}</div>
+          <div class="npw-client-meta">Teléfono:  ${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>
+          <div class="npw-client-meta">Vendedor: ${escapeHtml(data.vendedor || "")}</div>
         </div>
       </div>
 

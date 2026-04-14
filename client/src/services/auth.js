@@ -27,7 +27,7 @@ export function getUserRole() {
 }
 
 export function getDefaultHomeByRole(role = getUserRole()) {
-  return role === "ventas" ? "/notas-pedido" : "/dashboard";
+  return role === "ventas" ? "/dashboard" : "/dashboard";
 }
 
 export async function loginRequest({ username, password }) {

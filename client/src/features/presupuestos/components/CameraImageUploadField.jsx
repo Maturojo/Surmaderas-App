@@ -18,6 +18,7 @@ export default function CameraImageUploadField({
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState("");
+  const [pasteFeedback, setPasteFeedback] = useState("");
 
   async function fileToDataUrl(file) {
     return new Promise((resolve, reject) => {
@@ -77,6 +78,22 @@ export default function CameraImageUploadField({
     const file = event.target.files?.[0];
     if (!file) return;
     await commitFile(file);
+  }
+
+  async function handlePaste(event) {
+    const clipboardItems = Array.from(event.clipboardData?.items || []);
+    const imageItem = clipboardItems.find((item) => item.type?.startsWith("image/"));
+    if (!imageItem) return;
+
+    event.preventDefault();
+    const file = imageItem.getAsFile();
+    if (!file) {
+      setPasteFeedback("No se pudo leer la imagen pegada.");
+      return;
+    }
+
+    const saved = await commitFile(file);
+    setPasteFeedback(saved ? "Imagen pegada desde el portapapeles." : "");
   }
 
   async function openCamera() {
@@ -152,12 +169,18 @@ export default function CameraImageUploadField({
   function clear() {
     onChange(null);
     resetInputs();
+    setPasteFeedback("");
   }
 
   useEffect(() => () => stopCamera(), []);
+  useEffect(() => {
+    if (!pasteFeedback) return undefined;
+    const timeoutId = window.setTimeout(() => setPasteFeedback(""), 2400);
+    return () => window.clearTimeout(timeoutId);
+  }, [pasteFeedback]);
 
   return (
-    <div style={{ display: "grid", gap: 8 }}>
+    <div style={{ display: "grid", gap: 8 }} onPaste={handlePaste}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
         <label style={{ fontSize: 12, color: "#666" }}>{label}</label>
 
@@ -206,9 +229,10 @@ export default function CameraImageUploadField({
       />
 
       <div style={{ fontSize: 12, color: "#666" }}>
-        Podes sacar una foto en el momento o subir una imagen ya guardada. Maximo: {maxMB}MB.
+        Podes sacar una foto, subir una imagen o pegarla con Ctrl+V. Maximo: {maxMB}MB.
       </div>
 
+      {pasteFeedback ? <div style={{ fontSize: 12, color: "#4f6b42" }}>{pasteFeedback}</div> : null}
       {cameraError ? <div style={{ fontSize: 12, color: "#b14040" }}>{cameraError}</div> : null}
 
       {cameraOpen ? (

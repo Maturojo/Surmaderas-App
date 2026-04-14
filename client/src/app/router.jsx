@@ -20,6 +20,7 @@ import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import PresupuestosGenerar from "../pages/PresupuestosGenerar";
 import PresupuestosEnviar from "../pages/PresupuestosEnviar";
 import PresupuestosGuardadas from "../pages/PresupuestosGuardadas";
+import PresupuestosProveedorEspecial from "../pages/PresupuestosProveedorEspecial";
 import ProtectedRoute from "./ProtectedRoute";
 import { getDefaultHomeByRole, getUserRole } from "../services/auth";
 
@@ -82,6 +83,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "taller"]}>
             <PresupuestosGuardadas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "presupuestos/proveedores",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
+            <PresupuestosProveedorEspecial />
           </ProtectedRoute>
         ),
       },
