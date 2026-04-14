@@ -224,8 +224,6 @@ function SummaryRow({ label, value, strong = false }) {
 
 function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
   const safeLength = Math.max(length, 0.01);
-  const baseColor = veta || color;
-  const frontColor = color;
   const isPineChata = shapeType === "pine-chata";
   const baseThickness = isPineChata ? depth * 0.72 : depth;
   const frontLipThickness = isPineChata ? depth * 0.18 : 0;
@@ -242,24 +240,37 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     const texture = sourcePineTexture.clone();
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(Math.max(safeLength * 4.5, 1.6), 1.1);
-    texture.offset.set(0.18, 0.04);
-    texture.rotation = Math.PI / 2;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.repeat.set(Math.max(safeLength * 7.5, 3.2), 1.35);
+    texture.offset.set(0.12, 0.02);
+    texture.rotation = 0;
     texture.center.set(0.5, 0.5);
-    texture.anisotropy = 8;
+    texture.anisotropy = 16;
     texture.needsUpdate = true;
     return texture;
   }, [isPineChata, safeLength, sourcePineTexture]);
+  const pineBumpTexture = useMemo(() => {
+    if (!isPineChata || !pineTexture) {
+      return null;
+    }
+
+    const texture = pineTexture.clone();
+    texture.colorSpace = THREE.NoColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, [isPineChata, pineTexture]);
 
   return (
     <group position={position} rotation={rotation}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[safeLength, face, baseThickness]} />
         <meshStandardMaterial
-          color={baseColor}
-          roughness={isPineChata ? 0.78 : 0.5}
-          metalness={isPineChata ? 0.02 : 0.35}
+          color={isPineChata ? "#fff6df" : color}
+          roughness={isPineChata ? 0.82 : 0.5}
+          metalness={isPineChata ? 0.01 : 0.35}
           map={pineTexture}
+          bumpMap={pineBumpTexture}
+          bumpScale={isPineChata ? 0.012 : 0}
         />
       </mesh>
 
@@ -267,12 +278,26 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
         <>
           <mesh position={[0, face * 0.22, baseThickness / 2 - frontLipThickness / 2]} castShadow receiveShadow>
             <boxGeometry args={[safeLength, frontLipHeight, frontLipThickness]} />
-            <meshStandardMaterial color={frontColor} roughness={0.7} metalness={0.02} map={pineTexture} />
+            <meshStandardMaterial
+              color="#fff0d0"
+              roughness={0.74}
+              metalness={0.01}
+              map={pineTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.015}
+            />
           </mesh>
 
           <mesh position={[0, -face * 0.08, baseThickness / 2 - frontLipThickness - innerStepThickness / 2]} castShadow receiveShadow>
             <boxGeometry args={[safeLength, innerStepWidth, innerStepThickness]} />
-            <meshStandardMaterial color="#e7c992" roughness={0.72} metalness={0.01} map={pineTexture} />
+            <meshStandardMaterial
+              color="#f3ddb2"
+              roughness={0.76}
+              metalness={0.01}
+              map={pineTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.018}
+            />
           </mesh>
         </>
       ) : null}
