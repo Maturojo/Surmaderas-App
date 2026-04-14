@@ -236,12 +236,12 @@ function createFingerJointPineTexture() {
     return null;
   }
 
-  const plankPalette = ["#f7edd6", "#f2e6cb", "#fbf1dc", "#eedfbe", "#f5e8cf"];
-  const grainPalette = ["#d6be90", "#cfb27d", "#dfc9a2", "#c8a46d"];
-  const plankCount = 5;
+  const plankPalette = ["#f1dfb4", "#ebd6a7", "#f6e7c0", "#e7cf97"];
+  const grainPalette = ["#c99958", "#b88443", "#d6ab6f", "#aa7338"];
+  const plankCount = 4;
   const plankWidth = canvas.width / plankCount;
 
-  context.fillStyle = "#f6edd7";
+  context.fillStyle = "#efddb2";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   for (let plank = 0; plank < plankCount; plank += 1) {
@@ -250,34 +250,34 @@ function createFingerJointPineTexture() {
     context.fillStyle = baseColor;
     context.fillRect(x, 0, plankWidth, canvas.height);
 
-    context.fillStyle = "rgba(120, 86, 42, 0.06)";
-    context.fillRect(x + plankWidth - 1.5, 0, 1.5, canvas.height);
+    context.fillStyle = "rgba(111, 74, 28, 0.14)";
+    context.fillRect(x + plankWidth - 2, 0, 2, canvas.height);
 
-    for (let line = 0; line < 7; line += 1) {
-      const offset = x + 14 + line * ((plankWidth - 28) / 7);
+    for (let line = 0; line < 10; line += 1) {
+      const offset = x + 10 + line * ((plankWidth - 20) / 10);
       context.strokeStyle = grainPalette[(plank + line) % grainPalette.length];
-      context.globalAlpha = 0.12 + ((line + plank) % 3) * 0.04;
-      context.lineWidth = 0.9 + (line % 2) * 0.45;
+      context.globalAlpha = 0.18 + ((line + plank) % 3) * 0.05;
+      context.lineWidth = 1.2 + (line % 2) * 0.5;
       context.beginPath();
       context.moveTo(offset, 0);
       context.bezierCurveTo(
-        offset - 5,
-        canvas.height * 0.28,
-        offset + 8,
-        canvas.height * 0.62,
-        offset - 2,
+        offset - 7,
+        canvas.height * 0.22,
+        offset + 10,
+        canvas.height * 0.7,
+        offset - 3,
         canvas.height
       );
       context.stroke();
     }
 
-    for (let knot = 0; knot < 2; knot += 1) {
+    for (let knot = 0; knot < 3; knot += 1) {
       const centerX = x + plankWidth * (0.34 + knot * 0.24);
-      const centerY = 110 + (((plank + knot) * 103) % 250);
-      context.globalAlpha = 0.08;
-      context.fillStyle = "#c8a26b";
+      const centerY = 90 + (((plank + knot) * 103) % 290);
+      context.globalAlpha = 0.14;
+      context.fillStyle = "#b78449";
       context.beginPath();
-      context.ellipse(centerX, centerY, 8, 22, 0.05, 0, Math.PI * 2);
+      context.ellipse(centerX, centerY, 10, 28, 0.03, 0, Math.PI * 2);
       context.fill();
     }
   }
@@ -287,20 +287,20 @@ function createFingerJointPineTexture() {
   for (const row of jointRows) {
     for (let plank = 0; plank < plankCount; plank += 1) {
       const x = plank * plankWidth;
-      const fingerCount = 5;
+      const fingerCount = 6;
       const segmentWidth = plankWidth / fingerCount;
       for (let segment = 0; segment < fingerCount; segment += 1) {
-        context.globalAlpha = 0.26;
+        context.globalAlpha = 0.32;
         context.fillStyle = plankPalette[(plank + segment + 1) % plankPalette.length];
         context.fillRect(x + segment * segmentWidth, row, segmentWidth - 1, jointHeight);
       }
     }
   }
 
-  context.globalAlpha = 0.08;
-  for (let i = 0; i < 12; i += 1) {
-    context.fillStyle = i % 2 === 0 ? "#fff6e4" : "#e7d0a5";
-    context.fillRect(i * 42, 0, 18, canvas.height);
+  context.globalAlpha = 0.11;
+  for (let i = 0; i < 16; i += 1) {
+    context.fillStyle = i % 2 === 0 ? "#fff1d1" : "#ddbd84";
+    context.fillRect(i * 32, 0, 12, canvas.height);
   }
 
   context.globalAlpha = 1;
@@ -334,7 +334,7 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     const repeated = texture.clone();
     repeated.wrapS = THREE.RepeatWrapping;
     repeated.wrapT = THREE.RepeatWrapping;
-    repeated.repeat.set(Math.max(safeLength * 0.72, 1), 1);
+    repeated.repeat.set(Math.max(safeLength * 1.35, 2.2), 1.15);
     repeated.needsUpdate = true;
     return repeated;
   }, [isPineChata, safeLength]);
@@ -355,11 +355,11 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
         <boxGeometry args={[safeLength, face, baseThickness]} />
         <meshStandardMaterial
           color={isPineChata ? "#fff6df" : color}
-          roughness={isPineChata ? 0.82 : 0.5}
+          roughness={isPineChata ? 0.68 : 0.5}
           metalness={isPineChata ? 0.01 : 0.35}
           map={pineTexture}
           bumpMap={pineBumpTexture}
-          bumpScale={isPineChata ? 0.008 : 0}
+          bumpScale={isPineChata ? 0.02 : 0}
         />
       </mesh>
 
@@ -369,11 +369,11 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
             <boxGeometry args={[safeLength, frontLipHeight, frontLipThickness]} />
             <meshStandardMaterial
               color="#fff0d0"
-              roughness={0.74}
+              roughness={0.62}
               metalness={0.01}
               map={pineTexture}
               bumpMap={pineBumpTexture}
-              bumpScale={0.01}
+              bumpScale={0.024}
             />
           </mesh>
 
@@ -381,11 +381,11 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
             <boxGeometry args={[safeLength, innerStepWidth, innerStepThickness]} />
             <meshStandardMaterial
               color="#f3ddb2"
-              roughness={0.76}
+              roughness={0.64}
               metalness={0.01}
               map={pineTexture}
               bumpMap={pineBumpTexture}
-              bumpScale={0.012}
+              bumpScale={0.024}
             />
           </mesh>
         </>
