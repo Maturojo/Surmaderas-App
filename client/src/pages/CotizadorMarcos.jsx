@@ -384,12 +384,12 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
       <mesh castShadow receiveShadow>
         <boxGeometry args={[safeLength, face, baseThickness]} />
         <meshStandardMaterial
-          color={isPineChata ? "#fff6df" : color}
+          color={isPineChata ? "#ead8ac" : color}
           roughness={isPineChata ? 0.68 : 0.5}
           metalness={isPineChata ? 0.01 : 0.35}
           map={pineEdgeTexture || pineFaceTexture}
           bumpMap={pineBumpTexture}
-          bumpScale={isPineChata ? 0.02 : 0}
+          bumpScale={isPineChata ? 0.028 : 0}
         />
       </mesh>
 
@@ -416,6 +416,48 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
               map={pineFaceTexture}
               bumpMap={pineBumpTexture}
               bumpScale={0.024}
+            />
+          </mesh>
+
+          <mesh position={[0, 0, baseThickness / 2 + 0.0008]} receiveShadow>
+            <planeGeometry args={[safeLength, face * 0.52]} />
+            <meshStandardMaterial
+              color="#fff5dc"
+              roughness={0.54}
+              metalness={0.01}
+              map={pineFaceTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.03}
+              polygonOffset
+              polygonOffsetFactor={-1}
+            />
+          </mesh>
+
+          <mesh position={[0, face * 0.22, baseThickness / 2 - frontLipThickness + 0.0012]} receiveShadow>
+            <planeGeometry args={[safeLength, frontLipHeight]} />
+            <meshStandardMaterial
+              color="#fff1cf"
+              roughness={0.5}
+              metalness={0.01}
+              map={pineFaceTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.034}
+              polygonOffset
+              polygonOffsetFactor={-1}
+            />
+          </mesh>
+
+          <mesh position={[0, -face * 0.08, baseThickness / 2 - frontLipThickness - innerStepThickness + 0.001]} receiveShadow>
+            <planeGeometry args={[safeLength, innerStepWidth]} />
+            <meshStandardMaterial
+              color="#f8e7bf"
+              roughness={0.52}
+              metalness={0.01}
+              map={pineFaceTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.032}
+              polygonOffset
+              polygonOffsetFactor={-1}
             />
           </mesh>
         </>
