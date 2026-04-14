@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 const BAR_LENGTH_METERS = 3.05;
@@ -222,63 +222,6 @@ function SummaryRow({ label, value, strong = false }) {
   );
 }
 
-function createPineTexture(baseColor, accentColor) {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 256;
-  const context = canvas.getContext("2d");
-
-  if (!context) {
-    return null;
-  }
-
-  context.fillStyle = baseColor;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (let i = 0; i < 36; i += 1) {
-    const y = (i / 36) * canvas.height;
-    const thickness = 2 + (i % 3);
-    context.strokeStyle = i % 4 === 0 ? "#9f6f3c" : accentColor;
-    context.globalAlpha = i % 5 === 0 ? 0.38 : 0.2;
-    context.lineWidth = thickness;
-    context.beginPath();
-    context.moveTo(0, y + Math.sin(i * 0.8) * 6);
-    context.bezierCurveTo(
-      canvas.width * 0.25,
-      y + Math.cos(i * 0.5) * 8,
-      canvas.width * 0.65,
-      y + Math.sin(i * 0.35) * 10,
-      canvas.width,
-      y + Math.cos(i * 0.4) * 7
-    );
-    context.stroke();
-  }
-
-  context.globalAlpha = 0.16;
-  for (let i = 0; i < 8; i += 1) {
-    const x = 30 + i * 28;
-    const y = 28 + ((i * 37) % 160);
-    context.fillStyle = "#8f6036";
-    context.beginPath();
-    context.ellipse(x, y, 10 + (i % 3) * 3, 5 + (i % 2) * 2, 0.2, 0, Math.PI * 2);
-    context.fill();
-  }
-
-  context.globalAlpha = 1;
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(2.5, 2.5);
-  texture.anisotropy = 8;
-  texture.needsUpdate = true;
-
-  return texture;
-}
-
 function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
   const safeLength = Math.max(length, 0.01);
   const baseColor = veta || color;
@@ -290,10 +233,23 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
   const frontLipHeight = isPineChata ? face * 0.32 : 0;
   const innerStepHeight = isPineChata ? face * 0.18 : 0;
   const innerStepWidth = isPineChata ? face * 0.56 : 0;
-  const pineTexture = useMemo(
-    () => (isPineChata ? createPineTexture(veta || color, "#d4ae71") : null),
-    [color, isPineChata, veta]
-  );
+  const sourcePineTexture = useTexture(isPineChata ? "/texturas/chata-4cm-pino-strip.png" : "/vite.svg");
+  const pineTexture = useMemo(() => {
+    if (!isPineChata) {
+      return null;
+    }
+
+    const texture = sourcePineTexture.clone();
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(Math.max(safeLength * 4.5, 1.6), 1.1);
+    texture.offset.set(0.18, 0.04);
+    texture.rotation = Math.PI / 2;
+    texture.center.set(0.5, 0.5);
+    texture.anisotropy = 8;
+    texture.needsUpdate = true;
+    return texture;
+  }, [isPineChata, safeLength, sourcePineTexture]);
 
   return (
     <group position={position} rotation={rotation}>
