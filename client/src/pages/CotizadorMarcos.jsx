@@ -236,12 +236,12 @@ function createFingerJointPineTexture() {
     return null;
   }
 
-  const plankPalette = ["#f4e8c8", "#efdfbb", "#f7edd1", "#ead7ae", "#f2e3c3"];
-  const grainPalette = ["#cfb07b", "#c89f67", "#d7bb8d", "#bb945e"];
-  const plankCount = 6;
+  const plankPalette = ["#f7edd6", "#f2e6cb", "#fbf1dc", "#eedfbe", "#f5e8cf"];
+  const grainPalette = ["#d6be90", "#cfb27d", "#dfc9a2", "#c8a46d"];
+  const plankCount = 5;
   const plankWidth = canvas.width / plankCount;
 
-  context.fillStyle = "#f3e7c8";
+  context.fillStyle = "#f6edd7";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   for (let plank = 0; plank < plankCount; plank += 1) {
@@ -250,49 +250,57 @@ function createFingerJointPineTexture() {
     context.fillStyle = baseColor;
     context.fillRect(x, 0, plankWidth, canvas.height);
 
-    context.fillStyle = "rgba(120, 86, 42, 0.08)";
-    context.fillRect(x + plankWidth - 2, 0, 2, canvas.height);
+    context.fillStyle = "rgba(120, 86, 42, 0.06)";
+    context.fillRect(x + plankWidth - 1.5, 0, 1.5, canvas.height);
 
-    for (let line = 0; line < 9; line += 1) {
-      const offset = x + 10 + line * ((plankWidth - 20) / 9);
+    for (let line = 0; line < 7; line += 1) {
+      const offset = x + 14 + line * ((plankWidth - 28) / 7);
       context.strokeStyle = grainPalette[(plank + line) % grainPalette.length];
-      context.globalAlpha = 0.14 + ((line + plank) % 3) * 0.05;
-      context.lineWidth = 1 + (line % 2) * 0.4;
+      context.globalAlpha = 0.12 + ((line + plank) % 3) * 0.04;
+      context.lineWidth = 0.9 + (line % 2) * 0.45;
       context.beginPath();
       context.moveTo(offset, 0);
       context.bezierCurveTo(
-        offset - 8,
-        canvas.height * 0.25,
-        offset + 10,
-        canvas.height * 0.65,
-        offset - 4,
+        offset - 5,
+        canvas.height * 0.28,
+        offset + 8,
+        canvas.height * 0.62,
+        offset - 2,
         canvas.height
       );
       context.stroke();
     }
 
     for (let knot = 0; knot < 2; knot += 1) {
-      const centerX = x + plankWidth * (0.28 + knot * 0.32);
-      const centerY = 100 + (((plank + knot) * 97) % 260);
-      context.globalAlpha = 0.1;
-      context.fillStyle = "#b98c54";
+      const centerX = x + plankWidth * (0.34 + knot * 0.24);
+      const centerY = 110 + (((plank + knot) * 103) % 250);
+      context.globalAlpha = 0.08;
+      context.fillStyle = "#c8a26b";
       context.beginPath();
-      context.ellipse(centerX, centerY, 10, 26, 0.08, 0, Math.PI * 2);
+      context.ellipse(centerX, centerY, 8, 22, 0.05, 0, Math.PI * 2);
       context.fill();
     }
   }
 
-  const jointHeight = 44;
-  for (let row = 0; row < canvas.height; row += 210) {
+  const jointHeight = 38;
+  const jointRows = [0, 220, 470];
+  for (const row of jointRows) {
     for (let plank = 0; plank < plankCount; plank += 1) {
       const x = plank * plankWidth;
-      const segmentWidth = plankWidth / 4;
-      for (let segment = 0; segment < 4; segment += 1) {
-        context.globalAlpha = 0.22;
-        context.fillStyle = plankPalette[(plank + segment + 2) % plankPalette.length];
+      const fingerCount = 5;
+      const segmentWidth = plankWidth / fingerCount;
+      for (let segment = 0; segment < fingerCount; segment += 1) {
+        context.globalAlpha = 0.26;
+        context.fillStyle = plankPalette[(plank + segment + 1) % plankPalette.length];
         context.fillRect(x + segment * segmentWidth, row, segmentWidth - 1, jointHeight);
       }
     }
+  }
+
+  context.globalAlpha = 0.08;
+  for (let i = 0; i < 12; i += 1) {
+    context.fillStyle = i % 2 === 0 ? "#fff6e4" : "#e7d0a5";
+    context.fillRect(i * 42, 0, 18, canvas.height);
   }
 
   context.globalAlpha = 1;
@@ -326,7 +334,7 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     const repeated = texture.clone();
     repeated.wrapS = THREE.RepeatWrapping;
     repeated.wrapT = THREE.RepeatWrapping;
-    repeated.repeat.set(Math.max(safeLength * 0.9, 1), 1);
+    repeated.repeat.set(Math.max(safeLength * 0.72, 1), 1);
     repeated.needsUpdate = true;
     return repeated;
   }, [isPineChata, safeLength]);
