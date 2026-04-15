@@ -106,9 +106,10 @@ function buildRows(previewItems) {
 
 function buildStyles() {
   return `
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap');
     @page { size: A4 portrait; margin: 0; }
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #111; }
+    html, body { margin: 0; padding: 0; background: #fff; font-family: "Montserrat", Arial, Helvetica, sans-serif; color: #111; }
     body { width: 100%; margin: 0; }
     .npw-doc {
       width: 200mm;
@@ -157,13 +158,13 @@ function buildStyles() {
       min-width: 0;
     }
     .npw-topRight {
-      font-size: 10.5mm;
+      font-size: 7.8mm;
       line-height: 1;
-      font-weight: 400;
+      font-weight: 500;
       color: #1d1d1d;
       text-align: right;
       white-space: nowrap;
-      padding-bottom: 1.2mm;
+      padding-bottom: 0.9mm;
     }
     .npw-serial {
       color: #3c3c3c;
@@ -198,18 +199,18 @@ function buildStyles() {
       min-width: 0;
     }
     .npw-clientName {
-      font-size: 6mm;
+      font-size: 5.6mm;
       line-height: 1.04;
-      font-weight: 400;
+      font-weight: 500;
       color: #111;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .npw-clientPhone {
-      font-size: 5.6mm;
+      font-size: 5.1mm;
       line-height: 1.05;
-      font-weight: 400;
+      font-weight: 500;
       color: #222;
       margin-top: 0.8mm;
     }
@@ -227,13 +228,13 @@ function buildStyles() {
       white-space: nowrap;
     }
     .npw-deliveryLabel {
-      font-size: 5.4mm;
+      font-size: 4.8mm;
       line-height: 1;
-      font-weight: 400;
+      font-weight: 500;
       color: #1f1f1f;
     }
     .npw-deliveryValue {
-      font-size: 6.1mm;
+      font-size: 5.4mm;
       line-height: 1;
       font-weight: 900;
       color: #111;
