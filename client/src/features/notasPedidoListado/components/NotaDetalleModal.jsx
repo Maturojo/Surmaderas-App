@@ -3,16 +3,11 @@
 import Swal from "sweetalert2";
 
 import {
-  getNotaClienteDireccion,
-  getNotaClienteNombre,
-  getNotaClienteTelefono,
   getNotaTotal,
 } from "../../../utils/notaPedido";
 import {
+  buildNotaPedidoPrintHtml,
   buildNotaPedidoPrintData,
-  fmtDate,
-  formatPhonePreview,
-  getPreviewNumber,
   openNotaPedidoPrintWindow,
   toARS,
 } from "../../../utils/notaPedidoPrint";
@@ -43,33 +38,14 @@ export default function NotaDetalleModal({
   }, [detalle]);
 
   const total = getNotaTotal(detalle);
-  const clienteNombre = getNotaClienteNombre(detalle);
-  const clienteTelefono = getNotaClienteTelefono(detalle);
-  const clienteDireccion = getNotaClienteDireccion(detalle);
   const subtotal = Number(detalle?.totales?.subtotal ?? total);
   const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
   const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
-  const descuentoPct = subtotal > 0 ? (descuentoMonto / subtotal) * 100 : 0;
-
-  const previewItems = useMemo(
-    () =>
-      Array.isArray(detalle?.items)
-        ? detalle.items.map((item, idx) => {
-            const precio = Number(item?.precioUnit ?? item?.precio ?? 0);
-            const cantidad = Number(item?.cantidad || 0);
-            return {
-              id: `${item?.descripcion || item?.nombre || "item"}-${idx}`,
-              orden: idx + 1,
-              descripcion: item?.descripcion || item?.nombre || "Producto y/o servicio",
-              precio,
-              cantidad,
-              total: cantidad * precio,
-            };
-          })
-        : [],
-    [detalle?.items]
-  );
+  const previewDoc = useMemo(() => {
+    if (!detalle) return "";
+    return buildNotaPedidoPrintHtml(buildNotaPedidoPrintData(detalle));
+  }, [detalle]);
 
   function handlePrint() {
     openNotaPedidoPrintWindow(buildNotaPedidoPrintData(detalle));
@@ -95,96 +71,19 @@ export default function NotaDetalleModal({
         {!loading && detalle ? (
           <div className="npl-body">
             <div className="npl-printSheet npl-printSheet--landscape">
-              <div className="npl-previewDoc">
-                <div className="npl-previewWatermark" aria-hidden="true">
-                  <span>{new Date(detalle?.fecha || Date.now()).getFullYear() || ""}</span>
-                  <span>Sur</span>
-                </div>
-
-                <div className="npl-previewHeader">
-                  <div className="npl-previewBlock npl-previewBlock--left">
-                    <div className="npl-previewSerial">N° {getPreviewNumber(detalle?.numero)}</div>
-                    <h2 className="npl-previewTitle">Nota de Pedido</h2>
-                    <div className="npl-previewDateLine">
-                      <span className="npl-previewAlert">!</span>
-                      <span className="npl-previewDate">{fmtDate(detalle?.entrega)}</span>
-                    </div>
-                    <div className="npl-previewPedidoDia">DIA DEL PEDIDO: {fmtDate(detalle?.fecha)}</div>
-                  </div>
-
-                  <div className="npl-previewBlock npl-previewBlock--center">
-                    <div className="npl-previewLogoFrame">
-                      <img className="npl-previewLogo" src="/logo-linea-gris.png" alt="Sur Maderas" />
-                    </div>
-                  </div>
-
-                  <div className="npl-previewBlock npl-previewBlock--right">
-                    <div className="npl-previewClientLabel">CLIENTE</div>
-                    <div className="npl-previewClientName">{clienteNombre || "Consumidor final"}</div>
-                    <div className="npl-previewClientMeta">
-                      <strong>Teléfono:</strong> {formatPhonePreview(clienteTelefono)}
-                    </div>
-                    <div className="npl-previewClientMeta">
-                      <strong>Dirección:</strong>
-                    </div>
-                    <div className="npl-previewClientAddress">{clienteDireccion || "Todos los datos que sean necesarios"}</div>
-                  </div>
-                </div>
-
-                <div className="npl-previewTableWrap">
-                  <table className="npl-previewTable">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>DESCRIPCIÓN</th>
-                        <th>PRECIO</th>
-                        <th>CANTIDAD</th>
-                        <th>TOTAL</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {previewItems.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="npl-previewEmpty">
-                            Sin items cargados.
-                          </td>
-                        </tr>
-                      ) : (
-                        previewItems.map((item, idx) => (
-                          <tr key={item.id} className={idx % 2 === 1 ? "is-alt" : ""}>
-                            <td>{item.orden}</td>
-                            <td>{item.descripcion}</td>
-                            <td>${toARS(item.precio)}</td>
-                            <td>{item.cantidad}</td>
-                            <td>${toARS(item.total)}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="npl-previewSummary">
-                  <div className="npl-previewSummaryRow">
-                    <span>Subtotal</span>
-                    <strong>${toARS(subtotal)}</strong>
-                  </div>
-                  <div className="npl-previewSummaryDivider" />
-                  <div className="npl-previewSummaryRow npl-previewSummaryRow--discount">
-                    <span>Descuento (si hay)</span>
-                    <strong>{descuentoMonto > 0 ? `${toARS(descuentoPct)}%` : "-"}</strong>
-                    <strong>${toARS(descuentoMonto)}</strong>
-                  </div>
-                  <div className="npl-previewSummaryTotal">
-                    <span>TOTAL</span>
-                    <strong>${toARS(total)}</strong>
-                  </div>
-                </div>
-
-                <div className="npl-previewFooter">
-                  surmaderas.com.ar - surmaderasmdp@gmail.com - 223 438 3262
-                </div>
-              </div>
+              <iframe
+                title={detalle?.numero ? `Vista previa ${detalle.numero}` : "Vista previa de nota"}
+                srcDoc={previewDoc}
+                className="npl-sharedPreviewFrame"
+                style={{
+                  width: "100%",
+                  height: "720px",
+                  border: "1px solid rgba(0, 0, 0, 0.08)",
+                  borderRadius: "18px",
+                  background: "#fff",
+                  boxShadow: "0 18px 40px rgba(42, 42, 42, 0.08)",
+                }}
+              />
             </div>
 
             {!soloVistaPrevia ? (
