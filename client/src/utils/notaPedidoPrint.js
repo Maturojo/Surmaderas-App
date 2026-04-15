@@ -115,14 +115,14 @@ function buildStyles() {
       width: 200mm;
       height: 145mm;
       margin: 0;
-      padding: 4mm 6mm 3mm;
+      padding: 4.5mm 6.5mm 3mm;
       background: #fff;
       overflow: hidden;
     }
     .npw-header {
       display: grid;
-      grid-template-columns: 31mm minmax(0, 1fr);
-      gap: 7mm;
+      grid-template-columns: 29mm minmax(0, 1fr);
+      gap: 5.8mm;
       align-items: start;
     }
     .npw-logoWrap {
@@ -131,17 +131,17 @@ function buildStyles() {
       padding-top: 1.5mm;
     }
     .npw-logoFrame {
-      width: 27mm;
-      height: 27mm;
-      border: 0.8mm solid #111;
-      border-radius: 2.6mm;
+      width: 24.8mm;
+      height: 24.8mm;
+      border: 0.7mm solid #111;
+      border-radius: 2.3mm;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #fff;
     }
     .npw-logoFrame img {
-      width: 18mm;
+      width: 16.6mm;
       object-fit: contain;
       filter: grayscale(1);
     }
@@ -151,90 +151,94 @@ function buildStyles() {
     .npw-topline {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 4mm;
+      gap: 3mm;
       align-items: end;
     }
     .npw-topLeft {
       min-width: 0;
     }
     .npw-topRight {
-      font-size: 7.8mm;
-      line-height: 1;
-      font-weight: 500;
+      font-size: 6.2mm;
+      line-height: 1.05;
+      font-weight: 400;
       color: #1d1d1d;
       text-align: right;
       white-space: nowrap;
-      padding-bottom: 0.9mm;
+      padding-bottom: 1mm;
     }
     .npw-serial {
       color: #3c3c3c;
-      font-size: 4.2mm;
-      margin-bottom: 0.8mm;
+      font-size: 3.8mm;
+      margin-bottom: 0.7mm;
+      letter-spacing: 0.01em;
     }
     .npw-title {
       margin: 0;
-      font-size: 8.1mm;
-      line-height: 0.95;
+      font-size: 6.9mm;
+      line-height: 0.97;
       font-weight: 900;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
     }
     .npw-headDivider {
-      margin-top: 1.4mm;
-      border-top: 0.35mm solid #636363;
+      margin-top: 1.2mm;
+      border-top: 0.3mm solid #6c6c6c;
     }
     .npw-bottomline {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 5mm;
+      gap: 5.5mm;
       align-items: start;
-      margin-top: 1.6mm;
+      margin-top: 1.5mm;
     }
     .npw-client {
       min-width: 0;
       display: flex;
       align-items: center;
-      gap: 3.8mm;
+      gap: 3.2mm;
     }
     .npw-clientInfo {
       min-width: 0;
     }
     .npw-clientName {
-      font-size: 5.6mm;
-      line-height: 1.04;
+      font-size: 5.2mm;
+      line-height: 1.06;
       font-weight: 500;
       color: #111;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      letter-spacing: 0.03em;
     }
     .npw-clientPhone {
-      font-size: 5.1mm;
-      line-height: 1.05;
-      font-weight: 500;
+      font-size: 4.8mm;
+      line-height: 1.08;
+      font-weight: 400;
       color: #222;
-      margin-top: 0.8mm;
+      margin-top: 0.5mm;
+      letter-spacing: 0.01em;
+      text-align: center;
     }
     .npw-clientDivider {
-      width: 0.35mm;
+      width: 0.3mm;
       align-self: stretch;
       background: #6a6a6a;
-      min-height: 18mm;
+      min-height: 16.5mm;
     }
     .npw-delivery {
       display: flex;
       align-items: baseline;
-      gap: 1.8mm;
-      padding-top: 2.2mm;
+      gap: 1.3mm;
+      padding-top: 2mm;
       white-space: nowrap;
     }
     .npw-deliveryLabel {
-      font-size: 4.8mm;
+      font-size: 4.6mm;
       line-height: 1;
-      font-weight: 500;
+      font-weight: 400;
       color: #1f1f1f;
     }
     .npw-deliveryValue {
-      font-size: 5.4mm;
+      font-size: 5.3mm;
       line-height: 1;
       font-weight: 900;
       color: #111;
@@ -242,15 +246,15 @@ function buildStyles() {
     .npw-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 7.6mm;
+      margin-top: 6.9mm;
     }
     .npw-table thead th {
       background: #040404;
       color: #fff;
-      padding: 3.1mm 2.5mm;
-      font-size: 4.3mm;
+      padding: 2.9mm 2.5mm;
+      font-size: 4.1mm;
       font-weight: 800;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
       text-align: center;
     }
     .npw-table thead th:nth-child(2),
@@ -258,15 +262,15 @@ function buildStyles() {
       text-align: left;
     }
     .npw-table tbody td {
-      padding: 3mm 2.5mm;
-      font-size: 4.9mm;
+      padding: 2.8mm 2.5mm;
+      font-size: 4.75mm;
       font-weight: 700;
       color: #4a4a4a;
       text-align: center;
-      border-bottom: 1.2mm solid transparent;
+      border-bottom: 1mm solid transparent;
     }
     .npw-table tbody tr.is-alt td {
-      background: #f1f1f1;
+      background: #f3f3f3;
     }
     .npw-table .empty {
       text-align: center !important;
@@ -274,9 +278,9 @@ function buildStyles() {
       padding: 4mm !important;
     }
     .npw-summary {
-      width: 103mm;
+      width: 101.5mm;
       margin-left: auto;
-      margin-top: 2mm;
+      margin-top: 1.6mm;
     }
     .npw-summaryRow,
     .npw-summaryTotal {
@@ -286,35 +290,35 @@ function buildStyles() {
     .npw-summaryRow {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      padding: 1.2mm 0;
-      font-size: 5.7mm;
+      padding: 0.9mm 0;
+      font-size: 4.9mm;
       color: #414141;
     }
     .npw-summaryRow strong {
-      font-size: 5.7mm;
+      font-size: 4.9mm;
     }
     .npw-summaryRow.discount {
       grid-template-columns: 1fr auto auto;
-      font-size: 3.6mm;
+      font-size: 3.1mm;
     }
     .npw-divider {
       border-top: 0.35mm solid #626262;
-      margin: 1mm 0 1.5mm;
+      margin: 0.8mm 0 1.2mm;
     }
     .npw-summaryTotal {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      margin-top: 1.8mm;
-      padding: 3.2mm 3.6mm;
+      margin-top: 1.4mm;
+      padding: 2.8mm 3mm;
       background: #040404;
       color: #fff;
-      font-size: 5.8mm;
+      font-size: 4.9mm;
       font-weight: 900;
     }
     .npw-footer {
-      margin-top: 16mm;
+      margin-top: 13.8mm;
       text-align: center;
-      font-size: 4.6mm;
+      font-size: 4.2mm;
       letter-spacing: 0.05em;
       color: #595959;
     }
