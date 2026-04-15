@@ -114,93 +114,140 @@ function buildStyles() {
       width: 200mm;
       height: 145mm;
       margin: 0;
-      padding: 3mm 5mm 3mm;
+      padding: 4mm 6mm 3mm;
       background: #fff;
       overflow: hidden;
     }
     .npw-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 34mm minmax(0, 1fr);
-      gap: 6mm;
+      grid-template-columns: 31mm minmax(0, 1fr);
+      gap: 7mm;
       align-items: start;
-    }
-    .npw-serial {
-      color: #3c3c3c;
-      font-size: 10.5pt;
-      margin-bottom: 1mm;
-    }
-    .npw-title {
-      margin: 0;
-      font-size: 24pt;
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-    }
-    .npw-metaRow {
-      display: flex;
-      align-items: baseline;
-      gap: 2mm;
-      margin-top: 1.6mm;
-    }
-    .npw-metaLabel {
-      color: #2f2f2f;
-      font-size: 11pt;
-      letter-spacing: 0.03em;
-    }
-    .npw-metaValue {
-      color: #111;
-      font-size: 14pt;
-      font-weight: 500;
-    }
-    .npw-metaValue--delivery {
-      font-size: 19pt;
-      font-weight: 900;
     }
     .npw-logoWrap {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-top: 1.5mm;
     }
     .npw-logoFrame {
-      width: 34mm;
-      height: 34mm;
-      border: 1mm solid #111;
-      border-radius: 3mm;
+      width: 27mm;
+      height: 27mm;
+      border: 0.8mm solid #111;
+      border-radius: 2.6mm;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #fff;
     }
     .npw-logoFrame img {
-      width: 21mm;
+      width: 18mm;
       object-fit: contain;
       filter: grayscale(1);
     }
-    .npw-clientLabel {
-      font-size: 11pt;
-      letter-spacing: 0.08em;
-      color: #2f2f2f;
+    .npw-headerMain {
+      min-width: 0;
+    }
+    .npw-topline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 4mm;
+      align-items: end;
+    }
+    .npw-topLeft {
+      min-width: 0;
+    }
+    .npw-topRight {
+      font-size: 10.5mm;
+      line-height: 1;
+      font-weight: 400;
+      color: #1d1d1d;
+      text-align: right;
+      white-space: nowrap;
+      padding-bottom: 1.2mm;
+    }
+    .npw-serial {
+      color: #3c3c3c;
+      font-size: 4.2mm;
+      margin-bottom: 0.8mm;
+    }
+    .npw-title {
+      margin: 0;
+      font-size: 8.1mm;
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .npw-headDivider {
+      margin-top: 1.4mm;
+      border-top: 0.35mm solid #636363;
+    }
+    .npw-bottomline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 5mm;
+      align-items: start;
+      margin-top: 1.6mm;
+    }
+    .npw-client {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 3.8mm;
+    }
+    .npw-clientInfo {
+      min-width: 0;
     }
     .npw-clientName {
-      margin-top: 1mm;
-      font-size: 22pt;
+      font-size: 6mm;
+      line-height: 1.04;
+      font-weight: 400;
+      color: #111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .npw-clientPhone {
+      font-size: 5.6mm;
+      line-height: 1.05;
+      font-weight: 400;
+      color: #222;
+      margin-top: 0.8mm;
+    }
+    .npw-clientDivider {
+      width: 0.35mm;
+      align-self: stretch;
+      background: #6a6a6a;
+      min-height: 18mm;
+    }
+    .npw-delivery {
+      display: flex;
+      align-items: baseline;
+      gap: 1.8mm;
+      padding-top: 2.2mm;
+      white-space: nowrap;
+    }
+    .npw-deliveryLabel {
+      font-size: 5.4mm;
+      line-height: 1;
+      font-weight: 400;
+      color: #1f1f1f;
+    }
+    .npw-deliveryValue {
+      font-size: 6.1mm;
       line-height: 1;
       font-weight: 900;
-    }
-    .npw-clientMeta {
-      margin-top: 2mm;
-      font-size: 11pt;
-      line-height: 1.2;
+      color: #111;
     }
     .npw-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 7mm;
+      margin-top: 7.6mm;
     }
     .npw-table thead th {
-      background: #4b4948;
+      background: #040404;
       color: #fff;
-      padding: 3.2mm 2.5mm;
-      font-size: 9pt;
+      padding: 3.1mm 2.5mm;
+      font-size: 4.3mm;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-align: center;
@@ -211,11 +258,11 @@ function buildStyles() {
     }
     .npw-table tbody td {
       padding: 3mm 2.5mm;
-      font-size: 10pt;
+      font-size: 4.9mm;
       font-weight: 700;
       color: #4a4a4a;
       text-align: center;
-      border-bottom: 1.6mm solid transparent;
+      border-bottom: 1.2mm solid transparent;
     }
     .npw-table tbody tr.is-alt td {
       background: #f1f1f1;
@@ -226,9 +273,9 @@ function buildStyles() {
       padding: 4mm !important;
     }
     .npw-summary {
-      width: 102mm;
+      width: 103mm;
       margin-left: auto;
-      margin-top: 1.5mm;
+      margin-top: 2mm;
     }
     .npw-summaryRow,
     .npw-summaryTotal {
@@ -239,18 +286,18 @@ function buildStyles() {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
       padding: 1.2mm 0;
-      font-size: 10pt;
+      font-size: 5.7mm;
       color: #414141;
     }
     .npw-summaryRow strong {
-      font-size: 10pt;
+      font-size: 5.7mm;
     }
     .npw-summaryRow.discount {
       grid-template-columns: 1fr auto auto;
-      font-size: 7.6pt;
+      font-size: 3.6mm;
     }
     .npw-divider {
-      border-top: 0.5mm solid #626262;
+      border-top: 0.35mm solid #626262;
       margin: 1mm 0 1.5mm;
     }
     .npw-summaryTotal {
@@ -258,15 +305,15 @@ function buildStyles() {
       gap: 2.5mm;
       margin-top: 1.8mm;
       padding: 3.2mm 3.6mm;
-      background: #4b4948;
+      background: #040404;
       color: #fff;
-      font-size: 15pt;
+      font-size: 5.8mm;
       font-weight: 900;
     }
     .npw-footer {
-      margin-top: 22mm;
+      margin-top: 16mm;
       text-align: center;
-      font-size: 8.5pt;
+      font-size: 4.6mm;
       letter-spacing: 0.05em;
       color: #595959;
     }
@@ -278,30 +325,37 @@ export function buildNotaPedidoPrintMarkup(data) {
   return `
     <div class="npw-doc">
       <div class="npw-header">
-        <div>
-          <div class="npw-serial">N&deg; ${escapeHtml(getPreviewNumber(data.numero))}</div>
-          <h1 class="npw-title">Nota de Pedido</h1>
-          <div class="npw-metaRow">
-            <span class="npw-metaLabel">FECHA:</span>
-            <span class="npw-metaValue">${escapeHtml(fmtDate(data.fecha))}</span>
-          </div>
-          <div class="npw-metaRow">
-            <span class="npw-metaLabel">ENTREGA:</span>
-            <span class="npw-metaValue npw-metaValue--delivery">${escapeHtml(fmtDate(data.entrega))}</span>
-          </div>
-        </div>
-
         <div class="npw-logoWrap">
           <div class="npw-logoFrame">
             <img src="${window.location.origin}/logo-linea-gris.png" alt="Sur Maderas" />
           </div>
         </div>
 
-        <div>
-          <div class="npw-clientLabel">CLIENTE</div>
-          <div class="npw-clientName">${escapeHtml(data.clienteNombre || "Consumidor final")}</div>
-          <div class="npw-clientMeta">Tel&eacute;fono: ${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>
-          <div class="npw-clientMeta">Vendedor: ${escapeHtml(data.vendedor || "")}</div>
+        <div class="npw-headerMain">
+          <div class="npw-topline">
+            <div class="npw-topLeft">
+              <div class="npw-serial">N ${escapeHtml(getPreviewNumber(data.numero))}</div>
+              <h1 class="npw-title">Nota de Pedido</h1>
+            </div>
+            <div class="npw-topRight">${escapeHtml(fmtDate(data.fecha))}</div>
+          </div>
+
+          <div class="npw-headDivider"></div>
+
+          <div class="npw-bottomline">
+            <div class="npw-client">
+              <div class="npw-clientInfo">
+                <div class="npw-clientName">${escapeHtml(data.clienteNombre || "Consumidor final")}</div>
+                <div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>
+              </div>
+              <div class="npw-clientDivider" aria-hidden="true"></div>
+            </div>
+
+            <div class="npw-delivery">
+              <span class="npw-deliveryLabel">Entrega:</span>
+              <span class="npw-deliveryValue">${escapeHtml(fmtDate(data.entrega))}</span>
+            </div>
+          </div>
         </div>
       </div>
 
