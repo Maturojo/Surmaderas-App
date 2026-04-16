@@ -1,0 +1,353 @@
+.placas-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.placas-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+  gap: 18px;
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(217, 167, 108, 0.24), transparent 34%),
+    linear-gradient(135deg, #fffaf2 0%, #efe3d2 100%);
+  border: 1px solid rgba(84, 61, 35, 0.12);
+  box-shadow: 0 20px 46px rgba(73, 54, 31, 0.08);
+}
+
+.placas-kicker,
+.placas-sectionEyebrow {
+  color: #896846;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.placas-title {
+  margin: 10px 0 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1;
+  color: #2d2117;
+}
+
+.placas-copy {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: #65584b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.placas-heroDiagrams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  margin-top: 26px;
+  padding: 18px 20px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(138, 113, 80, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.placas-metaGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.placas-metaCard,
+.placas-toolbar,
+.placas-section,
+.placas-empty {
+  border-radius: 24px;
+  border: 1px solid rgba(84, 61, 35, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 30px rgba(73, 54, 31, 0.06);
+}
+
+.placas-metaCard {
+  padding: 18px;
+}
+
+.placas-metaLabel {
+  display: block;
+  color: #806e5a;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.placas-metaValue {
+  color: #261b13;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.placas-metaValue--small {
+  font-size: 20px;
+}
+
+.placas-toolbar {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.placas-toolbarTop,
+.placas-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.placas-toolbarTop {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.placas-search {
+  width: min(100%, 520px);
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(84, 61, 35, 0.16);
+  background: #fcfaf6;
+  color: #2c2219;
+  outline: none;
+}
+
+.placas-search:focus {
+  border-color: #97714b;
+  box-shadow: 0 0 0 4px rgba(184, 146, 100, 0.16);
+}
+
+.placas-actionBtn {
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(84, 61, 35, 0.16);
+  background: #fff;
+  color: #322417;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.placas-actionBtn--primary {
+  background: linear-gradient(135deg, #3b2a1c 0%, #64442a 100%);
+  border-color: transparent;
+  color: #fff8ef;
+}
+
+.placas-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.placas-filter {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(84, 61, 35, 0.14);
+  background: #f5ede1;
+  color: #5d4a36;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.placas-filter.active {
+  background: linear-gradient(135deg, #3b2a1c 0%, #64442a 100%);
+  border-color: transparent;
+  color: #fff8ef;
+}
+
+.placas-sections {
+  display: grid;
+  gap: 18px;
+}
+
+.placas-section {
+  padding: 18px;
+}
+
+.placas-sectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.placas-sectionHeader h2 {
+  margin: 6px 0 0;
+  color: #2b2118;
+  font-size: 28px;
+}
+
+.placas-sectionCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f3eadf;
+  color: #6b5540;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.placas-tableWrap {
+  overflow-x: auto;
+}
+
+.placas-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.placas-table th,
+.placas-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(84, 61, 35, 0.1);
+}
+
+.placas-table th {
+  color: #7b6650;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.placas-table td {
+  color: #2b2219;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.placas-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.placas-diagram {
+  display: grid;
+  gap: 10px;
+}
+
+.placas-diagramLabel {
+  color: #7a6348;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.placas-diagramBoard {
+  position: relative;
+  width: 88px;
+  height: 58px;
+  border-radius: 14px;
+  border: 1px solid rgba(154, 131, 101, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(244, 236, 223, 0.96)),
+    repeating-linear-gradient(
+      135deg,
+      rgba(171, 146, 115, 0.10) 0,
+      rgba(171, 146, 115, 0.10) 8px,
+      rgba(255, 255, 255, 0) 8px,
+      rgba(255, 255, 255, 0) 16px
+    );
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 3px 10px rgba(101, 76, 46, 0.08);
+}
+
+.placas-diagram--entera .placas-diagramBoard {
+  background: #141414;
+  border-color: rgba(115, 91, 60, 0.22);
+}
+
+.placas-diagramCut {
+  display: none;
+}
+
+.placas-diagram--entera .placas-diagramCut {
+  display: none;
+}
+
+.placas-diagram--vertical .placas-diagramBoard {
+  background: linear-gradient(
+    90deg,
+    #fffdfa 0%,
+    #fffdfa 49%,
+    #141414 49%,
+    #141414 100%
+  );
+  border-color: rgba(115, 91, 60, 0.22);
+}
+
+.placas-diagram--horizontal .placas-diagramBoard {
+  background: linear-gradient(
+    180deg,
+    #fffdfa 0%,
+    #fffdfa 54%,
+    #141414 54%,
+    #141414 100%
+  );
+  border-color: rgba(115, 91, 60, 0.22);
+}
+
+.placas-empty {
+  padding: 24px;
+  color: #6b5b4a;
+  text-align: center;
+}
+
+.placas-note {
+  margin: 0;
+  color: #7d6c59;
+  font-size: 13px;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .placas-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .placas-sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .placas-heroDiagrams {
+    width: 100%;
+    gap: 18px;
+    justify-content: space-between;
+  }
+
+  .placas-actions,
+  .placas-toolbarTop {
+    width: 100%;
+  }
+
+  .placas-actions {
+    flex-wrap: wrap;
+  }
+
+  .placas-actionBtn {
+    flex: 1 1 220px;
+  }
+}

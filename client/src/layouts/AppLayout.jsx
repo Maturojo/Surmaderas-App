@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   },
   { label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
   { label: "Productos", to: "/productos", icon: "products" },
+  { label: "Placas", to: "/placas", icon: "layers" },
   {
     label: "Proveedores",
     icon: "suppliers",
@@ -45,6 +46,7 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/presupuestos/cargar",
   "/presupuestos/proveedores",
   "/productos",
+  "/placas",
   "/generador-3d",
   "/marcos",
 ]);
@@ -105,6 +107,14 @@ function SidebarIcon({ name }) {
           <path d="M4 7.5 12 3l8 4.5-8 4.5-8-4.5Z" />
           <path d="M4 7.5V16.5L12 21l8-4.5V7.5" />
           <path d="M12 12v9" />
+        </svg>
+      );
+    case "layers":
+      return (
+        <svg {...common}>
+          <path d="m12 4 8 4-8 4-8-4 8-4Z" />
+          <path d="m4 12 8 4 8-4" />
+          <path d="m4 16 8 4 8-4" />
         </svg>
       );
     case "suppliers":
