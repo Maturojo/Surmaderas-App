@@ -613,18 +613,21 @@ export default function CotizadorMarcos() {
     const inputAnchoMm = normalizedDimensions.ancho;
     const inputAltoMm = normalizedDimensions.alto;
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
+    const paspartuMm = clampPositiveNumber(form.paspartuMm, 0);
+    const interiorConPaspartuAnchoMm = inputAnchoMm + paspartuMm * 2;
+    const interiorConPaspartuAltoMm = inputAltoMm + paspartuMm * 2;
     const anchoMm =
       form.tipoMedida === "interior"
-        ? inputAnchoMm + normalizedFaceMm * 2
+        ? interiorConPaspartuAnchoMm + normalizedFaceMm * 2
         : inputAnchoMm;
     const altoMm =
       form.tipoMedida === "interior"
-        ? inputAltoMm + normalizedFaceMm * 2
+        ? interiorConPaspartuAltoMm + normalizedFaceMm * 2
         : inputAltoMm;
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
-    const paspartuM = clampPositiveNumber(form.paspartuMm, 0) / 1000;
+    const paspartuM = paspartuMm / 1000;
     const openingWidthM = Math.max(anchoM - paspartuM * 2, 0);
     const openingHeightM = Math.max(altoM - paspartuM * 2, 0);
     const paspartuAreaM2 = paspartuM > 0 ? Math.max(areaM2 - openingWidthM * openingHeightM, 0) : 0;
@@ -668,6 +671,8 @@ export default function CotizadorMarcos() {
       total,
       inputAnchoMm,
       inputAltoMm,
+      interiorConPaspartuAnchoMm,
+      interiorConPaspartuAltoMm,
       anchoFinalMm: anchoMm,
       altoFinalMm: altoMm,
     };
@@ -1016,6 +1021,12 @@ export default function CotizadorMarcos() {
                 label="Medida cargada"
                 value={`${quote.inputAnchoMm} x ${quote.inputAltoMm} mm`}
               />
+              {clampPositiveNumber(form.paspartuMm, 0) > 0 && form.tipoMedida === "interior" ? (
+                <SummaryRow
+                  label="Interior + paspartu"
+                  value={`${quote.interiorConPaspartuAnchoMm} x ${quote.interiorConPaspartuAltoMm} mm`}
+                />
+              ) : null}
               <SummaryRow
                 label="Medidas aplicadas"
                 value={`${quote.anchoFinalMm} x ${quote.altoFinalMm} mm`}
