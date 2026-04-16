@@ -128,16 +128,21 @@ function reorderFormDimensions(form, orientacion) {
 
 function getArmadoSuggestion(anchoMm, altoMm) {
   const areaM2 = (clampPositiveNumber(anchoMm) * clampPositiveNumber(altoMm)) / 1000000;
+  const roundedAreaM2 = Math.round(areaM2 * 100) / 100;
 
-  if (areaM2 <= 0.5) {
-    return { etiqueta: "Chico", precio: 18000 };
+  if (roundedAreaM2 <= 0.03) {
+    return { etiqueta: "Hasta 0.03 m2", precio: 4900 };
   }
 
-  if (areaM2 <= 1.2) {
-    return { etiqueta: "Mediano", precio: 26000 };
+  if (roundedAreaM2 <= 0.12) {
+    return { etiqueta: "Hasta 0.12 m2", precio: 5600 };
   }
 
-  return { etiqueta: "Grande", precio: 34500 };
+  if (roundedAreaM2 <= 0.35) {
+    return { etiqueta: "Hasta 0.35 m2", precio: 6950 };
+  }
+
+  return { etiqueta: "Mas de 0.35 m2", precio: 8400 };
 }
 
 function calculateChargedBars(requiredMeters) {
