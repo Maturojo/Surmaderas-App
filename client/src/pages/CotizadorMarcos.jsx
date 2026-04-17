@@ -12,6 +12,7 @@ const GLASS_PRICE_M2 = 33582;
 const INITIAL_PROFILES = [
   {
     id: "chata-4cm-pino",
+    codigo: "CHATA-4CM-PINO",
     nombre: "Chata 4 cm pino",
     precioMetro: 19600,
     frenteMm: 40,
@@ -22,6 +23,7 @@ const INITIAL_PROFILES = [
   },
   {
     id: "box-20-negro",
+    codigo: "BOX-20-NEGRO",
     nombre: "Varilla Box 20 negro",
     precioMetro: 14800,
     frenteMm: 20,
@@ -31,6 +33,7 @@ const INITIAL_PROFILES = [
   },
   {
     id: "box-25-natural",
+    codigo: "BOX-25-NATURAL",
     nombre: "Varilla Box 25 natural",
     precioMetro: 17200,
     frenteMm: 25,
@@ -40,6 +43,7 @@ const INITIAL_PROFILES = [
   },
   {
     id: "madera-roble",
+    codigo: "MADERA-ROBLE",
     nombre: "Varilla simil madera roble",
     precioMetro: 19600,
     frenteMm: 30,
@@ -589,6 +593,9 @@ function FramePreview3D({
 
 export default function CotizadorMarcos() {
   const [form, setForm] = useState(INITIAL_FORM);
+  const [varillaSearch, setVarillaSearch] = useState(
+    `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
+  );
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
     [form.anchoMm, form.altoMm, form.orientacion]
@@ -598,6 +605,19 @@ export default function CotizadorMarcos() {
     () => INITIAL_PROFILES.find((profile) => profile.id === form.profileId) || INITIAL_PROFILES[0],
     [form.profileId]
   );
+  const filteredProfiles = useMemo(() => {
+    const query = varillaSearch.trim().toLowerCase();
+
+    if (!query) {
+      return INITIAL_PROFILES;
+    }
+
+    return INITIAL_PROFILES.filter((profile) => {
+      const codigo = String(profile.codigo || "").toLowerCase();
+      const nombre = String(profile.nombre || "").toLowerCase();
+      return codigo.includes(query) || nombre.includes(query);
+    });
+  }, [varillaSearch]);
   const selectedFondo = useMemo(
     () => FONDO_OPTIONS.find((option) => option.id === form.fondoId) || FONDO_OPTIONS[0],
     [form.fondoId]
@@ -680,6 +700,14 @@ export default function CotizadorMarcos() {
 
   function setField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function handleProfileChange(profileId) {
+    setField("profileId", profileId);
+    const profile = INITIAL_PROFILES.find((item) => item.id === profileId);
+    if (profile) {
+      setVarillaSearch(`${profile.codigo} - ${profile.nombre}`);
+    }
   }
 
   function handleOrientationChange(nextOrientation) {
@@ -793,18 +821,35 @@ export default function CotizadorMarcos() {
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Tipo de varilla
                   </span>
+                  <input
+                    type="text"
+                    value={varillaSearch}
+                    onChange={(e) => setVarillaSearch(e.target.value)}
+                    placeholder="Buscar por codigo o nombre"
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      padding: "0 14px",
+                      borderRadius: 14,
+                      border: "1px solid rgba(73, 58, 38, 0.14)",
+                      background: "#fcfbf8",
+                      outline: "none",
+                    }}
+                  />
                   <select
                     value={form.profileId}
-                    onChange={(e) => setField("profileId", e.target.value)}
+                    onChange={(e) => handleProfileChange(e.target.value)}
                     style={selectFieldStyle}
                   >
-                    {INITIAL_PROFILES.map((profile) => (
+                    {filteredProfiles.map((profile) => (
                       <option key={profile.id} value={profile.id}>
-                        {profile.nombre}
+                        {profile.codigo} · {profile.nombre}
                       </option>
                     ))}
                   </select>
-                  <span style={helperTextStyle}> </span>
+                  <span style={helperTextStyle}>
+                    Busca por codigo o nombre. Si el filtro queda vacio, se muestran todas las varillas cargadas.
+                  </span>
                 </label>
 
                 <NumberField
