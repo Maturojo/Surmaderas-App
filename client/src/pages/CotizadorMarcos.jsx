@@ -9,48 +9,98 @@ const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
 const GLASS_PRICE_M2 = 33582;
 
-const INITIAL_PROFILES = [
-  {
-    id: "chata-4cm-pino",
-    codigo: "CHATA-4CM-PINO",
-    nombre: "Chata 4 cm pino",
-    precioMetro: 19600,
-    frenteMm: 40,
-    profundidadMm: 18,
-    color: "#c59257",
-    shape: "pine-chata",
-    veta: "#e2bf86",
-  },
-  {
-    id: "box-20-negro",
-    codigo: "BOX-20-NEGRO",
-    nombre: "Varilla Box 20 negro",
-    precioMetro: 14800,
-    frenteMm: 20,
-    profundidadMm: 22,
-    color: "#2c2f36",
-    shape: "box",
-  },
-  {
-    id: "box-25-natural",
-    codigo: "BOX-25-NATURAL",
-    nombre: "Varilla Box 25 natural",
-    precioMetro: 17200,
-    frenteMm: 25,
-    profundidadMm: 24,
-    color: "#9d9c96",
-    shape: "box",
-  },
-  {
-    id: "madera-roble",
-    codigo: "MADERA-ROBLE",
-    nombre: "Varilla simil madera roble",
-    precioMetro: 19600,
+function createProfileId(codigo, nombre) {
+  return String(codigo || nombre || "varilla")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function inferProfileMeasures(nombre) {
+  const normalized = String(nombre || "").toUpperCase().replace(",", ".");
+  const explicitPair = normalized.match(/(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)/);
+
+  if (explicitPair) {
+    const first = Number(explicitPair[1]);
+    const second = Number(explicitPair[2]);
+    return {
+      frenteMm: Math.max(first, second),
+      profundidadMm: Math.min(first, second),
+    };
+  }
+
+  const cmMatch = normalized.match(/(\d+(?:\.\d+)?)\s*CM\b/);
+  if (cmMatch) {
+    const faceMm = Number(cmMatch[1]) * 10;
+    return {
+      frenteMm: faceMm,
+      profundidadMm: Math.max(Math.round(faceMm * 0.45), 12),
+    };
+  }
+
+  const genericNumber = normalized.match(/(\d+(?:\.\d+)?)/);
+  if (genericNumber) {
+    const faceMm = Number(genericNumber[1]) * 10;
+    return {
+      frenteMm: faceMm,
+      profundidadMm: Math.max(Math.round(faceMm * 0.45), 12),
+    };
+  }
+
+  return {
     frenteMm: 30,
-    profundidadMm: 24,
-    color: "#8b5e3c",
-    shape: "box",
-  },
+    profundidadMm: 18,
+  };
+}
+
+function createProfile({ codigo, nombre, precioMetro }) {
+  const measures = inferProfileMeasures(nombre);
+  const isPine = /PINO/.test(String(nombre || "").toUpperCase());
+
+  return {
+    id: createProfileId(codigo, nombre),
+    codigo,
+    nombre,
+    precioMetro,
+    frenteMm: measures.frenteMm,
+    profundidadMm: measures.profundidadMm,
+    color: isPine ? "#c59257" : "#b78a52",
+    shape: isPine ? "pine-chata" : "box",
+    veta: isPine ? "#e2bf86" : "#d7b079",
+  };
+}
+
+const INITIAL_PROFILES = [
+  createProfile({ codigo: "2101", nombre: "BATEA 20 X 27", precioMetro: 1858 }),
+  createProfile({ codigo: "MC910", nombre: "BATEA 21 X 45", precioMetro: 2948 }),
+  createProfile({ codigo: "2814", nombre: "BATEA AMERICANA 21 X 45", precioMetro: 6724 }),
+  createProfile({ codigo: "1410", nombre: "BOMBE 1 CM.", precioMetro: 3589 }),
+  createProfile({ codigo: "1531", nombre: "BOMBE 1,5 CM. KIRI", precioMetro: 4723 }),
+  createProfile({ codigo: "MC909", nombre: "BOMBE 1.5", precioMetro: 929 }),
+  createProfile({ codigo: "2532", nombre: "BOMBE 2", precioMetro: 1148 }),
+  createProfile({ codigo: "2533", nombre: "BOMBE 3", precioMetro: 2161 }),
+  createProfile({ codigo: "2567", nombre: "BOMBE 4", precioMetro: 2796 }),
+  createProfile({ codigo: "2229", nombre: "BOMBE C/GARGANTA 16 X 20", precioMetro: 1152 }),
+  createProfile({ codigo: "MC934", nombre: "CHANFLE 3.5", precioMetro: 1504 }),
+  createProfile({ codigo: "2564", nombre: "CHANFLE 4.5", precioMetro: 2240 }),
+  createProfile({ codigo: "2565", nombre: "CHANFLE 5.5", precioMetro: 2382 }),
+  createProfile({ codigo: "MC903", nombre: "CHANFLE 7", precioMetro: 3333 }),
+  createProfile({ codigo: "2331", nombre: "CHATA 10 X 30", precioMetro: 1209 }),
+  createProfile({ codigo: "MC927", nombre: "CHATA 15 X 30", precioMetro: 1639 }),
+  createProfile({ codigo: "2350", nombre: "CHATA 15 X 45", precioMetro: 2122 }),
+  createProfile({ codigo: "MC02", nombre: "CHATA 6 EN FF12", precioMetro: 3034 }),
+  createProfile({ codigo: "MC01", nombre: "CHATA 9 EN FF12", precioMetro: 3699 }),
+  createProfile({ codigo: "2237", nombre: "CHATA P/ CAJON 2 REBAJES 20X42 PINO", precioMetro: 8636 }),
+  createProfile({ codigo: "2811", nombre: "ITALIANA 2 CM.", precioMetro: 1146 }),
+  createProfile({ codigo: "2547", nombre: "ITALIANA 3 CM.", precioMetro: 2240 }),
+  createProfile({ codigo: "2548", nombre: "ITALIANA 4 CM.", precioMetro: 2896 }),
+  createProfile({ codigo: "2549", nombre: "ITALIANA 6 CM.", precioMetro: 6886 }),
+  createProfile({ codigo: "MC919", nombre: "MOLDURON 21 X 69 ESPECIAL", precioMetro: 5397 }),
+  createProfile({ codigo: "MC918", nombre: "MOLDURON ESPECIAL 32 X 58", precioMetro: 5795 }),
+  createProfile({ codigo: "MC914", nombre: "ONDULADA 14 X 32", precioMetro: 1639 }),
+  createProfile({ codigo: "MC922", nombre: "ONDULADA 14 X 45", precioMetro: 2241 }),
 ];
 
 const FONDO_OPTIONS = [
