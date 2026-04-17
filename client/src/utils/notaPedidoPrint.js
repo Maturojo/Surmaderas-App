@@ -162,7 +162,15 @@ function buildStyles() {
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap');
     @page { size: A4 portrait; margin: 0; }
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: #fff; font-family: "Montserrat", Arial, Helvetica, sans-serif; color: #111; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, rgba(206, 194, 176, 0.22), transparent 26%),
+        linear-gradient(180deg, #f7f3ee 0%, #ffffff 30%);
+      font-family: "Montserrat", Arial, Helvetica, sans-serif;
+      color: #111;
+    }
     body { width: 100%; margin: 0; }
     .npw-pages {
       width: fit-content;
@@ -171,27 +179,47 @@ function buildStyles() {
     .npw-doc {
       width: 200mm;
       height: 145mm;
-      margin: 0;
+      margin: 0 0 5mm;
       padding: 4.5mm 6.5mm 3mm;
-      background: #fff;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(251,249,246,0.98) 100%);
+      border: 0.35mm solid rgba(27, 24, 21, 0.08);
+      border-radius: 4mm;
+      box-shadow:
+        0 4mm 10mm rgba(43, 34, 25, 0.08),
+        inset 0 0 0 0.35mm rgba(255, 255, 255, 0.9);
       overflow: hidden;
       break-after: page;
       page-break-after: always;
+      position: relative;
     }
     .npw-doc:last-child {
+      margin-bottom: 0;
       break-after: auto;
       page-break-after: auto;
+    }
+    .npw-doc::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1.4mm;
+      background: linear-gradient(90deg, #1b1a18 0%, #3a352f 55%, #1b1a18 100%);
     }
     .npw-header {
       display: grid;
       grid-template-columns: 29mm minmax(0, 1fr);
       gap: 5.8mm;
       align-items: start;
+      padding: 3mm 3.3mm 3.2mm;
+      border-radius: 3.2mm;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(245, 240, 234, 0.96) 100%);
+      border: 0.3mm solid rgba(27, 24, 21, 0.07);
     }
     .npw-logoWrap {
       display: flex;
       justify-content: flex-start;
-      padding-top: 1.5mm;
+      padding-top: 0.8mm;
     }
     .npw-logoFrame {
       width: 24.8mm;
@@ -201,7 +229,10 @@ function buildStyles() {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f2ee 100%);
+      box-shadow:
+        0 1.4mm 3mm rgba(33, 27, 20, 0.10),
+        inset 0 0 0 0.3mm rgba(255,255,255,0.9);
     }
     .npw-logoFrame img {
       width: 16.6mm;
@@ -224,16 +255,16 @@ function buildStyles() {
       font-size: 6.2mm;
       line-height: 1.05;
       font-weight: 400;
-      color: #1d1d1d;
+      color: #26221e;
       text-align: right;
       white-space: nowrap;
       padding-bottom: 1mm;
     }
     .npw-serial {
-      color: #3c3c3c;
+      color: #7d6244;
       font-size: 3.8mm;
       margin-bottom: 0.7mm;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.03em;
     }
     .npw-title {
       margin: 0;
@@ -241,10 +272,11 @@ function buildStyles() {
       line-height: 0.97;
       font-weight: 900;
       letter-spacing: -0.02em;
+      color: #171513;
     }
     .npw-headDivider {
       margin-top: 1.2mm;
-      border-top: 0.3mm solid #6c6c6c;
+      border-top: 0.3mm solid rgba(84, 72, 58, 0.7);
     }
     .npw-bottomline {
       display: grid;
@@ -266,7 +298,7 @@ function buildStyles() {
       font-size: 5.2mm;
       line-height: 1.06;
       font-weight: 500;
-      color: #111;
+      color: #1d1916;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -284,7 +316,7 @@ function buildStyles() {
     .npw-clientDivider {
       width: 0.3mm;
       align-self: stretch;
-      background: #6a6a6a;
+      background: rgba(96, 82, 65, 0.72);
       min-height: 16.5mm;
     }
     .npw-delivery {
@@ -304,15 +336,23 @@ function buildStyles() {
       font-size: 5.3mm;
       line-height: 1;
       font-weight: 900;
-      color: #111;
+      color: #171513;
+    }
+    .npw-tableCard {
+      margin-top: 5.8mm;
+      border-radius: 3.4mm;
+      overflow: hidden;
+      background: rgba(255,255,255,0.95);
+      border: 0.3mm solid rgba(28, 25, 22, 0.08);
+      box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
     }
     .npw-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 6.9mm;
+      margin-top: 0;
     }
     .npw-table thead th {
-      background: #040404;
+      background: linear-gradient(180deg, #181614 0%, #050505 100%);
       color: #fff;
       padding: 2.9mm 2.5mm;
       font-size: 4.1mm;
@@ -330,10 +370,13 @@ function buildStyles() {
       font-weight: 700;
       color: #4a4a4a;
       text-align: center;
-      border-bottom: 1mm solid transparent;
+      border-bottom: 0.28mm solid rgba(60, 48, 37, 0.08);
     }
     .npw-table tbody tr.is-alt td {
-      background: #f3f3f3;
+      background: linear-gradient(180deg, #f7f4f0 0%, #f1efec 100%);
+    }
+    .npw-table tbody tr:last-child td {
+      border-bottom: 0;
     }
     .npw-table .empty {
       text-align: center !important;
@@ -343,7 +386,12 @@ function buildStyles() {
     .npw-summary {
       width: 101.5mm;
       margin-left: auto;
-      margin-top: 1.6mm;
+      margin-top: 2.4mm;
+      padding: 2.4mm 2.8mm 2.6mm;
+      border-radius: 3.2mm;
+      background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,243,238,0.97) 100%);
+      border: 0.3mm solid rgba(28, 25, 22, 0.08);
+      box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
     }
     .npw-summaryRow,
     .npw-summaryTotal {
@@ -355,17 +403,18 @@ function buildStyles() {
       gap: 2.5mm;
       padding: 0.9mm 0;
       font-size: 4.4mm;
-      color: #414141;
+      color: #35302b;
     }
     .npw-summaryRow strong {
       font-size: 4.4mm;
+      color: #23201c;
     }
     .npw-summaryRow.discount {
       grid-template-columns: 1fr auto auto;
       font-size: 2.8mm;
     }
     .npw-divider {
-      border-top: 0.35mm solid #626262;
+      border-top: 0.35mm solid rgba(63, 54, 44, 0.42);
       margin: 0.8mm 0 1.2mm;
     }
     .npw-summaryTotal {
@@ -373,17 +422,41 @@ function buildStyles() {
       gap: 2.5mm;
       margin-top: 1.4mm;
       padding: 2.3mm 2.8mm;
-      background: #040404;
+      border-radius: 2.4mm;
+      background: linear-gradient(180deg, #171513 0%, #050505 100%);
       color: #fff;
       font-size: 4.5mm;
       font-weight: 900;
+      box-shadow: inset 0 0 0 0.25mm rgba(255,255,255,0.06);
     }
     .npw-footer {
-      margin-top: 13.8mm;
+      margin-top: 12.2mm;
+      padding-top: 2.4mm;
+      border-top: 0.28mm solid rgba(72, 61, 49, 0.14);
       text-align: center;
       font-size: 4.2mm;
       letter-spacing: 0.05em;
-      color: #595959;
+      color: #6d6359;
+    }
+    @media print {
+      html, body {
+        background: #fff !important;
+      }
+      .npw-doc {
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+      }
+      .npw-doc::before {
+        height: 1mm !important;
+      }
+      .npw-header,
+      .npw-tableCard,
+      .npw-summary {
+        box-shadow: none !important;
+      }
     }
   `;
 }
@@ -427,18 +500,20 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
         </div>
       </div>
 
-      <table class="npw-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>DESCRIPCI&Oacute;N</th>
-            <th>PRECIO</th>
-            <th>CANTIDAD</th>
-            <th>TOTAL</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <div class="npw-tableCard">
+        <table class="npw-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>DESCRIPCI&Oacute;N</th>
+              <th>PRECIO</th>
+              <th>CANTIDAD</th>
+              <th>TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
 
       ${
         showSummary
