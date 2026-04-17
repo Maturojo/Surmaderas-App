@@ -3,6 +3,9 @@ import html2canvas from "html2canvas";
 const NOTE_WIDTH_MM = 200;
 const NOTE_HEIGHT_MM = 145;
 const CSS_PX_PER_MM = 96 / 25.4;
+const DESCRIPTION_CHARS_PER_LINE = 26;
+const NORMAL_PAGE_UNITS = 8.4;
+const LAST_PAGE_UNITS = 4.8;
 
 export function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
@@ -104,6 +107,56 @@ function buildRows(previewItems) {
     .join("");
 }
 
+function estimateRowUnits(item) {
+  const description = String(item?.descripcion || "").trim();
+  if (!description) return 1;
+
+  const segments = description.split(/\r?\n/);
+  const lines = segments.reduce((acc, segment) => {
+    const clean = segment.trim();
+    if (!clean) return acc + 1;
+    return acc + Math.max(1, Math.ceil(clean.length / DESCRIPTION_CHARS_PER_LINE));
+  }, 0);
+
+  return 1.02 + Math.max(0, lines - 1) * 0.76;
+}
+
+function estimateItemsUnits(items) {
+  return items.reduce((acc, item) => acc + estimateRowUnits(item), 0);
+}
+
+function takeItemsByCapacity(items, capacity) {
+  const taken = [];
+  let units = 0;
+
+  for (const item of items) {
+    const itemUnits = estimateRowUnits(item);
+    if (taken.length > 0 && units + itemUnits > capacity) break;
+    taken.push(item);
+    units += itemUnits;
+  }
+
+  return taken.length ? taken : items.slice(0, 1);
+}
+
+function paginatePreviewItems(items) {
+  if (!items.length) return [[]];
+  if (estimateItemsUnits(items) <= LAST_PAGE_UNITS) return [items];
+
+  const firstPage = takeItemsByCapacity(items, NORMAL_PAGE_UNITS);
+
+  if (firstPage.length >= items.length) {
+    const safeCut = Math.max(1, items.length - 1);
+    return [items.slice(0, safeCut), items.slice(safeCut)];
+  }
+
+  return [firstPage, ...paginatePreviewItems(items.slice(firstPage.length))];
+}
+
+export function getNotaPedidoPageCount(data) {
+  return paginatePreviewItems(data?.previewItems || []).length;
+}
+
 function buildStyles() {
   return `
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap');
@@ -111,6 +164,10 @@ function buildStyles() {
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; background: #fff; font-family: "Montserrat", Arial, Helvetica, sans-serif; color: #111; }
     body { width: 100%; margin: 0; }
+    .npw-pages {
+      width: fit-content;
+      margin: 0 auto;
+    }
     .npw-doc {
       width: 200mm;
       height: 145mm;
@@ -118,6 +175,12 @@ function buildStyles() {
       padding: 4.5mm 6.5mm 3mm;
       background: #fff;
       overflow: hidden;
+      break-after: page;
+      page-break-after: always;
+    }
+    .npw-doc:last-child {
+      break-after: auto;
+      page-break-after: auto;
     }
     .npw-header {
       display: grid;
@@ -325,8 +388,8 @@ function buildStyles() {
   `;
 }
 
-export function buildNotaPedidoPrintMarkup(data) {
-  const rows = buildRows(data.previewItems || []);
+function buildDocPage(data, items, { showSummary, showFooter }) {
+  const rows = buildRows(items);
   return `
     <div class="npw-doc">
       <div class="npw-header">
@@ -377,24 +440,46 @@ export function buildNotaPedidoPrintMarkup(data) {
         <tbody>${rows}</tbody>
       </table>
 
-      <div class="npw-summary">
-        <div class="npw-summaryRow">
-          <span>Subtotal</span>
-          <strong>$${escapeHtml(toARS(data.subtotal))}</strong>
-        </div>
-        <div class="npw-divider"></div>
-        <div class="npw-summaryRow discount">
-          <span>Descuento (si hay)</span>
-          <strong>${data.descuentoMonto > 0 ? `${escapeHtml(toARS(data.descuentoPct))}%` : "-"}</strong>
-          <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
-        </div>
-        <div class="npw-summaryTotal">
-          <span>TOTAL</span>
-          <strong>$${escapeHtml(toARS(data.total))}</strong>
-        </div>
-      </div>
+      ${
+        showSummary
+          ? `
+            <div class="npw-summary">
+              <div class="npw-summaryRow">
+                <span>Subtotal</span>
+                <strong>$${escapeHtml(toARS(data.subtotal))}</strong>
+              </div>
+              <div class="npw-divider"></div>
+              <div class="npw-summaryRow discount">
+                <span>Descuento (si hay)</span>
+                <strong>${data.descuentoMonto > 0 ? `${escapeHtml(toARS(data.descuentoPct))}%` : "-"}</strong>
+                <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
+              </div>
+              <div class="npw-summaryTotal">
+                <span>TOTAL</span>
+                <strong>$${escapeHtml(toARS(data.total))}</strong>
+              </div>
+            </div>
+          `
+          : ""
+      }
 
-      <div class="npw-footer">surmaderas.com.ar - surmaderasmdp@gmail.com - 223 438 3262</div>
+      ${showFooter ? `<div class="npw-footer">surmaderas.com.ar - surmaderasmdp@gmail.com - 223 438 3262</div>` : ""}
+    </div>
+  `;
+}
+
+export function buildNotaPedidoPrintMarkup(data) {
+  const pages = paginatePreviewItems(data.previewItems || []);
+  return `
+    <div class="npw-pages">
+      ${pages
+        .map((pageItems, index) =>
+          buildDocPage(data, pageItems, {
+            showSummary: index === pages.length - 1,
+            showFooter: index === pages.length - 1,
+          })
+        )
+        .join("")}
     </div>
   `;
 }
@@ -426,7 +511,8 @@ async function waitForImages(root) {
 
 export async function generateNotaPedidoImageFile(data) {
   const widthPx = Math.round(NOTE_WIDTH_MM * CSS_PX_PER_MM);
-  const heightPx = Math.round(NOTE_HEIGHT_MM * CSS_PX_PER_MM);
+  const pageCount = getNotaPedidoPageCount(data);
+  const heightPx = Math.round(NOTE_HEIGHT_MM * CSS_PX_PER_MM * pageCount);
   const renderScale = Math.max(3, Math.min(4, Math.ceil(window.devicePixelRatio || 1)));
 
   const host = document.createElement("div");
@@ -441,7 +527,7 @@ export async function generateNotaPedidoImageFile(data) {
   document.body.appendChild(host);
 
   try {
-    const node = host.querySelector(".npw-doc");
+    const node = host.querySelector(".npw-pages");
     node.style.width = `${widthPx}px`;
     node.style.height = `${heightPx}px`;
     await waitForImages(host);

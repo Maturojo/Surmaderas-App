@@ -8,6 +8,7 @@ import {
 import {
   buildNotaPedidoPrintHtml,
   buildNotaPedidoPrintData,
+  getNotaPedidoPageCount,
   openNotaPedidoPrintWindow,
   toARS,
 } from "../../../utils/notaPedidoPrint";
@@ -42,13 +43,19 @@ export default function NotaDetalleModal({
   const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
   const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
+  const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
   const previewDoc = useMemo(() => {
-    if (!detalle) return "";
-    return buildNotaPedidoPrintHtml(buildNotaPedidoPrintData(detalle));
-  }, [detalle]);
+    if (!previewData) return "";
+    return buildNotaPedidoPrintHtml(previewData);
+  }, [previewData]);
+  const previewFrameHeight = useMemo(() => {
+    if (!previewData) return 720;
+    return Math.min(1600, Math.max(720, getNotaPedidoPageCount(previewData) * 590));
+  }, [previewData]);
 
   function handlePrint() {
-    openNotaPedidoPrintWindow(buildNotaPedidoPrintData(detalle));
+    if (!previewData) return;
+    openNotaPedidoPrintWindow(previewData);
   }
 
   if (!open) return null;
@@ -77,7 +84,7 @@ export default function NotaDetalleModal({
                 className="npl-sharedPreviewFrame"
                 style={{
                   width: "100%",
-                  height: "720px",
+                  height: `${previewFrameHeight}px`,
                   border: "1px solid rgba(0, 0, 0, 0.08)",
                   borderRadius: "18px",
                   background: "#fff",
