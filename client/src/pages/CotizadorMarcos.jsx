@@ -697,10 +697,9 @@ export default function CotizadorMarcos() {
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
-    const interiorConPaspartuAreaM2 = (interiorConPaspartuAnchoMm / 1000) * (interiorConPaspartuAltoMm / 1000);
     const vidrioAreaM2 = form.vidrio === "si" ? areaM2 : 0;
     const fondoAreaM2 = selectedFondo.precioM2 > 0 ? areaM2 : 0;
-    const paspartuAreaM2 = paspartuMm > 0 ? interiorConPaspartuAreaM2 : 0;
+    const paspartuAreaM2 = paspartuMm > 0 ? areaM2 : 0;
 
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
@@ -728,7 +727,6 @@ export default function CotizadorMarcos() {
       vidrioAreaM2,
       fondoAreaM2,
       paspartuAreaM2,
-      interiorConPaspartuAreaM2,
       metrosMarcoUnitarios,
       metrosMarcoTotales,
       mediasVarillasCobradas: chargedBars.chargedHalfBars,
