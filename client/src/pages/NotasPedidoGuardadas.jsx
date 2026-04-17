@@ -134,6 +134,7 @@ export default function NotasPedidoGuardadas() {
   const [comprobantePreviewUrl, setComprobantePreviewUrl] = useState("");
   const [comprobantePreviewFile, setComprobantePreviewFile] = useState(null);
   const [comprobantePreviewLoading, setComprobantePreviewLoading] = useState(false);
+  const [comprobantePreviewOpen, setComprobantePreviewOpen] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -222,6 +223,7 @@ export default function NotasPedidoGuardadas() {
     setComprobantePreviewUrl("");
     setComprobantePreviewFile(null);
     setComprobantePreviewLoading(false);
+    setComprobantePreviewOpen(false);
   }
 
   useEffect(() => {
@@ -431,6 +433,15 @@ export default function NotasPedidoGuardadas() {
       title: "No se pudo copiar",
       text: "Tu navegador no permitió copiar la imagen. La descargamos para que la uses igual.",
     });
+  }
+
+  function abrirComprobantePreview() {
+    if (!comprobantePreviewUrl || comprobantePreviewLoading) return;
+    setComprobantePreviewOpen(true);
+  }
+
+  function cerrarComprobantePreview() {
+    setComprobantePreviewOpen(false);
   }
 
   function quitarProveedorAsignado(proveedorId) {
@@ -774,7 +785,12 @@ export default function NotasPedidoGuardadas() {
                     Antes de derivar la nota, podés enviarla por WhatsApp o imprimirla como comprobante.
                   </div>
                   <div className="ng-clientProofRow">
-                    <div className="ng-clientProofThumb">
+                    <button
+                      type="button"
+                      className="ng-clientProofThumb"
+                      onClick={abrirComprobantePreview}
+                      disabled={!comprobantePreviewUrl || comprobantePreviewLoading}
+                    >
                       {comprobantePreviewLoading ? (
                         <div className="ng-clientProofPlaceholder">Generando comprobante...</div>
                       ) : comprobantePreviewUrl ? (
@@ -782,7 +798,7 @@ export default function NotasPedidoGuardadas() {
                       ) : (
                         <div className="ng-clientProofPlaceholder">Sin vista previa</div>
                       )}
-                    </div>
+                    </button>
 
                     <div className="ng-clientProofActions">
                       <button className="ng-actionBtn ng-actionBtn--ghost" onClick={copiarComprobanteCliente} disabled={comprobantePreviewLoading}>
@@ -937,6 +953,19 @@ export default function NotasPedidoGuardadas() {
               <button className="ng-actionBtn ng-actionBtn--primary" onClick={guardarGestion} disabled={savingGestion}>
                 {savingGestion ? "Guardando..." : "Guardar gestion"}
               </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {comprobantePreviewOpen && comprobantePreviewUrl ? (
+        <div className="ng-previewLightbox" onClick={cerrarComprobantePreview}>
+          <div className="ng-previewLightboxDialog" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="ng-previewLightboxClose" onClick={cerrarComprobantePreview}>
+              Cerrar
+            </button>
+            <div className="ng-previewLightboxBody">
+              <img src={comprobantePreviewUrl} alt="Comprobante para cliente en grande" />
             </div>
           </div>
         </div>

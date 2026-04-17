@@ -517,22 +517,45 @@
 }
 
 .ng-clientProofThumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(73, 58, 38, 0.1);
   background: #fff;
-  min-height: 150px;
+  min-height: 0;
+  aspect-ratio: 200 / 145;
   box-shadow: 0 10px 20px rgba(55, 43, 29, 0.06);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.ng-clientProofThumb:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(73, 58, 38, 0.18);
+  box-shadow: 0 14px 28px rgba(55, 43, 29, 0.10);
+}
+
+.ng-clientProofThumb:disabled {
+  cursor: default;
 }
 
 .ng-clientProofThumb img {
   display: block;
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
+  object-fit: contain;
+  object-position: center;
 }
 
 .ng-clientProofPlaceholder {
-  min-height: 150px;
+  min-height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -547,6 +570,64 @@
 .ng-clientProofActions {
   display: grid;
   gap: 10px;
+}
+
+.ng-previewLightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: rgba(18, 14, 10, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.ng-previewLightboxDialog {
+  position: relative;
+  width: min(1100px, 100%);
+  max-height: calc(100vh - 56px);
+  padding: 20px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(34, 28, 22, 0.96) 0%, rgba(21, 18, 15, 0.96) 100%);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.36);
+}
+
+.ng-previewLightboxClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fffdf8;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ng-previewLightboxBody {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: min(72vh, 820px);
+  max-height: calc(100vh - 96px);
+  padding-top: 22px;
+}
+
+.ng-previewLightboxBody img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 140px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
 }
 
 .ng-inlinePromptHead {
@@ -819,6 +900,19 @@
 
   .ng-clientProofRow {
     grid-template-columns: 1fr;
+  }
+
+  .ng-previewLightbox {
+    padding: 16px;
+  }
+
+  .ng-previewLightboxDialog {
+    padding: 16px;
+  }
+
+  .ng-previewLightboxBody {
+    min-height: auto;
+    padding-top: 42px;
   }
 
   .ng-stats,
