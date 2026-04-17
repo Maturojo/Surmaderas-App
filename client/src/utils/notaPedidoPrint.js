@@ -235,7 +235,8 @@ function buildStyles() {
         inset 0 0 0 0.3mm rgba(255,255,255,0.9);
     }
     .npw-logoFrame img {
-      width: 18.4mm;
+      width: 21.8mm;
+      height: 21.8mm;
       object-fit: contain;
       filter: grayscale(1);
     }
