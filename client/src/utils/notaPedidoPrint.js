@@ -269,14 +269,14 @@ function buildStyles() {
     }
     .npw-title {
       margin: 0;
-      font-size: 6.9mm;
-      line-height: 0.97;
+      font-size: 6.2mm;
+      line-height: 1.02;
       font-weight: 900;
       letter-spacing: -0.02em;
       color: #171513;
     }
     .npw-headDivider {
-      margin-top: 1.2mm;
+      margin-top: 1.8mm;
       border-top: 0.3mm solid rgba(84, 72, 58, 0.7);
     }
     .npw-bottomline {
@@ -284,7 +284,7 @@ function buildStyles() {
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 5.5mm;
       align-items: start;
-      margin-top: 1.5mm;
+      margin-top: 2mm;
     }
     .npw-client {
       min-width: 0;
@@ -294,25 +294,26 @@ function buildStyles() {
     }
     .npw-clientInfo {
       min-width: 0;
+      padding-right: 1mm;
     }
     .npw-clientName {
-      font-size: 5.2mm;
+      font-size: 4.8mm;
       line-height: 1.06;
       font-weight: 500;
       color: #1d1916;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
       letter-spacing: 0.03em;
     }
     .npw-clientPhone {
-      font-size: 4.8mm;
+      font-size: 4.5mm;
       line-height: 1.08;
       font-weight: 400;
       color: #222;
-      margin-top: 0.5mm;
+      margin-top: 0.9mm;
       letter-spacing: 0.01em;
-      text-align: center;
+      text-align: left;
     }
     .npw-clientDivider {
       width: 0.3mm;
@@ -591,6 +592,15 @@ async function waitForImages(root) {
   );
 }
 
+async function waitForFonts() {
+  if (!document.fonts?.ready) return;
+  try {
+    await document.fonts.ready;
+  } catch {
+    // Ignore font loading errors and continue with available fonts.
+  }
+}
+
 export async function generateNotaPedidoImageFile(data) {
   const widthPx = Math.round(NOTE_WIDTH_MM * CSS_PX_PER_MM);
   const pageCount = getNotaPedidoPageCount(data);
@@ -612,6 +622,7 @@ export async function generateNotaPedidoImageFile(data) {
     const node = host.querySelector(".npw-pages");
     node.style.width = `${widthPx}px`;
     node.style.height = `${heightPx}px`;
+    await waitForFonts();
     await waitForImages(host);
 
     const canvas = await html2canvas(node, {
