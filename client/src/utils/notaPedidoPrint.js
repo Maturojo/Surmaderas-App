@@ -354,15 +354,15 @@ function buildStyles() {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
       padding: 0.9mm 0;
-      font-size: 4.9mm;
+      font-size: 4.4mm;
       color: #414141;
     }
     .npw-summaryRow strong {
-      font-size: 4.9mm;
+      font-size: 4.4mm;
     }
     .npw-summaryRow.discount {
       grid-template-columns: 1fr auto auto;
-      font-size: 3.1mm;
+      font-size: 2.8mm;
     }
     .npw-divider {
       border-top: 0.35mm solid #626262;
@@ -372,10 +372,10 @@ function buildStyles() {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
       margin-top: 1.4mm;
-      padding: 2.8mm 3mm;
+      padding: 2.3mm 2.8mm;
       background: #040404;
       color: #fff;
-      font-size: 4.9mm;
+      font-size: 4.5mm;
       font-weight: 900;
     }
     .npw-footer {
@@ -448,12 +448,18 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                 <span>Subtotal</span>
                 <strong>$${escapeHtml(toARS(data.subtotal))}</strong>
               </div>
-              <div class="npw-divider"></div>
-              <div class="npw-summaryRow discount">
-                <span>Descuento (si hay)</span>
-                <strong>${data.descuentoMonto > 0 ? `${escapeHtml(toARS(data.descuentoPct))}%` : "-"}</strong>
-                <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
-              </div>
+              ${
+                data.descuentoMonto > 0
+                  ? `
+                    <div class="npw-divider"></div>
+                    <div class="npw-summaryRow discount">
+                      <span>Descuento (si hay)</span>
+                      <strong>${escapeHtml(toARS(data.descuentoPct))}%</strong>
+                      <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
+                    </div>
+                  `
+                  : ""
+              }
               <div class="npw-summaryTotal">
                 <span>TOTAL</span>
                 <strong>$${escapeHtml(toARS(data.total))}</strong>
