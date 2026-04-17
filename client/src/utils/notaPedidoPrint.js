@@ -274,6 +274,8 @@ function buildStyles() {
       font-weight: 900;
       letter-spacing: -0.02em;
       color: #171513;
+      position: relative;
+      top: -0.8mm;
     }
     .npw-headDivider {
       margin-top: 1.8mm;
