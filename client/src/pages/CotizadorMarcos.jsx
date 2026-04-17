@@ -1110,6 +1110,7 @@ export default function CotizadorMarcos() {
 
             <div style={{ marginTop: 12 }}>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile.nombre} />
+              <SummaryRow label="Ancho de varilla" value={`${formatNumber(selectedProfile.frenteMm, 0)} mm`} />
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
               <SummaryRow label="Tipo de medida" value={form.tipoMedida === "interior" ? "Interior" : "Exterior"} />
               <SummaryRow
