@@ -761,6 +761,26 @@ export default function CotizadorMarcos() {
     }
   }
 
+  function handleVarillaSearchChange(nextValue) {
+    setVarillaSearch(nextValue);
+    const normalizedValue = String(nextValue || "").trim().toLowerCase();
+
+    if (!normalizedValue) {
+      return;
+    }
+
+    const matchedProfile = INITIAL_PROFILES.find((profile) => {
+      const codigo = String(profile.codigo || "").toLowerCase();
+      const nombre = String(profile.nombre || "").toLowerCase();
+      const fullLabel = `${codigo} - ${nombre}`;
+      return codigo === normalizedValue || nombre === normalizedValue || fullLabel === normalizedValue;
+    });
+
+    if (matchedProfile) {
+      setField("profileId", matchedProfile.id);
+    }
+  }
+
   function handleOrientationChange(nextOrientation) {
     setForm((prev) => reorderFormDimensions(prev, nextOrientation));
   }
@@ -874,8 +894,9 @@ export default function CotizadorMarcos() {
                   </span>
                   <input
                     type="text"
+                    list="varillas-options"
                     value={varillaSearch}
-                    onChange={(e) => setVarillaSearch(e.target.value)}
+                    onChange={(e) => handleVarillaSearchChange(e.target.value)}
                     placeholder="Buscar por codigo o nombre"
                     style={{
                       width: "100%",
@@ -887,17 +908,11 @@ export default function CotizadorMarcos() {
                       outline: "none",
                     }}
                   />
-                  <select
-                    value={form.profileId}
-                    onChange={(e) => handleProfileChange(e.target.value)}
-                    style={selectFieldStyle}
-                  >
+                  <datalist id="varillas-options">
                     {filteredProfiles.map((profile) => (
-                      <option key={profile.id} value={profile.id}>
-                        {profile.codigo} · {profile.nombre}
-                      </option>
+                      <option key={profile.id} value={`${profile.codigo} - ${profile.nombre}`} />
                     ))}
-                  </select>
+                  </datalist>
                   <span style={helperTextStyle}>
                     Busca por codigo o nombre. Si el filtro queda vacio, se muestran todas las varillas cargadas.
                   </span>
