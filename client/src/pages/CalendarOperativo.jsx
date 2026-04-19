@@ -115,6 +115,8 @@ export default function CalendarOperativo() {
   const [form, setForm] = useState(() => ({ ...emptyForm, fecha: today }));
   const [agendaOpen, setAgendaOpen] = useState(false);
   const [reminderModalOpen, setReminderModalOpen] = useState(false);
+  const [draggingReminderId, setDraggingReminderId] = useState("");
+  const [dropTargetDay, setDropTargetDay] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -285,6 +287,45 @@ export default function CalendarOperativo() {
     }
   }
 
+  async function moveReminderToDate(item, nextDate) {
+    if (!item?._id || item.type !== "recordatorio" || !nextDate || item.fecha === nextDate) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await actualizarRecordatorio(item._id, {
+        titulo: item.titulo,
+        descripcion: item.descripcion,
+        fecha: nextDate,
+        prioridad: item.prioridad,
+        completado: Boolean(item.completado),
+      });
+
+      const nextCursor = new Date(`${nextDate}T00:00:00`);
+      const shouldMoveCursor =
+        viewMode === "week"
+          ? !gridDays.some((day) => ymd(day) === nextDate)
+          : nextDate.slice(0, 7) !== monthKey(cursor);
+
+      if (shouldMoveCursor) {
+        setCursor(nextCursor);
+        await refreshCalendar(nextCursor);
+      } else {
+        await refreshCalendar();
+      }
+
+      setSelectedDay(nextDate);
+      setError("");
+    } catch (moveError) {
+      setError(moveError.message || "No se pudo mover el recordatorio");
+    } finally {
+      setSaving(false);
+      setDraggingReminderId("");
+      setDropTargetDay("");
+    }
+  }
+
   function moveCursor(step) {
     setCursor((prev) => (viewMode === "week" ? addDays(prev, step * 7) : addMonths(prev, step)));
   }
@@ -390,10 +431,31 @@ export default function CalendarOperativo() {
               <button
                 key={key}
                 type="button"
-                className={`calendar-cell${isSelected ? " is-selected" : ""}${!isCurrentMonth ? " is-muted" : ""}${isToday ? " is-today" : ""}`}
+                className={`calendar-cell${isSelected ? " is-selected" : ""}${!isCurrentMonth ? " is-muted" : ""}${isToday ? " is-today" : ""}${dropTargetDay === key ? " is-dropTarget" : ""}`}
                 onClick={() => {
                   setSelectedDay(key);
                   setAgendaOpen(true);
+                }}
+                onDragOver={(event) => {
+                  if (!draggingReminderId) return;
+                  event.preventDefault();
+                  if (dropTargetDay !== key) {
+                    setDropTargetDay(key);
+                  }
+                }}
+                onDragLeave={() => {
+                  if (dropTargetDay === key) {
+                    setDropTargetDay("");
+                  }
+                }}
+                onDrop={async (event) => {
+                  if (!draggingReminderId) return;
+                  event.preventDefault();
+                  const reminderId = event.dataTransfer.getData("text/plain");
+                  const reminder = (calendarData?.eventos || []).find(
+                    (item) => item._id === reminderId && item.type === "recordatorio"
+                  );
+                  await moveReminderToDate(reminder, key);
                 }}
               >
                 <div className="calendar-cellTop">
@@ -409,6 +471,17 @@ export default function CalendarOperativo() {
                     <span
                       key={item.id}
                       className={`calendar-miniEvent${item.type === "nota-pedido" ? " is-note" : ""}${item.completado ? " is-done" : ""}`}
+                      draggable={item.type === "recordatorio"}
+                      onDragStart={(event) => {
+                        if (item.type !== "recordatorio") return;
+                        event.dataTransfer.setData("text/plain", item._id);
+                        event.dataTransfer.effectAllowed = "move";
+                        setDraggingReminderId(item._id);
+                      }}
+                      onDragEnd={() => {
+                        setDraggingReminderId("");
+                        setDropTargetDay("");
+                      }}
                     >
                       {item.type === "nota-pedido" ? item.numero : item.titulo}
                     </span>
@@ -519,6 +592,9 @@ export default function CalendarOperativo() {
                       <button type="button" className="calendar-linkBtn" onClick={() => openReminderModal(item.fecha, item)}>
                         Editar
                       </button>
+                      <button type="button" className="calendar-linkBtn" onClick={() => openReminderModal(item.fecha, item)}>
+                        Mover
+                      </button>
                       <button type="button" className="calendar-linkBtn danger" onClick={() => handleDelete(item)}>
                         Eliminar
                       </button>
@@ -537,7 +613,11 @@ export default function CalendarOperativo() {
             <div className="calendar-sectionHead">
               <div>
                 <h3>{editingId ? "Editar recordatorio" : "Crear recordatorio"}</h3>
-                <p>Se guarda para todo el equipo en la fecha elegida.</p>
+                <p>
+                  {editingId
+                    ? "Podés cambiar la fecha para moverlo a otro día."
+                    : "Se guarda para todo el equipo en la fecha elegida."}
+                </p>
               </div>
               <button type="button" className="calendar-ghostBtn" onClick={closeReminderModal}>
                 Cerrar

@@ -1,7 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PLACAS_ACTUALIZACION, PLACAS_DATA } from "../data/placasData";
 import { generarListaPlacasPdf } from "../utils/placasPdf";
 import "../css/lista-placas.css";
+
+const PLACAS_STORAGE_KEY = "surmaderas-placas-config-v1";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("es-AR", {
@@ -35,6 +37,38 @@ function getMediasPlaca(medida = "") {
   };
 }
 
+function clonePlacasData(data = PLACAS_DATA) {
+  return data.map((bloque) => ({
+    ...bloque,
+    items: (bloque.items || []).map((item) => ({ ...item })),
+  }));
+}
+
+function getTodayLabel() {
+  return new Date().toLocaleDateString("es-AR");
+}
+
+function loadPlacasConfig() {
+  if (typeof window === "undefined") {
+    return { data: clonePlacasData(), actualizacion: PLACAS_ACTUALIZACION };
+  }
+
+  try {
+    const raw = window.localStorage.getItem(PLACAS_STORAGE_KEY);
+    if (!raw) return { data: clonePlacasData(), actualizacion: PLACAS_ACTUALIZACION };
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed?.data)) {
+      return { data: clonePlacasData(), actualizacion: PLACAS_ACTUALIZACION };
+    }
+    return {
+      data: clonePlacasData(parsed.data),
+      actualizacion: parsed.actualizacion || PLACAS_ACTUALIZACION,
+    };
+  } catch {
+    return { data: clonePlacasData(), actualizacion: PLACAS_ACTUALIZACION };
+  }
+}
+
 function HalfPlateDiagram({ orientation }) {
   const titleByOrientation = {
     entera: "Placa entera",
@@ -52,18 +86,35 @@ function HalfPlateDiagram({ orientation }) {
   );
 }
 export default function ListaPlacas() {
+  const initialConfig = useMemo(() => loadPlacasConfig(), []);
+  const [placasData, setPlacasData] = useState(initialConfig.data);
+  const [actualizacionLabel, setActualizacionLabel] = useState(initialConfig.actualizacion);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaActiva, setCategoriaActiva] = useState("Todas");
+  const [configOpen, setConfigOpen] = useState(false);
+  const [ajusteModo, setAjusteModo] = useState("general");
+  const [ajusteCategoria, setAjusteCategoria] = useState("");
+  const [ajustePorcentaje, setAjustePorcentaje] = useState("");
+  const [mensajeConfig, setMensajeConfig] = useState("");
+  const [nuevaPlaca, setNuevaPlaca] = useState({
+    categoriaExistente: "",
+    categoriaNueva: "",
+    nombre: "",
+    medida: "",
+    espesor: "",
+    precioPlaca: "",
+    precioMedia: "",
+  });
 
   const categorias = useMemo(
-    () => ["Todas", ...PLACAS_DATA.map((bloque) => bloque.categoria)],
-    []
+    () => ["Todas", ...placasData.map((bloque) => bloque.categoria)],
+    [placasData]
   );
 
   const bloques = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
 
-    return PLACAS_DATA.map((bloque) => ({
+    return placasData.map((bloque) => ({
       ...bloque,
       items: bloque.items.filter((item) => {
         if (categoriaActiva !== "Todas" && bloque.categoria !== categoriaActiva) return false;
@@ -80,15 +131,132 @@ export default function ListaPlacas() {
         ]
           .join(" ")
           .toLowerCase();
-        return texto.includes(termino);
-      }),
+          return texto.includes(termino);
+        }),
     })).filter((bloque) => bloque.items.length > 0);
-  }, [busqueda, categoriaActiva]);
+  }, [busqueda, categoriaActiva, placasData]);
 
   const totalItems = useMemo(
     () => bloques.reduce((acc, bloque) => acc + bloque.items.length, 0),
     [bloques]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(
+      PLACAS_STORAGE_KEY,
+      JSON.stringify({
+        data: placasData,
+        actualizacion: actualizacionLabel,
+      })
+    );
+  }, [placasData, actualizacionLabel]);
+
+  function touchActualizacion() {
+    setActualizacionLabel(getTodayLabel());
+  }
+
+  function actualizarNuevaPlaca(field, value) {
+    setNuevaPlaca((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function aplicarAjustePrecios() {
+    const porcentaje = Number(String(ajustePorcentaje).replace(",", "."));
+    if (!Number.isFinite(porcentaje) || porcentaje === 0) {
+      setMensajeConfig("Ingresá un porcentaje valido distinto de 0.");
+      return;
+    }
+
+    if (ajusteModo === "material" && !ajusteCategoria) {
+      setMensajeConfig("Elegí una categoria antes de aplicar el aumento por material.");
+      return;
+    }
+
+    setPlacasData((prev) =>
+      prev.map((bloque) => {
+        if (ajusteModo === "material" && bloque.categoria !== ajusteCategoria) return bloque;
+
+        return {
+          ...bloque,
+          items: bloque.items.map((item) => ({
+            ...item,
+            precioPlaca: Number((item.precioPlaca * (1 + porcentaje / 100)).toFixed(2)),
+            precioMedia: Number((item.precioMedia * (1 + porcentaje / 100)).toFixed(2)),
+          })),
+        };
+      })
+    );
+
+    touchActualizacion();
+    setMensajeConfig(
+      ajusteModo === "general"
+        ? `Se actualizo toda la lista un ${porcentaje}%.`
+        : `Se actualizo ${ajusteCategoria} un ${porcentaje}%.`
+    );
+    setAjustePorcentaje("");
+  }
+
+  function agregarPlacaNueva() {
+    const categoriaFinal = (nuevaPlaca.categoriaNueva || nuevaPlaca.categoriaExistente).trim();
+    const nombre = nuevaPlaca.nombre.trim();
+    const medida = nuevaPlaca.medida.trim();
+    const espesor = nuevaPlaca.espesor.trim();
+    const precioPlaca = Number(String(nuevaPlaca.precioPlaca).replace(",", "."));
+    const precioMedia = Number(String(nuevaPlaca.precioMedia).replace(",", "."));
+
+    if (!categoriaFinal || !nombre || !medida || !espesor) {
+      setMensajeConfig("Completa categoria, nombre, medida y espesor para agregar la placa.");
+      return;
+    }
+
+    if (!Number.isFinite(precioPlaca) || !Number.isFinite(precioMedia)) {
+      setMensajeConfig("Cargá precios validos para placa entera y media placa.");
+      return;
+    }
+
+    setPlacasData((prev) => {
+      const existente = prev.find((bloque) => bloque.categoria === categoriaFinal);
+      if (existente) {
+        return prev.map((bloque) =>
+          bloque.categoria === categoriaFinal
+            ? {
+                ...bloque,
+                items: [
+                  ...bloque.items,
+                  { nombre, medida, espesor, precioPlaca, precioMedia },
+                ],
+              }
+            : bloque
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          categoria: categoriaFinal,
+          items: [{ nombre, medida, espesor, precioPlaca, precioMedia }],
+        },
+      ];
+    });
+
+    touchActualizacion();
+    setMensajeConfig(`Se agrego ${nombre} en ${categoriaFinal}.`);
+    setNuevaPlaca({
+      categoriaExistente: "",
+      categoriaNueva: "",
+      nombre: "",
+      medida: "",
+      espesor: "",
+      precioPlaca: "",
+      precioMedia: "",
+    });
+  }
+
+  function restablecerListaBase() {
+    setPlacasData(clonePlacasData());
+    setActualizacionLabel(PLACAS_ACTUALIZACION);
+    setMensajeConfig("Se restablecio la lista base de placas.");
+  }
 
   function handlePdf(autoPrint = false) {
     generarListaPlacasPdf({
@@ -120,7 +288,7 @@ export default function ListaPlacas() {
         <div className="placas-metaGrid">
           <article className="placas-metaCard">
             <span className="placas-metaLabel">Categorias</span>
-            <strong className="placas-metaValue">{PLACAS_DATA.length}</strong>
+            <strong className="placas-metaValue">{placasData.length}</strong>
           </article>
           <article className="placas-metaCard">
             <span className="placas-metaLabel">Items visibles</span>
@@ -128,7 +296,7 @@ export default function ListaPlacas() {
           </article>
           <article className="placas-metaCard">
             <span className="placas-metaLabel">Actualizado</span>
-            <strong className="placas-metaValue placas-metaValue--small">{PLACAS_ACTUALIZACION}</strong>
+            <strong className="placas-metaValue placas-metaValue--small">{actualizacionLabel}</strong>
           </article>
         </div>
       </div>
@@ -144,6 +312,13 @@ export default function ListaPlacas() {
           />
 
           <div className="placas-actions">
+            <button
+              type="button"
+              className="placas-actionBtn"
+              onClick={() => setConfigOpen((prev) => !prev)}
+            >
+              {configOpen ? "Cerrar configuracion" : "Configuracion"}
+            </button>
             <button type="button" className="placas-actionBtn" onClick={() => handlePdf(false)}>
               Descargar PDF
             </button>
@@ -170,6 +345,165 @@ export default function ListaPlacas() {
           ))}
         </div>
       </div>
+
+      {configOpen ? (
+        <section className="placas-configPanel">
+          <div className="placas-configGrid">
+            <article className="placas-configCard">
+              <div className="placas-configTitle">Subir precios</div>
+              <p className="placas-configCopy">
+                Ajusta toda la lista o solo un tipo de material. El porcentaje impacta placa entera y media placa.
+              </p>
+
+              <div className="placas-configInline">
+                <label className="placas-field">
+                  <span>Modo</span>
+                  <select value={ajusteModo} onChange={(event) => setAjusteModo(event.target.value)}>
+                    <option value="general">General</option>
+                    <option value="material">Por material</option>
+                  </select>
+                </label>
+
+                {ajusteModo === "material" ? (
+                  <label className="placas-field">
+                    <span>Material</span>
+                    <select
+                      value={ajusteCategoria}
+                      onChange={(event) => setAjusteCategoria(event.target.value)}
+                    >
+                      <option value="">Elegir categoria</option>
+                      {placasData.map((bloque) => (
+                        <option key={bloque.categoria} value={bloque.categoria}>
+                          {bloque.categoria}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+
+                <label className="placas-field">
+                  <span>Porcentaje</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={ajustePorcentaje}
+                    onChange={(event) => setAjustePorcentaje(event.target.value)}
+                    placeholder="Ej: 8"
+                  />
+                </label>
+              </div>
+
+              <div className="placas-configActions">
+                <button type="button" className="placas-actionBtn placas-actionBtn--primary" onClick={aplicarAjustePrecios}>
+                  Aplicar aumento
+                </button>
+                <button type="button" className="placas-actionBtn" onClick={restablecerListaBase}>
+                  Restablecer lista base
+                </button>
+              </div>
+            </article>
+
+            <article className="placas-configCard">
+              <div className="placas-configTitle">Agregar placa nueva</div>
+              <p className="placas-configCopy">
+                Puedes cargarla dentro de una categoria existente o crear un material nuevo.
+              </p>
+
+              <div className="placas-configInline">
+                <label className="placas-field">
+                  <span>Categoria existente</span>
+                  <select
+                    value={nuevaPlaca.categoriaExistente}
+                    onChange={(event) => actualizarNuevaPlaca("categoriaExistente", event.target.value)}
+                  >
+                    <option value="">Elegir categoria</option>
+                    {placasData.map((bloque) => (
+                      <option key={bloque.categoria} value={bloque.categoria}>
+                        {bloque.categoria}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="placas-field">
+                  <span>O categoria nueva</span>
+                  <input
+                    value={nuevaPlaca.categoriaNueva}
+                    onChange={(event) => actualizarNuevaPlaca("categoriaNueva", event.target.value)}
+                    placeholder="Ej: Enchapados"
+                  />
+                </label>
+              </div>
+
+              <div className="placas-configInline">
+                <label className="placas-field">
+                  <span>Nombre</span>
+                  <input
+                    value={nuevaPlaca.nombre}
+                    onChange={(event) => actualizarNuevaPlaca("nombre", event.target.value)}
+                    placeholder="Ej: Roble natural"
+                  />
+                </label>
+
+                <label className="placas-field">
+                  <span>Medida</span>
+                  <input
+                    value={nuevaPlaca.medida}
+                    onChange={(event) => actualizarNuevaPlaca("medida", event.target.value)}
+                    placeholder="Ej: 1,83 x 2,75"
+                  />
+                </label>
+
+                <label className="placas-field">
+                  <span>Espesor</span>
+                  <input
+                    value={nuevaPlaca.espesor}
+                    onChange={(event) => actualizarNuevaPlaca("espesor", event.target.value)}
+                    placeholder="Ej: 18mm"
+                  />
+                </label>
+              </div>
+
+              <div className="placas-configInline">
+                <label className="placas-field">
+                  <span>Placa entera</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={nuevaPlaca.precioPlaca}
+                    onChange={(event) => actualizarNuevaPlaca("precioPlaca", event.target.value)}
+                    placeholder="0"
+                  />
+                </label>
+
+                <label className="placas-field">
+                  <span>1/2 placa</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={nuevaPlaca.precioMedia}
+                    onChange={(event) => actualizarNuevaPlaca("precioMedia", event.target.value)}
+                    placeholder="0"
+                  />
+                </label>
+              </div>
+
+              <div className="placas-configActions">
+                <button type="button" className="placas-actionBtn placas-actionBtn--primary" onClick={agregarPlacaNueva}>
+                  Agregar placa
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <div className="placas-configFoot">
+            <span>
+              Esta configuracion se guarda en este navegador para que puedas seguir editando la lista sin recargar todo desde cero.
+            </span>
+            {mensajeConfig ? <strong>{mensajeConfig}</strong> : null}
+          </div>
+        </section>
+      ) : null}
 
       {bloques.length === 0 ? (
         <div className="placas-empty">

@@ -101,6 +101,95 @@
   gap: 14px;
 }
 
+.placas-configPanel {
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(84, 61, 35, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 30px rgba(73, 54, 31, 0.06);
+  display: grid;
+  gap: 18px;
+}
+
+.placas-configGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.placas-configCard {
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(84, 61, 35, 0.08);
+  background: linear-gradient(180deg, #fffdf9 0%, #f8f1e6 100%);
+  display: grid;
+  gap: 14px;
+}
+
+.placas-configTitle {
+  color: #2c2118;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.placas-configCopy {
+  margin: 0;
+  color: #665b4d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.placas-configInline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.placas-field {
+  display: grid;
+  gap: 6px;
+}
+
+.placas-field span {
+  color: #745f47;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.placas-field input,
+.placas-field select {
+  min-height: 44px;
+  width: 100%;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(84, 61, 35, 0.14);
+  background: #fffdf9;
+  color: #2a2219;
+  outline: none;
+}
+
+.placas-configActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.placas-configFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #6a5a48;
+  font-size: 13px;
+}
+
+.placas-configFoot strong {
+  color: #3b2a1c;
+}
+
 .placas-toolbarTop,
 .placas-actions {
   display: flex;
@@ -345,6 +434,11 @@
 
   .placas-actions {
     flex-wrap: wrap;
+  }
+
+  .placas-configGrid,
+  .placas-configInline {
+    grid-template-columns: 1fr;
   }
 
   .placas-actionBtn {
