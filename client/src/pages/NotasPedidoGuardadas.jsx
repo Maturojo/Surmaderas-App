@@ -133,8 +133,9 @@ export default function NotasPedidoGuardadas() {
   const [savingGestion, setSavingGestion] = useState(false);
   const [comprobantePreviewUrl, setComprobantePreviewUrl] = useState("");
   const [comprobantePreviewFile, setComprobantePreviewFile] = useState(null);
+  const [proveedorPreviewUrl, setProveedorPreviewUrl] = useState("");
   const [comprobantePreviewLoading, setComprobantePreviewLoading] = useState(false);
-  const [comprobantePreviewOpen, setComprobantePreviewOpen] = useState(false);
+  const [previewLightbox, setPreviewLightbox] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -211,6 +212,9 @@ export default function NotasPedidoGuardadas() {
     if (comprobantePreviewUrl) {
       URL.revokeObjectURL(comprobantePreviewUrl);
     }
+    if (proveedorPreviewUrl) {
+      URL.revokeObjectURL(proveedorPreviewUrl);
+    }
     setGestionOpen(false);
     setGestionNota(null);
     setEstadoOperativo("Pendiente");
@@ -222,8 +226,9 @@ export default function NotasPedidoGuardadas() {
     setSavingGestion(false);
     setComprobantePreviewUrl("");
     setComprobantePreviewFile(null);
+    setProveedorPreviewUrl("");
     setComprobantePreviewLoading(false);
-    setComprobantePreviewOpen(false);
+    setPreviewLightbox(null);
   }
 
   useEffect(() => {
@@ -238,19 +243,36 @@ export default function NotasPedidoGuardadas() {
       setComprobantePreviewLoading(true);
 
       try {
-        const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(gestionNota));
+        const proveedorSeleccionado = proveedores.find(
+          (prov) => String(prov._id) === String(proveedorIdNuevo)
+        );
+        const [fileCliente, fileProveedor] = await Promise.all([
+          generateNotaPedidoImageFile(buildNotaPedidoPrintData(gestionNota)),
+          generateNotaPedidoImageFile(
+            buildNotaPedidoPrintData(gestionNota, {
+              audience: "provider",
+              providerName: proveedorSeleccionado?.nombre || "",
+            })
+          ),
+        ]);
         if (cancelled) return;
 
-        const nextUrl = URL.createObjectURL(file);
+        const nextUrl = URL.createObjectURL(fileCliente);
+        const nextProviderUrl = URL.createObjectURL(fileProveedor);
         setComprobantePreviewUrl((prev) => {
           if (prev) URL.revokeObjectURL(prev);
           return nextUrl;
         });
-        setComprobantePreviewFile(file);
+        setComprobantePreviewFile(fileCliente);
+        setProveedorPreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return nextProviderUrl;
+        });
       } catch {
         if (!cancelled) {
           setComprobantePreviewUrl("");
           setComprobantePreviewFile(null);
+          setProveedorPreviewUrl("");
         }
       } finally {
         if (!cancelled) setComprobantePreviewLoading(false);
@@ -262,7 +284,7 @@ export default function NotasPedidoGuardadas() {
     return () => {
       cancelled = true;
     };
-  }, [gestionOpen, gestionNota]);
+  }, [gestionOpen, gestionNota, proveedorIdNuevo, proveedores]);
 
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
@@ -440,13 +462,13 @@ export default function NotasPedidoGuardadas() {
     });
   }
 
-  function abrirComprobantePreview() {
-    if (!comprobantePreviewUrl || comprobantePreviewLoading) return;
-    setComprobantePreviewOpen(true);
+  function abrirComprobantePreview(url, alt) {
+    if (!url || comprobantePreviewLoading) return;
+    setPreviewLightbox({ url, alt });
   }
 
   function cerrarComprobantePreview() {
-    setComprobantePreviewOpen(false);
+    setPreviewLightbox(null);
   }
 
   function cerrarPromptProveedor() {
@@ -797,7 +819,9 @@ export default function NotasPedidoGuardadas() {
                     <button
                       type="button"
                       className="ng-clientProofThumb"
-                      onClick={abrirComprobantePreview}
+                      onClick={() =>
+                        abrirComprobantePreview(comprobantePreviewUrl, "Comprobante para cliente en grande")
+                      }
                       disabled={!comprobantePreviewUrl || comprobantePreviewLoading}
                     >
                       {comprobantePreviewLoading ? (
@@ -887,7 +911,15 @@ export default function NotasPedidoGuardadas() {
                             </div>
                           </div>
                           <div className="ng-providerCardActions">
-                            <button className="ng-miniBtn ng-miniBtn--preview" onClick={abrirComprobantePreview}>
+                            <button
+                              className="ng-miniBtn ng-miniBtn--preview"
+                              onClick={() =>
+                                abrirComprobantePreview(
+                                  proveedorPreviewUrl,
+                                  `Nota para proveedor ${item.nombre || ""}`.trim()
+                                )
+                              }
+                            >
                               Vista previa
                             </button>
                             <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
@@ -915,14 +947,14 @@ export default function NotasPedidoGuardadas() {
         </div>
       ) : null}
 
-      {comprobantePreviewOpen && comprobantePreviewUrl ? (
+      {previewLightbox?.url ? (
         <div className="ng-previewLightbox" onClick={cerrarComprobantePreview}>
           <div className="ng-previewLightboxDialog" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="ng-previewLightboxClose" onClick={cerrarComprobantePreview}>
               Cerrar
             </button>
             <div className="ng-previewLightboxBody">
-              <img src={comprobantePreviewUrl} alt="Comprobante para cliente en grande" />
+              <img src={previewLightbox.url} alt={previewLightbox.alt || "Vista previa en grande"} />
             </div>
           </div>
         </div>
@@ -947,16 +979,16 @@ export default function NotasPedidoGuardadas() {
                 <strong>{gestionNota?.numero || "-"}</strong>
               </div>
               <div>
-                <span>Cliente</span>
-                <strong>{getNotaClienteNombre(gestionNota)}</strong>
-              </div>
-              <div>
                 <span>Entrega</span>
                 <strong>{gestionNota?.entrega || "-"}</strong>
               </div>
               <div>
-                <span>Total</span>
-                <strong>${toARS(getNotaTotal(gestionNota))}</strong>
+                <span>Vendedor</span>
+                <strong>{gestionNota?.vendedor || "-"}</strong>
+              </div>
+              <div>
+                <span>Items</span>
+                <strong>{Array.isArray(gestionNota?.items) ? gestionNota.items.length : 0}</strong>
               </div>
             </div>
 
@@ -964,13 +996,15 @@ export default function NotasPedidoGuardadas() {
               <button
                 type="button"
                 className="ng-clientProofThumb ng-clientProofThumb--modal"
-                onClick={abrirComprobantePreview}
-                disabled={!comprobantePreviewUrl || comprobantePreviewLoading}
+                onClick={() =>
+                  abrirComprobantePreview(proveedorPreviewUrl, "Vista previa para proveedor")
+                }
+                disabled={!proveedorPreviewUrl || comprobantePreviewLoading}
               >
                 {comprobantePreviewLoading ? (
                   <div className="ng-clientProofPlaceholder">Generando comprobante...</div>
-                ) : comprobantePreviewUrl ? (
-                  <img src={comprobantePreviewUrl} alt="Vista previa para proveedor" />
+                ) : proveedorPreviewUrl ? (
+                  <img src={proveedorPreviewUrl} alt="Vista previa para proveedor" />
                 ) : (
                   <div className="ng-clientProofPlaceholder">Sin vista previa</div>
                 )}
