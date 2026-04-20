@@ -444,6 +444,10 @@ export default function NotasPedidoGuardadas() {
     setComprobantePreviewOpen(false);
   }
 
+  function cerrarPromptProveedor() {
+    setProveedorPromptOpen(false);
+  }
+
   function quitarProveedorAsignado(proveedorId) {
     setAsignaciones((prev) => prev.filter((item) => String(item.proveedorId) !== String(proveedorId)));
   }
@@ -814,81 +818,6 @@ export default function NotasPedidoGuardadas() {
                   </div>
                 </div>
 
-                {proveedorPromptOpen ? (
-                  <div className="ng-inlinePrompt">
-                    <div className="ng-inlinePromptHead">
-                      <div>
-                        <div className="ng-inlinePromptTitle">Agregar proveedor</div>
-                        <div className="ng-inlinePromptSub">Elegí el proveedor y cargá la observación para esta nota.</div>
-                      </div>
-                      <button className="ng-inlinePromptClose" onClick={() => setProveedorPromptOpen(false)}>
-                        Cerrar
-                      </button>
-                    </div>
-
-                    <select
-                      className="ng-select"
-                      value={proveedorIdNuevo}
-                      onChange={(e) => setProveedorIdNuevo(e.target.value)}
-                    >
-                      <option value="">Seleccionar proveedor</option>
-                      {proveedores.map((prov) => (
-                        <option key={prov._id} value={prov._id}>
-                          {prov.nombre}
-                        </option>
-                      ))}
-                    </select>
-
-                    {proveedorIdNuevo ? (
-                      <div className="ng-selectedProviderPreview">
-                        {(() => {
-                          const proveedorSeleccionado = proveedores.find((prov) => String(prov._id) === String(proveedorIdNuevo));
-                          if (!proveedorSeleccionado) return null;
-                          return (
-                            <span
-                              className="ng-destinoTag"
-                              style={estiloProveedor(
-                                proveedorSeleccionado?.color || colorProveedorPorNombre(proveedorSeleccionado?.nombre)
-                              )}
-                            >
-                              {proveedorSeleccionado?.nombre}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    ) : null}
-
-                    <textarea
-                      className="ng-textarea"
-                      rows={3}
-                      placeholder="Observacion para este proveedor"
-                      value={observacionNueva}
-                      onChange={(e) => setObservacionNueva(e.target.value)}
-                    />
-
-                    <label className="ng-checkboxRow">
-                      <input
-                        type="checkbox"
-                        checked={enviarWhatsappNuevo}
-                        onChange={(e) => setEnviarWhatsappNuevo(e.target.checked)}
-                      />
-                      <span>Enviar por WhatsApp al agregar proveedor</span>
-                    </label>
-
-                    <div className="ng-inlinePromptActions">
-                      <button className="ng-actionBtn ng-actionBtn--ghost" onClick={() => setProveedorPromptOpen(false)}>
-                        Después lo cargo
-                      </button>
-                      <button
-                        className="ng-actionBtn ng-actionBtn--primary"
-                        onClick={agregarProveedorAsignado}
-                        disabled={!proveedorIdNuevo}
-                      >
-                        Agregar proveedor
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
               </div>
 
               <div className="ng-panel">
@@ -933,10 +862,33 @@ export default function NotasPedidoGuardadas() {
                             {item?.enviadoWhatsapp ? (
                               <div className="ng-providerMetaTag">Enviado por WhatsApp</div>
                             ) : null}
+                            <div className="ng-providerNoteMeta">
+                              <div>
+                                <span>Nota</span>
+                                <strong>{gestionNota?.numero || "-"}</strong>
+                              </div>
+                              <div>
+                                <span>Cliente</span>
+                                <strong>{getNotaClienteNombre(gestionNota)}</strong>
+                              </div>
+                              <div>
+                                <span>Entrega</span>
+                                <strong>{gestionNota?.entrega || "-"}</strong>
+                              </div>
+                              <div>
+                                <span>Total</span>
+                                <strong>${toARS(getNotaTotal(gestionNota))}</strong>
+                              </div>
+                            </div>
                           </div>
-                          <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
-                            Quitar
-                          </button>
+                          <div className="ng-providerCardActions">
+                            <button className="ng-miniBtn ng-miniBtn--preview" onClick={abrirComprobantePreview}>
+                              Vista previa
+                            </button>
+                            <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
+                              Quitar
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))
@@ -966,6 +918,120 @@ export default function NotasPedidoGuardadas() {
             </button>
             <div className="ng-previewLightboxBody">
               <img src={comprobantePreviewUrl} alt="Comprobante para cliente en grande" />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {gestionOpen && gestionNota && proveedorPromptOpen ? (
+        <div className="ng-providerModalBack" onClick={cerrarPromptProveedor}>
+          <div className="ng-providerModal" onClick={(e) => e.stopPropagation()}>
+            <div className="ng-inlinePromptHead">
+              <div>
+                <div className="ng-inlinePromptTitle">Mandar a proveedor</div>
+                <div className="ng-inlinePromptSub">Elegí el proveedor y cargá la observación para esta nota.</div>
+              </div>
+              <button className="ng-inlinePromptClose" onClick={cerrarPromptProveedor}>
+                Cerrar
+              </button>
+            </div>
+
+            <div className="ng-providerModalNote">
+              <div>
+                <span>Nota</span>
+                <strong>{gestionNota?.numero || "-"}</strong>
+              </div>
+              <div>
+                <span>Cliente</span>
+                <strong>{getNotaClienteNombre(gestionNota)}</strong>
+              </div>
+              <div>
+                <span>Entrega</span>
+                <strong>{gestionNota?.entrega || "-"}</strong>
+              </div>
+              <div>
+                <span>Total</span>
+                <strong>${toARS(getNotaTotal(gestionNota))}</strong>
+              </div>
+            </div>
+
+            <div className="ng-providerModalPreview">
+              <button
+                type="button"
+                className="ng-clientProofThumb ng-clientProofThumb--modal"
+                onClick={abrirComprobantePreview}
+                disabled={!comprobantePreviewUrl || comprobantePreviewLoading}
+              >
+                {comprobantePreviewLoading ? (
+                  <div className="ng-clientProofPlaceholder">Generando comprobante...</div>
+                ) : comprobantePreviewUrl ? (
+                  <img src={comprobantePreviewUrl} alt="Vista previa para proveedor" />
+                ) : (
+                  <div className="ng-clientProofPlaceholder">Sin vista previa</div>
+                )}
+              </button>
+            </div>
+
+            <select
+              className="ng-select"
+              value={proveedorIdNuevo}
+              onChange={(e) => setProveedorIdNuevo(e.target.value)}
+            >
+              <option value="">Seleccionar proveedor</option>
+              {proveedores.map((prov) => (
+                <option key={prov._id} value={prov._id}>
+                  {prov.nombre}
+                </option>
+              ))}
+            </select>
+
+            {proveedorIdNuevo ? (
+              <div className="ng-selectedProviderPreview">
+                {(() => {
+                  const proveedorSeleccionado = proveedores.find((prov) => String(prov._id) === String(proveedorIdNuevo));
+                  if (!proveedorSeleccionado) return null;
+                  return (
+                    <span
+                      className="ng-destinoTag"
+                      style={estiloProveedor(
+                        proveedorSeleccionado?.color || colorProveedorPorNombre(proveedorSeleccionado?.nombre)
+                      )}
+                    >
+                      {proveedorSeleccionado?.nombre}
+                    </span>
+                  );
+                })()}
+              </div>
+            ) : null}
+
+            <textarea
+              className="ng-textarea"
+              rows={3}
+              placeholder="Observacion para este proveedor"
+              value={observacionNueva}
+              onChange={(e) => setObservacionNueva(e.target.value)}
+            />
+
+            <label className="ng-checkboxRow">
+              <input
+                type="checkbox"
+                checked={enviarWhatsappNuevo}
+                onChange={(e) => setEnviarWhatsappNuevo(e.target.checked)}
+              />
+              <span>Enviar por WhatsApp al agregar proveedor</span>
+            </label>
+
+            <div className="ng-inlinePromptActions">
+              <button className="ng-actionBtn ng-actionBtn--ghost" onClick={cerrarPromptProveedor}>
+                Después lo cargo
+              </button>
+              <button
+                className="ng-actionBtn ng-actionBtn--primary"
+                onClick={agregarProveedorAsignado}
+                disabled={!proveedorIdNuevo}
+              >
+                Agregar proveedor
+              </button>
             </div>
           </div>
         </div>

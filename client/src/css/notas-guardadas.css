@@ -572,6 +572,11 @@
   gap: 10px;
 }
 
+.ng-clientProofThumb--modal {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
 .ng-previewLightbox {
   position: fixed;
   inset: 0;
@@ -665,6 +670,65 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 14px;
+}
+
+.ng-providerModalBack {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 16, 12, 0.54);
+  backdrop-filter: blur(5px);
+}
+
+.ng-providerModal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 22px;
+  border-radius: 26px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background:
+    radial-gradient(circle at top right, rgba(176, 210, 241, 0.16), transparent 34%),
+    #fffdf9;
+  box-shadow: 0 26px 60px rgba(20, 15, 10, 0.22);
+}
+
+.ng-providerModalNote {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: linear-gradient(135deg, #f7f1e7 0%, #fcfaf7 100%);
+}
+
+.ng-providerModalNote span,
+.ng-providerNoteMeta span {
+  display: block;
+  color: #7b7267;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ng-providerModalNote strong,
+.ng-providerNoteMeta strong {
+  display: block;
+  margin-top: 5px;
+  color: #241f19;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.ng-providerModalPreview {
+  margin-top: 16px;
 }
 
 .ng-checkboxRow {
@@ -772,6 +836,17 @@
   font-size: 13px;
 }
 
+.ng-providerNoteMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fbf8f3;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+}
+
 .ng-providerMetaTag {
   display: inline-flex;
   align-items: center;
@@ -799,6 +874,17 @@
   border: 1px solid rgba(73, 58, 38, 0.12);
   background: #fff4f4;
   color: #943939;
+}
+
+.ng-miniBtn--preview {
+  background: #fff;
+  color: #2f2821;
+}
+
+.ng-providerCardActions {
+  display: grid;
+  gap: 8px;
+  min-width: 120px;
 }
 
 .ng-addCard {
@@ -913,6 +999,15 @@
   .ng-previewLightboxBody {
     min-height: auto;
     padding-top: 42px;
+  }
+
+  .ng-providerModal {
+    padding: 18px;
+  }
+
+  .ng-providerModalNote,
+  .ng-providerNoteMeta {
+    grid-template-columns: 1fr;
   }
 
   .ng-stats,
