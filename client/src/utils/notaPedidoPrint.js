@@ -508,7 +508,7 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                 <div class="npw-clientPhone">${
                   data.showClientDetails
                     ? escapeHtml(formatPhonePreview(data.clienteTelefono))
-                    : "Sin datos del cliente"
+                    : ""
                 }</div>
               </div>
               <div class="npw-clientDivider" aria-hidden="true"></div>
