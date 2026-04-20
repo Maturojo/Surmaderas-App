@@ -4,6 +4,7 @@ import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDeta
 import {
   actualizarProveedor,
   crearProveedor,
+  eliminarNotaPedido,
   eliminarProveedor,
   listarNotasPedido,
   listarProveedores,
@@ -291,6 +292,26 @@ export default function Proveedores() {
     setNotaDetalleLoading(false);
   }
 
+  async function borrarNotaProveedor(nota) {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Borrar nota",
+      text: `Se va a borrar la nota ${nota?.numero || ""}.`,
+      showCancelButton: true,
+      confirmButtonText: "Sí, borrar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    await eliminarNotaPedido(nota?._id);
+    if (openNotaId === nota?._id) {
+      cerrarNotaDetalle();
+    }
+    await load();
+  }
+
   return (
     <div className="grid gap-5">
       <section className="rounded-[28px] border border-[var(--sm-line)] bg-[linear-gradient(135deg,#fff8ee_0%,#f4efe7_100%)] p-7 shadow-[var(--sm-shadow)]">
@@ -568,6 +589,13 @@ export default function Proveedores() {
                                         className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
                                       >
                                         Ver nota completa
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => borrarNotaProveedor(nota)}
+                                        className="rounded-[12px] border border-[rgba(139,45,45,0.18)] bg-[#fff4f4] px-3 py-2 text-sm font-bold text-[#8b2d2d]"
+                                      >
+                                        Borrar nota
                                       </button>
                                     </div>
                                   </article>
