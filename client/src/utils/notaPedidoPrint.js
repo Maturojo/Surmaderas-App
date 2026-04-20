@@ -46,8 +46,14 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-export function buildNotaPedidoPrintData(nota) {
+export function buildNotaPedidoPrintData(nota, options = {}) {
   const cliente = nota?.cliente || {};
+  const {
+    audience = "client",
+    providerName = "",
+  } = options;
+  const showPrices = audience !== "provider";
+  const showClientDetails = audience !== "provider";
   const items = Array.isArray(nota?.items)
     ? nota.items.map((item, idx) => {
         const precio = Number(item?.precioUnit ?? item?.precio ?? 0);
@@ -74,20 +80,24 @@ export function buildNotaPedidoPrintData(nota) {
     entrega: nota?.entrega || "",
     clienteNombre: cliente?.nombre || "Consumidor final",
     clienteTelefono: cliente?.telefono || "",
+    providerName,
     vendedor: nota?.vendedor || "",
     subtotal,
     descuentoMonto,
     descuentoPct,
     total,
     previewItems: items,
+    audience,
+    showPrices,
+    showClientDetails,
   };
 }
 
-function buildRows(previewItems) {
+function buildRows(previewItems, showPrices = true) {
   if (!previewItems.length) {
     return `
       <tr>
-        <td colspan="5" class="empty">Sin items cargados.</td>
+        <td colspan="${showPrices ? 5 : 3}" class="empty">Sin items cargados.</td>
       </tr>
     `;
   }
@@ -98,9 +108,9 @@ function buildRows(previewItems) {
         <tr class="${idx % 2 === 1 ? "is-alt" : ""}">
           <td>${item.orden}</td>
           <td>${escapeHtml(item.descripcion)}</td>
-          <td>$${escapeHtml(toARS(item.precio))}</td>
+          ${showPrices ? `<td>$${escapeHtml(toARS(item.precio))}</td>` : ""}
           <td>${item.cantidad}</td>
-          <td>$${escapeHtml(toARS(item.total))}</td>
+          ${showPrices ? `<td>$${escapeHtml(toARS(item.total))}</td>` : ""}
         </tr>
       `
     )
@@ -466,7 +476,7 @@ function buildStyles() {
 }
 
 function buildDocPage(data, items, { showSummary, showFooter }) {
-  const rows = buildRows(items);
+  const rows = buildRows(items, data.showPrices);
   return `
     <div class="npw-doc">
       <div class="npw-header">
@@ -490,8 +500,16 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
           <div class="npw-bottomline">
             <div class="npw-client">
               <div class="npw-clientInfo">
-                <div class="npw-clientName">${escapeHtml(data.clienteNombre || "Consumidor final")}</div>
-                <div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>
+                <div class="npw-clientName">${
+                  data.showClientDetails
+                    ? escapeHtml(data.clienteNombre || "Consumidor final")
+                    : escapeHtml(data.providerName || "Uso para proveedor")
+                }</div>
+                <div class="npw-clientPhone">${
+                  data.showClientDetails
+                    ? escapeHtml(formatPhonePreview(data.clienteTelefono))
+                    : "Sin datos del cliente"
+                }</div>
               </div>
               <div class="npw-clientDivider" aria-hidden="true"></div>
             </div>
@@ -510,9 +528,9 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
             <tr>
               <th>#</th>
               <th>DESCRIPCI&Oacute;N</th>
-              <th>PRECIO</th>
+              ${data.showPrices ? "<th>PRECIO</th>" : ""}
               <th>CANTIDAD</th>
-              <th>TOTAL</th>
+              ${data.showPrices ? "<th>TOTAL</th>" : ""}
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -520,7 +538,7 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
       </div>
 
       ${
-        showSummary
+        showSummary && data.showPrices
           ? `
             <div class="npw-summary">
               <div class="npw-summaryRow">

@@ -94,10 +94,10 @@ function construirMensajeCliente(nota) {
   ].join("\n");
 }
 
-async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, etiquetaDestino }) {
+async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, etiquetaDestino, printData }) {
   openWhatsappText(telefonoWhatsapp, mensaje);
 
-  const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(nota));
+  const file = await generateNotaPedidoImageFile(printData || buildNotaPedidoPrintData(nota));
   const copied = await copyFileToClipboard(file);
   downloadFile(file);
 
@@ -343,11 +343,16 @@ export default function NotasPedidoGuardadas() {
         });
       } else if (typeof window !== "undefined") {
         const mensaje = construirMensajeProveedor(gestionNota, proveedor, observacionNueva);
+        const proveedorPrintData = buildNotaPedidoPrintData(gestionNota, {
+          audience: "provider",
+          providerName: proveedor?.nombre || "",
+        });
         enviarNotaWhatsappConAdjunto({
           nota: gestionNota,
           telefonoWhatsapp,
           mensaje,
           etiquetaDestino: proveedor?.nombre || "proveedor",
+          printData: proveedorPrintData,
         }).catch(async () => {
           openWhatsappText(telefonoWhatsapp, mensaje);
           await Swal.fire({
