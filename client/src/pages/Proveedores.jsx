@@ -59,6 +59,19 @@ function getNotaItemImage(nota) {
   return itemConImagen?.imagen?.dataUrl || itemConImagen?.data?.imagen?.dataUrl || "";
 }
 
+function getDiasHastaEntrega(value) {
+  if (!value) return null;
+  const [year, month, day] = String(value).split("-").map(Number);
+  if (!year || !month || !day) return null;
+
+  const entrega = new Date(year, month - 1, day);
+  const hoy = new Date();
+  const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  const diferencia = entrega.getTime() - inicioHoy.getTime();
+
+  return Math.round(diferencia / 86400000);
+}
+
 export default function Proveedores() {
   const [items, setItems] = useState([]);
   const [notasGuardadas, setNotasGuardadas] = useState([]);
@@ -318,6 +331,13 @@ export default function Proveedores() {
       cerrarNotaDetalle();
     }
     await load();
+    await Swal.fire({
+      icon: "success",
+      title: "Nota borrada",
+      text: "La nota se eliminó del panel del proveedor.",
+      timer: 1400,
+      showConfirmButton: false,
+    });
   }
 
   return (
@@ -492,129 +512,80 @@ export default function Proveedores() {
                         <>
                           <div className="flex items-center justify-between gap-3">
                             <div>
-                              <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos pendientes</div>
+                              <div className="text-[14px] font-extrabold text-[#2f261d]">Notas de pedido</div>
                               <div className="mt-1 text-xs text-[var(--sm-muted)]">
                                 {pendientes.length === 0
-                                  ? "No hay pedidos pendientes para este proveedor."
-                                  : `${pendientes.length} ${pendientes.length === 1 ? "pedido pendiente" : "pedidos pendientes"}`}
+                                  ? "No hay notas de pedido para este proveedor."
+                                  : `${pendientes.length} ${pendientes.length === 1 ? "nota cargada" : "notas cargadas"}`}
                               </div>
                             </div>
                           </div>
 
-                          <div className="mt-3 grid gap-3 xl:grid-cols-2">
+                          <div className="mt-3 grid gap-2">
                             {pendientes.length === 0 ? (
                               <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
-                                Este proveedor no tiene notas pendientes por ahora.
+                                Este proveedor no tiene notas cargadas por ahora.
                               </div>
                             ) : (
                               pendientes.map((nota) => {
-                                const asignacion = Array.isArray(nota?.proveedores)
-                                  ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
-                                  : null;
-                                const imagenNota = getNotaItemImage(nota);
+                                const diasHastaEntrega = getDiasHastaEntrega(nota?.entrega);
 
                                 return (
                                   <article
                                     key={nota._id}
-                                    className="rounded-[14px] border border-[rgba(70,55,38,0.08)] p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
+                                    className="rounded-[14px] border border-[rgba(70,55,38,0.08)] bg-white/80 p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
                                     style={{
-                                      background: `linear-gradient(135deg, ${color}26 0%, #fffdfa 30%, #fffdfa 100%)`,
+                                      background: `linear-gradient(135deg, ${color}16 0%, #fffdfa 34%, #fffdfa 100%)`,
                                     }}
                                   >
-                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
                                       <div>
-                                        <div className="text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
+                                        <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
                                           {nota?.numero || "Sin número"}
                                         </div>
-                                        <div className="mt-1 flex flex-wrap items-center gap-2">
-                                          <span className="inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-[#5f4b34]" style={estiloProveedor(asignacion?.color || color)}>
-                                            {asignacion?.nombre || item?.nombre}
-                                          </span>
-                                          <div className="text-[14px] font-black text-[#241f19]">{getNotaClienteNombre(nota)}</div>
+                                        <div className="mt-1 text-[15px] font-black text-[#241f19]">
+                                          {getNotaClienteNombre(nota)}
                                         </div>
                                         <div className="mt-1 text-[13px] text-[var(--sm-muted)]">
-                                          Entrega {fmtDate(nota?.entrega)} · Total ${Number(getNotaTotal(nota) || 0).toLocaleString("es-AR")}
+                                          {fmtDate(nota?.entrega)} ·{" "}
+                                          {diasHastaEntrega === null
+                                            ? "Sin fecha"
+                                            : diasHastaEntrega < 0
+                                              ? `${Math.abs(diasHastaEntrega)} día(s) de atraso`
+                                              : diasHastaEntrega === 0
+                                                ? "Entrega hoy"
+                                                : `Faltan ${diasHastaEntrega} día(s)`}
                                         </div>
                                       </div>
-                                      <span
-                                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${estadoOperativoClase(
-                                          nota?.estadoOperativo || "Pendiente"
-                                        )}`}
-                                      >
-                                        {nota?.estadoOperativo || "Pendiente"}
-                                      </span>
-                                    </div>
-
-                                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Vendedor</span>
-                                        <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
-                                      </div>
-                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Telefono</span>
-                                        <strong className="mt-1 block text-[#2a241e]">{nota?.cliente?.telefono || "-"}</strong>
-                                      </div>
-                                      <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
-                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Estado comercial</span>
-                                        <strong className="mt-1 block text-[#2f5d89]">{nota?.estado || "Sin estado"}</strong>
-                                      </div>
-                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
-                                        <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
-                                      </div>
-                                      <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
-                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Envío</span>
-                                        <strong className="mt-1 block text-[#2f5d89]">
-                                          {asignacion?.enviadoWhatsapp ? "Enviado por WhatsApp" : "Sin envío por WhatsApp"}
-                                        </strong>
+                                      <div className="flex flex-wrap gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={() => abrirNotaDetalle(nota._id)}
+                                          className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
+                                        >
+                                          Ver nota completa
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => borrarNotaProveedor(nota)}
+                                          className="rounded-[12px] border border-[rgba(139,45,45,0.18)] bg-[#fff4f4] px-3 py-2 text-sm font-bold text-[#8b2d2d]"
+                                        >
+                                          Borrar nota
+                                        </button>
                                       </div>
                                     </div>
 
-                                    <div className="mt-3 rounded-[12px] bg-white/80 px-3 py-3 text-sm text-[#5d5247]">
-                                      <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle de la nota</span>
-                                      {imagenNota ? (
-                                        <div className="mt-2">
-                                          <img
-                                            src={imagenNota}
-                                            alt={`Referencia de ${getNotaClienteNombre(nota)}`}
-                                            className="h-[140px] w-full rounded-[12px] border border-[rgba(70,55,38,0.08)] bg-white object-cover shadow-[0_8px_18px_rgba(69,54,38,0.08)]"
-                                          />
-                                        </div>
-                                      ) : null}
-                                      <div className="mt-2 grid gap-2">
-                                        {Array.isArray(nota?.items) && nota.items.length > 0 ? (
-                                          nota.items.slice(0, 2).map((detalle, idx) => (
-                                            <div key={`${nota._id}-item-${idx}`} className="rounded-[10px] bg-[#f8f3ec] px-3 py-2">
-                                              <strong className="block text-[#2a241e]">{detalle?.descripcion || detalle?.nombre || "Item"}</strong>
-                                              <span className="mt-1 block text-[#746a60]">
-                                                Cantidad {detalle?.cantidad || 0} · Precio ${Number(detalle?.precioUnit ?? detalle?.precio ?? 0).toLocaleString("es-AR")}
-                                              </span>
-                                            </div>
-                                          ))
-                                        ) : (
-                                          <div className="rounded-[10px] bg-[#f8f3ec] px-3 py-2 text-[#746a60]">Sin items cargados.</div>
-                                        )}
-                                        {Array.isArray(nota?.items) && nota.items.length > 2 ? (
-                                          <div className="text-xs font-bold text-[#8d7557]">+ {nota.items.length - 2} item(s) más</div>
-                                        ) : null}
-                                      </div>
-                                    </div>
+                                    <div className="mt-3 h-px bg-[rgba(70,55,38,0.08)]"></div>
 
-                                    <div className="mt-3 flex flex-wrap justify-end gap-2">
-                                      <button
-                                        type="button"
-                                        onClick={() => abrirNotaDetalle(nota._id)}
-                                        className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
-                                      >
-                                        Ver nota completa
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => borrarNotaProveedor(nota)}
-                                        className="rounded-[12px] border border-[rgba(139,45,45,0.18)] bg-[#fff4f4] px-3 py-2 text-sm font-bold text-[#8b2d2d]"
-                                      >
-                                        Borrar nota
-                                      </button>
+                                    <div className="mt-3 text-sm text-[#5d5247]">
+                                      {getNotaClienteNombre(nota)} - {fmtDate(nota?.entrega)} -{" "}
+                                      {diasHastaEntrega === null
+                                        ? "Sin fecha de entrega"
+                                        : diasHastaEntrega < 0
+                                          ? `${Math.abs(diasHastaEntrega)} día(s) de atraso`
+                                          : diasHastaEntrega === 0
+                                            ? "Entrega hoy"
+                                            : `Faltan ${diasHastaEntrega} día(s)`}
                                     </div>
                                   </article>
                                 );
