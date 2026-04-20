@@ -1,11 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import {
   actualizarProveedor,
   crearProveedor,
   eliminarProveedor,
   listarNotasPedido,
   listarProveedores,
+  obtenerNotaPedido,
 } from "../services/notasPedido";
 import { listarPedidosProveedor } from "../services/pedidosProveedor";
 import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
@@ -61,6 +63,10 @@ export default function Proveedores() {
   const [listOpen, setListOpen] = useState(false);
   const [openProveedorId, setOpenProveedorId] = useState("");
   const [formData, setFormData] = useState(emptyForm());
+  const [openNotaId, setOpenNotaId] = useState("");
+  const [notaDetalle, setNotaDetalle] = useState(null);
+  const [notaDetalleLoading, setNotaDetalleLoading] = useState(false);
+  const [notaDetalleError, setNotaDetalleError] = useState("");
 
   async function load() {
     setLoading(true);
@@ -260,6 +266,29 @@ export default function Proveedores() {
       cerrarFormulario();
     }
     await load();
+  }
+
+  async function abrirNotaDetalle(id) {
+    setOpenNotaId(id);
+    setNotaDetalle(null);
+    setNotaDetalleError("");
+    setNotaDetalleLoading(true);
+
+    try {
+      const detalle = await obtenerNotaPedido(id);
+      setNotaDetalle(detalle);
+    } catch (e) {
+      setNotaDetalleError(e?.message || "No se pudo cargar la nota");
+    } finally {
+      setNotaDetalleLoading(false);
+    }
+  }
+
+  function cerrarNotaDetalle() {
+    setOpenNotaId("");
+    setNotaDetalle(null);
+    setNotaDetalleError("");
+    setNotaDetalleLoading(false);
   }
 
   return (
@@ -492,6 +521,14 @@ export default function Proveedores() {
                                         <strong className="mt-1 block text-[#2a241e]">{nota?.vendedor || "-"}</strong>
                                       </div>
                                       <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
+                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Telefono</span>
+                                        <strong className="mt-1 block text-[#2a241e]">{nota?.cliente?.telefono || "-"}</strong>
+                                      </div>
+                                      <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
+                                        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Estado comercial</span>
+                                        <strong className="mt-1 block text-[#2f5d89]">{nota?.estado || "Sin estado"}</strong>
+                                      </div>
+                                      <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
                                         <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
                                         <strong className="mt-1 block text-[#2a241e]">{asignacion?.observacion || "Sin observación"}</strong>
                                       </div>
@@ -501,6 +538,37 @@ export default function Proveedores() {
                                           {asignacion?.enviadoWhatsapp ? "Enviado por WhatsApp" : "Sin envío por WhatsApp"}
                                         </strong>
                                       </div>
+                                    </div>
+
+                                    <div className="mt-3 rounded-[12px] bg-white/80 px-3 py-3 text-sm text-[#5d5247]">
+                                      <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle de la nota</span>
+                                      <div className="mt-2 grid gap-2">
+                                        {Array.isArray(nota?.items) && nota.items.length > 0 ? (
+                                          nota.items.slice(0, 4).map((detalle, idx) => (
+                                            <div key={`${nota._id}-item-${idx}`} className="rounded-[10px] bg-[#f8f3ec] px-3 py-2">
+                                              <strong className="block text-[#2a241e]">{detalle?.descripcion || detalle?.nombre || "Item"}</strong>
+                                              <span className="mt-1 block text-[#746a60]">
+                                                Cantidad {detalle?.cantidad || 0} · Precio ${Number(detalle?.precioUnit ?? detalle?.precio ?? 0).toLocaleString("es-AR")}
+                                              </span>
+                                            </div>
+                                          ))
+                                        ) : (
+                                          <div className="rounded-[10px] bg-[#f8f3ec] px-3 py-2 text-[#746a60]">Sin items cargados.</div>
+                                        )}
+                                        {Array.isArray(nota?.items) && nota.items.length > 4 ? (
+                                          <div className="text-xs font-bold text-[#8d7557]">+ {nota.items.length - 4} item(s) más</div>
+                                        ) : null}
+                                      </div>
+                                    </div>
+
+                                    <div className="mt-3 flex flex-wrap justify-end gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => abrirNotaDetalle(nota._id)}
+                                        className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
+                                      >
+                                        Ver nota completa
+                                      </button>
                                     </div>
                                   </article>
                                 );
@@ -553,6 +621,10 @@ export default function Proveedores() {
                               </div>
 
                               <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                <div className="rounded-[12px] bg-[#eef6ff] px-3 py-2 text-sm text-[#355d85]">
+                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Estado</span>
+                                  <strong className="mt-1 block text-[#2f5d89]">{pedido?.estado || "Pendiente"}</strong>
+                                </div>
                                 <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
                                   <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle</span>
                                   <strong className="mt-1 block text-[#2a241e]">
@@ -747,6 +819,16 @@ export default function Proveedores() {
           </div>
         </div>
       ) : null}
+
+      <NotaDetalleModal
+        open={Boolean(openNotaId)}
+        onClose={cerrarNotaDetalle}
+        detalle={notaDetalle}
+        loading={notaDetalleLoading}
+        error={notaDetalleError}
+        onRefresh={() => abrirNotaDetalle(openNotaId)}
+        soloVistaPrevia
+      />
     </div>
   );
 }
