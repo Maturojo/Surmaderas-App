@@ -505,11 +505,11 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                     ? escapeHtml(data.clienteNombre || "Consumidor final")
                     : escapeHtml(data.providerName || "Uso para proveedor")
                 }</div>
-                <div class="npw-clientPhone">${
+                ${
                   data.showClientDetails
-                    ? escapeHtml(formatPhonePreview(data.clienteTelefono))
+                    ? `<div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>`
                     : ""
-                }</div>
+                }
               </div>
               <div class="npw-clientDivider" aria-hidden="true"></div>
             </div>
