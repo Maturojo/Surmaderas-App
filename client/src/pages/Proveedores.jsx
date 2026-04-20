@@ -51,6 +51,14 @@ function emptyForm() {
   };
 }
 
+function getNotaItemImage(nota) {
+  if (!Array.isArray(nota?.items)) return "";
+  const itemConImagen = nota.items.find(
+    (detalle) => detalle?.imagen?.dataUrl || detalle?.data?.imagen?.dataUrl
+  );
+  return itemConImagen?.imagen?.dataUrl || itemConImagen?.data?.imagen?.dataUrl || "";
+}
+
 export default function Proveedores() {
   const [items, setItems] = useState([]);
   const [notasGuardadas, setNotasGuardadas] = useState([]);
@@ -503,6 +511,7 @@ export default function Proveedores() {
                                 const asignacion = Array.isArray(nota?.proveedores)
                                   ? nota.proveedores.find((prov) => String(prov?.proveedorId) === String(item._id))
                                   : null;
+                                const imagenNota = getNotaItemImage(nota);
 
                                 return (
                                   <article
@@ -563,6 +572,15 @@ export default function Proveedores() {
 
                                     <div className="mt-3 rounded-[12px] bg-white/80 px-3 py-3 text-sm text-[#5d5247]">
                                       <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle de la nota</span>
+                                      {imagenNota ? (
+                                        <div className="mt-2">
+                                          <img
+                                            src={imagenNota}
+                                            alt={`Referencia de ${getNotaClienteNombre(nota)}`}
+                                            className="h-[140px] w-full rounded-[12px] border border-[rgba(70,55,38,0.08)] bg-white object-cover shadow-[0_8px_18px_rgba(69,54,38,0.08)]"
+                                          />
+                                        </div>
+                                      ) : null}
                                       <div className="mt-2 grid gap-2">
                                         {Array.isArray(nota?.items) && nota.items.length > 0 ? (
                                           nota.items.slice(0, 2).map((detalle, idx) => (
