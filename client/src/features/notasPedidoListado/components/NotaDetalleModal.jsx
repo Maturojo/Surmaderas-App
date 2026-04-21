@@ -727,9 +727,38 @@ export default function NotaDetalleModal({
                 </div>
               </div>
             ) : (
-              <div className="npl-modalActions npl-modalActions--preview">
-                <button className="npl-btnGhost" onClick={handlePrint}>Imprimir</button>
-              </div>
+              <>
+                {detalle?.caja?.comprobante?.dataUrl ? (
+                  <div className="npl-soloComprobanteBox npl-noPrint">
+                    <div className="npl-soloComprobanteHeader">
+                      <div>
+                        <div className="npl-k">Comprobante de pago</div>
+                        <div className="npl-proofHint">
+                          {detalle.caja.metodo && <span>{detalle.caja.metodo} · </span>}
+                          {detalle.caja.tipo && <span>{detalle.caja.tipo} · </span>}
+                          {detalle.caja.comprobante.monto > 0 && <span>${toARS(detalle.caja.comprobante.monto)}</span>}
+                        </div>
+                      </div>
+                      <button
+                        className="npl-btnGhost"
+                        type="button"
+                        onClick={() => setLightboxSrc(detalle.caja.comprobante.dataUrl)}
+                      >
+                        Ver completo
+                      </button>
+                    </div>
+                    <img
+                      src={detalle.caja.comprobante.dataUrl}
+                      alt="Comprobante de pago"
+                      className="npl-soloComprobanteImg npl-proofThumb"
+                      onClick={() => setLightboxSrc(detalle.caja.comprobante.dataUrl)}
+                    />
+                  </div>
+                ) : null}
+                <div className="npl-modalActions npl-modalActions--preview">
+                  <button className="npl-btnGhost" onClick={handlePrint}>Imprimir</button>
+                </div>
+              </>
             )}
           </div>
         ) : null}
