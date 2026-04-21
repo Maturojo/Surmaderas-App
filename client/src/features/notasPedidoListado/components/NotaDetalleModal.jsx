@@ -234,6 +234,7 @@ export default function NotaDetalleModal({
   const [montoComprobante, setMontoComprobante] = useState("");
   const [leyendoComprobante, setLeyendoComprobante] = useState(false);
   const [ocrTexto, setOcrTexto] = useState("");
+  const [lightboxSrc, setLightboxSrc] = useState(null);
 
   useEffect(() => {
     if (!detalle) return;
@@ -251,7 +252,7 @@ export default function NotaDetalleModal({
   const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
   const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
-  const puedeComprobante = tipo === "pago" || tipo === "seña";
+  const puedeComprobante = tipo === "pago" || tipo === "seña" || !!detalle?.caja?.comprobante?.dataUrl;
   const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
@@ -590,10 +591,24 @@ export default function NotaDetalleModal({
 
                       {comprobante?.dataUrl ? (
                         <div className="npl-proofPreview">
-                          <img src={comprobante.dataUrl} alt="Comprobante de pago" />
+                          <img
+                            src={comprobante.dataUrl}
+                            alt="Comprobante de pago"
+                            className="npl-proofThumb"
+                            onClick={() => setLightboxSrc(comprobante.dataUrl)}
+                          />
                         <div>
                           <strong>{comprobante.nombre || "Comprobante"}</strong>
-                          <span>{leyendoComprobante ? "Leyendo monto automáticamente..." : "Listo para guardar con la caja."}</span>
+                          <span>
+                            {leyendoComprobante
+                              ? "Leyendo monto automáticamente..."
+                              : detalle?.caja?.guardada
+                                ? "Guardado con la caja."
+                                : "Listo para guardar con la caja."}
+                          </span>
+                          <button className="npl-proofVerBtn" type="button" onClick={() => setLightboxSrc(comprobante.dataUrl)}>
+                            Ver completo
+                          </button>
                         </div>
                       </div>
                       ) : (
@@ -719,6 +734,13 @@ export default function NotaDetalleModal({
           </div>
         ) : null}
       </div>
+
+      {lightboxSrc && (
+        <div className="npl-lightbox" onClick={() => setLightboxSrc(null)}>
+          <img src={lightboxSrc} alt="Comprobante de pago" onClick={(e) => e.stopPropagation()} />
+          <button className="npl-lightboxClose" type="button" onClick={() => setLightboxSrc(null)}>✕</button>
+        </div>
+      )}
     </div>
   );
 }

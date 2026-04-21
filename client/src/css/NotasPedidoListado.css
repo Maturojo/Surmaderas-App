@@ -863,13 +863,66 @@
   border: 1px solid rgba(48, 41, 33, 0.08);
 }
 
-.npl-proofPreview img {
+.npl-proofThumb {
   width: 92px;
   height: 72px;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid rgba(48, 41, 33, 0.12);
   background: #f7f1e7;
+  cursor: zoom-in;
+  flex-shrink: 0;
+}
+
+.npl-proofVerBtn {
+  margin-top: 6px;
+  padding: 2px 8px;
+  border: 1px solid rgba(48, 41, 33, 0.22);
+  border-radius: 6px;
+  background: none;
+  color: #756b61;
+  font-size: 11px;
+  cursor: pointer;
+}
+.npl-proofVerBtn:hover {
+  background: #f0ebe3;
+  color: #231f1a;
+}
+
+.npl-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.npl-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 6px;
+  cursor: default;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.npl-lightboxClose {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.npl-lightboxClose:hover {
+  opacity: 1;
 }
 
 .npl-proofPreview strong,
