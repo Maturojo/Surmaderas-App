@@ -251,7 +251,8 @@ export default function NotaDetalleModal({
   const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
   const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
-  const requiereComprobante = (tipo === "pago" || tipo === "seña") && metodo !== "Efectivo";
+  const puedeComprobante = tipo === "pago" || tipo === "seña";
+  const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
   const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
@@ -370,7 +371,7 @@ export default function NotaDetalleModal({
       total: esOperacionConPago ? total : 0,
       metodo,
       nota: notaCaja,
-      comprobante: requiereComprobante
+      comprobante: puedeComprobante
         ? { ...(comprobante || {}), monto: parseMoney(montoComprobante) }
         : null,
     };
@@ -539,27 +540,29 @@ export default function NotaDetalleModal({
                 </div>
 
                 <div
-                  className={`npl-proofBox${!requiereComprobante ? " npl-proofBox--disabled" : ""}`}
-                  onPaste={requiereComprobante ? handleComprobantePaste : undefined}
-                  tabIndex={requiereComprobante ? 0 : -1}
+                  className={`npl-proofBox${!puedeComprobante ? " npl-proofBox--disabled" : ""}`}
+                  onPaste={puedeComprobante ? handleComprobantePaste : undefined}
+                  tabIndex={puedeComprobante ? 0 : -1}
                 >
                   <div className="npl-proofHeader">
                     <div>
                       <div className="npl-k">Comprobante</div>
                       <div className="npl-proofHint">
-                        {requiereComprobante
-                          ? "Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
-                          : "Se habilita cuando el medio de pago no es Efectivo."}
+                        {!puedeComprobante
+                          ? "Se habilita cuando el tipo es Seña o Pago."
+                          : requiereComprobante
+                            ? "Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
+                            : "Opcional. Podés adjuntar una imagen, pegarla con Ctrl+V o sacar una foto."}
                       </div>
                     </div>
-                    {requiereComprobante && comprobante?.dataUrl ? (
+                    {puedeComprobante && comprobante?.dataUrl ? (
                       <button className="npl-btnGhost" type="button" onClick={() => setComprobante(null)}>
                         Quitar
                       </button>
                     ) : null}
                   </div>
 
-                  {requiereComprobante ? (
+                  {puedeComprobante ? (
                     <>
                       <div className="npl-proofActions">
                         <label className="npl-proofBtn" htmlFor={comprobanteArchivoId}>Adjuntar</label>
@@ -615,7 +618,7 @@ export default function NotaDetalleModal({
                       </div>
                     </>
                   ) : (
-                    <div className="npl-proofEmpty">Para cargar comprobante elegí Transferencia, Débito, Crédito o Cuenta Corriente.</div>
+                    <div className="npl-proofEmpty">Para cargar comprobante seleccioná el tipo Seña o Pago.</div>
                   )}
                 </div>
 

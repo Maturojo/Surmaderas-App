@@ -199,10 +199,11 @@ export async function guardarCajaNota(req, res) {
     const montoNumero = esPago ? totalNota : Number(monto || 0);
     const guardarImportesNota = esSena || esPago;
     const metodoTexto = String(metodo || "");
-    const guardaComprobante = (esSena || esPago) && metodoTexto.toLowerCase() !== "efectivo";
+    const esEfectivo = metodoTexto.toLowerCase() === "efectivo";
+    const guardaComprobante = (esSena || esPago) && !esEfectivo;
     const montoComprobante = Number(comprobante?.monto || 0);
     const comprobantePayload =
-      guardaComprobante && comprobante?.dataUrl
+      (esSena || esPago) && comprobante?.dataUrl
         ? {
             nombre: String(comprobante?.nombre || "comprobante"),
             tipo: String(comprobante?.tipo || ""),
