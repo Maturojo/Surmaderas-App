@@ -847,6 +847,34 @@ export default function NotasPedidoGuardadas() {
                   </div>
                 </div>
 
+                {gestionNota?.caja?.comprobante?.dataUrl ? (
+                  <div className="ng-clientActionsCard">
+                    <div className="ng-clientActionsTitle">Comprobante de pago</div>
+                    <div className="ng-clientActionsSub">
+                      {gestionNota.caja.metodo && <span>{gestionNota.caja.metodo} · </span>}
+                      {gestionNota.caja.tipo && <span>{gestionNota.caja.tipo} · </span>}
+                      {gestionNota.caja.comprobante.monto > 0 && <span>${toARS(gestionNota.caja.comprobante.monto)}</span>}
+                    </div>
+                    <div className="ng-clientProofRow">
+                      <button
+                        type="button"
+                        className="ng-clientProofThumb"
+                        onClick={() => abrirComprobantePreview(gestionNota.caja.comprobante.dataUrl, "Comprobante de pago")}
+                      >
+                        <img src={gestionNota.caja.comprobante.dataUrl} alt="Comprobante de pago" />
+                      </button>
+                      <div className="ng-clientProofActions">
+                        <button
+                          className="ng-actionBtn ng-actionBtn--ghost"
+                          onClick={() => abrirComprobantePreview(gestionNota.caja.comprobante.dataUrl, "Comprobante de pago")}
+                        >
+                          Ver completo
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="ng-clientActionsCard">
                   <div className="ng-clientActionsTitle">Comprobante para cliente</div>
                   <div className="ng-clientActionsSub">
