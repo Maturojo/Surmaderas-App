@@ -847,6 +847,32 @@ export default function NotasPedidoGuardadas() {
                   </div>
                 </div>
 
+                {(() => {
+                  const itemsConImg = (gestionNota?.items || []).filter(it => it.imagen || it.data?.imagen);
+                  if (!itemsConImg.length) return null;
+                  return (
+                    <div className="ng-clientActionsCard">
+                      <div className="ng-clientActionsTitle">Imágenes de referencia</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
+                        {itemsConImg.map((it, i) => {
+                          const src = it.imagen || it.data?.imagen;
+                          const label = it.descripcion || it.tipo || `Ítem ${i + 1}`;
+                          return (
+                            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                              <img
+                                src={src}
+                                alt={label}
+                                style={{ width: 80, height: 64, objectFit: "cover", borderRadius: 8, cursor: "zoom-in", border: "1px solid rgba(48,41,33,0.12)" }}
+                                onClick={() => abrirComprobantePreview(src, label)}
+                              />
+                              <span style={{ fontSize: 11, color: "#756b61", maxWidth: 80, textAlign: "center", lineHeight: 1.2 }}>{label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {gestionNota?.caja?.comprobante?.dataUrl ? (
                   <div className="ng-clientActionsCard">
                     <div className="ng-clientActionsTitle">Comprobante de pago</div>

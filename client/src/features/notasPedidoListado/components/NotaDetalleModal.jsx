@@ -728,6 +728,33 @@ export default function NotaDetalleModal({
               </div>
             ) : (
               <>
+                {(() => {
+                  const itemsConImg = (detalle?.items || []).filter(it => it.imagen || it.data?.imagen);
+                  if (!itemsConImg.length) return null;
+                  return (
+                    <div className="npl-soloComprobanteBox npl-noPrint">
+                      <div className="npl-k" style={{ marginBottom: 10 }}>Imágenes de referencia</div>
+                      <div className="npl-refImgGrid">
+                        {itemsConImg.map((it, i) => {
+                          const src = it.imagen || it.data?.imagen;
+                          const label = it.descripcion || it.tipo || `Ítem ${i + 1}`;
+                          return (
+                            <div key={i} className="npl-refImgItem">
+                              <img
+                                src={src}
+                                alt={label}
+                                className="npl-proofThumb"
+                                style={{ width: 80, height: 64 }}
+                                onClick={() => setLightboxSrc(src)}
+                              />
+                              <span className="npl-refImgLabel">{label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {detalle?.caja?.comprobante?.dataUrl ? (
                   <div className="npl-soloComprobanteBox npl-noPrint">
                     <div className="npl-soloComprobanteHeader">

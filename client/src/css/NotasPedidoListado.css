@@ -1815,6 +1815,27 @@
   height: 96px !important;
 }
 
+.npl-refImgGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.npl-refImgItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.npl-refImgLabel {
+  font-size: 11px;
+  color: #756b61;
+  max-width: 80px;
+  text-align: center;
+  line-height: 1.2;
+}
+
 @media (max-width: 1100px) {
   .npl-previewHeader {
     grid-template-columns: 1fr;
