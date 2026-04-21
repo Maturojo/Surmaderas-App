@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 
 import Swal from "sweetalert2";
+import { createWorker } from "tesseract.js";
 
 import {
   getNotaTotal,
@@ -14,6 +15,206 @@ import {
 } from "../../../utils/notaPedidoPrint";
 
 const MEDIOS_PAGO = ["Efectivo", "Transferencia", "Debito", "Credito", "Cuenta Corriente"];
+const MAX_COMPROBANTE_MB = 6;
+
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error("No se selecciono ningun archivo"));
+      return;
+    }
+
+    if (!String(file.type || "").startsWith("image/")) {
+      reject(new Error("El comprobante tiene que ser una imagen"));
+      return;
+    }
+
+    if (file.size > MAX_COMPROBANTE_MB * 1024 * 1024) {
+      reject(new Error(`El comprobante no puede superar ${MAX_COMPROBANTE_MB}MB`));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve({
+        nombre: file.name || "comprobante",
+        tipo: file.type || "image/*",
+        dataUrl: String(reader.result || ""),
+      });
+    };
+    reader.onerror = () => reject(new Error("No se pudo leer el comprobante"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function parseMoney(value) {
+  const normalized = String(value || "")
+    .replace(/\s/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".");
+  const number = Number(normalized || 0);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function sameMoney(a, b) {
+  return Math.round(Number(a || 0) * 100) === Math.round(Number(b || 0) * 100);
+}
+
+function moneyTokenToNumber(raw) {
+  const compact = String(raw || "").replace(/[^\d.,]/g, "");
+  if (!compact) return 0;
+
+  const hasDecimalComma = /,\d{2}$/.test(compact);
+  const hasDecimalDot = /\.\d{2}$/.test(compact);
+  const normalized = hasDecimalComma
+    ? compact.replace(/\./g, "").replace(",", ".")
+    : hasDecimalDot
+      ? compact.replace(/,/g, "")
+      : compact.replace(/[.,]/g, "");
+  const value = Number(normalized || 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function extractMoneyCandidates(text) {
+  const lines = String(text || "").split(/\r?\n/);
+  const candidates = [];
+
+  lines.forEach((line, lineIndex) => {
+    const cleanLine = line.replace(/\s+/g, " ").trim();
+    const matches = cleanLine.matchAll(/(?:[$S]\s*)?\d{1,3}(?:[.\s]\d{3})+(?:,\d{2})?|(?:[$S]\s*)?\d+(?:,\d{2})/gi);
+
+    for (const match of matches) {
+      const raw = match[0];
+      const value = moneyTokenToNumber(raw);
+      if (!Number.isFinite(value) || value <= 0) continue;
+
+      const digitCount = raw.replace(/\D/g, "").length;
+      const hasCurrencyMarker = /[$S]/i.test(raw);
+      const hasMoneyFormat = /(?:[.\s]\d{3})|(?:,\d{2})/.test(raw);
+      const isVeryLongIdentifier = digitCount > 8 && !hasCurrencyMarker && !hasMoneyFormat;
+
+      let score = 0;
+      if (hasCurrencyMarker) score += 120;
+      if (hasMoneyFormat) score += 45;
+      if (lineIndex <= 4) score += 20;
+      if (/importe|monto|total|transferencia|comprobante/i.test(cleanLine)) score += 18;
+      if (isVeryLongIdentifier) score -= 180;
+      if (!hasCurrencyMarker && digitCount > 9) score -= 140;
+      if (!hasCurrencyMarker && value > 10000000) score -= 120;
+      if (value < 100) score -= 20;
+
+      candidates.push({ value, score });
+    }
+  });
+
+  return candidates
+    .sort((a, b) => b.score - a.score || b.value - a.value)
+    .map((candidate) => candidate.value)
+    .filter((value, index, values) => values.findIndex((item) => sameMoney(item, value)) === index);
+}
+
+function extractCurrencyLineAmount(text) {
+  const lines = String(text || "").split(/\r?\n/);
+
+  for (const line of lines) {
+    const cleanLine = line.replace(/\s+/g, " ").trim();
+    const match = cleanLine.match(/[$S]\s*(\d{1,3}(?:[.\s]\d{3})+(?:,\d{2})?|\d+(?:,\d{2})?)/i);
+    const value = moneyTokenToNumber(match?.[1]);
+    if (value > 0) return value;
+  }
+
+  return 0;
+}
+
+function findExpectedAmountInText(text, expectedAmount) {
+  const expected = Number(expectedAmount || 0);
+  if (expected <= 0) return 0;
+
+  const expectedForms = [
+    String(Math.round(expected)),
+    Math.round(expected).toLocaleString("es-AR"),
+    expected.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  ];
+
+  return expectedForms.some((form) => {
+    const escaped = form.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\./g, "[.\\s]");
+    return new RegExp(`(^|[^\\d])${escaped}([^\\d]|$)`).test(text);
+  })
+    ? expected
+    : 0;
+}
+
+function pickAmountFromOcrResult(result, expectedAmount) {
+  const text = result?.data?.text || "";
+  const expectedFromText = findExpectedAmountInText(text, expectedAmount);
+  if (expectedFromText > 0) return expectedFromText;
+
+  const currencyLineAmount = extractCurrencyLineAmount(text);
+  if (currencyLineAmount > 0) return currencyLineAmount;
+
+  const wordRows = (result?.data?.words || [])
+    .filter((word) => word?.text && word?.bbox)
+    .sort((a, b) => (a.bbox.y0 - b.bbox.y0) || (a.bbox.x0 - b.bbox.x0))
+    .reduce((rows, word) => {
+      const previous = rows[rows.length - 1];
+      if (previous && Math.abs(previous.y - word.bbox.y0) <= 14) {
+        previous.words.push(word);
+        previous.y = Math.round((previous.y + word.bbox.y0) / 2);
+        return rows;
+      }
+      rows.push({ y: word.bbox.y0, words: [word] });
+      return rows;
+    }, []);
+
+  for (const row of wordRows) {
+    const rowText = row.words.map((word) => word.text).join(" ");
+    const value = extractCurrencyLineAmount(rowText);
+    if (value > 0) return value;
+  }
+
+  const candidates = extractMoneyCandidates(text);
+  const expected = Number(expectedAmount || 0);
+  if (!candidates.length) return 0;
+
+  if (expected > 0) {
+    const exact = candidates.find((candidate) => sameMoney(candidate, expected));
+    if (exact) return exact;
+  }
+
+  return candidates[0];
+}
+
+function getShortOcrText(text) {
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 180);
+}
+
+function getOcrDebugText(result) {
+  const text = result?.data?.text || "";
+  const wordsText = (result?.data?.words || []).map((word) => word?.text).filter(Boolean).join(" ");
+  return getShortOcrText(text || wordsText);
+}
+
+function pickLikelyReceiptAmount(text, expectedAmount) {
+  const expectedFromText = findExpectedAmountInText(text, expectedAmount);
+  if (expectedFromText > 0) return expectedFromText;
+
+  const currencyLineAmount = extractCurrencyLineAmount(text);
+  if (currencyLineAmount > 0) return currencyLineAmount;
+
+  const candidates = extractMoneyCandidates(text);
+  const expected = Number(expectedAmount || 0);
+  if (!candidates.length) return 0;
+
+  if (expected > 0) {
+    const exact = candidates.find((candidate) => sameMoney(candidate, expected));
+    if (exact) return exact;
+  }
+
+  return candidates[0];
+}
 
 export default function NotaDetalleModal({
   open,
@@ -29,6 +230,10 @@ export default function NotaDetalleModal({
   const [monto, setMonto] = useState("");
   const [metodo, setMetodo] = useState("Efectivo");
   const [notaCaja, setNotaCaja] = useState("");
+  const [comprobante, setComprobante] = useState(null);
+  const [montoComprobante, setMontoComprobante] = useState("");
+  const [leyendoComprobante, setLeyendoComprobante] = useState(false);
+  const [ocrTexto, setOcrTexto] = useState("");
 
   useEffect(() => {
     if (!detalle) return;
@@ -36,6 +241,9 @@ export default function NotaDetalleModal({
     setMonto(String(detalle?.caja?.monto ?? getNotaTotal(detalle)));
     setMetodo(detalle?.caja?.metodo || "Efectivo");
     setNotaCaja(detalle?.caja?.nota || "");
+    setComprobante(detalle?.caja?.comprobante?.dataUrl ? detalle.caja.comprobante : null);
+    setMontoComprobante(detalle?.caja?.comprobante?.monto ? String(detalle.caja.comprobante.monto) : "");
+    setOcrTexto("");
   }, [detalle]);
 
   const total = getNotaTotal(detalle);
@@ -43,6 +251,9 @@ export default function NotaDetalleModal({
   const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
   const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
+  const requiereComprobante = (tipo === "pago" || tipo === "seña") && metodo !== "Efectivo";
+  const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
+  const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
   const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
   const previewDoc = useMemo(() => {
     if (!previewData) return "";
@@ -56,6 +267,157 @@ export default function NotaDetalleModal({
   function handlePrint() {
     if (!previewData) return;
     openNotaPedidoPrintWindow(previewData);
+  }
+
+  function getMontoCajaActual() {
+    if (tipo === "pago") return total;
+    if (tipo === "seña") return parseMoney(monto);
+    return 0;
+  }
+
+  async function leerMontoDesdeComprobante(nextComprobante) {
+    if (!nextComprobante?.dataUrl) return;
+
+    setLeyendoComprobante(true);
+    setOcrTexto("");
+
+    try {
+      const worker = await createWorker("eng");
+      await worker.setParameters({
+        preserve_interword_spaces: "1",
+      });
+      const result = await worker.recognize(nextComprobante.dataUrl);
+      await worker.terminate();
+
+      const text = result?.data?.text || "";
+      const montoDetectado = pickAmountFromOcrResult(result, getMontoCajaActual());
+      setOcrTexto(getOcrDebugText(result));
+
+      if (montoDetectado > 0) {
+        setMontoComprobante(String(Math.round(montoDetectado * 100) / 100));
+        return;
+      }
+
+      await Swal.fire({
+        title: "No pude leer el monto",
+        text: "No encontré un importe claro en el comprobante. Podés cargarlo manualmente.",
+        icon: "info",
+      });
+    } catch (e) {
+      await Swal.fire({
+        title: "No se pudo leer el comprobante",
+        text: e?.message || "El OCR no pudo procesar la imagen. Podés cargar el monto manualmente.",
+        icon: "warning",
+      });
+    } finally {
+      setLeyendoComprobante(false);
+    }
+  }
+
+  async function cargarComprobanteDesdeArchivo(file) {
+    try {
+      const next = await readImageFile(file);
+      setComprobante(next);
+      await leerMontoDesdeComprobante(next);
+    } catch (e) {
+      await Swal.fire({
+        title: "Comprobante no valido",
+        text: e?.message || "No se pudo cargar el comprobante",
+        icon: "warning",
+      });
+    }
+  }
+
+  async function pegarComprobanteDesdePortapapeles() {
+    try {
+      if (!navigator.clipboard?.read) {
+        throw new Error("Tu navegador no permite leer imagenes del portapapeles con este boton. Probá pegando con Ctrl+V.");
+      }
+
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find((candidate) => candidate.startsWith("image/"));
+        if (!imageType) continue;
+
+        const blob = await item.getType(imageType);
+        await cargarComprobanteDesdeArchivo(new File([blob], "comprobante-pegado.png", { type: imageType }));
+        return;
+      }
+
+      throw new Error("No encontramos una imagen en el portapapeles.");
+    } catch (e) {
+      await Swal.fire({
+        title: "No se pudo pegar",
+        text: e?.message || "Copiá una imagen y volvé a intentar.",
+        icon: "warning",
+      });
+    }
+  }
+
+  async function handleComprobantePaste(e) {
+    const file = Array.from(e.clipboardData?.files || []).find((item) => String(item.type || "").startsWith("image/"));
+    if (!file) return;
+    e.preventDefault();
+    await cargarComprobanteDesdeArchivo(file);
+  }
+
+  function buildCajaPayload(payloadTipo, montoCaja) {
+    const esOperacionConPago = payloadTipo === "seña" || payloadTipo === "pago";
+    return {
+      tipo: payloadTipo,
+      monto: Number(montoCaja || 0),
+      subtotal: esOperacionConPago ? subtotal : 0,
+      total: esOperacionConPago ? total : 0,
+      metodo,
+      nota: notaCaja,
+      comprobante: requiereComprobante
+        ? { ...(comprobante || {}), monto: parseMoney(montoComprobante) }
+        : null,
+    };
+  }
+
+  async function validarComprobanteAntesDeGuardar(payloadTipo, montoCaja) {
+    const necesitaValidacion = (payloadTipo === "seña" || payloadTipo === "pago") && metodo !== "Efectivo";
+    if (!necesitaValidacion) return true;
+
+    if (leyendoComprobante) {
+      await Swal.fire({
+        title: "Comprobante en lectura",
+        text: "Esperá a que termine de leer el monto del comprobante antes de guardar.",
+        icon: "info",
+      });
+      return false;
+    }
+
+    if (!comprobante?.dataUrl) {
+      await Swal.fire({
+        title: "Falta comprobante",
+        text: "Para este medio de pago tenés que adjuntar, pegar o sacar foto del comprobante.",
+        icon: "warning",
+      });
+      return false;
+    }
+
+    const montoComprobanteNumero = parseMoney(montoComprobante);
+    if (!(montoComprobanteNumero > 0)) {
+      await Swal.fire({
+        title: "Falta monto del comprobante",
+        text: "Cargá el monto que figura en el comprobante para compararlo con la seña o el pago.",
+        icon: "warning",
+      });
+      return false;
+    }
+
+    if (!sameMoney(montoComprobanteNumero, montoCaja)) {
+      await Swal.fire({
+        title: "El monto no coincide",
+        text: `El comprobante dice $${toARS(montoComprobanteNumero)} y en caja figura $${toARS(montoCaja)}.`,
+        icon: "warning",
+      });
+      return false;
+    }
+
+    return true;
   }
 
   if (!open) return null;
@@ -176,6 +538,87 @@ export default function NotaDetalleModal({
                   </div>
                 </div>
 
+                <div
+                  className={`npl-proofBox${!requiereComprobante ? " npl-proofBox--disabled" : ""}`}
+                  onPaste={requiereComprobante ? handleComprobantePaste : undefined}
+                  tabIndex={requiereComprobante ? 0 : -1}
+                >
+                  <div className="npl-proofHeader">
+                    <div>
+                      <div className="npl-k">Comprobante</div>
+                      <div className="npl-proofHint">
+                        {requiereComprobante
+                          ? "Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
+                          : "Se habilita cuando el medio de pago no es Efectivo."}
+                      </div>
+                    </div>
+                    {requiereComprobante && comprobante?.dataUrl ? (
+                      <button className="npl-btnGhost" type="button" onClick={() => setComprobante(null)}>
+                        Quitar
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {requiereComprobante ? (
+                    <>
+                      <div className="npl-proofActions">
+                        <label className="npl-proofBtn" htmlFor={comprobanteArchivoId}>Adjuntar</label>
+                        <button className="npl-proofBtn" type="button" onClick={pegarComprobanteDesdePortapapeles}>
+                          Pegar
+                        </button>
+                        <label className="npl-proofBtn" htmlFor={comprobanteCamaraId}>Sacar foto</label>
+                      </div>
+
+                      <input
+                        id={comprobanteArchivoId}
+                        type="file"
+                        accept="image/*"
+                        className="npl-proofInput"
+                        onChange={(e) => cargarComprobanteDesdeArchivo(e.target.files?.[0])}
+                      />
+                      <input
+                        id={comprobanteCamaraId}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="npl-proofInput"
+                        onChange={(e) => cargarComprobanteDesdeArchivo(e.target.files?.[0])}
+                      />
+
+                      {comprobante?.dataUrl ? (
+                        <div className="npl-proofPreview">
+                          <img src={comprobante.dataUrl} alt="Comprobante de pago" />
+                        <div>
+                          <strong>{comprobante.nombre || "Comprobante"}</strong>
+                          <span>{leyendoComprobante ? "Leyendo monto automáticamente..." : "Listo para guardar con la caja."}</span>
+                        </div>
+                      </div>
+                      ) : (
+                        <div className="npl-proofEmpty">También podés hacer click acá y pegar una captura con Ctrl+V.</div>
+                      )}
+
+                      <div className="npl-proofAmount">
+                        <label className="npl-k" htmlFor="montoComprobante">Monto que figura en el comprobante</label>
+                        <input
+                          id="montoComprobante"
+                          value={montoComprobante}
+                          onChange={(e) => setMontoComprobante(e.target.value)}
+                          disabled={leyendoComprobante}
+                          placeholder="Ej: 214172"
+                        />
+                        <span>
+                          {leyendoComprobante
+                            ? "Leyendo la imagen para completar el monto..."
+                            : "Se completa automáticamente desde la imagen y debe coincidir con la seña o pago."}
+                        </span>
+                        {ocrTexto ? <span>Texto detectado: {ocrTexto.slice(0, 140)}</span> : null}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="npl-proofEmpty">Para cargar comprobante elegí Transferencia, Débito, Crédito o Cuenta Corriente.</div>
+                  )}
+                </div>
+
                 <div className="npl-noteBox">
                   <div className="npl-k">Observaciones</div>
                   <div>
@@ -215,14 +658,9 @@ export default function NotaDetalleModal({
                         }
 
                         if (payloadTipo === "pago") {
-                          await onGuardarCaja?.(detalle, {
-                            tipo: "pago",
-                            monto: Number(total || 0),
-                            subtotal,
-                            total,
-                            metodo,
-                            nota: notaCaja,
-                          });
+                          const okComprobante = await validarComprobanteAntesDeGuardar("pago", total);
+                          if (!okComprobante) return;
+                          await onGuardarCaja?.(detalle, buildCajaPayload("pago", total));
                           return;
                         }
 
@@ -249,28 +687,18 @@ export default function NotaDetalleModal({
                               reverseButtons: true,
                             }).then(async (result) => {
                               if (!result.isConfirmed) return;
+                              const okComprobante = await validarComprobanteAntesDeGuardar("seña", montoSenia);
+                              if (!okComprobante) return;
 
-                              await onGuardarCaja?.(detalle, {
-                                tipo: "seña",
-                                monto: montoSenia,
-                                subtotal,
-                                total,
-                                metodo,
-                                nota: notaCaja,
-                              });
+                              await onGuardarCaja?.(detalle, buildCajaPayload("seña", montoSenia));
                             });
                             return;
                           }
                         }
 
-                        await onGuardarCaja?.(detalle, {
-                          tipo: payloadTipo,
-                          monto: Number(monto || 0),
-                          subtotal: payloadTipo === "seña" || payloadTipo === "pago" ? subtotal : 0,
-                          total: payloadTipo === "seña" || payloadTipo === "pago" ? total : 0,
-                          metodo,
-                          nota: notaCaja,
-                        });
+                        const okComprobante = await validarComprobanteAntesDeGuardar(payloadTipo, Number(monto || 0));
+                        if (!okComprobante) return;
+                        await onGuardarCaja?.(detalle, buildCajaPayload(payloadTipo, monto));
                       } catch (e) {
                         alert(e?.message || "Error guardando caja");
                       }

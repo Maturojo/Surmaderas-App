@@ -73,6 +73,13 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
   const descuentoMonto = Number(nota?.totales?.descuento ?? 0);
   const total = Number(nota?.totales?.total ?? nota?.total ?? 0);
   const descuentoPct = subtotal > 0 ? (descuentoMonto / subtotal) * 100 : 0;
+  const tipoCaja = String(nota?.caja?.tipo || "").toLowerCase();
+  const estadoComercial = String(nota?.estado || "").toLowerCase();
+  const estaSenada = tipoCaja === "seña" || tipoCaja === "sena" || tipoCaja === "senia" || estadoComercial === "señada";
+  const estaPagada = tipoCaja === "pago" || estadoComercial === "pagada";
+  const estadoCajaLabel = estaPagada ? "PAGADA" : estaSenada ? "SEÑADA" : "";
+  const montoCaja = Number(nota?.caja?.monto || 0);
+  const totalPendiente = estaSenada ? Math.max(0, total - montoCaja) : total;
 
   return {
     numero: nota?.numero || "",
@@ -85,7 +92,9 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
     subtotal,
     descuentoMonto,
     descuentoPct,
-    total,
+    total: totalPendiente,
+    estadoCajaLabel,
+    montoCaja,
     previewItems: items,
     audience,
     showPrices,
@@ -427,6 +436,31 @@ function buildStyles() {
       grid-template-columns: 1fr auto auto;
       font-size: 2.8mm;
     }
+    .npw-summaryRow.status {
+      margin-top: 0.7mm;
+      padding: 1.3mm 0;
+      border-top: 0.25mm solid rgba(63, 54, 44, 0.16);
+    }
+    .npw-statusBadge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22mm;
+      padding: 1mm 2.4mm;
+      border-radius: 999px;
+      background: #f1ede6;
+      border: 0.25mm solid rgba(63, 54, 44, 0.18);
+      color: #2c251e;
+      font-size: 3.2mm;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+    .npw-paymentNote {
+      margin-top: 0.4mm;
+      font-size: 3mm;
+      color: #6d6359;
+      text-align: right;
+    }
     .npw-divider {
       border-top: 0.35mm solid rgba(63, 54, 44, 0.42);
       margin: 0.8mm 0 1.2mm;
@@ -553,6 +587,23 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                       <span>Descuento (si hay)</span>
                       <strong>${escapeHtml(toARS(data.descuentoPct))}%</strong>
                       <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
+                    </div>
+                  `
+                  : ""
+              }
+              ${
+                data.estadoCajaLabel
+                  ? `
+                    <div class="npw-summaryRow status">
+                      <span>Estado</span>
+                      <strong>
+                        <span class="npw-statusBadge">${escapeHtml(data.estadoCajaLabel)}</span>
+                        ${
+                          data.estadoCajaLabel === "SEÑADA" && data.montoCaja > 0
+                            ? `<div class="npw-paymentNote">Seña: $${escapeHtml(toARS(data.montoCaja))}</div>`
+                            : ""
+                        }
+                      </strong>
                     </div>
                   `
                   : ""

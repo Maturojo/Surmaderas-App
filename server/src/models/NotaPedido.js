@@ -32,6 +32,12 @@ const CajaSchema = new mongoose.Schema(
     fecha: { type: Date },
     metodo: { type: String, default: "" },
     nota: { type: String, default: "" },
+    comprobante: {
+      nombre: { type: String, default: "" },
+      tipo: { type: String, default: "" },
+      dataUrl: { type: String, default: "" },
+      monto: { type: Number, default: 0 },
+    },
   },
   { _id: false }
 );

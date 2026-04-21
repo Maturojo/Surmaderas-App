@@ -271,6 +271,18 @@
   border-color: rgba(101, 80, 61, 0.12);
 }
 
+.ng-stateCell {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+}
+
+.ng-stateMeta {
+  color: #6f665d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .ng-destinos {
   display: flex;
   flex-wrap: wrap;

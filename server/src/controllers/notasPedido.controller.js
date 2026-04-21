@@ -30,6 +30,10 @@ function getClienteTelefono(doc) {
   return doc?.cliente?.telefono || "";
 }
 
+function sameMoney(a, b) {
+  return Math.round(Number(a || 0) * 100) === Math.round(Number(b || 0) * 100);
+}
+
 function normalizeNotaPayload(body = {}) {
   const clienteBody = body?.cliente;
   const cliente =
@@ -181,7 +185,7 @@ export async function eliminarNotaPedido(req, res) {
 export async function guardarCajaNota(req, res) {
   try {
     const { id } = req.params;
-    const { tipo = "pago", monto = 0, metodo = "", nota = "" } = req.body;
+    const { tipo = "pago", monto = 0, metodo = "", nota = "", comprobante = null } = req.body;
 
     const notaActual = await NotaPedido.findById(id);
     if (!notaActual) return res.status(404).json({ message: "Nota no encontrada" });
@@ -194,9 +198,35 @@ export async function guardarCajaNota(req, res) {
     const totalNota = Number(notaActual?.totales?.total ?? notaActual?.total ?? 0);
     const montoNumero = esPago ? totalNota : Number(monto || 0);
     const guardarImportesNota = esSena || esPago;
+    const metodoTexto = String(metodo || "");
+    const guardaComprobante = (esSena || esPago) && metodoTexto.toLowerCase() !== "efectivo";
+    const montoComprobante = Number(comprobante?.monto || 0);
+    const comprobantePayload =
+      guardaComprobante && comprobante?.dataUrl
+        ? {
+            nombre: String(comprobante?.nombre || "comprobante"),
+            tipo: String(comprobante?.tipo || ""),
+            dataUrl: String(comprobante?.dataUrl || ""),
+            monto: montoComprobante,
+          }
+        : undefined;
 
     if (esSena && !(montoNumero > 0)) {
       return res.status(400).json({ message: "Si la nota queda señada, el monto debe ser mayor a 0" });
+    }
+
+    if (guardaComprobante) {
+      if (!comprobantePayload?.dataUrl) {
+        return res.status(400).json({ message: "Tenes que adjuntar el comprobante para este medio de pago" });
+      }
+
+      if (!(montoComprobante > 0)) {
+        return res.status(400).json({ message: "Tenes que cargar el monto que figura en el comprobante" });
+      }
+
+      if (!sameMoney(montoComprobante, montoNumero)) {
+        return res.status(400).json({ message: "El monto del comprobante no coincide con el monto de caja" });
+      }
     }
 
     const update = {
@@ -207,8 +237,9 @@ export async function guardarCajaNota(req, res) {
         monto: esSena || esPago ? montoNumero : 0,
         subtotal: guardarImportesNota ? subtotalNota : 0,
         total: guardarImportesNota ? totalNota : 0,
-        metodo: esSena || esPago ? String(metodo || "") : "",
+        metodo: esSena || esPago ? metodoTexto : "",
         nota: String(nota || ""),
+        comprobante: comprobantePayload,
         fecha: new Date(),
       },
     };

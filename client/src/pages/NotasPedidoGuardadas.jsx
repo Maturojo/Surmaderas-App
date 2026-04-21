@@ -44,6 +44,36 @@ function estadoOperativoClase(estado) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
+function getEstadoComercial(nota) {
+  const tipoCaja = String(nota?.caja?.tipo || "").toLowerCase();
+  const estado = String(nota?.estado || "").toLowerCase();
+
+  if (tipoCaja === "pago" || estado === "pagada") return "pagada";
+  if (tipoCaja === "seña" || tipoCaja === "sena" || tipoCaja === "senia" || estado === "señada") return "señada";
+  return "pendiente";
+}
+
+function getEstadoOperativoLabel(estado) {
+  if (estado === "Enviado a proveedor") return "Enviada a proveedor";
+  if (estado === "En taller") return "Enviada a taller";
+  if (estado === "Finalizado") return "Finalizada";
+  return "Pendiente";
+}
+
+function EstadoComercialCell({ nota }) {
+  const estado = getEstadoComercial(nota);
+  const montoSena = Number(nota?.caja?.monto || 0);
+
+  return (
+    <div className="ng-stateCell">
+      <span className="ng-statusPill ng-statusPill--comercial">{estado}</span>
+      {estado === "señada" && montoSena > 0 ? (
+        <span className="ng-stateMeta">Seña: ${toARS(montoSena)}</span>
+      ) : null}
+    </div>
+  );
+}
+
 function normalizarWhatsapp(telefono = "") {
   const digits = String(telefono || "").replace(/\D/g, "");
   if (!digits) return "";
@@ -617,11 +647,11 @@ export default function NotasPedidoGuardadas() {
                   </td>
                   <td>{n?.vendedor ?? "-"}</td>
                   <td>
-                    <span className="ng-statusPill ng-statusPill--comercial">{n?.estado ?? "-"}</span>
+                    <EstadoComercialCell nota={n} />
                   </td>
                   <td>
                     <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
-                      {n?.estadoOperativo || "Pendiente"}
+                      {getEstadoOperativoLabel(n?.estadoOperativo)}
                     </span>
                   </td>
                   <td>
@@ -685,6 +715,7 @@ export default function NotasPedidoGuardadas() {
                 <th>Entrega</th>
                 <th>Proveedor</th>
                 <th>Estado</th>
+                <th>Operativo</th>
                 <th>Total</th>
                 <th>Acciones</th>
               </tr>
@@ -692,9 +723,9 @@ export default function NotasPedidoGuardadas() {
 
             <tbody>
               {loading ? (
-                <tr><td className="ng-tableMessage" colSpan={7}>Cargando...</td></tr>
+                <tr><td className="ng-tableMessage" colSpan={8}>Cargando...</td></tr>
               ) : guardadasProveedor.length === 0 ? (
-                <tr><td className="ng-tableMessage" colSpan={7}>Todavía no hay notas enviadas a proveedor.</td></tr>
+                <tr><td className="ng-tableMessage" colSpan={8}>Todavía no hay notas enviadas a proveedor.</td></tr>
               ) : (
                 guardadasProveedor.map((n) => (
                   <tr key={`prov-${n?._id || n?.id || n?.numero}`}>
@@ -724,8 +755,11 @@ export default function NotasPedidoGuardadas() {
                       </div>
                     </td>
                     <td>
+                      <EstadoComercialCell nota={n} />
+                    </td>
+                    <td>
                       <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
-                        {n?.estadoOperativo || "Enviado a proveedor"}
+                        {getEstadoOperativoLabel(n?.estadoOperativo || "Enviado a proveedor")}
                       </span>
                     </td>
                     <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
