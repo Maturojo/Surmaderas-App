@@ -27,6 +27,8 @@ const CajaSchema = new mongoose.Schema(
     guardada: { type: Boolean, default: false },
     tipo: { type: String, enum: ["", "seña", "pago"], default: "" },
     monto: { type: Number, default: 0 },
+    subtotal: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
     fecha: { type: Date },
     metodo: { type: String, default: "" },
     nota: { type: String, default: "" },

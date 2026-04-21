@@ -87,8 +87,6 @@ export default function NotasPedidoView() {
   const [vendedor, setVendedor] = useState("");
 
   const [items, setItems] = useState([{ ...emptyItem }]);
-  const [descuento, setDescuento] = useState("");
-  const [adelanto, setAdelanto] = useState("");
   const telefonoValido = isTelefonoValido(telefono);
 
   useEffect(() => {
@@ -137,15 +135,7 @@ export default function NotasPedidoView() {
     [items]
   );
 
-  const totalFinal = useMemo(() => {
-    const d = Number(String(descuento).replace(",", ".") || 0);
-    return Math.max(0, subtotal - d);
-  }, [subtotal, descuento]);
-
-  const resta = useMemo(() => {
-    const a = Number(String(adelanto).replace(",", ".") || 0);
-    return Math.max(0, totalFinal - a);
-  }, [totalFinal, adelanto]);
+  const totalFinal = subtotal;
 
   function updateItem(idx, patch) {
     setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
@@ -268,10 +258,10 @@ export default function NotasPedidoView() {
         items: itemsMapped,
         totales: {
           subtotal,
-          descuento: Number(String(descuento).replace(",", ".") || 0),
+          descuento: 0,
           total: totalFinal,
-          adelanto: Number(String(adelanto).replace(",", ".") || 0),
-          resta,
+          adelanto: 0,
+          resta: totalFinal,
         },
         pdfBase64: "",
       };
@@ -553,21 +543,6 @@ export default function NotasPedidoView() {
             <div className="np-field">
               <label className="np-label">Total $:</label>
               <input className="np-input np-readonly" readOnly value={toARS(totalFinal)} />
-            </div>
-
-            <div className="np-field">
-              <label className="np-label">Descuento $:</label>
-              <input className="np-input" value={descuento} onChange={(e) => setDescuento(e.target.value)} />
-            </div>
-
-            <div className="np-field">
-              <label className="np-label">Adelanto $:</label>
-              <input className="np-input" value={adelanto} onChange={(e) => setAdelanto(e.target.value)} />
-            </div>
-
-            <div className="np-field">
-              <label className="np-label">Resta $:</label>
-              <input className="np-input np-readonly" readOnly value={toARS(resta)} />
             </div>
           </div>
         </div>

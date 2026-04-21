@@ -737,6 +737,9 @@ export default function NotasPedidoGuardadas() {
                         <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                           Gestionar
                         </button>
+                        <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
+                          Borrar
+                        </button>
                       </div>
                     </td>
                   </tr>

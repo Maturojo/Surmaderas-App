@@ -218,6 +218,8 @@ export default function NotaDetalleModal({
                           await onGuardarCaja?.(detalle, {
                             tipo: "pago",
                             monto: Number(total || 0),
+                            subtotal,
+                            total,
                             metodo,
                             nota: notaCaja,
                           });
@@ -251,6 +253,8 @@ export default function NotaDetalleModal({
                               await onGuardarCaja?.(detalle, {
                                 tipo: "seña",
                                 monto: montoSenia,
+                                subtotal,
+                                total,
                                 metodo,
                                 nota: notaCaja,
                               });
@@ -262,6 +266,8 @@ export default function NotaDetalleModal({
                         await onGuardarCaja?.(detalle, {
                           tipo: payloadTipo,
                           monto: Number(monto || 0),
+                          subtotal: payloadTipo === "seña" || payloadTipo === "pago" ? subtotal : 0,
+                          total: payloadTipo === "seña" || payloadTipo === "pago" ? total : 0,
                           metodo,
                           nota: notaCaja,
                         });

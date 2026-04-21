@@ -190,8 +190,10 @@ export async function guardarCajaNota(req, res) {
     const esSena = t === "seña" || t === "sena" || t === "senia";
     const esPago = t === "pago";
     const estado = esSena ? "señada" : esPago ? "pagada" : "pendiente";
+    const subtotalNota = Number(notaActual?.totales?.subtotal ?? 0);
     const totalNota = Number(notaActual?.totales?.total ?? notaActual?.total ?? 0);
     const montoNumero = esPago ? totalNota : Number(monto || 0);
+    const guardarImportesNota = esSena || esPago;
 
     if (esSena && !(montoNumero > 0)) {
       return res.status(400).json({ message: "Si la nota queda señada, el monto debe ser mayor a 0" });
@@ -203,6 +205,8 @@ export async function guardarCajaNota(req, res) {
         guardada: true,
         tipo: esSena ? "seña" : esPago ? "pago" : "",
         monto: esSena || esPago ? montoNumero : 0,
+        subtotal: guardarImportesNota ? subtotalNota : 0,
+        total: guardarImportesNota ? totalNota : 0,
         metodo: esSena || esPago ? String(metodo || "") : "",
         nota: String(nota || ""),
         fecha: new Date(),
