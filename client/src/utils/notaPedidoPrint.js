@@ -77,7 +77,7 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
   const estadoComercial = String(nota?.estado || "").toLowerCase();
   const estaSenada = tipoCaja === "seña" || tipoCaja === "sena" || tipoCaja === "senia" || estadoComercial === "señada";
   const estaPagada = tipoCaja === "pago" || estadoComercial === "pagada";
-  const estadoCajaLabel = estaPagada ? "PAGADA" : estaSenada ? "SEÑADA" : "";
+  const estadoCajaLabel = estaPagada ? "Pagada" : estaSenada ? "Señada" : "";
   const montoCaja = Number(nota?.caja?.monto || 0);
   const totalPendiente = estaSenada ? Math.max(0, total - montoCaja) : total;
 
@@ -441,25 +441,22 @@ function buildStyles() {
       padding: 1.3mm 0;
       border-top: 0.25mm solid rgba(63, 54, 44, 0.16);
     }
+    .npw-summaryRow.deposit {
+      padding: 0.9mm 0;
+    }
     .npw-statusBadge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 22mm;
-      padding: 1mm 2.4mm;
+      min-width: 0;
+      padding: 0;
       border-radius: 999px;
-      background: #f1ede6;
-      border: 0.25mm solid rgba(63, 54, 44, 0.18);
-      color: #2c251e;
-      font-size: 3.2mm;
+      background: transparent;
+      border: 0;
+      color: #23201c;
+      font-size: 4.4mm;
       font-weight: 900;
-      letter-spacing: 0.08em;
-    }
-    .npw-paymentNote {
-      margin-top: 0.4mm;
-      font-size: 3mm;
-      color: #6d6359;
-      text-align: right;
+      letter-spacing: 0;
     }
     .npw-divider {
       border-top: 0.35mm solid rgba(63, 54, 44, 0.42);
@@ -596,15 +593,18 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                   ? `
                     <div class="npw-summaryRow status">
                       <span>Estado</span>
-                      <strong>
-                        <span class="npw-statusBadge">${escapeHtml(data.estadoCajaLabel)}</span>
-                        ${
-                          data.estadoCajaLabel === "SEÑADA" && data.montoCaja > 0
-                            ? `<div class="npw-paymentNote">Seña: $${escapeHtml(toARS(data.montoCaja))}</div>`
-                            : ""
-                        }
-                      </strong>
+                      <strong><span class="npw-statusBadge">${escapeHtml(data.estadoCajaLabel)}</span></strong>
                     </div>
+                    ${
+                      data.estadoCajaLabel === "Señada" && data.montoCaja > 0
+                        ? `
+                          <div class="npw-summaryRow deposit">
+                            <span>Seña</span>
+                            <strong>$${escapeHtml(toARS(data.montoCaja))}</strong>
+                          </div>
+                        `
+                        : ""
+                    }
                   `
                   : ""
               }
