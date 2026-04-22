@@ -11,6 +11,10 @@ import {
   buildNotaPedidoPrintData,
   getNotaPedidoPageCount,
   openNotaPedidoPrintWindow,
+  generateNotaPedidoImageFile,
+  copyFileToClipboard,
+  downloadFile,
+  openWhatsappText,
   toARS,
 } from "../../../utils/notaPedidoPrint";
 
@@ -302,6 +306,11 @@ export default function NotaDetalleModal({
   const [leyendoComprobante, setLeyendoComprobante] = useState(false);
   const [ocrTexto, setOcrTexto] = useState("");
   const [lightboxSrc, setLightboxSrc] = useState(null);
+  const [comprobanteClienteOpen, setComprobanteClienteOpen] = useState(false);
+  const [pendingCajaPayload, setPendingCajaPayload] = useState(null);
+  const [comprobanteClienteFile, setComprobanteClienteFile] = useState(null);
+  const [comprobanteClienteUrl, setComprobanteClienteUrl] = useState(null);
+  const [comprobanteClienteLoading, setComprobanteClienteLoading] = useState(false);
   const [descuentoTipo, setDescuentoTipo] = useState("0");
   const [descuentoPersonalizado, setDescuentoPersonalizado] = useState("");
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -333,6 +342,59 @@ export default function NotaDetalleModal({
       setDescuentoPersonalizado("");
     }
   }, [detalle]);
+
+  // Genera la imagen del comprobante para cliente cuando se abre el modal de confirmación
+  useEffect(() => {
+    let cancelled = false;
+    if (!comprobanteClienteOpen || !detalle) return;
+    setComprobanteClienteLoading(true);
+    setComprobanteClienteFile(null);
+    setComprobanteClienteUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    generateNotaPedidoImageFile(buildNotaPedidoPrintData(detalle))
+      .then((file) => {
+        if (cancelled) return;
+        setComprobanteClienteFile(file);
+        setComprobanteClienteUrl(URL.createObjectURL(file));
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setComprobanteClienteLoading(false); });
+    return () => { cancelled = true; };
+  }, [comprobanteClienteOpen, detalle]);
+
+  function normalizarWhatsappLocal(telefono = "") {
+    const digits = String(telefono || "").replace(/\D/g, "");
+    if (!digits) return "";
+    if (digits.startsWith("549")) return digits;
+    if (digits.startsWith("54")) return `549${digits.slice(2)}`;
+    return `549${digits}`;
+  }
+
+  function construirMensajeClienteLocal(nota) {
+    return [
+      `Hola ${nota?.cliente?.nombre || "cliente"}, te compartimos la nota de pedido ${nota?.numero || ""}.`,
+      "",
+      `Entrega estimada: ${nota?.entrega || "-"}`,
+      `Vendedor: ${nota?.vendedor || "-"}`,
+      `Total: $${toARS(getNotaTotal(nota))}`,
+      "",
+      "Si necesitás alguna corrección o confirmación, respondé por este medio.",
+    ].join("\n");
+  }
+
+  function abrirComprobanteAntesDeSave(payload) {
+    setPendingCajaPayload(payload);
+    setComprobanteClienteOpen(true);
+  }
+
+  async function confirmarGuardarCaja() {
+    try {
+      await onGuardarCaja?.(detalle, pendingCajaPayload);
+      setComprobanteClienteOpen(false);
+      setPendingCajaPayload(null);
+    } catch (e) {
+      alert(e?.message || "Error guardando caja");
+    }
+  }
 
   const totalGuardado = getNotaTotal(detalle);
   const subtotal = Number(detalle?.caja?.subtotal || detalle?.totales?.subtotal || totalGuardado);
@@ -906,7 +968,7 @@ export default function NotaDetalleModal({
                         if (payloadTipo === "pago") {
                           const okComprobante = await validarComprobanteAntesDeGuardar("pago", total);
                           if (!okComprobante) return;
-                          await onGuardarCaja?.(detalle, buildCajaPayload("pago", total));
+                          abrirComprobanteAntesDeSave(buildCajaPayload("pago", total));
                           return;
                         }
 
@@ -935,8 +997,7 @@ export default function NotaDetalleModal({
                               if (!result.isConfirmed) return;
                               const okComprobante = await validarComprobanteAntesDeGuardar("seña", montoSenia);
                               if (!okComprobante) return;
-
-                              await onGuardarCaja?.(detalle, buildCajaPayload("seña", montoSenia));
+                              abrirComprobanteAntesDeSave(buildCajaPayload("seña", montoSenia));
                             });
                             return;
                           }
@@ -944,7 +1005,7 @@ export default function NotaDetalleModal({
 
                         const okComprobante = await validarComprobanteAntesDeGuardar(payloadTipo, Number(monto || 0));
                         if (!okComprobante) return;
-                        await onGuardarCaja?.(detalle, buildCajaPayload(payloadTipo, monto));
+                        abrirComprobanteAntesDeSave(buildCajaPayload(payloadTipo, monto));
                       } catch (e) {
                         alert(e?.message || "Error guardando caja");
                       }
@@ -1022,6 +1083,70 @@ export default function NotaDetalleModal({
           </div>
         ) : null}
       </div>
+
+      {comprobanteClienteOpen && (
+        <div className="npl-ccModal">
+          <div className="npl-ccModalInner">
+            <div className="npl-ccModalHeader">
+              <div>
+                <div className="npl-modalTitle">Comprobante para cliente</div>
+                <div className="npl-modalSub">Envialo antes de confirmar el guardado</div>
+              </div>
+              <button className="npl-btnGhost" type="button" onClick={() => setComprobanteClienteOpen(false)}>
+                Volver
+              </button>
+            </div>
+
+            <div className="npl-ccModalPreview">
+              {comprobanteClienteLoading ? (
+                <div className="npl-muted" style={{ padding: 24 }}>Generando comprobante...</div>
+              ) : comprobanteClienteUrl ? (
+                <img src={comprobanteClienteUrl} alt="Comprobante para cliente" />
+              ) : null}
+            </div>
+
+            <div className="npl-ccModalActions">
+              <button
+                className="npl-btnGhost"
+                type="button"
+                onClick={() => openNotaPedidoPrintWindow(buildNotaPedidoPrintData(detalle))}
+              >
+                Imprimir
+              </button>
+              <button
+                className="npl-btnGhost"
+                type="button"
+                disabled={!comprobanteClienteFile}
+                onClick={async () => {
+                  if (!comprobanteClienteFile) return;
+                  const copied = await copyFileToClipboard(comprobanteClienteFile);
+                  if (!copied) downloadFile(comprobanteClienteFile);
+                }}
+              >
+                Copiar imagen
+              </button>
+              <button
+                className="npl-btnGhost"
+                type="button"
+                onClick={() => {
+                  const tel = normalizarWhatsappLocal(detalle?.cliente?.telefono);
+                  if (!tel) { Swal.fire({ icon: "warning", title: "Sin teléfono", text: "La nota no tiene teléfono para enviar." }); return; }
+                  openWhatsappText(tel, construirMensajeClienteLocal(detalle));
+                  if (comprobanteClienteFile) copyFileToClipboard(comprobanteClienteFile).catch(() => {});
+                }}
+              >
+                WhatsApp
+              </button>
+            </div>
+
+            <div className="npl-ccModalFooter">
+              <button className="npl-btn" type="button" onClick={confirmarGuardarCaja}>
+                Guardar caja
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {lightboxSrc && (
         <div className="npl-lightbox" onClick={() => setLightboxSrc(null)}>
