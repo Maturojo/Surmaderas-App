@@ -70,9 +70,9 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
       })
     : [];
 
-  const subtotal = Number(nota?.totales?.subtotal ?? nota?.total ?? 0);
-  const descuentoMonto = Number(nota?.totales?.descuento ?? 0);
-  const total = Number(nota?.totales?.total ?? nota?.total ?? 0);
+  const subtotal = Number(nota?.caja?.subtotal || nota?.totales?.subtotal || nota?.total || 0);
+  const descuentoMonto = Number(nota?.caja?.descuento ?? nota?.totales?.descuento ?? 0);
+  const total = Number(nota?.caja?.total || nota?.totales?.total || nota?.total || 0);
   const descuentoPct = subtotal > 0 ? (descuentoMonto / subtotal) * 100 : 0;
   const tipoCaja = String(nota?.caja?.tipo || "").toLowerCase();
   const estadoComercial = String(nota?.estado || "").toLowerCase();
@@ -455,8 +455,9 @@ function buildStyles() {
       color: #23201c;
     }
     .npw-summaryRow.discount {
-      grid-template-columns: 1fr auto auto;
-      font-size: 2.8mm;
+      grid-template-columns: 1fr auto;
+      font-size: 3.6mm;
+      color: #7a6a5a;
     }
     .npw-summaryRow.status {
       margin-top: 0.4mm;
@@ -622,9 +623,8 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
                   ? `
                     <div class="npw-divider"></div>
                     <div class="npw-summaryRow discount">
-                      <span>Descuento (si hay)</span>
-                      <strong>${escapeHtml(toARS(data.descuentoPct))}%</strong>
-                      <strong>$${escapeHtml(toARS(data.descuentoMonto))}</strong>
+                      <span>Descuento ${escapeHtml(toARS(data.descuentoPct))}%</span>
+                      <strong>- $${escapeHtml(toARS(data.descuentoMonto))}</strong>
                     </div>
                   `
                   : ""

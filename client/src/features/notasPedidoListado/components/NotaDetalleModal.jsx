@@ -353,6 +353,9 @@ export default function NotaDetalleModal({
         ...(detalle.caja || {}),
         tipo: pendingCajaPayload.tipo || "",
         monto: Number(pendingCajaPayload.monto || 0),
+        subtotal: Number(pendingCajaPayload.subtotal || 0),
+        descuento: Number(pendingCajaPayload.descuento || 0),
+        total: Number(pendingCajaPayload.total || 0),
       },
     };
   }
