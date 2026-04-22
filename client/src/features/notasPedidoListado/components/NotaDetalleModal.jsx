@@ -304,6 +304,9 @@ export default function NotaDetalleModal({
   const [lightboxSrc, setLightboxSrc] = useState(null);
   const [descuentoTipo, setDescuentoTipo] = useState("0");
   const [descuentoPersonalizado, setDescuentoPersonalizado] = useState("");
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [cameraError, setCameraError] = useState("");
 
   useEffect(() => {
     if (!detalle) return;
@@ -349,12 +352,19 @@ export default function NotaDetalleModal({
   const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
+  const comprobanteVideoId = `comprobante-video-${detalle?._id || "nota"}`;
 
   useEffect(() => {
     if (tipo === "pago") {
       setMonto(String(total));
     }
   }, [tipo, total]);
+
+  useEffect(() => {
+    if (!open) cerrarCamara();
+    return () => cerrarCamara();
+  }, [open]);
+
   const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
   const previewDoc = useMemo(() => {
     if (!previewData) return "";
@@ -434,6 +444,79 @@ export default function NotaDetalleModal({
         icon: "warning",
       });
     }
+  }
+
+  async function cargarComprobanteDesdeDataUrl(dataUrl, nombre = "comprobante-camara.png") {
+    const next = {
+      nombre,
+      tipo: "image/png",
+      dataUrl,
+    };
+    setComprobante(next);
+    await leerMontoDesdeComprobante(next);
+  }
+
+  function abrirCamaraFallback() {
+    document.getElementById(comprobanteCamaraId)?.click();
+  }
+
+  async function abrirCamara() {
+    setCameraError("");
+
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      abrirCamaraFallback();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1600 },
+          height: { ideal: 1200 },
+        },
+        audio: false,
+      });
+      setCameraStream(stream);
+      setCameraOpen(true);
+      window.setTimeout(() => {
+        const video = document.getElementById(comprobanteVideoId);
+        if (video) {
+          video.srcObject = stream;
+          video.play?.().catch(() => {});
+        }
+      }, 0);
+    } catch (e) {
+      setCameraError(e?.message || "No se pudo acceder a la camara.");
+      abrirCamaraFallback();
+    }
+  }
+
+  function cerrarCamara() {
+    setCameraOpen(false);
+    setCameraError("");
+    setCameraStream((stream) => {
+      stream?.getTracks?.().forEach((track) => track.stop());
+      return null;
+    });
+  }
+
+  async function tomarFotoCamara() {
+    const cameraVideo = document.getElementById(comprobanteVideoId);
+    if (!cameraVideo) return;
+
+    const width = cameraVideo.videoWidth || 1280;
+    const height = cameraVideo.videoHeight || 960;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.drawImage(cameraVideo, 0, 0, width, height);
+    const dataUrl = canvas.toDataURL("image/png");
+    cerrarCamara();
+    await cargarComprobanteDesdeDataUrl(dataUrl);
   }
 
   async function pegarComprobanteDesdePortapapeles() {
@@ -700,7 +783,9 @@ export default function NotaDetalleModal({
                         <button className="npl-proofBtn" type="button" onClick={pegarComprobanteDesdePortapapeles}>
                           Pegar
                         </button>
-                        <label className="npl-proofBtn" htmlFor={comprobanteCamaraId}>Sacar foto</label>
+                        <button className="npl-proofBtn" type="button" onClick={abrirCamara}>
+                          Sacar foto
+                        </button>
                       </div>
 
                       <input
@@ -927,6 +1012,32 @@ export default function NotaDetalleModal({
         <div className="npl-lightbox" onClick={() => setLightboxSrc(null)}>
           <img src={lightboxSrc} alt="Comprobante de pago" onClick={(e) => e.stopPropagation()} />
           <button className="npl-lightboxClose" type="button" onClick={() => setLightboxSrc(null)}>✕</button>
+        </div>
+      )}
+
+      {cameraOpen && (
+        <div className="npl-cameraOverlay" onClick={cerrarCamara}>
+          <div className="npl-cameraPanel" onClick={(e) => e.stopPropagation()}>
+            <div className="npl-cameraHeader">
+              <div>
+                <strong>Sacar foto</strong>
+                <span>Enfocá el comprobante completo y tocá Capturar.</span>
+              </div>
+              <button type="button" className="npl-lightboxClose npl-cameraClose" onClick={cerrarCamara}>✕</button>
+            </div>
+            {cameraError ? <div className="npl-cameraError">{cameraError}</div> : null}
+            <video
+              id={comprobanteVideoId}
+              className="npl-cameraVideo"
+              autoPlay
+              playsInline
+              muted
+            />
+            <div className="npl-cameraActions">
+              <button type="button" className="npl-btnGhost" onClick={cerrarCamara}>Cancelar</button>
+              <button type="button" className="npl-btn" onClick={tomarFotoCamara}>Capturar</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

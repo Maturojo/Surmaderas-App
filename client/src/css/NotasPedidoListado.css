@@ -994,6 +994,84 @@
   opacity: 1;
 }
 
+.npl-cameraOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.npl-cameraPanel {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 36px);
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+.npl-cameraHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(48, 41, 33, 0.1);
+}
+
+.npl-cameraHeader strong,
+.npl-cameraHeader span {
+  display: block;
+}
+
+.npl-cameraHeader strong {
+  color: #1f1c19;
+  font-size: 15px;
+}
+
+.npl-cameraHeader span {
+  margin-top: 3px;
+  color: #756b61;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.npl-cameraClose {
+  position: static;
+  color: #1f1c19;
+  font-size: 22px;
+}
+
+.npl-cameraVideo {
+  display: block;
+  width: 100%;
+  max-height: min(62vh, 520px);
+  background: #111;
+  object-fit: contain;
+}
+
+.npl-cameraError {
+  margin: 12px 16px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff4f4;
+  color: #9f2d2d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.npl-cameraActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(48, 41, 33, 0.1);
+}
+
 .npl-proofPreview strong,
 .npl-proofPreview span {
   display: block;
