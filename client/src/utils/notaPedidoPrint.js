@@ -4,8 +4,9 @@ const NOTE_WIDTH_MM = 200;
 const NOTE_HEIGHT_MM = 145;
 const CSS_PX_PER_MM = 96 / 25.4;
 const DESCRIPTION_CHARS_PER_LINE = 26;
-const NORMAL_PAGE_UNITS = 8.4;
-const LAST_PAGE_UNITS = 4.8;
+const FIRST_PAGE_UNITS = 10.8;
+const CONTINUATION_PAGE_UNITS = 15.2;
+const LAST_PAGE_UNITS = 9.2;
 
 export function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
@@ -94,6 +95,7 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
     descuentoPct,
     total: totalPendiente,
     estadoCajaLabel,
+    estaSenada,
     montoCaja,
     previewItems: items,
     audience,
@@ -162,14 +164,28 @@ function paginatePreviewItems(items) {
   if (!items.length) return [[]];
   if (estimateItemsUnits(items) <= LAST_PAGE_UNITS) return [items];
 
-  const firstPage = takeItemsByCapacity(items, NORMAL_PAGE_UNITS);
+  const pages = [];
+  let remaining = items;
+  let isFirstPage = true;
 
-  if (firstPage.length >= items.length) {
-    const safeCut = Math.max(1, items.length - 1);
-    return [items.slice(0, safeCut), items.slice(safeCut)];
+  while (remaining.length) {
+    const allRemainingFitOnLast = estimateItemsUnits(remaining) <= LAST_PAGE_UNITS;
+    if (allRemainingFitOnLast) {
+      pages.push(remaining);
+      break;
+    }
+
+    const capacity = isFirstPage ? FIRST_PAGE_UNITS : CONTINUATION_PAGE_UNITS;
+    let pageItems = takeItemsByCapacity(remaining, capacity);
+    if (pageItems.length >= remaining.length && estimateItemsUnits(remaining) > LAST_PAGE_UNITS) {
+      pageItems = remaining.slice(0, Math.max(1, remaining.length - 1));
+    }
+    pages.push(pageItems);
+    remaining = remaining.slice(pageItems.length);
+    isFirstPage = false;
   }
 
-  return [firstPage, ...paginatePreviewItems(items.slice(firstPage.length))];
+  return pages;
 }
 
 export function getNotaPedidoPageCount(data) {
@@ -199,7 +215,7 @@ function buildStyles() {
       width: 200mm;
       height: 145mm;
       margin: 0 0 5mm;
-      padding: 4.5mm 6.5mm 3mm;
+      padding: 4.5mm 6.5mm 9mm;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(251,249,246,0.98) 100%);
       border: 0.35mm solid rgba(27, 24, 21, 0.08);
@@ -211,6 +227,9 @@ function buildStyles() {
       break-after: page;
       page-break-after: always;
       position: relative;
+    }
+    .npw-doc--continuation {
+      padding-top: 6mm;
     }
     .npw-doc:last-child {
       margin-bottom: 0;
@@ -369,6 +388,9 @@ function buildStyles() {
       border: 0.3mm solid rgba(28, 25, 22, 0.08);
       box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
     }
+    .npw-doc--continuation .npw-tableCard {
+      margin-top: 0;
+    }
     .npw-table {
       width: 100%;
       border-collapse: collapse;
@@ -474,12 +496,26 @@ function buildStyles() {
       box-shadow: inset 0 0 0 0.25mm rgba(255,255,255,0.06);
     }
     .npw-footer {
-      margin-top: 12.2mm;
+      position: absolute;
+      left: 6.5mm;
+      right: 6.5mm;
+      bottom: 5.2mm;
       padding-top: 2.4mm;
       border-top: 0.28mm solid rgba(72, 61, 49, 0.14);
       text-align: center;
       font-size: 4.2mm;
       letter-spacing: 0.05em;
+      color: #6d6359;
+    }
+    .npw-pageMark {
+      position: absolute;
+      left: 6.5mm;
+      right: 6.5mm;
+      bottom: 1.8mm;
+      text-align: center;
+      font-size: 3.1mm;
+      font-weight: 800;
+      letter-spacing: 0.03em;
       color: #6d6359;
     }
     @media print {
@@ -505,52 +541,58 @@ function buildStyles() {
   `;
 }
 
-function buildDocPage(data, items, { showSummary, showFooter }) {
+function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageNumber, pageCount }) {
   const rows = buildRows(items, data.showPrices);
   return `
-    <div class="npw-doc">
-      <div class="npw-header">
-        <div class="npw-logoWrap">
-          <div class="npw-logoFrame">
-            <img src="${window.location.origin}/logo-linea-gris.png" alt="Sur Maderas" />
-          </div>
-        </div>
-
-        <div class="npw-headerMain">
-          <div class="npw-topline">
-            <div class="npw-topLeft">
-              <div class="npw-serial">N ${escapeHtml(getPreviewNumber(data.numero))}</div>
-              <h1 class="npw-title">Nota de Pedido</h1>
-            </div>
-            <div class="npw-topRight">${escapeHtml(fmtDate(data.fecha))}</div>
-          </div>
-
-          <div class="npw-headDivider"></div>
-
-          <div class="npw-bottomline">
-            <div class="npw-client">
-              <div class="npw-clientInfo">
-                <div class="npw-clientName">${
-                  data.showClientDetails
-                    ? escapeHtml(data.clienteNombre || "Consumidor final")
-                    : escapeHtml(data.providerName || "Uso para proveedor")
-                }</div>
-                ${
-                  data.showClientDetails
-                    ? `<div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>`
-                    : ""
-                }
+    <div class="npw-doc${isFirstPage ? "" : " npw-doc--continuation"}">
+      ${
+        isFirstPage
+          ? `
+            <div class="npw-header">
+              <div class="npw-logoWrap">
+                <div class="npw-logoFrame">
+                  <img src="${window.location.origin}/logo-linea-gris.png" alt="Sur Maderas" />
+                </div>
               </div>
-              <div class="npw-clientDivider" aria-hidden="true"></div>
-            </div>
 
-            <div class="npw-delivery">
-              <span class="npw-deliveryLabel">Entrega:</span>
-              <span class="npw-deliveryValue">${escapeHtml(fmtDate(data.entrega))}</span>
+              <div class="npw-headerMain">
+                <div class="npw-topline">
+                  <div class="npw-topLeft">
+                    <div class="npw-serial">N ${escapeHtml(getPreviewNumber(data.numero))}</div>
+                    <h1 class="npw-title">Nota de Pedido</h1>
+                  </div>
+                  <div class="npw-topRight">${escapeHtml(fmtDate(data.fecha))}</div>
+                </div>
+
+                <div class="npw-headDivider"></div>
+
+                <div class="npw-bottomline">
+                  <div class="npw-client">
+                    <div class="npw-clientInfo">
+                      <div class="npw-clientName">${
+                        data.showClientDetails
+                          ? escapeHtml(data.clienteNombre || "Consumidor final")
+                          : escapeHtml(data.providerName || "Uso para proveedor")
+                      }</div>
+                      ${
+                        data.showClientDetails
+                          ? `<div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>`
+                          : ""
+                      }
+                    </div>
+                    <div class="npw-clientDivider" aria-hidden="true"></div>
+                  </div>
+
+                  <div class="npw-delivery">
+                    <span class="npw-deliveryLabel">Entrega:</span>
+                    <span class="npw-deliveryValue">${escapeHtml(fmtDate(data.entrega))}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          `
+          : ""
+      }
 
       <div class="npw-tableCard">
         <table class="npw-table">
@@ -612,6 +654,7 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
       }
 
       ${showFooter ? `<div class="npw-footer">surmaderas.com.ar - surmaderasmdp@gmail.com - 223 438 3262</div>` : ""}
+      <div class="npw-pageMark">Hoja ${pageNumber} de ${pageCount}</div>
     </div>
   `;
 }
@@ -625,6 +668,9 @@ export function buildNotaPedidoPrintMarkup(data) {
           buildDocPage(data, pageItems, {
             showSummary: index === pages.length - 1,
             showFooter: index === pages.length - 1,
+            isFirstPage: index === 0,
+            pageNumber: index + 1,
+            pageCount: pages.length,
           })
         )
         .join("")}
