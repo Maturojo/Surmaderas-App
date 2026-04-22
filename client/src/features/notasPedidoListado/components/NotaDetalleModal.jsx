@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 
 import Swal from "sweetalert2";
 import { createWorker } from "tesseract.js";
@@ -317,6 +317,9 @@ export default function NotaDetalleModal({
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState("");
 
+  const detalleRef = useRef(detalle);
+  useEffect(() => { detalleRef.current = detalle; }, [detalle]);
+
   useEffect(() => {
     if (!detalle) return;
     setTipo(detalle?.caja?.tipo || "");
@@ -412,8 +415,9 @@ export default function NotaDetalleModal({
   }
 
   async function confirmarGuardarCaja() {
+    const notaActual = detalleRef.current;
     try {
-      await onGuardarCaja?.(detalle, pendingCajaPayload);
+      await onGuardarCaja?.(notaActual, pendingCajaPayload);
       setComprobanteClienteOpen(false);
       setPendingCajaPayload(null);
     } catch (e) {
@@ -1120,7 +1124,7 @@ export default function NotaDetalleModal({
       </div>
 
       {comprobanteClienteOpen && (
-        <div className="npl-ccModal">
+        <div className="npl-ccModal" onClick={(e) => e.stopPropagation()}>
           <div className="npl-ccModalInner">
             <div className="npl-ccModalHeader">
               <div>
