@@ -336,14 +336,18 @@ export default function NotaDetalleModal({
 
   const totalGuardado = getNotaTotal(detalle);
   const subtotal = Number(detalle?.caja?.subtotal || detalle?.totales?.subtotal || totalGuardado);
+  const descuentoSoloPagoTotal = subtotal < 100000;
+  const descuentoBloqueado = descuentoSoloPagoTotal && tipo !== "pago";
   const descuentoMonto = Math.min(
     subtotal,
-    Math.max(
-      0,
-      descuentoTipo === "custom"
-        ? roundMoney(subtotal * (parseMoney(descuentoPersonalizado) / 100))
-        : roundMoney(subtotal * (Number(descuentoTipo || 0) / 100))
-    )
+    descuentoBloqueado
+      ? 0
+      : Math.max(
+          0,
+          descuentoTipo === "custom"
+            ? roundMoney(subtotal * (parseMoney(descuentoPersonalizado) / 100))
+            : roundMoney(subtotal * (Number(descuentoTipo || 0) / 100))
+        )
   );
   const total = Math.max(0, roundMoney(subtotal - descuentoMonto));
   const adelanto = tipo === "seña" ? Math.min(total, Math.max(0, parseMoney(monto))) : 0;
@@ -625,7 +629,11 @@ export default function NotaDetalleModal({
       <div className="npl-totalBox">
         <div className="npl-k">Descuento</div>
         <div className="npl-v npl-discountControl">
-          <select value={descuentoTipo} onChange={(e) => setDescuentoTipo(e.target.value)}>
+          <select
+            value={descuentoTipo}
+            onChange={(e) => setDescuentoTipo(e.target.value)}
+            disabled={descuentoBloqueado}
+          >
             {DESCUENTO_OPCIONES.map((opcion) => (
               <option key={opcion.value} value={opcion.value}>
                 {opcion.label}
@@ -638,13 +646,16 @@ export default function NotaDetalleModal({
               onChange={(e) => setDescuentoPersonalizado(e.target.value)}
               placeholder="%"
               aria-label="Porcentaje de descuento personalizado"
+              disabled={descuentoBloqueado}
             />
           ) : null}
           <span>
-            {descuentoTipo === "custom" && parseMoney(descuentoPersonalizado) > 0
+            {descuentoBloqueado
+              ? "Solo con pago total en notas menores a $100.000"
+              : descuentoTipo === "custom" && parseMoney(descuentoPersonalizado) > 0
               ? `${toARS(parseMoney(descuentoPersonalizado))}% = `
               : ""}
-            ${toARS(descuentoMonto)}
+            {!descuentoBloqueado ? `$${toARS(descuentoMonto)}` : ""}
           </span>
         </div>
       </div>

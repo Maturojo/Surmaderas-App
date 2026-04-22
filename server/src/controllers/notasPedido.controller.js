@@ -207,7 +207,8 @@ export async function guardarCajaNota(req, res) {
     const estado = esSena ? "señada" : esPago ? "pagada" : "pendiente";
     const subtotalNota = Number(notaActual?.totales?.subtotal ?? notaActual?.total ?? 0);
     const subtotalCaja = Math.max(0, Number(subtotal ?? subtotalNota));
-    const descuentoCaja = Math.min(subtotalCaja, Math.max(0, Number(descuento || 0)));
+    const descuentoPedido = Math.min(subtotalCaja, Math.max(0, Number(descuento || 0)));
+    const descuentoCaja = subtotalCaja < 100000 && !esPago ? 0 : descuentoPedido;
     const totalCalculado = Math.max(0, Math.round((subtotalCaja - descuentoCaja) * 100) / 100);
     const totalCajaPedido = Number(total ?? totalCalculado);
     const totalCaja = sameMoney(totalCajaPedido, totalCalculado) ? totalCajaPedido : totalCalculado;
