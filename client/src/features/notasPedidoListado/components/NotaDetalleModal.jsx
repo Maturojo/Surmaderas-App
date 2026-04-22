@@ -343,6 +343,20 @@ export default function NotaDetalleModal({
     }
   }, [detalle]);
 
+  // Fusiona el payload pendiente en la nota para mostrar la seña/saldo en el comprobante
+  function buildNotaConPendingCaja() {
+    if (!detalle || !pendingCajaPayload) return detalle;
+    return {
+      ...detalle,
+      estado: pendingCajaPayload.tipo === "pago" ? "pagada" : pendingCajaPayload.tipo === "seña" ? "señada" : detalle.estado,
+      caja: {
+        ...(detalle.caja || {}),
+        tipo: pendingCajaPayload.tipo || "",
+        monto: Number(pendingCajaPayload.monto || 0),
+      },
+    };
+  }
+
   // Genera la imagen del comprobante para cliente cuando se abre el modal de confirmación
   useEffect(() => {
     let cancelled = false;
@@ -350,7 +364,7 @@ export default function NotaDetalleModal({
     setComprobanteClienteLoading(true);
     setComprobanteClienteFile(null);
     setComprobanteClienteUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
-    generateNotaPedidoImageFile(buildNotaPedidoPrintData(detalle))
+    generateNotaPedidoImageFile(buildNotaPedidoPrintData(buildNotaConPendingCaja()))
       .then((file) => {
         if (cancelled) return;
         setComprobanteClienteFile(file);
@@ -359,7 +373,7 @@ export default function NotaDetalleModal({
       .catch(() => {})
       .finally(() => { if (!cancelled) setComprobanteClienteLoading(false); });
     return () => { cancelled = true; };
-  }, [comprobanteClienteOpen, detalle]);
+  }, [comprobanteClienteOpen, detalle, pendingCajaPayload]);
 
   function normalizarWhatsappLocal(telefono = "") {
     const digits = String(telefono || "").replace(/\D/g, "");
@@ -369,16 +383,24 @@ export default function NotaDetalleModal({
     return `549${digits}`;
   }
 
-  function construirMensajeClienteLocal(nota) {
-    return [
+  function construirMensajeClienteLocal(nota, payload) {
+    const totalNota = getNotaTotal(nota);
+    const esSenia = payload?.tipo === "seña" && Number(payload?.monto || 0) > 0;
+    const montoSenia = Number(payload?.monto || 0);
+    const saldo = Math.max(0, totalNota - montoSenia);
+    const lines = [
       `Hola ${nota?.cliente?.nombre || "cliente"}, te compartimos la nota de pedido ${nota?.numero || ""}.`,
       "",
       `Entrega estimada: ${nota?.entrega || "-"}`,
       `Vendedor: ${nota?.vendedor || "-"}`,
-      `Total: $${toARS(getNotaTotal(nota))}`,
-      "",
-      "Si necesitás alguna corrección o confirmación, respondé por este medio.",
-    ].join("\n");
+      `Total: $${toARS(totalNota)}`,
+    ];
+    if (esSenia) {
+      lines.push(`Seña abonada: $${toARS(montoSenia)}`);
+      lines.push(`Saldo restante: $${toARS(saldo)}`);
+    }
+    lines.push("", "Si necesitás alguna corrección o confirmación, respondé por este medio.");
+    return lines.join("\n");
   }
 
   function abrirComprobanteAntesDeSave(payload) {
@@ -1119,7 +1141,7 @@ export default function NotaDetalleModal({
               <button
                 className="npl-btnGhost"
                 type="button"
-                onClick={() => openNotaPedidoPrintWindow(buildNotaPedidoPrintData(detalle))}
+                onClick={() => openNotaPedidoPrintWindow(buildNotaPedidoPrintData(buildNotaConPendingCaja()))}
               >
                 Imprimir
               </button>
@@ -1141,7 +1163,7 @@ export default function NotaDetalleModal({
                 onClick={() => {
                   const tel = normalizarWhatsappLocal(detalle?.cliente?.telefono);
                   if (!tel) { Swal.fire({ icon: "warning", title: "Sin teléfono", text: "La nota no tiene teléfono para enviar." }); return; }
-                  openWhatsappText(tel, construirMensajeClienteLocal(detalle));
+                  openWhatsappText(tel, construirMensajeClienteLocal(detalle, pendingCajaPayload));
                   if (comprobanteClienteFile) copyFileToClipboard(comprobanteClienteFile).catch(() => {});
                 }}
               >
