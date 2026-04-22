@@ -218,7 +218,7 @@ export async function guardarCajaNota(req, res) {
     const guardarImportesNota = esSena || esPago;
     const metodoTexto = String(metodo || "");
     const esEfectivo = metodoTexto.toLowerCase() === "efectivo";
-    const guardaComprobante = (esSena || esPago) && !esEfectivo;
+    const guardaComprobante = esPago || (esSena && !esEfectivo);
     const montoComprobante = Number(comprobante?.monto || 0);
     const comprobantePayload =
       (esSena || esPago) && comprobante?.dataUrl

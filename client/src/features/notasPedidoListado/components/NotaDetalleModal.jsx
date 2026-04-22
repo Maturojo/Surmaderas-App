@@ -353,7 +353,7 @@ export default function NotaDetalleModal({
   const adelanto = tipo === "seña" ? Math.min(total, Math.max(0, parseMoney(monto))) : 0;
   const resta = tipo === "pago" ? 0 : Math.max(0, roundMoney(total - adelanto));
   const puedeComprobante = tipo === "pago" || tipo === "seña" || !!detalle?.caja?.comprobante?.dataUrl;
-  const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
+  const requiereComprobante = tipo === "pago" || (tipo === "seña" && metodo !== "Efectivo");
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
   const comprobanteVideoId = `comprobante-video-${detalle?._id || "nota"}`;
@@ -575,7 +575,7 @@ export default function NotaDetalleModal({
   }
 
   async function validarComprobanteAntesDeGuardar(payloadTipo, montoCaja) {
-    const necesitaValidacion = (payloadTipo === "seña" || payloadTipo === "pago") && metodo !== "Efectivo";
+    const necesitaValidacion = payloadTipo === "pago" || (payloadTipo === "seña" && metodo !== "Efectivo");
     if (!necesitaValidacion) return true;
 
     if (leyendoComprobante) {
@@ -776,7 +776,7 @@ export default function NotaDetalleModal({
                         {!puedeComprobante
                           ? "Se habilita cuando el tipo es Seña o Pago."
                           : requiereComprobante
-                            ? "Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
+                            ? "Obligatorio para guardar. Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
                             : "Opcional. Podés adjuntar una imagen, pegarla con Ctrl+V o sacar una foto."}
                       </div>
                     </div>
