@@ -533,6 +533,53 @@ export default function NotaDetalleModal({
 
   if (!open) return null;
 
+  const totalesCajaResumen = (
+    <div className="npl-totalsGrid npl-totalsGrid--afterProof">
+      <div className="npl-totalBox">
+        <div className="npl-k">Subtotal</div>
+        <div className="npl-v">${toARS(subtotal)}</div>
+      </div>
+      <div className="npl-totalBox">
+        <div className="npl-k">Descuento</div>
+        <div className="npl-v npl-discountControl">
+          <select value={descuentoTipo} onChange={(e) => setDescuentoTipo(e.target.value)}>
+            {DESCUENTO_OPCIONES.map((opcion) => (
+              <option key={opcion.value} value={opcion.value}>
+                {opcion.label}
+              </option>
+            ))}
+          </select>
+          {descuentoTipo === "custom" ? (
+            <input
+              value={descuentoPersonalizado}
+              onChange={(e) => setDescuentoPersonalizado(e.target.value)}
+              placeholder="%"
+              aria-label="Porcentaje de descuento personalizado"
+            />
+          ) : null}
+          <span>
+            {descuentoTipo === "custom" && parseMoney(descuentoPersonalizado) > 0
+              ? `${toARS(parseMoney(descuentoPersonalizado))}% = `
+              : ""}
+            ${toARS(descuentoMonto)}
+          </span>
+        </div>
+      </div>
+      <div className="npl-totalBox npl-totalBox--strong">
+        <div className="npl-k">Total</div>
+        <div className="npl-v">${toARS(total)}</div>
+      </div>
+      <div className="npl-totalBox">
+        <div className="npl-k">Adelanto</div>
+        <div className="npl-v">${toARS(adelanto)}</div>
+      </div>
+      <div className="npl-totalBox">
+        <div className="npl-k">Resta</div>
+        <div className="npl-v">${toARS(resta)}</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="npl-modalBack" onClick={onClose}>
       <div className="npl-modal npl-modal--nice" onClick={(e) => e.stopPropagation()}>
@@ -569,51 +616,6 @@ export default function NotaDetalleModal({
             {!soloVistaPrevia ? (
               <div className="npl-cajaPanel">
                 <div className="npl-docBlockTitle">Totales y caja</div>
-
-                <div className="npl-totalsGrid">
-                  <div className="npl-totalBox">
-                    <div className="npl-k">Subtotal</div>
-                    <div className="npl-v">${toARS(subtotal)}</div>
-                  </div>
-                  <div className="npl-totalBox">
-                    <div className="npl-k">Descuento</div>
-                    <div className="npl-v npl-discountControl">
-                      <select value={descuentoTipo} onChange={(e) => setDescuentoTipo(e.target.value)}>
-                        {DESCUENTO_OPCIONES.map((opcion) => (
-                          <option key={opcion.value} value={opcion.value}>
-                            {opcion.label}
-                          </option>
-                        ))}
-                      </select>
-                      {descuentoTipo === "custom" ? (
-                        <input
-                          value={descuentoPersonalizado}
-                          onChange={(e) => setDescuentoPersonalizado(e.target.value)}
-                          placeholder="%"
-                          aria-label="Porcentaje de descuento personalizado"
-                        />
-                      ) : null}
-                      <span>
-                        {descuentoTipo === "custom" && parseMoney(descuentoPersonalizado) > 0
-                          ? `${toARS(parseMoney(descuentoPersonalizado))}% = `
-                          : ""}
-                        ${toARS(descuentoMonto)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="npl-totalBox npl-totalBox--strong">
-                    <div className="npl-k">Total</div>
-                    <div className="npl-v">${toARS(total)}</div>
-                  </div>
-                  <div className="npl-totalBox">
-                    <div className="npl-k">Adelanto</div>
-                    <div className="npl-v">${toARS(adelanto)}</div>
-                  </div>
-                  <div className="npl-totalBox">
-                    <div className="npl-k">Resta</div>
-                    <div className="npl-v">${toARS(resta)}</div>
-                  </div>
-                </div>
 
                 <div className="npl-cajaResumen npl-totalsGrid">
                   <div className="npl-totalBox npl-paymentTypeBox">
@@ -764,6 +766,8 @@ export default function NotaDetalleModal({
                     <div className="npl-proofEmpty">Para cargar comprobante seleccioná el tipo Seña o Pago.</div>
                   )}
                 </div>
+
+                {totalesCajaResumen}
 
                 <div className="npl-noteBox">
                   <div className="npl-k">Observaciones</div>

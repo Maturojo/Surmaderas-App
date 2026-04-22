@@ -751,6 +751,10 @@
   margin-top: 8px;
 }
 
+.npl-totalsGrid--afterProof {
+  margin-top: 14px;
+}
+
 .npl-totalBox {
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
