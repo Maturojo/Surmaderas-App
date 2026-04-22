@@ -428,9 +428,6 @@ function buildStyles() {
       font-size: 4.4mm;
       color: #35302b;
     }
-    .npw-summaryRow.subtotalWithDeposit {
-      grid-template-columns: 1fr auto auto;
-    }
     .npw-summaryRow strong {
       font-size: 4.4mm;
       color: #23201c;
@@ -443,8 +440,7 @@ function buildStyles() {
       margin-top: 0.7mm;
       padding: 1.3mm 0;
       border-top: 0.25mm solid rgba(63, 54, 44, 0.16);
-      grid-template-columns: auto 1fr;
-      justify-content: start;
+      grid-template-columns: auto 1fr auto;
       gap: 2mm;
     }
     .npw-statusBadge {
@@ -575,14 +571,9 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
         showSummary && data.showPrices
           ? `
             <div class="npw-summary">
-              <div class="npw-summaryRow${data.estadoCajaLabel === "Señada" && data.montoCaja > 0 ? " subtotalWithDeposit" : ""}">
+              <div class="npw-summaryRow">
                 <span>Subtotal</span>
                 <strong>$${escapeHtml(toARS(data.subtotal))}</strong>
-                ${
-                  data.estadoCajaLabel === "Señada" && data.montoCaja > 0
-                    ? `<strong>$${escapeHtml(toARS(data.montoCaja))}</strong>`
-                    : ""
-                }
               </div>
               ${
                 data.descuentoMonto > 0
@@ -602,6 +593,11 @@ function buildDocPage(data, items, { showSummary, showFooter }) {
                     <div class="npw-summaryRow status">
                       <span>Estado</span>
                       <strong><span class="npw-statusBadge">${escapeHtml(data.estadoCajaLabel)}</span></strong>
+                      ${
+                        data.estadoCajaLabel === "Señada" && data.montoCaja > 0
+                          ? `<strong>$${escapeHtml(toARS(data.montoCaja))}</strong>`
+                          : ""
+                      }
                     </div>
                   `
                   : ""
