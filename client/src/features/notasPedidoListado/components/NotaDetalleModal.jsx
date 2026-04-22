@@ -299,7 +299,7 @@ export default function NotaDetalleModal({
 }) {
   const [tipo, setTipo] = useState("");
   const [monto, setMonto] = useState("");
-  const [metodo, setMetodo] = useState("Efectivo");
+  const [metodo, setMetodo] = useState("");
   const [notaCaja, setNotaCaja] = useState("");
   const [comprobante, setComprobante] = useState(null);
   const [montoComprobante, setMontoComprobante] = useState("");
@@ -321,7 +321,7 @@ export default function NotaDetalleModal({
     if (!detalle) return;
     setTipo(detalle?.caja?.tipo || "");
     setMonto(String(detalle?.caja?.monto ?? getNotaTotal(detalle)));
-    setMetodo(detalle?.caja?.metodo || "Efectivo");
+    setMetodo(detalle?.caja?.metodo || "");
     setNotaCaja(detalle?.caja?.nota || "");
     setComprobante(detalle?.caja?.comprobante?.dataUrl ? detalle.caja.comprobante : null);
     setMontoComprobante(detalle?.caja?.comprobante?.monto ? String(detalle.caja.comprobante.monto) : "");
@@ -812,6 +812,7 @@ export default function NotaDetalleModal({
                     <div className="npl-k">Medio de pago</div>
                     <div className="npl-v">
                       <select value={metodo} onChange={(e) => setMetodo(e.target.value)}>
+                        <option value="">-</option>
                         {MEDIOS_PAGO.map((medio) => (
                           <option key={medio} value={medio}>
                             {medio}
@@ -963,6 +964,15 @@ export default function NotaDetalleModal({
 
                           if (!result.isConfirmed) return;
                           payloadTipo = "";
+                        }
+
+                        if (payloadTipo && !metodo) {
+                          await Swal.fire({
+                            title: "Falta medio de pago",
+                            text: "Seleccioná un medio de pago antes de guardar.",
+                            icon: "warning",
+                          });
+                          return;
                         }
 
                         if (payloadTipo === "pago") {
