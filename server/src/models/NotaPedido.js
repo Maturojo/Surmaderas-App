@@ -30,6 +30,7 @@ const CajaSchema = new mongoose.Schema(
     subtotal: { type: Number, default: 0 },
     descuento: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
+    adelanto: { type: Number, default: 0 },
     resta: { type: Number, default: 0 },
     fecha: { type: Date },
     metodo: { type: String, default: "" },

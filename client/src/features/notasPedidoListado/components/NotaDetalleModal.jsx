@@ -343,8 +343,8 @@ export default function NotaDetalleModal({
     )
   );
   const total = Math.max(0, roundMoney(subtotal - descuentoMonto));
-  const adelanto = Number(detalle?.totales?.adelanto ?? 0);
-  const resta = Math.max(0, roundMoney(total - adelanto));
+  const adelanto = tipo === "seña" ? Math.min(total, Math.max(0, parseMoney(monto))) : 0;
+  const resta = tipo === "pago" ? 0 : Math.max(0, roundMoney(total - adelanto));
   const puedeComprobante = tipo === "pago" || tipo === "seña" || !!detalle?.caja?.comprobante?.dataUrl;
   const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
@@ -477,6 +477,7 @@ export default function NotaDetalleModal({
       subtotal: esOperacionConPago ? subtotal : 0,
       descuento: esOperacionConPago ? descuentoMonto : 0,
       total: esOperacionConPago ? total : 0,
+      adelanto: esOperacionConPago ? adelanto : 0,
       resta: esOperacionConPago ? resta : 0,
       metodo,
       nota: notaCaja,
@@ -615,35 +616,32 @@ export default function NotaDetalleModal({
                 </div>
 
                 <div className="npl-cajaResumen npl-totalsGrid">
-                  <div className="npl-totalBox">
-                    <div className="npl-k">Tipo en caja</div>
+                  <div className="npl-totalBox npl-paymentTypeBox">
                     <div className="npl-v">
-                      <div className="npl-radioRow">
-                        <label className="npl-radioOption">
-                          <input
-                            type="radio"
-                            name="tipoCaja"
-                            checked={tipo === "pago"}
-                            onChange={() => {
-                              setTipo("pago");
-                              setMonto(String(total));
-                            }}
-                          />
-                          <span>Pago</span>
-                        </label>
-                        <label className="npl-radioOption">
-                          <input
-                            type="radio"
-                            name="tipoCaja"
-                            checked={tipo === "seña"}
-                            onChange={() => {
-                              setTipo("seña");
-                              setMonto("");
-                            }}
-                          />
-                          <span>Seña</span>
-                        </label>
-                      </div>
+                      <label className={`npl-radioOption npl-radioOption--card${tipo === "pago" ? " is-active" : ""}`}>
+                        <input
+                          type="radio"
+                          name="tipoCaja"
+                          checked={tipo === "pago"}
+                          onChange={() => {
+                            setTipo("pago");
+                            setMonto(String(total));
+                          }}
+                        />
+                        <span>Pago</span>
+                      </label>
+                      <label className={`npl-radioOption npl-radioOption--card${tipo === "seña" ? " is-active" : ""}`}>
+                        <input
+                          type="radio"
+                          name="tipoCaja"
+                          checked={tipo === "seña"}
+                          onChange={() => {
+                            setTipo("seña");
+                            setMonto("");
+                          }}
+                        />
+                        <span>Seña</span>
+                      </label>
                     </div>
                   </div>
                   <div className="npl-totalBox">

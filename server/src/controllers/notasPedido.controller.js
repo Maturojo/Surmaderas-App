@@ -191,6 +191,7 @@ export async function guardarCajaNota(req, res) {
       subtotal = undefined,
       descuento = 0,
       total = undefined,
+      adelanto = undefined,
       resta = undefined,
       metodo = "",
       nota = "",
@@ -210,7 +211,8 @@ export async function guardarCajaNota(req, res) {
     const totalCalculado = Math.max(0, Math.round((subtotalCaja - descuentoCaja) * 100) / 100);
     const totalCajaPedido = Number(total ?? totalCalculado);
     const totalCaja = sameMoney(totalCajaPedido, totalCalculado) ? totalCajaPedido : totalCalculado;
-    const restaCaja = Math.max(0, Number(resta ?? totalCaja));
+    const adelantoCaja = esSena ? Math.min(totalCaja, Math.max(0, Number(adelanto ?? monto))) : 0;
+    const restaCaja = esPago ? 0 : Math.max(0, Number(resta ?? totalCaja - adelantoCaja));
     const montoNumero = esPago ? totalCaja : Number(monto || 0);
     const guardarImportesNota = esSena || esPago;
     const metodoTexto = String(metodo || "");
@@ -254,6 +256,7 @@ export async function guardarCajaNota(req, res) {
         subtotal: guardarImportesNota ? subtotalCaja : 0,
         descuento: guardarImportesNota ? descuentoCaja : 0,
         total: guardarImportesNota ? totalCaja : 0,
+        adelanto: guardarImportesNota ? adelantoCaja : 0,
         resta: guardarImportesNota ? restaCaja : 0,
         metodo: esSena || esPago ? metodoTexto : "",
         nota: String(nota || ""),
@@ -267,6 +270,7 @@ export async function guardarCajaNota(req, res) {
       update["totales.subtotal"] = subtotalCaja;
       update["totales.descuento"] = descuentoCaja;
       update["totales.total"] = totalCaja;
+      update["totales.adelanto"] = adelantoCaja;
       update["totales.resta"] = restaCaja;
     }
 
