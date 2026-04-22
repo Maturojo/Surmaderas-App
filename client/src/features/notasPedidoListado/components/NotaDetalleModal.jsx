@@ -957,14 +957,18 @@ export default function NotaDetalleModal({
             ) : (
               <>
                 {(() => {
-                  const itemsConImg = (detalle?.items || []).filter(it => it.imagen || it.data?.imagen);
+                  function getImgSrc(it) {
+                    const img = it.imagen || it.data?.imagen;
+                    return img?.dataUrl || (typeof img === "string" ? img : null);
+                  }
+                  const itemsConImg = (detalle?.items || []).filter(it => getImgSrc(it));
                   if (!itemsConImg.length) return null;
                   return (
                     <div className="npl-soloComprobanteBox npl-noPrint">
                       <div className="npl-k" style={{ marginBottom: 10 }}>Imágenes de referencia</div>
                       <div className="npl-refImgGrid">
                         {itemsConImg.map((it, i) => {
-                          const src = it.imagen || it.data?.imagen;
+                          const src = getImgSrc(it);
                           const label = it.descripcion || it.tipo || `Ítem ${i + 1}`;
                           return (
                             <div key={i} className="npl-refImgItem">

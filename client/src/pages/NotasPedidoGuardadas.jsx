@@ -814,14 +814,8 @@ export default function NotasPedidoGuardadas() {
                 </select>
 
                 <div className="ng-quickActions">
-                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("Pendiente")}>
-                    Pendiente
-                  </button>
-                  <button className="ng-quickBtn" onClick={() => setEstadoOperativo("En taller")}>
-                    Mandar a taller
-                  </button>
                   <button className="ng-quickBtn" onClick={abrirPromptProveedor}>
-                    Mandar a proveedor
+                    Enviar a
                   </button>
                 </div>
 
@@ -848,14 +842,18 @@ export default function NotasPedidoGuardadas() {
                 </div>
 
                 {(() => {
-                  const itemsConImg = (gestionNota?.items || []).filter(it => it.imagen || it.data?.imagen);
+                  function getImgSrc(it) {
+                    const img = it.imagen || it.data?.imagen;
+                    return img?.dataUrl || (typeof img === "string" ? img : null);
+                  }
+                  const itemsConImg = (gestionNota?.items || []).filter(it => getImgSrc(it));
                   if (!itemsConImg.length) return null;
                   return (
                     <div className="ng-clientActionsCard">
                       <div className="ng-clientActionsTitle">Imágenes de referencia</div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
                         {itemsConImg.map((it, i) => {
-                          const src = it.imagen || it.data?.imagen;
+                          const src = getImgSrc(it);
                           const label = it.descripcion || it.tipo || `Ítem ${i + 1}`;
                           return (
                             <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
