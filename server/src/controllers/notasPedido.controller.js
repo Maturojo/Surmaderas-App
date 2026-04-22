@@ -185,7 +185,17 @@ export async function eliminarNotaPedido(req, res) {
 export async function guardarCajaNota(req, res) {
   try {
     const { id } = req.params;
-    const { tipo = "pago", monto = 0, metodo = "", nota = "", comprobante = null } = req.body;
+    const {
+      tipo = "pago",
+      monto = 0,
+      subtotal = undefined,
+      descuento = 0,
+      total = undefined,
+      resta = undefined,
+      metodo = "",
+      nota = "",
+      comprobante = null,
+    } = req.body;
 
     const notaActual = await NotaPedido.findById(id);
     if (!notaActual) return res.status(404).json({ message: "Nota no encontrada" });
@@ -194,9 +204,14 @@ export async function guardarCajaNota(req, res) {
     const esSena = t === "seña" || t === "sena" || t === "senia";
     const esPago = t === "pago";
     const estado = esSena ? "señada" : esPago ? "pagada" : "pendiente";
-    const subtotalNota = Number(notaActual?.totales?.subtotal ?? 0);
-    const totalNota = Number(notaActual?.totales?.total ?? notaActual?.total ?? 0);
-    const montoNumero = esPago ? totalNota : Number(monto || 0);
+    const subtotalNota = Number(notaActual?.totales?.subtotal ?? notaActual?.total ?? 0);
+    const subtotalCaja = Math.max(0, Number(subtotal ?? subtotalNota));
+    const descuentoCaja = Math.min(subtotalCaja, Math.max(0, Number(descuento || 0)));
+    const totalCalculado = Math.max(0, Math.round((subtotalCaja - descuentoCaja) * 100) / 100);
+    const totalCajaPedido = Number(total ?? totalCalculado);
+    const totalCaja = sameMoney(totalCajaPedido, totalCalculado) ? totalCajaPedido : totalCalculado;
+    const restaCaja = Math.max(0, Number(resta ?? totalCaja));
+    const montoNumero = esPago ? totalCaja : Number(monto || 0);
     const guardarImportesNota = esSena || esPago;
     const metodoTexto = String(metodo || "");
     const esEfectivo = metodoTexto.toLowerCase() === "efectivo";
@@ -236,14 +251,24 @@ export async function guardarCajaNota(req, res) {
         guardada: true,
         tipo: esSena ? "seña" : esPago ? "pago" : "",
         monto: esSena || esPago ? montoNumero : 0,
-        subtotal: guardarImportesNota ? subtotalNota : 0,
-        total: guardarImportesNota ? totalNota : 0,
+        subtotal: guardarImportesNota ? subtotalCaja : 0,
+        descuento: guardarImportesNota ? descuentoCaja : 0,
+        total: guardarImportesNota ? totalCaja : 0,
+        resta: guardarImportesNota ? restaCaja : 0,
         metodo: esSena || esPago ? metodoTexto : "",
         nota: String(nota || ""),
         comprobante: comprobantePayload,
         fecha: new Date(),
       },
     };
+
+    if (guardarImportesNota) {
+      update.total = totalCaja;
+      update["totales.subtotal"] = subtotalCaja;
+      update["totales.descuento"] = descuentoCaja;
+      update["totales.total"] = totalCaja;
+      update["totales.resta"] = restaCaja;
+    }
 
     const updated = await NotaPedido.findByIdAndUpdate(id, update, { new: true });
 

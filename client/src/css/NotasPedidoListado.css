@@ -775,6 +775,35 @@
   color: #111;
 }
 
+.npl-totalBox input,
+.npl-totalBox select {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(48, 41, 33, 0.14);
+  background: #fff;
+  color: #231f1a;
+  font: inherit;
+  font-weight: 800;
+  outline: none;
+}
+
+.npl-totalBox input:focus,
+.npl-totalBox select:focus {
+  border-color: rgba(48, 41, 33, 0.34);
+}
+
+.npl-discountControl {
+  display: grid;
+  gap: 6px;
+}
+
+.npl-discountControl span {
+  color: #5f574f;
+  font-size: 12px;
+}
+
 /* Caja de detalle (ajuste / pago / seña) */
 .npl-cajaResumen {
   padding: 14px 16px;

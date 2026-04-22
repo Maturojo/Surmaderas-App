@@ -15,6 +15,12 @@ import {
 } from "../../../utils/notaPedidoPrint";
 
 const MEDIOS_PAGO = ["Efectivo", "Transferencia", "Debito", "Credito", "Cuenta Corriente"];
+const DESCUENTO_OPCIONES = [
+  { value: "0", label: "Sin descuento" },
+  { value: "5", label: "5%" },
+  { value: "10", label: "10%" },
+  { value: "custom", label: "Personalizado" },
+];
 const MAX_COMPROBANTE_MB = 6;
 
 function readImageFile(file) {
@@ -58,6 +64,10 @@ function parseMoney(value) {
 
 function sameMoney(a, b) {
   return Math.round(Number(a || 0) * 100) === Math.round(Number(b || 0) * 100);
+}
+
+function roundMoney(value) {
+  return Math.round(Number(value || 0) * 100) / 100;
 }
 
 function moneyTokenToNumber(raw) {
@@ -118,8 +128,8 @@ function extractCurrencyLineAmount(text) {
 
   for (const line of lines) {
     const cleanLine = line.replace(/\s+/g, " ").trim();
-    const match = cleanLine.match(/[$S]\s*(\d{1,3}(?:[.\s]\d{3})+(?:,\d{2})?|\d+(?:,\d{2})?)/i);
-    const value = moneyTokenToNumber(match?.[1]);
+    const match = cleanLine.match(/(^|[^A-Za-z0-9])[$S]\s*(\d{1,3}(?:[.\s]\d{3})+(?:,\d{2})?|\d+(?:,\d{2})?)/i);
+    const value = moneyTokenToNumber(match?.[2]);
     if (value > 0) return value;
   }
 
@@ -216,6 +226,63 @@ function pickLikelyReceiptAmount(text, expectedAmount) {
   return candidates[0];
 }
 
+function buildOcrVariant(dataUrl, options = {}) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const sourceWidth = img.naturalWidth || img.width;
+      const sourceHeight = img.naturalHeight || img.height;
+      const cropX = 0;
+      const cropY = Math.max(0, Math.round(sourceHeight * (options.y || 0)));
+      const cropWidth = sourceWidth;
+      const cropHeight = Math.min(sourceHeight - cropY, Math.round(sourceHeight * (options.height || 1)));
+      const scale = options.scale || 2;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(cropWidth * scale));
+      canvas.height = Math.max(1, Math.round(cropHeight * scale));
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
+
+      if (options.contrast) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        for (let i = 0; i < pixels.length; i += 4) {
+          const gray = (pixels[i] * 0.3) + (pixels[i + 1] * 0.59) + (pixels[i + 2] * 0.11);
+          const value = gray < 215 ? Math.max(0, gray - 45) : 255;
+          pixels[i] = value;
+          pixels[i + 1] = value;
+          pixels[i + 2] = value;
+          pixels[i + 3] = 255;
+        }
+        ctx.putImageData(imageData, 0, 0);
+      }
+
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function buildOcrVariants(dataUrl) {
+  const variants = await Promise.all([
+    Promise.resolve(dataUrl),
+    buildOcrVariant(dataUrl, { scale: 2, contrast: true }),
+    buildOcrVariant(dataUrl, { y: 0.16, height: 0.28, scale: 3, contrast: true }),
+    buildOcrVariant(dataUrl, { y: 0.22, height: 0.18, scale: 4, contrast: true }),
+  ]);
+
+  return variants.filter((variant, index, list) => variant && list.indexOf(variant) === index);
+}
+
 export default function NotaDetalleModal({
   open,
   onClose,
@@ -235,6 +302,8 @@ export default function NotaDetalleModal({
   const [leyendoComprobante, setLeyendoComprobante] = useState(false);
   const [ocrTexto, setOcrTexto] = useState("");
   const [lightboxSrc, setLightboxSrc] = useState(null);
+  const [descuentoTipo, setDescuentoTipo] = useState("0");
+  const [descuentoPersonalizado, setDescuentoPersonalizado] = useState("");
 
   useEffect(() => {
     if (!detalle) return;
@@ -245,17 +314,47 @@ export default function NotaDetalleModal({
     setComprobante(detalle?.caja?.comprobante?.dataUrl ? detalle.caja.comprobante : null);
     setMontoComprobante(detalle?.caja?.comprobante?.monto ? String(detalle.caja.comprobante.monto) : "");
     setOcrTexto("");
+    const descuentoInicial = Number(detalle?.caja?.descuento ?? detalle?.totales?.descuento ?? 0);
+    const subtotalInicial = Number(detalle?.caja?.subtotal ?? detalle?.totales?.subtotal ?? getNotaTotal(detalle));
+    if (descuentoInicial > 0 && sameMoney(descuentoInicial, subtotalInicial * 0.05)) {
+      setDescuentoTipo("5");
+      setDescuentoPersonalizado("");
+    } else if (descuentoInicial > 0 && sameMoney(descuentoInicial, subtotalInicial * 0.1)) {
+      setDescuentoTipo("10");
+      setDescuentoPersonalizado("");
+    } else if (descuentoInicial > 0) {
+      setDescuentoTipo("custom");
+      setDescuentoPersonalizado(String(roundMoney(descuentoInicial)));
+    } else {
+      setDescuentoTipo("0");
+      setDescuentoPersonalizado("");
+    }
   }, [detalle]);
 
-  const total = getNotaTotal(detalle);
-  const subtotal = Number(detalle?.totales?.subtotal ?? total);
-  const descuentoMonto = Number(detalle?.totales?.descuento ?? 0);
+  const totalGuardado = getNotaTotal(detalle);
+  const subtotal = Number(detalle?.caja?.subtotal || detalle?.totales?.subtotal || totalGuardado);
+  const descuentoMonto = Math.min(
+    subtotal,
+    Math.max(
+      0,
+      descuentoTipo === "custom"
+        ? parseMoney(descuentoPersonalizado)
+        : roundMoney(subtotal * (Number(descuentoTipo || 0) / 100))
+    )
+  );
+  const total = Math.max(0, roundMoney(subtotal - descuentoMonto));
   const adelanto = Number(detalle?.totales?.adelanto ?? 0);
-  const resta = Number(detalle?.totales?.resta ?? Math.max(0, total - adelanto));
+  const resta = Math.max(0, roundMoney(total - adelanto));
   const puedeComprobante = tipo === "pago" || tipo === "seña" || !!detalle?.caja?.comprobante?.dataUrl;
   const requiereComprobante = puedeComprobante && metodo !== "Efectivo";
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
+
+  useEffect(() => {
+    if (tipo === "pago") {
+      setMonto(String(total));
+    }
+  }, [tipo, total]);
   const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
   const previewDoc = useMemo(() => {
     if (!previewData) return "";
@@ -288,11 +387,18 @@ export default function NotaDetalleModal({
       await worker.setParameters({
         preserve_interword_spaces: "1",
       });
-      const result = await worker.recognize(nextComprobante.dataUrl);
+      const variants = await buildOcrVariants(nextComprobante.dataUrl);
+      let result = null;
+      let montoDetectado = 0;
+
+      for (const variant of variants) {
+        result = await worker.recognize(variant);
+        montoDetectado = pickAmountFromOcrResult(result, getMontoCajaActual());
+        if (montoDetectado > 0) break;
+      }
+
       await worker.terminate();
 
-      const text = result?.data?.text || "";
-      const montoDetectado = pickAmountFromOcrResult(result, getMontoCajaActual());
       setOcrTexto(getOcrDebugText(result));
 
       if (montoDetectado > 0) {
@@ -369,7 +475,9 @@ export default function NotaDetalleModal({
       tipo: payloadTipo,
       monto: Number(montoCaja || 0),
       subtotal: esOperacionConPago ? subtotal : 0,
+      descuento: esOperacionConPago ? descuentoMonto : 0,
       total: esOperacionConPago ? total : 0,
+      resta: esOperacionConPago ? resta : 0,
       metodo,
       nota: notaCaja,
       comprobante: puedeComprobante
@@ -468,7 +576,23 @@ export default function NotaDetalleModal({
                   </div>
                   <div className="npl-totalBox">
                     <div className="npl-k">Descuento</div>
-                    <div className="npl-v">${toARS(descuentoMonto)}</div>
+                    <div className="npl-v npl-discountControl">
+                      <select value={descuentoTipo} onChange={(e) => setDescuentoTipo(e.target.value)}>
+                        {DESCUENTO_OPCIONES.map((opcion) => (
+                          <option key={opcion.value} value={opcion.value}>
+                            {opcion.label}
+                          </option>
+                        ))}
+                      </select>
+                      {descuentoTipo === "custom" ? (
+                        <input
+                          value={descuentoPersonalizado}
+                          onChange={(e) => setDescuentoPersonalizado(e.target.value)}
+                          placeholder="Monto"
+                        />
+                      ) : null}
+                      <span>${toARS(descuentoMonto)}</span>
+                    </div>
                   </div>
                   <div className="npl-totalBox npl-totalBox--strong">
                     <div className="npl-k">Total</div>
