@@ -645,7 +645,7 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
                   : ""
               }
               <div class="npw-summaryTotal">
-                <span>TOTAL</span>
+                <span>${data.estaSenada ? "SALDO" : "TOTAL"}</span>
                 <strong>$${escapeHtml(toARS(data.total))}</strong>
               </div>
             </div>
