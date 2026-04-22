@@ -4,9 +4,9 @@ const NOTE_WIDTH_MM = 200;
 const NOTE_HEIGHT_MM = 145;
 const CSS_PX_PER_MM = 96 / 25.4;
 const DESCRIPTION_CHARS_PER_LINE = 26;
-const FIRST_PAGE_UNITS = 12.2;
-const CONTINUATION_PAGE_UNITS = 16.8;
-const LAST_PAGE_UNITS = 10.6;
+const FIRST_PAGE_UNITS = 13.5;
+const CONTINUATION_PAGE_UNITS = 18.5;
+const LAST_PAGE_UNITS = 11.8;
 
 export function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
@@ -213,9 +213,9 @@ function buildStyles() {
     }
     .npw-doc {
       width: 200mm;
-      height: 162mm;
+      height: 148mm;
       margin: 0 0 5mm;
-      padding: 5mm 7mm 11mm;
+      padding: 4mm 6.5mm 9mm;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(251,249,246,0.98) 100%);
       border: 0.35mm solid rgba(27, 24, 21, 0.08);
@@ -381,7 +381,7 @@ function buildStyles() {
       color: #171513;
     }
     .npw-tableCard {
-      margin-top: 5.8mm;
+      margin-top: 3.5mm;
       border-radius: 3.4mm;
       overflow: hidden;
       background: rgba(255,255,255,0.95);
@@ -399,8 +399,8 @@ function buildStyles() {
     .npw-table thead th {
       background: linear-gradient(180deg, #181614 0%, #050505 100%);
       color: #fff;
-      padding: 2.9mm 2.5mm;
-      font-size: 4.1mm;
+      padding: 1.8mm 2mm;
+      font-size: 3.4mm;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-align: center;
@@ -410,8 +410,8 @@ function buildStyles() {
       text-align: left;
     }
     .npw-table tbody td {
-      padding: 3.4mm 2.8mm;
-      font-size: 4.75mm;
+      padding: 2mm 2.2mm;
+      font-size: 4mm;
       font-weight: 700;
       color: #4a4a4a;
       text-align: center;
@@ -431,8 +431,8 @@ function buildStyles() {
     .npw-summary {
       width: 101.5mm;
       margin-left: auto;
-      margin-top: 3.5mm;
-      padding: 3mm 3.4mm 3mm;
+      margin-top: 2mm;
+      padding: 2mm 2.8mm 2mm;
       border-radius: 3.2mm;
       background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,243,238,0.97) 100%);
       border: 0.3mm solid rgba(28, 25, 22, 0.08);
@@ -446,12 +446,12 @@ function buildStyles() {
     .npw-summaryRow {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      padding: 1.4mm 0;
-      font-size: 4.4mm;
+      padding: 0.9mm 0;
+      font-size: 4mm;
       color: #35302b;
     }
     .npw-summaryRow strong {
-      font-size: 4.4mm;
+      font-size: 4mm;
       color: #23201c;
     }
     .npw-summaryRow.discount {
@@ -459,8 +459,8 @@ function buildStyles() {
       font-size: 2.8mm;
     }
     .npw-summaryRow.status {
-      margin-top: 0.8mm;
-      padding: 1.8mm 0;
+      margin-top: 0.4mm;
+      padding: 1.1mm 0;
       border-top: 0.25mm solid rgba(63, 54, 44, 0.16);
       grid-template-columns: auto 1fr auto;
       gap: 2mm;
@@ -486,8 +486,8 @@ function buildStyles() {
     .npw-summaryTotal {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      margin-top: 2mm;
-      padding: 3mm 3.4mm;
+      margin-top: 1.2mm;
+      padding: 2.2mm 2.8mm;
       border-radius: 2.4mm;
       background: linear-gradient(180deg, #171513 0%, #050505 100%);
       color: #fff;
