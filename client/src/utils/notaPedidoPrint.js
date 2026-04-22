@@ -4,9 +4,9 @@ const NOTE_WIDTH_MM = 200;
 const NOTE_HEIGHT_MM = 145;
 const CSS_PX_PER_MM = 96 / 25.4;
 const DESCRIPTION_CHARS_PER_LINE = 26;
-const FIRST_PAGE_UNITS = 10.8;
-const CONTINUATION_PAGE_UNITS = 15.2;
-const LAST_PAGE_UNITS = 9.2;
+const FIRST_PAGE_UNITS = 12.2;
+const CONTINUATION_PAGE_UNITS = 16.8;
+const LAST_PAGE_UNITS = 10.6;
 
 export function toARS(n) {
   return Number(n || 0).toLocaleString("es-AR", {
@@ -213,9 +213,9 @@ function buildStyles() {
     }
     .npw-doc {
       width: 200mm;
-      height: 145mm;
+      height: 162mm;
       margin: 0 0 5mm;
-      padding: 4.5mm 6.5mm 9mm;
+      padding: 5mm 7mm 11mm;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(251,249,246,0.98) 100%);
       border: 0.35mm solid rgba(27, 24, 21, 0.08);
@@ -410,7 +410,7 @@ function buildStyles() {
       text-align: left;
     }
     .npw-table tbody td {
-      padding: 2.8mm 2.5mm;
+      padding: 3.4mm 2.8mm;
       font-size: 4.75mm;
       font-weight: 700;
       color: #4a4a4a;
@@ -431,8 +431,8 @@ function buildStyles() {
     .npw-summary {
       width: 101.5mm;
       margin-left: auto;
-      margin-top: 2.4mm;
-      padding: 2.4mm 2.8mm 2.6mm;
+      margin-top: 3.5mm;
+      padding: 3mm 3.4mm 3mm;
       border-radius: 3.2mm;
       background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,243,238,0.97) 100%);
       border: 0.3mm solid rgba(28, 25, 22, 0.08);
@@ -446,7 +446,7 @@ function buildStyles() {
     .npw-summaryRow {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      padding: 0.9mm 0;
+      padding: 1.4mm 0;
       font-size: 4.4mm;
       color: #35302b;
     }
@@ -459,8 +459,8 @@ function buildStyles() {
       font-size: 2.8mm;
     }
     .npw-summaryRow.status {
-      margin-top: 0.7mm;
-      padding: 1.3mm 0;
+      margin-top: 0.8mm;
+      padding: 1.8mm 0;
       border-top: 0.25mm solid rgba(63, 54, 44, 0.16);
       grid-template-columns: auto 1fr auto;
       gap: 2mm;
@@ -486,8 +486,8 @@ function buildStyles() {
     .npw-summaryTotal {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      margin-top: 1.4mm;
-      padding: 2.3mm 2.8mm;
+      margin-top: 2mm;
+      padding: 3mm 3.4mm;
       border-radius: 2.4mm;
       background: linear-gradient(180deg, #171513 0%, #050505 100%);
       color: #fff;
