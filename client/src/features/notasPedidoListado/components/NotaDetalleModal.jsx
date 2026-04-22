@@ -324,7 +324,7 @@ export default function NotaDetalleModal({
       setDescuentoPersonalizado("");
     } else if (descuentoInicial > 0) {
       setDescuentoTipo("custom");
-      setDescuentoPersonalizado(String(roundMoney(descuentoInicial)));
+      setDescuentoPersonalizado(String(roundMoney((descuentoInicial / Math.max(1, subtotalInicial)) * 100)));
     } else {
       setDescuentoTipo("0");
       setDescuentoPersonalizado("");
@@ -338,7 +338,7 @@ export default function NotaDetalleModal({
     Math.max(
       0,
       descuentoTipo === "custom"
-        ? parseMoney(descuentoPersonalizado)
+        ? roundMoney(subtotal * (parseMoney(descuentoPersonalizado) / 100))
         : roundMoney(subtotal * (Number(descuentoTipo || 0) / 100))
     )
   );
@@ -588,10 +588,16 @@ export default function NotaDetalleModal({
                         <input
                           value={descuentoPersonalizado}
                           onChange={(e) => setDescuentoPersonalizado(e.target.value)}
-                          placeholder="Monto"
+                          placeholder="%"
+                          aria-label="Porcentaje de descuento personalizado"
                         />
                       ) : null}
-                      <span>${toARS(descuentoMonto)}</span>
+                      <span>
+                        {descuentoTipo === "custom" && parseMoney(descuentoPersonalizado) > 0
+                          ? `${toARS(parseMoney(descuentoPersonalizado))}% = `
+                          : ""}
+                        ${toARS(descuentoMonto)}
+                      </span>
                     </div>
                   </div>
                   <div className="npl-totalBox npl-totalBox--strong">
