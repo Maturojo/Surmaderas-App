@@ -8,6 +8,7 @@ const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
 const GLASS_PRICE_M2 = 33582;
+const MIRROR_PRICE_M2 = 59166;
 
 function createProfileId(codigo, nombre) {
   return String(codigo || nombre || "varilla")
@@ -126,7 +127,7 @@ const INITIAL_FORM = {
   cantidad: 1,
   orientacion: "vertical",
   tipoMedida: "exterior",
-  vidrio: "si",
+  frente: "vidrio",
   fondoId: "fibrofacil",
   paspartuMm: 0,
   pintadoId: "sin-pintar",
@@ -531,7 +532,7 @@ function FramePreview3D({
   faceMm,
   depthMm,
   color,
-  vidrio,
+  frente,
   fondoColor,
   paspartuMm,
   shapeType,
@@ -595,10 +596,15 @@ function FramePreview3D({
           veta={veta}
         />
 
-        {vidrio ? (
+        {frente === "vidrio" ? (
           <mesh position={[0, 0, 0.002]} receiveShadow>
             <boxGeometry args={[innerWidth, innerHeight, 0.005]} />
             <meshPhysicalMaterial color="#b7d8ec" transmission={0.72} roughness={0.08} thickness={0.03} transparent opacity={0.5} />
+          </mesh>
+        ) : frente === "espejo" ? (
+          <mesh position={[0, 0, 0.002]} receiveShadow>
+            <boxGeometry args={[innerWidth, innerHeight, 0.005]} />
+            <meshStandardMaterial color="#d0d8e0" metalness={1} roughness={0.05} />
           </mesh>
         ) : null}
 
@@ -697,7 +703,7 @@ export default function CotizadorMarcos() {
     const anchoM = anchoMm / 1000;
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
-    const vidrioAreaM2 = form.vidrio === "si" ? areaM2 : 0;
+    const frenteAreaM2 = form.frente !== "no" ? areaM2 : 0;
     const fondoAreaM2 = selectedFondo.precioM2 > 0 ? areaM2 : 0;
     const paspartuAreaM2 = paspartuMm > 0 ? areaM2 : 0;
 
@@ -706,7 +712,8 @@ export default function CotizadorMarcos() {
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
     const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(selectedProfile.precioMetro, 0);
 
-    const subtotalVidrio = vidrioAreaM2 * cantidad * GLASS_PRICE_M2;
+    const frentePrecioM2 = form.frente === "espejo" ? MIRROR_PRICE_M2 : form.frente === "vidrio" ? GLASS_PRICE_M2 : 0;
+    const subtotalVidrio = frenteAreaM2 * cantidad * frentePrecioM2;
     const subtotalFondo = fondoAreaM2 * cantidad * selectedFondo.precioM2;
     const subtotalPaspartu = paspartuAreaM2 * cantidad * PASPARTU_PRICE_M2;
     const subtotalPintado = selectedPintado.extra * cantidad;
@@ -724,7 +731,7 @@ export default function CotizadorMarcos() {
 
     return {
       areaM2,
-      vidrioAreaM2,
+      frenteAreaM2,
       fondoAreaM2,
       paspartuAreaM2,
       metrosMarcoUnitarios,
@@ -1010,15 +1017,16 @@ export default function CotizadorMarcos() {
                 />
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Vidrio
+                    Frente
                   </span>
                   <select
-                    value={form.vidrio}
-                    onChange={(e) => setField("vidrio", e.target.value)}
+                    value={form.frente}
+                    onChange={(e) => setField("frente", e.target.value)}
                     style={selectFieldStyle}
                   >
-                    <option value="si">Si</option>
                     <option value="no">No</option>
+                    <option value="vidrio">Vidrio</option>
+                    <option value="espejo">Espejo</option>
                   </select>
                   <span style={helperTextStyle}> </span>
                 </label>
@@ -1094,7 +1102,7 @@ export default function CotizadorMarcos() {
               </div>
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Render 3D del marco</div>
               <div style={{ fontSize: 14, color: "#6f665d" }}>
-                Esta vista ya responde a medida, orientacion, vidrio, fondo, paspartu y al color de pintado.
+                Esta vista ya responde a medida, orientacion, frente (vidrio/espejo), fondo, paspartu y al color de pintado.
               </div>
             </div>
 
@@ -1106,7 +1114,7 @@ export default function CotizadorMarcos() {
                   faceMm={selectedProfile.frenteMm}
                   depthMm={selectedProfile.profundidadMm}
                   color={frameColor}
-                  vidrio={form.vidrio === "si"}
+                  frente={form.frente}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
                   paspartuMm={form.paspartuMm}
                   shapeType={selectedProfile.shape}
@@ -1150,8 +1158,8 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Varillas cobradas" value={`${formatNumber(quote.varillasCobradas, 1)}`} />
               <SummaryRow label="Metros facturados" value={`${formatNumber(quote.metrosFacturados)} m`} />
               <SummaryRow label="Subtotal varilla" value={formatCurrency(quote.subtotalVarilla)} />
-              <SummaryRow label="Vidrio m2" value={`${formatNumber(quote.vidrioAreaM2)} m2`} />
-              <SummaryRow label="Subtotal vidrio" value={formatCurrency(quote.subtotalVidrio)} />
+              <SummaryRow label="Frente m2" value={`${formatNumber(quote.frenteAreaM2)} m2`} />
+              <SummaryRow label={`Subtotal frente (${form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "Sin frente"})`} value={formatCurrency(quote.subtotalVidrio)} />
               <SummaryRow label={`${selectedFondo.nombre} m2`} value={`${formatNumber(quote.fondoAreaM2)} m2`} />
               <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={formatCurrency(quote.subtotalFondo)} />
               <SummaryRow
