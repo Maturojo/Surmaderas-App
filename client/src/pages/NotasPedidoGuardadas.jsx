@@ -817,7 +817,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         </div>
       </section>
 
-      {view === "all" ? (
+      {false ? (
       <section className="ng-tableCard ng-tableCard--provider">
         <div className="ng-tableHead">
           <div>
