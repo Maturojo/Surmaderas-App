@@ -652,7 +652,7 @@ export default function CotizadorMarcos() {
   const [varillaSearch, setVarillaSearch] = useState(
     `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
   );
-  const [unidadMedida, setUnidadMedida] = useState("mm");
+  const [unidadMedida, setUnidadMedida] = useState("cm");
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
     [form.anchoMm, form.altoMm, form.orientacion]
