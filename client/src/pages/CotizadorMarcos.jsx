@@ -8,6 +8,15 @@ const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
 const GLASS_PRICE_M2 = 33582;
+const PRESET_SIZE_OPTIONS = [
+  { id: "personalizada", nombre: "Personalizada", anchoMm: null, altoMm: null },
+  { id: "a5", nombre: "A5", anchoMm: 148, altoMm: 210 },
+  { id: "a4", nombre: "A4", anchoMm: 210, altoMm: 297 },
+  { id: "a3", nombre: "A3", anchoMm: 297, altoMm: 420 },
+  { id: "a2", nombre: "A2", anchoMm: 420, altoMm: 594 },
+  { id: "a1", nombre: "A1", anchoMm: 594, altoMm: 841 },
+  { id: "a0", nombre: "A0", anchoMm: 841, altoMm: 1189 },
+];
 const MIRROR_PRICE_M2 = 59166;
 
 function createProfileId(codigo, nombre) {
@@ -695,6 +704,7 @@ export default function CotizadorMarcos() {
   const [varillaSearch, setVarillaSearch] = useState(
     `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
   );
+  const [presetSizeId, setPresetSizeId] = useState("personalizada");
   const [unidadMedida, setUnidadMedida] = useState("cm");
   const [imagenUrl, setImagenUrl] = useState(null);
   const [glRef, setGlRef] = useState(null);
@@ -923,6 +933,22 @@ export default function CotizadorMarcos() {
     setForm((prev) => reorderFormDimensions(prev, nextOrientation));
   }
 
+  function handlePresetSizeChange(nextPresetId) {
+    setPresetSizeId(nextPresetId);
+    const preset = PRESET_SIZE_OPTIONS.find((option) => option.id === nextPresetId);
+
+    if (!preset || !preset.anchoMm || !preset.altoMm) {
+      return;
+    }
+
+    const normalized = normalizeDimensionsByOrientation(preset.anchoMm, preset.altoMm, form.orientacion);
+    setForm((prev) => ({
+      ...prev,
+      anchoMm: normalized.ancho,
+      altoMm: normalized.alto,
+    }));
+  }
+
   const pageStyle = {
     maxWidth: 1380,
     margin: "0 auto",
@@ -1127,6 +1153,25 @@ export default function CotizadorMarcos() {
                     ))}
                   </div>
                 </div>
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Medida predeterminada
+                  </span>
+                  <select
+                    value={presetSizeId}
+                    onChange={(e) => handlePresetSizeChange(e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    {PRESET_SIZE_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <span style={helperTextStyle}>
+                    La medida elegida se interpreta como {form.tipoMedida === "interior" ? "interior" : "exterior"}.
+                  </span>
+                </label>
                 <div style={twoColumnGridStyle}>
                   <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
                     <input
@@ -1134,7 +1179,10 @@ export default function CotizadorMarcos() {
                       min={unidadMedida === "cm" ? "5" : "50"}
                       step={unidadMedida === "cm" ? "0.1" : "1"}
                       value={unidadMedida === "cm" ? form.anchoMm / 10 : form.anchoMm}
-                      onChange={(e) => setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value)}
+                      onChange={(e) => {
+                        setPresetSizeId("personalizada");
+                        setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                      }}
                       placeholder="Medida 1"
                       style={rawMeasureInputStyle}
                     />
@@ -1147,7 +1195,10 @@ export default function CotizadorMarcos() {
                       min={unidadMedida === "cm" ? "5" : "50"}
                       step={unidadMedida === "cm" ? "0.1" : "1"}
                       value={unidadMedida === "cm" ? form.altoMm / 10 : form.altoMm}
-                      onChange={(e) => setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value)}
+                      onChange={(e) => {
+                        setPresetSizeId("personalizada");
+                        setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                      }}
                       placeholder="Medida 2"
                       style={rawMeasureInputStyle}
                     />
