@@ -137,6 +137,15 @@ export default function NotasPedidoView() {
 
   const totalFinal = subtotal;
 
+  function resetGenerador() {
+    setFecha(formatDateYYYYMMDD(new Date()));
+    setDiasHabiles(15);
+    setCliente("");
+    setTelefono("");
+    setVendedor("");
+    setItems([{ ...emptyItem }]);
+  }
+
   function updateItem(idx, patch) {
     setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
   }
@@ -268,10 +277,12 @@ export default function NotasPedidoView() {
 
       await crearNotaPedido(payload);
 
+      resetGenerador();
+
       await Swal.fire({
         icon: "success",
         title: "Nota guardada",
-        text: `La nota ${numero} se guardo correctamente`,
+        text: `La nota ${numero} ya puede ir a abonar su nota por caja`,
         timer: 1600,
         showConfirmButton: false,
       });
