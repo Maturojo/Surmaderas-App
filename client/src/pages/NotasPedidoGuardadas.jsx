@@ -102,7 +102,6 @@ function construirMensajeProveedor(nota, proveedor, observacion) {
     `Cliente: ${getNotaClienteNombre(nota)}`,
     `Entrega: ${nota?.entrega || "-"}`,
     `Vendedor: ${nota?.vendedor || "-"}`,
-    `Total: $${toARS(getNotaTotal(nota))}`,
     "",
     "Detalle:",
     detalle || "- Sin items cargados",
