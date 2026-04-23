@@ -344,9 +344,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
     const filteredByView = items.filter((n) => {
-      if (view === "pendientes") return (n?.estadoOperativo || "Pendiente") === "Pendiente";
+      if (view === "pendientes") return n?.estadoOperativo === "Enviado a proveedor";
       if (view === "deposito") return n?.estadoOperativo === "Finalizado";
-      return true;
+      return n?.estadoOperativo !== "Enviado a proveedor";
     });
 
     return filteredByView
