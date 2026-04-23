@@ -283,7 +283,7 @@ export default function NotasPedidoView() {
         icon: "success",
         title: "Nota guardada",
         text: `La nota ${numero} ya puede ir a abonar su nota por caja`,
-        timer: 1600,
+        timer: 2600,
         showConfirmButton: false,
       });
     } catch (e) {
