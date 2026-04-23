@@ -124,6 +124,17 @@ function construirMensajeCliente(nota) {
   ].join("\n");
 }
 
+function construirMensajeMuebleListo(nota) {
+  return [
+    `Hola ${getNotaClienteNombre(nota)}, te avisamos que tu pedido ya está listo para retirar en el local.`,
+    "",
+    `Nota: ${nota?.numero || ""}`,
+    `Total: $${toARS(getNotaTotal(nota))}`,
+    "",
+    "¡Esperamos verte pronto!",
+  ].join("\n");
+}
+
 async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, etiquetaDestino, printData }) {
   openWhatsappText(telefonoWhatsapp, mensaje);
 
@@ -191,6 +202,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const [proveedorPreviewUrl, setProveedorPreviewUrl] = useState("");
   const [comprobantePreviewLoading, setComprobantePreviewLoading] = useState(false);
   const [previewLightbox, setPreviewLightbox] = useState(null);
+  const [terminadoOpen, setTerminadoOpen] = useState(false);
+  const [terminadoOpcion, setTerminadoOpcion] = useState(null);
+  const [terminadoFoto, setTerminadoFoto] = useState(null);
+  const [terminadoLoading, setTerminadoLoading] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -571,6 +586,88 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
       });
     } finally {
       setSavingGestion(false);
+    }
+  }
+
+  function abrirTerminado() {
+    setTerminadoOpcion(null);
+    setTerminadoFoto(null);
+    setTerminadoOpen(true);
+  }
+
+  function cerrarTerminado() {
+    setTerminadoOpen(false);
+    setTerminadoOpcion(null);
+    setTerminadoFoto(null);
+  }
+
+  function handleTerminadoFoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setTerminadoFoto({ dataUrl: ev.target.result, file });
+    reader.readAsDataURL(file);
+  }
+
+  async function confirmarTerminadoEnLocal() {
+    if (!gestionNota?._id) return;
+    setTerminadoLoading(true);
+    try {
+      const telefonoWhatsapp = normalizarWhatsapp(gestionNota?.cliente?.telefono);
+      if (telefonoWhatsapp) {
+        const mensaje = construirMensajeMuebleListo(gestionNota);
+        openWhatsappText(telefonoWhatsapp, mensaje);
+        if (terminadoFoto?.file) {
+          downloadFile(terminadoFoto.file);
+        }
+        await Swal.fire({
+          icon: "info",
+          title: "WhatsApp abierto",
+          text: terminadoFoto?.file
+            ? "Abrimos el chat del cliente y descargamos la foto para que la puedas adjuntar."
+            : "Abrimos el chat del cliente con el mensaje listo.",
+        });
+      }
+      await actualizarOperacionNota(gestionNota._id, {
+        estadoOperativo: "Finalizado",
+        proveedores: asignaciones,
+      });
+      await load();
+      cerrarTerminado();
+      cerrarGestion();
+      await Swal.fire({
+        icon: "success",
+        title: "Nota finalizada",
+        text: "La nota pasó a depósito correctamente.",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({ icon: "error", title: "Error", text: e?.message || "No se pudo finalizar la nota." });
+    } finally {
+      setTerminadoLoading(false);
+    }
+  }
+
+  async function confirmarTerminadoEntregado() {
+    if (!gestionNota?._id) return;
+    setTerminadoLoading(true);
+    try {
+      await eliminarNotaPedido(gestionNota._id);
+      await load();
+      cerrarTerminado();
+      cerrarGestion();
+      await Swal.fire({
+        icon: "success",
+        title: "Nota eliminada",
+        text: "La nota fue eliminada correctamente.",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({ icon: "error", title: "Error", text: e?.message || "No se pudo eliminar la nota." });
+    } finally {
+      setTerminadoLoading(false);
     }
   }
 
@@ -1038,6 +1135,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                             >
                               Vista previa
                             </button>
+                            <button className="ng-miniBtn ng-miniBtn--done" onClick={abrirTerminado}>
+                              Terminado
+                            </button>
                             <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
                               Quitar
                             </button>
@@ -1188,6 +1288,74 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 Agregar proveedor
               </button>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {terminadoOpen ? (
+        <div className="ng-providerModalBack" onClick={cerrarTerminado}>
+          <div className="ng-providerModal ng-terminadoModal" onClick={(e) => e.stopPropagation()}>
+            <div className="ng-inlinePromptHead">
+              <div>
+                <div className="ng-inlinePromptTitle">¿Cómo se completó el pedido?</div>
+                <div className="ng-inlinePromptSub">Indicá si el mueble quedó en el local o si lo entregó el proveedor directamente.</div>
+              </div>
+              <button className="ng-inlinePromptClose" onClick={cerrarTerminado}>Cerrar</button>
+            </div>
+
+            {!terminadoOpcion && (
+              <div className="ng-terminadoOpciones">
+                <button className="ng-terminadoOpcionBtn ng-terminadoOpcionBtn--local" onClick={() => setTerminadoOpcion("local")}>
+                  <span className="ng-terminadoOpcionIcon">🏠</span>
+                  <span>Está en el local</span>
+                  <span className="ng-terminadoOpcionSub">El cliente viene a retirar</span>
+                </button>
+                <button className="ng-terminadoOpcionBtn ng-terminadoOpcionBtn--entregado" onClick={() => setTerminadoOpcion("entregado")}>
+                  <span className="ng-terminadoOpcionIcon">🚚</span>
+                  <span>Lo entregó el proveedor</span>
+                  <span className="ng-terminadoOpcionSub">El proveedor lo llevó directo al cliente</span>
+                </button>
+              </div>
+            )}
+
+            {terminadoOpcion === "local" && (
+              <div className="ng-terminadoForm">
+                <p className="ng-terminadoDesc">
+                  Podés agregar una foto del mueble para enviarle al cliente junto con el aviso por WhatsApp.
+                </p>
+                <label className="ng-terminadoFotoLabel">
+                  <span>Foto del mueble (opcional)</span>
+                  <input type="file" accept="image/*" capture="environment" onChange={handleTerminadoFoto} />
+                </label>
+                {terminadoFoto?.dataUrl && (
+                  <img src={terminadoFoto.dataUrl} alt="Preview mueble" className="ng-terminadoFotoPreview" />
+                )}
+                <div className="ng-terminadoActions">
+                  <button className="ng-actionBtn ng-actionBtn--ghost" onClick={() => setTerminadoOpcion(null)}>
+                    Volver
+                  </button>
+                  <button className="ng-actionBtn ng-actionBtn--primary" onClick={confirmarTerminadoEnLocal} disabled={terminadoLoading}>
+                    {terminadoLoading ? "Procesando..." : "Confirmar y avisar al cliente"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {terminadoOpcion === "entregado" && (
+              <div className="ng-terminadoForm">
+                <p className="ng-terminadoDesc">
+                  La nota se va a eliminar permanentemente ya que el proveedor entregó el pedido directamente al cliente.
+                </p>
+                <div className="ng-terminadoActions">
+                  <button className="ng-actionBtn ng-actionBtn--ghost" onClick={() => setTerminadoOpcion(null)}>
+                    Volver
+                  </button>
+                  <button className="ng-actionBtn ng-actionBtn--danger" onClick={confirmarTerminadoEntregado} disabled={terminadoLoading}>
+                    {terminadoLoading ? "Eliminando..." : "Eliminar nota"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : null}
