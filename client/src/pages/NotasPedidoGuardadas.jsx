@@ -346,13 +346,23 @@ export default function NotasPedidoGuardadas() {
     return { totalNotas, enTaller, enProveedor, finalizadas };
   }, [guardadas]);
 
-  const guardadasPrincipales = useMemo(
-    () => guardadas.filter((item) => item?.estadoOperativo !== "Enviado a proveedor"),
+  const guardadasPendientes = useMemo(
+    () => guardadas.filter((item) => (item?.estadoOperativo || "Pendiente") === "Pendiente"),
+    [guardadas]
+  );
+
+  const guardadasProceso = useMemo(
+    () => guardadas.filter((item) => item?.estadoOperativo === "En taller"),
     [guardadas]
   );
 
   const guardadasProveedor = useMemo(
     () => guardadas.filter((item) => item?.estadoOperativo === "Enviado a proveedor"),
+    [guardadas]
+  );
+
+  const guardadasDeposito = useMemo(
+    () => guardadas.filter((item) => item?.estadoOperativo === "Finalizado"),
     [guardadas]
   );
 
@@ -607,7 +617,7 @@ export default function NotasPedidoGuardadas() {
             <p className="ng-sectionSub">Visualizá rápido destino, estado operativo y total de cada nota.</p>
           </div>
           <div className="ng-resultsPill">
-            {guardadasPrincipales.length} {guardadasPrincipales.length === 1 ? "nota" : "notas"}
+            {guardadasPendientes.length} {guardadasPendientes.length === 1 ? "nota" : "notas"}
           </div>
         </div>
 
@@ -631,10 +641,10 @@ export default function NotasPedidoGuardadas() {
           <tbody>
             {loading ? (
               <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
-            ) : guardadasPrincipales.length === 0 ? (
-              <tr><td className="ng-tableMessage" colSpan={10}>No hay notas guardadas.</td></tr>
+            ) : guardadasPendientes.length === 0 ? (
+              <tr><td className="ng-tableMessage" colSpan={10}>No hay notas pendientes.</td></tr>
             ) : (
-              guardadasPrincipales.map((n) => (
+              guardadasPendientes.map((n) => (
                 <tr key={n?._id || n?.id || n?.numero}>
                   <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                   <td>{fmtDate(n?.fecha)}</td>
@@ -691,6 +701,85 @@ export default function NotasPedidoGuardadas() {
               ))
             )}
           </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="ng-tableCard">
+        <div className="ng-tableHead">
+          <div>
+            <h2 className="ng-sectionTitle">Notas en proceso</h2>
+            <p className="ng-sectionSub">Las notas que ya entraron a taller se siguen desde acá.</p>
+          </div>
+          <div className="ng-resultsPill">
+            {guardadasProceso.length} {guardadasProceso.length === 1 ? "nota" : "notas"}
+          </div>
+        </div>
+
+        <div className="ng-tableWrap">
+          <table className="ng-table">
+            <thead>
+              <tr>
+                <th>Numero</th>
+                <th>Fecha</th>
+                <th>Entrega</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Estado</th>
+                <th>Operativo</th>
+                <th>Destino</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
+              ) : guardadasProceso.length === 0 ? (
+                <tr><td className="ng-tableMessage" colSpan={10}>Todavía no hay notas en proceso.</td></tr>
+              ) : (
+                guardadasProceso.map((n) => (
+                  <tr key={`proceso-${n?._id || n?.id || n?.numero}`}>
+                    <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
+                    <td>{fmtDate(n?.fecha)}</td>
+                    <td>{n?.entrega ?? "-"}</td>
+                    <td>
+                      <div className="ng-clientCell">
+                        <strong>{getNotaClienteNombre(n)}</strong>
+                        <span>{n?.cliente?.telefono || "Sin telefono"}</span>
+                      </div>
+                    </td>
+                    <td>{n?.vendedor ?? "-"}</td>
+                    <td>
+                      <EstadoComercialCell nota={n} />
+                    </td>
+                    <td>
+                      <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "En taller")}`}>
+                        {getEstadoOperativoLabel(n?.estadoOperativo || "En taller")}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="ng-inlineBadge ng-inlineBadge--taller">Taller</span>
+                    </td>
+                    <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
+                    <td>
+                      <div className="ng-actions">
+                        <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
+                          Ver
+                        </button>
+                        <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
+                          Gestionar
+                        </button>
+                        <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
+                          Borrar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
         </div>
       </section>
@@ -761,6 +850,85 @@ export default function NotasPedidoGuardadas() {
                       <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
                         {getEstadoOperativoLabel(n?.estadoOperativo || "Enviado a proveedor")}
                       </span>
+                    </td>
+                    <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
+                    <td>
+                      <div className="ng-actions">
+                        <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
+                          Ver
+                        </button>
+                        <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
+                          Gestionar
+                        </button>
+                        <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
+                          Borrar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="ng-tableCard">
+        <div className="ng-tableHead">
+          <div>
+            <h2 className="ng-sectionTitle">Notas en depósito</h2>
+            <p className="ng-sectionSub">Las notas finalizadas y listas en depósito quedan agrupadas acá.</p>
+          </div>
+          <div className="ng-resultsPill">
+            {guardadasDeposito.length} {guardadasDeposito.length === 1 ? "nota" : "notas"}
+          </div>
+        </div>
+
+        <div className="ng-tableWrap">
+          <table className="ng-table">
+            <thead>
+              <tr>
+                <th>Numero</th>
+                <th>Fecha</th>
+                <th>Entrega</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Estado</th>
+                <th>Operativo</th>
+                <th>Destino</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
+              ) : guardadasDeposito.length === 0 ? (
+                <tr><td className="ng-tableMessage" colSpan={10}>Todavía no hay notas en depósito.</td></tr>
+              ) : (
+                guardadasDeposito.map((n) => (
+                  <tr key={`deposito-${n?._id || n?.id || n?.numero}`}>
+                    <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
+                    <td>{fmtDate(n?.fecha)}</td>
+                    <td>{n?.entrega ?? "-"}</td>
+                    <td>
+                      <div className="ng-clientCell">
+                        <strong>{getNotaClienteNombre(n)}</strong>
+                        <span>{n?.cliente?.telefono || "Sin telefono"}</span>
+                      </div>
+                    </td>
+                    <td>{n?.vendedor ?? "-"}</td>
+                    <td>
+                      <EstadoComercialCell nota={n} />
+                    </td>
+                    <td>
+                      <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Finalizado")}`}>
+                        {getEstadoOperativoLabel(n?.estadoOperativo || "Finalizado")}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="ng-inlineBadge ng-inlineBadge--deposito">Depósito</span>
                     </td>
                     <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
                     <td>
