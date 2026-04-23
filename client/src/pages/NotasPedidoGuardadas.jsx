@@ -1323,10 +1323,16 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 <p className="ng-terminadoDesc">
                   Podés agregar una foto del mueble para enviarle al cliente junto con el aviso por WhatsApp.
                 </p>
-                <label className="ng-terminadoFotoLabel">
-                  <span>Foto del mueble (opcional)</span>
-                  <input type="file" accept="image/*" capture="environment" onChange={handleTerminadoFoto} />
-                </label>
+                <div className="ng-terminadoFotoOpciones">
+                  <label className="ng-terminadoFotoBtn">
+                    📷 Sacar foto
+                    <input type="file" accept="image/*" capture="environment" onChange={handleTerminadoFoto} style={{ display: "none" }} />
+                  </label>
+                  <label className="ng-terminadoFotoBtn ng-terminadoFotoBtn--galeria">
+                    🖼️ Elegir imagen
+                    <input type="file" accept="image/*" onChange={handleTerminadoFoto} style={{ display: "none" }} />
+                  </label>
+                </div>
                 {terminadoFoto?.dataUrl && (
                   <img src={terminadoFoto.dataUrl} alt="Preview mueble" className="ng-terminadoFotoPreview" />
                 )}

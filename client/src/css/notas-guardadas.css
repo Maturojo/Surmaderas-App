@@ -978,13 +978,35 @@
   line-height: 1.5;
 }
 
-.ng-terminadoFotoLabel {
+.ng-terminadoFotoOpciones {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+}
+
+.ng-terminadoFotoBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
-  font-size: 13px;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(73, 58, 38, 0.18);
+  background: #faf8f5;
+  font-size: 14px;
   font-weight: 600;
   color: #2f2821;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ng-terminadoFotoBtn:hover {
+  background: #f0ebe3;
+}
+
+.ng-terminadoFotoBtn--galeria {
+  background: #fff;
 }
 
 .ng-terminadoFotoPreview {
