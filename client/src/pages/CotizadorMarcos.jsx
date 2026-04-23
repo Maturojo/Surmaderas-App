@@ -697,12 +697,86 @@ export default function CotizadorMarcos() {
   );
   const [unidadMedida, setUnidadMedida] = useState("cm");
   const [imagenUrl, setImagenUrl] = useState(null);
+  const [glRef, setGlRef] = useState(null);
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (imagenUrl) URL.revokeObjectURL(imagenUrl);
     setImagenUrl(URL.createObjectURL(file));
+  }
+
+  function buildSummaryLines() {
+    const frenteLabel = form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "No";
+    const fondoLabel = selectedFondo.precioM2 > 0 && !espejoSinFondo ? selectedFondo.nombre : "No";
+    const paspartuVal = clampPositiveNumber(form.paspartuMm, 0);
+    const cantidadVal = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
+    return [
+      ["Varilla seleccionada", `${selectedProfile.codigo} - ${selectedProfile.nombre}`],
+      ["Ancho de varilla", `${selectedProfile.frenteMm} mm`],
+      ["Orientacion visual", form.orientacion === "horizontal" ? "Horizontal" : "Vertical"],
+      ["Tipo de medida", form.tipoMedida === "interior" ? "Interior" : "Exterior"],
+      ["Medida cargada", `${quote.inputAnchoMm} x ${quote.inputAltoMm} mm`],
+      ["Cantidad", String(cantidadVal)],
+      ["Fondo", fondoLabel],
+      ["Frente", frenteLabel],
+      ["Paspartu", paspartuVal > 0 ? `${paspartuVal} mm` : "No"],
+      ["Pintado", selectedPintado.nombre],
+      ["Total estimado", formatCurrency(quote.total), true],
+    ];
+  }
+
+  function handlePrint() {
+    const imageDataUrl = glRef ? glRef.domElement.toDataURL("image/png") : null;
+    const lines = buildSummaryLines();
+    const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Presupuesto de Marco</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:system-ui,sans-serif;padding:32px;color:#1a1a1a;max-width:680px;margin:0 auto}
+    h1{font-size:26px;font-weight:900;margin-bottom:4px}
+    .sub{color:#666;font-size:13px;margin-bottom:28px}
+    .render{display:block;width:100%;max-width:400px;margin:0 auto 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.14)}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    tr:nth-child(even){background:#f7f4f0}
+    td{padding:9px 14px;font-size:14px}
+    td:first-child{color:#5d544b;font-weight:600;width:55%}
+    td:last-child{font-weight:700;text-align:right}
+    .total td{font-size:18px;font-weight:900;border-top:2.5px solid #2d241c;padding-top:14px;margin-top:6px}
+    @media print{body{padding:16px}}
+  </style>
+</head>
+<body>
+  <h1>Presupuesto de Marco</h1>
+  <p class="sub">Sur Maderas &mdash; ${fecha}</p>
+  ${imageDataUrl ? `<img class="render" src="${imageDataUrl}" />` : ""}
+  <table>
+    ${lines.map(([label, value, strong]) =>
+      `<tr class="${strong ? "total" : ""}"><td>${label}</td><td>${value}</td></tr>`
+    ).join("")}
+  </table>
+</body>
+</html>`;
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 450);
+  }
+
+  function handleWhatsApp() {
+    const lines = buildSummaryLines();
+    const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+    const text = [
+      `*Presupuesto de Marco - Sur Maderas*`,
+      `_${fecha}_`,
+      "",
+      ...lines.map(([label, value]) => `*${label}:* ${value}`),
+    ].join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
@@ -1191,7 +1265,7 @@ export default function CotizadorMarcos() {
             </div>
 
             <div style={{ height: 470, marginTop: 12 }}>
-              <Canvas camera={{ position: [0, 0, 2.2], fov: 40 }}>
+              <Canvas camera={{ position: [0, 0, 2.2], fov: 40 }} gl={{ preserveDrawingBuffer: true }} onCreated={({ gl }) => setGlRef(gl)}>
                 <FramePreview3D
                   anchoMm={normalizedDimensions.ancho}
                   altoMm={normalizedDimensions.alto}
@@ -1278,6 +1352,23 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Total estimado" value={formatCurrency(quote.total)} strong />
             </div>
           </article>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <button
+              type="button"
+              onClick={handlePrint}
+              style={{ padding: "14px 0", borderRadius: 16, background: "#2d241c", color: "#fffaf3", border: "none", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: "0.02em" }}
+            >
+              Imprimir presupuesto
+            </button>
+            <button
+              type="button"
+              onClick={handleWhatsApp}
+              style={{ padding: "14px 0", borderRadius: 16, background: "#25d366", color: "#fff", border: "none", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: "0.02em" }}
+            >
+              Enviar por WhatsApp
+            </button>
+          </div>
         </div>
       </section>
     </div>
