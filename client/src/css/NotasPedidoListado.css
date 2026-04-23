@@ -419,6 +419,16 @@
   color: #8b2d2d;
 }
 
+.npl-btnGhost--whatsapp {
+  background: #eaf7ef;
+  border-color: rgba(34, 104, 69, 0.2);
+  color: #226845;
+}
+
+.npl-btnGhost--whatsapp:hover {
+  background: #d4f0de;
+}
+
 .npl-btnLink {
   padding: 0;
   border: none;

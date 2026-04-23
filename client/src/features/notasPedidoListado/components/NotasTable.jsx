@@ -16,7 +16,7 @@ function getEntregaLabel(value) {
   return String(value);
 }
 
-export default function NotasTable({ items, loading, onVerDetalle, onEliminar }) {
+export default function NotasTable({ items, loading, onVerDetalle, onEliminar, onEnviarCliente }) {
   return (
     <div className="npl-tableWrap">
       <table className="npl-table">
@@ -76,6 +76,9 @@ export default function NotasTable({ items, loading, onVerDetalle, onEliminar })
                 <td className="npl-actions">
                   <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>
                     Ver
+                  </button>
+                  <button className="npl-btnGhost npl-btnGhost--whatsapp" onClick={() => onEnviarCliente?.(n)}>
+                    Enviar al cliente
                   </button>
                   <button className="npl-btnGhost" onClick={() => onEliminar?.(n)}>
                     Borrar

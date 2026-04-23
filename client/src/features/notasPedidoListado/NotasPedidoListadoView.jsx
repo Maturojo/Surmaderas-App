@@ -3,6 +3,39 @@
 import { useEffect, useState } from "react";
 
 import { eliminarNotaPedido, guardarCajaNota } from "../../services/notasPedido";
+import {
+  buildNotaPedidoPrintData,
+  copyFileToClipboard,
+  downloadFile,
+  generateNotaPedidoImageFile,
+  openWhatsappText,
+} from "../../utils/notaPedidoPrint";
+import { getNotaTotal } from "../../utils/notaPedido";
+
+function normalizarTel(telefono = "") {
+  const d = String(telefono || "").replace(/\D/g, "");
+  if (!d) return "";
+  if (d.startsWith("549")) return d;
+  if (d.startsWith("54")) return `549${d.slice(2)}`;
+  return `549${d}`;
+}
+
+function toARSLocal(n) {
+  return Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function construirMensajeNota(nota) {
+  const nombre = nota?.cliente?.nombre || nota?.cliente || "cliente";
+  return [
+    `Hola ${nombre}, te compartimos la nota de pedido ${nota?.numero || ""}.`,
+    "",
+    `Entrega estimada: ${nota?.entrega || "-"}`,
+    `Vendedor: ${nota?.vendedor || "-"}`,
+    `Total: $${toARSLocal(getNotaTotal(nota))}`,
+    "",
+    "Si necesitás alguna corrección o confirmación, respondé por este medio.",
+  ].join("\n");
+}
 
 import { useNotasPedidoListado } from "./hooks/useNotasPedidoListado";
 import SearchBar from "./components/SearchBar";
@@ -56,6 +89,23 @@ export default function NotasPedidoListadoView() {
     });
   }
 
+  async function handleEnviarCliente(nota) {
+    const tel = normalizarTel(nota?.cliente?.telefono || nota?.telefono);
+    if (!tel) {
+      setFlash({ kind: "info", message: "La nota no tiene teléfono de cliente para enviar." });
+      return;
+    }
+    const mensaje = construirMensajeNota(nota);
+    openWhatsappText(tel, mensaje);
+    try {
+      const file = await generateNotaPedidoImageFile(buildNotaPedidoPrintData(nota));
+      const copied = await copyFileToClipboard(file);
+      if (!copied) downloadFile(file);
+    } catch {
+      // si falla la imagen igual se abrió el WhatsApp con el mensaje
+    }
+  }
+
   async function handleEliminarNota(nota) {
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
     if (!ok) return;
@@ -104,6 +154,7 @@ export default function NotasPedidoListadoView() {
         loading={loading}
         onVerDetalle={abrirDetalle}
         onEliminar={handleEliminarNota}
+        onEnviarCliente={handleEnviarCliente}
       />
 
       <div className="npl-footer">
