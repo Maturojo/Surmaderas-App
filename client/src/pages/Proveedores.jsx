@@ -77,6 +77,7 @@ export default function Proveedores() {
   const [notasGuardadas, setNotasGuardadas] = useState([]);
   const [pedidosProveedor, setPedidosProveedor] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingExtras, setLoadingExtras] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [q, setQ] = useState("");
@@ -92,22 +93,47 @@ export default function Proveedores() {
 
   async function load() {
     setLoading(true);
+    setLoadingExtras(false);
     setError("");
+    let proveedoresOk = false;
     try {
-      const [proveedoresData, notasData, pedidosData] = await Promise.all([
-        listarProveedores(),
-        listarNotasPedido({ q: "", page: 1, limit: 500, guardada: true }),
-        listarPedidosProveedor(),
-      ]);
-
+      const proveedoresData = await listarProveedores();
       setItems(proveedoresData);
-      setNotasGuardadas(Array.isArray(notasData?.items) ? notasData.items : Array.isArray(notasData) ? notasData : []);
-      setPedidosProveedor(Array.isArray(pedidosData) ? pedidosData : []);
+      proveedoresOk = true;
     } catch (e) {
       setError(e?.message || "No se pudieron cargar los proveedores");
     } finally {
       setLoading(false);
     }
+
+    if (!proveedoresOk) return;
+
+    setLoadingExtras(true);
+
+    const [notasData, pedidosData] = await Promise.allSettled([
+      listarNotasPedido({ q: "", page: 1, limit: 500, guardada: true }),
+      listarPedidosProveedor(),
+    ]);
+
+    if (notasData.status === "fulfilled") {
+      const value = notasData.value;
+      setNotasGuardadas(Array.isArray(value?.items) ? value.items : Array.isArray(value) ? value : []);
+    } else {
+      console.error("No se pudieron cargar las notas relacionadas de proveedores", notasData.reason);
+      setNotasGuardadas([]);
+      setError((prev) => prev || "Se cargaron los proveedores, pero no pudimos traer las notas relacionadas por ahora.");
+    }
+
+    if (pedidosData.status === "fulfilled") {
+      const value = pedidosData.value;
+      setPedidosProveedor(Array.isArray(value) ? value : []);
+    } else {
+      console.error("No se pudieron cargar los pedidos relacionados de proveedores", pedidosData.reason);
+      setPedidosProveedor([]);
+      setError((prev) => prev || "Se cargaron los proveedores, pero no pudimos traer los pedidos relacionados por ahora.");
+    }
+
+    setLoadingExtras(false);
   }
 
   useEffect(() => {
@@ -416,6 +442,12 @@ export default function Proveedores() {
 
         {error ? (
           <div className="rounded-[16px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
+        ) : null}
+
+        {!loading && loadingExtras ? (
+          <div className="mt-3 rounded-[16px] border border-[#e6d6be] bg-[#fbf6ec] p-3 text-sm text-[#6d5b45]">
+            Cargando notas y pedidos relacionados...
+          </div>
         ) : null}
 
         <div className="grid gap-3">
