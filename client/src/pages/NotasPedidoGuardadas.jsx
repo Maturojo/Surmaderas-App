@@ -1135,12 +1135,40 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                             >
                               Vista previa
                             </button>
-                            <button className="ng-miniBtn ng-miniBtn--done" onClick={abrirTerminado}>
-                              Terminado
-                            </button>
-                            <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
-                              Quitar
-                            </button>
+                            {estadoOperativo === "Finalizado" ? (
+                              <button
+                                className="ng-miniBtn"
+                                onClick={async () => {
+                                  const res = await Swal.fire({
+                                    icon: "warning",
+                                    title: "¿Eliminar nota?",
+                                    text: "Esta acción no se puede deshacer.",
+                                    showCancelButton: true,
+                                    confirmButtonText: "Eliminar",
+                                    cancelButtonText: "Cancelar",
+                                  });
+                                  if (!res.isConfirmed) return;
+                                  try {
+                                    await eliminarNotaPedido(gestionNota._id);
+                                    await load();
+                                    cerrarGestion();
+                                  } catch (e) {
+                                    await Swal.fire({ icon: "error", title: "Error", text: e?.message || "No se pudo eliminar." });
+                                  }
+                                }}
+                              >
+                                Borrar nota
+                              </button>
+                            ) : (
+                              <>
+                                <button className="ng-miniBtn ng-miniBtn--done" onClick={abrirTerminado}>
+                                  Terminado
+                                </button>
+                                <button className="ng-miniBtn" onClick={() => quitarProveedorAsignado(item.proveedorId)}>
+                                  Quitar
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
