@@ -99,7 +99,6 @@ function construirMensajeProveedor(nota, proveedor, observacion) {
   return [
     `Hola ${proveedor?.contacto || proveedor?.nombre || ""}, te envío la nota de pedido ${nota?.numero || ""}.`,
     "",
-    `Cliente: ${getNotaClienteNombre(nota)}`,
     `Entrega: ${nota?.entrega || "-"}`,
     `Vendedor: ${nota?.vendedor || "-"}`,
     "",
