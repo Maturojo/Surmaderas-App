@@ -652,6 +652,7 @@ export default function CotizadorMarcos() {
   const [varillaSearch, setVarillaSearch] = useState(
     `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
   );
+  const [unidadMedida, setUnidadMedida] = useState("mm");
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
     [form.anchoMm, form.altoMm, form.orientacion]
@@ -684,6 +685,10 @@ export default function CotizadorMarcos() {
   );
   const frameColor = selectedPintado.color || selectedProfile.color;
   const normalizedFaceMm = clampPositiveNumber(selectedProfile.frenteMm, 0);
+  const espejoSinFondo =
+    form.frente === "espejo" &&
+    normalizedDimensions.ancho <= 1200 &&
+    normalizedDimensions.alto <= 1200;
 
   const quote = useMemo(() => {
     const inputAnchoMm = normalizedDimensions.ancho;
@@ -704,7 +709,8 @@ export default function CotizadorMarcos() {
     const altoM = altoMm / 1000;
     const areaM2 = anchoM * altoM;
     const frenteAreaM2 = form.frente !== "no" ? areaM2 : 0;
-    const fondoAreaM2 = selectedFondo.precioM2 > 0 ? areaM2 : 0;
+    const fondoDisabled = form.frente === "espejo" && anchoMm <= 1200 && altoMm <= 1200;
+    const fondoAreaM2 = selectedFondo.precioM2 > 0 && !fondoDisabled ? areaM2 : 0;
     const paspartuAreaM2 = paspartuMm > 0 ? areaM2 : 0;
 
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
@@ -969,17 +975,41 @@ export default function CotizadorMarcos() {
               </div>
 
               <div style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                  Medidas
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Medidas
+                  </span>
+                  <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1.5px solid #d6cfc8" }}>
+                    {["mm", "cm"].map((u) => (
+                      <button
+                        key={u}
+                        type="button"
+                        onClick={() => setUnidadMedida(u)}
+                        style={{
+                          padding: "2px 10px",
+                          fontSize: 11,
+                          fontWeight: 800,
+                          letterSpacing: "0.06em",
+                          border: "none",
+                          cursor: "pointer",
+                          background: unidadMedida === u ? "#5d544b" : "transparent",
+                          color: unidadMedida === u ? "#fff" : "#5d544b",
+                          transition: "background 0.15s",
+                        }}
+                      >
+                        {u.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div style={twoColumnGridStyle}>
                   <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
                     <input
                       type="number"
-                      min="50"
-                      step="1"
-                      value={form.anchoMm}
-                      onChange={(e) => setField("anchoMm", e.target.value)}
+                      min={unidadMedida === "cm" ? "5" : "50"}
+                      step={unidadMedida === "cm" ? "0.1" : "1"}
+                      value={unidadMedida === "cm" ? form.anchoMm / 10 : form.anchoMm}
+                      onChange={(e) => setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value)}
                       placeholder="Medida 1"
                       style={rawMeasureInputStyle}
                     />
@@ -989,17 +1019,17 @@ export default function CotizadorMarcos() {
                   <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
                     <input
                       type="number"
-                      min="50"
-                      step="1"
-                      value={form.altoMm}
-                      onChange={(e) => setField("altoMm", e.target.value)}
+                      min={unidadMedida === "cm" ? "5" : "50"}
+                      step={unidadMedida === "cm" ? "0.1" : "1"}
+                      value={unidadMedida === "cm" ? form.altoMm / 10 : form.altoMm}
+                      onChange={(e) => setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value)}
                       placeholder="Medida 2"
                       style={rawMeasureInputStyle}
                     />
                     <span style={helperTextStyle}>
-                      {form.orientacion === "horizontal"
-                        ? `Horizontal: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`
-                        : `Vertical: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
+                      {unidadMedida === "cm"
+                        ? `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho / 10} cm, alto ${normalizedDimensions.alto / 10} cm`
+                        : `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
                     </span>
                   </div>
                 </div>
@@ -1031,7 +1061,7 @@ export default function CotizadorMarcos() {
                   <span style={helperTextStyle}> </span>
                 </label>
 
-                <label style={selectWrapperStyle}>
+                <label style={{ ...selectWrapperStyle, opacity: espejoSinFondo ? 0.45 : 1 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Fondo
                   </span>
@@ -1039,6 +1069,7 @@ export default function CotizadorMarcos() {
                     value={form.fondoId}
                     onChange={(e) => setField("fondoId", e.target.value)}
                     style={selectFieldStyle}
+                    disabled={espejoSinFondo}
                   >
                     {FONDO_OPTIONS.map((option) => (
                       <option key={option.id} value={option.id}>
@@ -1046,7 +1077,9 @@ export default function CotizadorMarcos() {
                       </option>
                     ))}
                   </select>
-                  <span style={helperTextStyle}> </span>
+                  <span style={helperTextStyle}>
+                    {espejoSinFondo ? "No aplica en espejo bajo 120 cm." : " "}
+                  </span>
                 </label>
               </div>
 
