@@ -108,7 +108,7 @@ function buildRows(previewItems, showPrices = true) {
   if (!previewItems.length) {
     return `
       <tr>
-        <td colspan="${showPrices ? 5 : 3}" class="empty">Sin items cargados.</td>
+        <td colspan="${showPrices ? 4 : 2}" class="empty">Sin items cargados.</td>
       </tr>
     `;
   }
@@ -117,10 +117,9 @@ function buildRows(previewItems, showPrices = true) {
     .map(
       (item, idx) => `
         <tr class="${idx % 2 === 1 ? "is-alt" : ""}">
-          <td>${item.orden}</td>
+          <td>${item.cantidad}</td>
           <td>${escapeHtml(item.descripcion)}</td>
           ${showPrices ? `<td>$${escapeHtml(toARS(item.precio))}</td>` : ""}
-          <td>${item.cantidad}</td>
           ${showPrices ? `<td>$${escapeHtml(toARS(item.total))}</td>` : ""}
         </tr>
       `
@@ -552,6 +551,7 @@ function buildStyles() {
 
 function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageNumber, pageCount }) {
   const rows = buildRows(items, data.showPrices);
+  const itemsCountLabel = `${data.previewItems.length} ${data.previewItems.length === 1 ? "item" : "items"}`;
   return `
     <div class="npw-doc${isFirstPage ? "" : " npw-doc--continuation"}">
       ${
@@ -612,10 +612,9 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
         <table class="npw-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>DESCRIPCI&Oacute;N</th>
-              ${data.showPrices ? "<th>PRECIO</th>" : ""}
               <th>CANTIDAD</th>
+              <th>DESCRIPCI&Oacute;N (${escapeHtml(itemsCountLabel)})</th>
+              ${data.showPrices ? "<th>PRECIO</th>" : ""}
               ${data.showPrices ? "<th>TOTAL</th>" : ""}
             </tr>
           </thead>
