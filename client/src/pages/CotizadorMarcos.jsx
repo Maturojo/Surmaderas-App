@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -526,6 +526,39 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
   );
 }
 
+function ImageMesh({ imageUrl, width, height, z }) {
+  const [texture, setTexture] = useState(null);
+
+  useEffect(() => {
+    if (!imageUrl) { setTexture(null); return; }
+    const loader = new THREE.TextureLoader();
+    loader.load(imageUrl, (t) => {
+      t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+      setTexture(t);
+    });
+  }, [imageUrl]);
+
+  if (!texture || !texture.image) return null;
+
+  const imgAspect = texture.image.width / texture.image.height;
+  const frameAspect = width / height;
+  if (imgAspect > frameAspect) {
+    texture.repeat.set(frameAspect / imgAspect, 1);
+    texture.offset.set((1 - frameAspect / imgAspect) / 2, 0);
+  } else {
+    texture.repeat.set(1, imgAspect / frameAspect);
+    texture.offset.set(0, (1 - imgAspect / frameAspect) / 2);
+  }
+  texture.needsUpdate = true;
+
+  return (
+    <mesh position={[0, 0, z]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 function FramePreview3D({
   anchoMm,
   altoMm,
@@ -535,6 +568,7 @@ function FramePreview3D({
   frente,
   fondoColor,
   paspartuMm,
+  imagenUrl,
   shapeType,
   veta,
 }) {
@@ -615,6 +649,15 @@ function FramePreview3D({
           </mesh>
         ) : null}
 
+        {imagenUrl ? (
+          <ImageMesh
+            imageUrl={imagenUrl}
+            width={openingWidth}
+            height={openingHeight}
+            z={0.001}
+          />
+        ) : null}
+
         {paspartuScene > 0 ? (
           <>
             <mesh position={[0, innerHeight / 2 - paspartuScene / 2, 0.008]}>
@@ -653,6 +696,14 @@ export default function CotizadorMarcos() {
     `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
   );
   const [unidadMedida, setUnidadMedida] = useState("cm");
+  const [imagenUrl, setImagenUrl] = useState(null);
+
+  function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (imagenUrl) URL.revokeObjectURL(imagenUrl);
+    setImagenUrl(URL.createObjectURL(file));
+  }
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
     [form.anchoMm, form.altoMm, form.orientacion]
@@ -1150,10 +1201,30 @@ export default function CotizadorMarcos() {
                   frente={form.frente}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
                   paspartuMm={form.paspartuMm}
+                  imagenUrl={imagenUrl}
                   shapeType={selectedProfile.shape}
                   veta={selectedProfile.veta}
                 />
               </Canvas>
+            </div>
+
+            <div style={{ padding: "12px 22px 18px", display: "flex", alignItems: "center", gap: 12 }}>
+              <label style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 12, background: "#f0ece5", border: "1.5px solid #d6cfc8", fontSize: 13, fontWeight: 700, color: "#5d544b" }}>
+                <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
+                Cargar imagen
+              </label>
+              {imagenUrl && (
+                <button
+                  type="button"
+                  onClick={() => { URL.revokeObjectURL(imagenUrl); setImagenUrl(null); }}
+                  style={{ padding: "8px 14px", borderRadius: 12, background: "transparent", border: "1.5px solid #d6cfc8", fontSize: 13, fontWeight: 700, color: "#b04a2a", cursor: "pointer" }}
+                >
+                  Quitar imagen
+                </button>
+              )}
+              {imagenUrl && (
+                <span style={{ fontSize: 12, color: "#8a7457" }}>La imagen se ajusta a la apertura interior del marco.</span>
+              )}
             </div>
           </article>
 
