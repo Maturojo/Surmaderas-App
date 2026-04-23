@@ -162,11 +162,11 @@ const VIEW_CONFIG = {
     emptyMessage: "No hay notas guardadas.",
   },
   pendientes: {
-    title: "Notas pendientes",
-    subtitle: "Acá quedan las notas guardadas que todavía siguen pendientes de avance operativo.",
-    sectionTitle: "Pendientes",
-    sectionSubtitle: "Revisá rápido las notas que todavía no salieron del estado pendiente.",
-    emptyMessage: "No hay notas pendientes.",
+    title: "Notas en Proceso",
+    subtitle: "Acá están las notas enviadas a proveedor que están en proceso.",
+    sectionTitle: "En Proceso",
+    sectionSubtitle: "Notas enviadas a proveedor que todavía no se finalizaron.",
+    emptyMessage: "No hay notas en proceso.",
   },
   deposito: {
     title: "Notas en depósito",
