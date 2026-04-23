@@ -196,13 +196,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     setLoading(true);
     setErr("");
     try {
-      const [data, proveedoresData] = await Promise.all([
-        listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true }),
-        listarProveedores(),
-      ]);
+      const data = await listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true });
       const arr = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
       setItems(arr);
-      setProveedores(proveedoresData);
     } catch (e) {
       setErr(e?.message || `Error cargando ${VIEW_CONFIG[view]?.title?.toLowerCase?.() || "notas guardadas"}`);
     } finally {
@@ -212,7 +208,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [view]);
 
   async function abrirDetalle(id) {
     setOpenId(id);
@@ -239,7 +235,11 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
 
   async function abrirGestion(nota) {
     try {
-      const completa = await obtenerNotaPedido(nota._id);
+      const [completa, proveedoresData] = await Promise.all([
+        obtenerNotaPedido(nota._id),
+        proveedores.length > 0 ? Promise.resolve(proveedores) : listarProveedores(),
+      ]);
+      setProveedores(proveedoresData);
       setGestionNota(completa);
       setEstadoOperativo(completa?.estadoOperativo || "Pendiente");
             setAsignaciones(

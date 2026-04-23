@@ -126,8 +126,34 @@ export async function listarNotasPedido(req, res) {
     const l = Math.min(500, Math.max(1, Number(limit || 25)));
     const skip = (p - 1) * l;
 
+    const listSelect = [
+      "numero",
+      "fecha",
+      "entrega",
+      "cliente",
+      "vendedor",
+      "estado",
+      "estadoOperativo",
+      "proveedores",
+      "total",
+      "totales",
+      "createdAt",
+      "updatedAt",
+      "caja.guardada",
+      "caja.tipo",
+      "caja.monto",
+      "caja.subtotal",
+      "caja.descuento",
+      "caja.total",
+      "caja.adelanto",
+      "caja.resta",
+      "caja.fecha",
+      "caja.metodo",
+      "caja.nota",
+    ].join(" ");
+
     const [items, total] = await Promise.all([
-      NotaPedido.find(filter).sort({ createdAt: -1 }).skip(skip).limit(l),
+      NotaPedido.find(filter).select(listSelect).sort({ createdAt: -1 }).skip(skip).limit(l).lean(),
       NotaPedido.countDocuments(filter),
     ]);
 
