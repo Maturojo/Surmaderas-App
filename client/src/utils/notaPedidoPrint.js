@@ -644,20 +644,35 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
               ${
                 data.estadoCajaLabel
                   ? `
+                    ${
+                      data.descuentoMonto > 0
+                        ? `
+                          <div class="npw-summaryRow">
+                            <span>Total</span>
+                            <strong>$${escapeHtml(toARS(data.subtotal - data.descuentoMonto))}</strong>
+                          </div>
+                        `
+                        : ""
+                    }
+                    ${
+                      data.estaSenada && data.montoCaja > 0
+                        ? `
+                          <div class="npw-summaryRow">
+                            <span>Seña</span>
+                            <strong>$${escapeHtml(toARS(data.montoCaja))}</strong>
+                          </div>
+                        `
+                        : ""
+                    }
                     <div class="npw-summaryRow status">
                       <span>Estado</span>
                       <strong><span class="npw-statusBadge">${escapeHtml(data.estadoCajaLabel)}</span></strong>
-                      ${
-                        data.estadoCajaLabel === "Señada" && data.montoCaja > 0
-                          ? `<strong>$${escapeHtml(toARS(data.montoCaja))}</strong>`
-                          : ""
-                      }
                     </div>
                   `
                   : ""
               }
               <div class="npw-summaryTotal">
-                <span>${data.estaSenada ? "SALDO" : "TOTAL"}</span>
+                <span>${data.estaSenada ? "Saldo" : "Total"}</span>
                 <strong>$${escapeHtml(toARS(data.total))}</strong>
               </div>
             </div>
