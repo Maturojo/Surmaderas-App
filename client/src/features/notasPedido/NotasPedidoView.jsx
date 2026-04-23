@@ -1,7 +1,7 @@
 ﻿import { useMemo, useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
-import { crearNotaPedido } from "../../services/notasPedido";
+import { crearNotaPedido, listarNotasPedido } from "../../services/notasPedido";
 import { useProductos } from "./hooks/useProductos";
 import { addBusinessDays, formatDateYYYYMMDD } from "./utils/dates";
 import { toARS } from "./utils/money";
@@ -68,6 +68,33 @@ function calcularPrecioUnitarioCorte(item) {
   return formatPriceInput(areaM2 * material.precioM2);
 }
 
+function fmtDate(isoOrYmd) {
+  if (!isoOrYmd) return "-";
+  if (String(isoOrYmd).includes("-") && String(isoOrYmd).length <= 10) {
+    return String(isoOrYmd).split("-").reverse().join("/");
+  }
+  const d = new Date(isoOrYmd);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString("es-AR");
+}
+
+function getNotaClienteNombre(nota) {
+  return String(nota?.cliente?.nombre || nota?.cliente || "Sin cliente");
+}
+
+function getNotaTotal(nota) {
+  return Number(nota?.totales?.total ?? nota?.total ?? 0);
+}
+
+function getEstadoComercial(nota) {
+  const tipoCaja = String(nota?.caja?.tipo || "").toLowerCase();
+  const estado = String(nota?.estado || "").toLowerCase();
+
+  if (tipoCaja === "pago" || estado === "pagada") return "Pagada";
+  if (tipoCaja === "seña" || tipoCaja === "sena" || tipoCaja === "senia" || estado === "señada") return "Señada";
+  return "Pendiente";
+}
+
 export default function NotasPedidoView() {
   const { productos } = useProductos();
   const acItemsRef = useRef({});
@@ -85,9 +112,27 @@ export default function NotasPedidoView() {
   const [cliente, setCliente] = useState("");
   const [telefono, setTelefono] = useState("");
   const [vendedor, setVendedor] = useState("");
+  const [notasGuardadas, setNotasGuardadas] = useState([]);
+  const [seguimientoLoading, setSeguimientoLoading] = useState(true);
+  const [seguimientoError, setSeguimientoError] = useState("");
 
   const [items, setItems] = useState([{ ...emptyItem }]);
   const telefonoValido = isTelefonoValido(telefono);
+
+  async function loadSeguimiento() {
+    setSeguimientoLoading(true);
+    setSeguimientoError("");
+
+    try {
+      const data = await listarNotasPedido({ q: "", page: 1, limit: 300, guardada: true });
+      const arr = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+      setNotasGuardadas(arr);
+    } catch (e) {
+      setSeguimientoError(e?.message || "No se pudieron cargar las notas de seguimiento");
+    } finally {
+      setSeguimientoLoading(false);
+    }
+  }
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -125,6 +170,10 @@ export default function NotasPedidoView() {
     });
   }, [items]);
 
+  useEffect(() => {
+    loadSeguimiento();
+  }, []);
+
   const subtotal = useMemo(
     () =>
       items.reduce((acc, it) => {
@@ -136,6 +185,14 @@ export default function NotasPedidoView() {
   );
 
   const totalFinal = subtotal;
+  const notasEnProceso = useMemo(
+    () => notasGuardadas.filter((nota) => nota?.estadoOperativo === "En taller"),
+    [notasGuardadas]
+  );
+  const notasEnDeposito = useMemo(
+    () => notasGuardadas.filter((nota) => nota?.estadoOperativo === "Finalizado"),
+    [notasGuardadas]
+  );
 
   function resetGenerador() {
     setFecha(formatDateYYYYMMDD(new Date()));
@@ -278,6 +335,7 @@ export default function NotasPedidoView() {
       await crearNotaPedido(payload);
 
       resetGenerador();
+      await loadSeguimiento();
 
       await Swal.fire({
         icon: "success",
@@ -562,6 +620,101 @@ export default function NotasPedidoView() {
           <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
             {guardando ? "Guardando..." : "Guardar Nota"}
           </button>
+        </div>
+
+        <div className="np-sectionCard np-sectionCard--tracking">
+          <div className="np-sectionHead np-sectionHead--tracking">
+            <div>
+              <h2 className="np-section-title">Seguimiento de notas</h2>
+              <span className="np-sectionHint">
+                Estos dos bloques quedan aparte del generador, pero dentro del módulo de notas de pedido.
+              </span>
+            </div>
+            <button
+              className="np-btn np-btn-secondary np-btn-secondary--compact"
+              type="button"
+              onClick={loadSeguimiento}
+              disabled={seguimientoLoading}
+            >
+              {seguimientoLoading ? "Actualizando..." : "Actualizar"}
+            </button>
+          </div>
+
+          {seguimientoError ? <div className="np-trackingError">{seguimientoError}</div> : null}
+
+          <div className="np-trackingGrid">
+            <section className="np-trackingPanel">
+              <div className="np-trackingPanelHead">
+                <div>
+                  <h3 className="np-trackingTitle">Notas en proceso</h3>
+                  <p className="np-trackingCopy">Las notas que ya entraron a taller se siguen desde acá.</p>
+                </div>
+                <span className="np-trackingCount">{notasEnProceso.length}</span>
+              </div>
+
+              <div className="np-trackingList">
+                {seguimientoLoading ? (
+                  <div className="np-trackingEmpty">Cargando...</div>
+                ) : notasEnProceso.length === 0 ? (
+                  <div className="np-trackingEmpty">Todavía no hay notas en proceso.</div>
+                ) : (
+                  notasEnProceso.map((nota) => (
+                    <article className="np-trackItem" key={`proceso-${nota?._id || nota?.numero}`}>
+                      <div className="np-trackTop">
+                        <strong className="np-trackNumber">{nota?.numero || "-"}</strong>
+                        <span className="np-trackBadge np-trackBadge--process">{getEstadoComercial(nota)}</span>
+                      </div>
+                      <div className="np-trackMeta">
+                        <span>{getNotaClienteNombre(nota)}</span>
+                        <span>Entrega: {fmtDate(nota?.entrega)}</span>
+                        <span>Vendedor: {nota?.vendedor || "-"}</span>
+                      </div>
+                      <div className="np-trackBottom">
+                        <span className="np-trackState">En taller</span>
+                        <strong className="np-trackTotal">${toARS(getNotaTotal(nota))}</strong>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="np-trackingPanel">
+              <div className="np-trackingPanelHead">
+                <div>
+                  <h3 className="np-trackingTitle">Notas en depósito</h3>
+                  <p className="np-trackingCopy">Las notas finalizadas y listas para entrega quedan acá.</p>
+                </div>
+                <span className="np-trackingCount">{notasEnDeposito.length}</span>
+              </div>
+
+              <div className="np-trackingList">
+                {seguimientoLoading ? (
+                  <div className="np-trackingEmpty">Cargando...</div>
+                ) : notasEnDeposito.length === 0 ? (
+                  <div className="np-trackingEmpty">Todavía no hay notas en depósito.</div>
+                ) : (
+                  notasEnDeposito.map((nota) => (
+                    <article className="np-trackItem" key={`deposito-${nota?._id || nota?.numero}`}>
+                      <div className="np-trackTop">
+                        <strong className="np-trackNumber">{nota?.numero || "-"}</strong>
+                        <span className="np-trackBadge np-trackBadge--deposit">{getEstadoComercial(nota)}</span>
+                      </div>
+                      <div className="np-trackMeta">
+                        <span>{getNotaClienteNombre(nota)}</span>
+                        <span>Entrega: {fmtDate(nota?.entrega)}</span>
+                        <span>Vendedor: {nota?.vendedor || "-"}</span>
+                      </div>
+                      <div className="np-trackBottom">
+                        <span className="np-trackState">En depósito</span>
+                        <strong className="np-trackTotal">${toARS(getNotaTotal(nota))}</strong>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </div>
