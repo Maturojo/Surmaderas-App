@@ -355,6 +355,14 @@ function buildStyles() {
       letter-spacing: 0.01em;
       text-align: left;
     }
+    .npw-vendedor {
+      font-size: 3.8mm;
+      line-height: 1.08;
+      font-weight: 700;
+      color: #6f614f;
+      margin-top: 0.8mm;
+      text-align: left;
+    }
     .npw-clientDivider {
       width: 0.3mm;
       align-self: stretch;
@@ -578,6 +586,11 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
                       ${
                         data.showClientDetails
                           ? `<div class="npw-clientPhone">${escapeHtml(formatPhonePreview(data.clienteTelefono))}</div>`
+                          : ""
+                      }
+                      ${
+                        data.vendedor
+                          ? `<div class="npw-vendedor">Vendedor: ${escapeHtml(data.vendedor)}</div>`
                           : ""
                       }
                     </div>
