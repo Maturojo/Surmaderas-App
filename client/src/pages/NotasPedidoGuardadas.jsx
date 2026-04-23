@@ -141,7 +141,32 @@ async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, e
   });
 }
 
-export default function NotasPedidoGuardadas() {
+const VIEW_CONFIG = {
+  all: {
+    title: "Notas guardadas",
+    subtitle:
+      "Organizá qué sale al taller, qué va a proveedores y qué ya quedó finalizado sin perder de vista el estado comercial de cada pedido.",
+    sectionTitle: "Plan del día",
+    sectionSubtitle: "Visualizá rápido destino, estado operativo y total de cada nota.",
+    emptyMessage: "No hay notas guardadas.",
+  },
+  pendientes: {
+    title: "Notas pendientes",
+    subtitle: "Acá quedan las notas guardadas que todavía siguen pendientes de avance operativo.",
+    sectionTitle: "Pendientes",
+    sectionSubtitle: "Revisá rápido las notas que todavía no salieron del estado pendiente.",
+    emptyMessage: "No hay notas pendientes.",
+  },
+  deposito: {
+    title: "Notas en depósito",
+    subtitle: "Acá ves las notas finalizadas que ya quedaron listas en depósito.",
+    sectionTitle: "Depósito",
+    sectionSubtitle: "Listado de notas que ya terminaron su circuito operativo.",
+    emptyMessage: "No hay notas en depósito.",
+  },
+};
+
+export default function NotasPedidoGuardadas({ view = "all" }) {
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -179,7 +204,7 @@ export default function NotasPedidoGuardadas() {
       setItems(arr);
       setProveedores(proveedoresData);
     } catch (e) {
-      setErr(e?.message || "Error cargando notas guardadas");
+      setErr(e?.message || `Error cargando ${VIEW_CONFIG[view]?.title?.toLowerCase?.() || "notas guardadas"}`);
     } finally {
       setLoading(false);
     }
@@ -318,7 +343,13 @@ export default function NotasPedidoGuardadas() {
 
   const guardadas = useMemo(() => {
     const qq = q.trim().toLowerCase();
-    return items
+    const filteredByView = items.filter((n) => {
+      if (view === "pendientes") return (n?.estadoOperativo || "Pendiente") === "Pendiente";
+      if (view === "deposito") return n?.estadoOperativo === "Finalizado";
+      return true;
+    });
+
+    return filteredByView
       .filter((n) => {
         if (!qq) return true;
         return (
@@ -336,7 +367,7 @@ export default function NotasPedidoGuardadas() {
         const db = new Date(b?.caja?.fecha || b?.updatedAt || 0).getTime();
         return db - da;
       });
-  }, [items, q]);
+  }, [items, q, view]);
 
   const resumen = useMemo(() => {
     const totalNotas = guardadas.length;
@@ -350,6 +381,8 @@ export default function NotasPedidoGuardadas() {
     () => guardadas.filter((item) => item?.estadoOperativo === "Enviado a proveedor"),
     [guardadas]
   );
+
+  const copy = VIEW_CONFIG[view] || VIEW_CONFIG.all;
 
   async function borrarNota(nota) {
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
@@ -546,11 +579,8 @@ export default function NotasPedidoGuardadas() {
       <section className="ng-hero">
         <div className="ng-heroCopy">
           <span className="ng-kicker">Caja y planificación</span>
-          <h1 className="ng-title">Notas guardadas</h1>
-          <p className="ng-subtitle">
-            Organizá qué sale al taller, qué va a proveedores y qué ya quedó finalizado sin perder
-            de vista el estado comercial de cada pedido.
-          </p>
+          <h1 className="ng-title">{copy.title}</h1>
+          <p className="ng-subtitle">{copy.subtitle}</p>
         </div>
         <div className="ng-stats">
           <article className="ng-statCard">
@@ -598,8 +628,8 @@ export default function NotasPedidoGuardadas() {
       <section className="ng-tableCard">
         <div className="ng-tableHead">
           <div>
-            <h2 className="ng-sectionTitle">Plan del día</h2>
-            <p className="ng-sectionSub">Visualizá rápido destino, estado operativo y total de cada nota.</p>
+            <h2 className="ng-sectionTitle">{copy.sectionTitle}</h2>
+            <p className="ng-sectionSub">{copy.sectionSubtitle}</p>
           </div>
           <div className="ng-resultsPill">
             {guardadas.length} {guardadas.length === 1 ? "nota" : "notas"}
@@ -627,7 +657,7 @@ export default function NotasPedidoGuardadas() {
             {loading ? (
               <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
             ) : guardadas.length === 0 ? (
-              <tr><td className="ng-tableMessage" colSpan={10}>No hay notas guardadas.</td></tr>
+              <tr><td className="ng-tableMessage" colSpan={10}>{copy.emptyMessage}</td></tr>
             ) : (
               guardadas.map((n) => (
                 <tr key={n?._id || n?.id || n?.numero}>
@@ -690,6 +720,7 @@ export default function NotasPedidoGuardadas() {
         </div>
       </section>
 
+      {view === "all" ? (
       <section className="ng-tableCard ng-tableCard--provider">
         <div className="ng-tableHead">
           <div>
@@ -778,6 +809,7 @@ export default function NotasPedidoGuardadas() {
           </table>
         </div>
       </section>
+      ) : null}
 
       {gestionOpen && gestionNota ? (
         <div className="ng-modalBack">

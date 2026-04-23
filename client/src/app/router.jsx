@@ -18,6 +18,8 @@ import TurneroSettings from "../pages/TurneroSettings.jsx";
 import ChatInterno from "../pages/ChatInterno.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
+import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
+import NotasPedidoDeposito from "../pages/NotasPedidoDeposito";
 import PresupuestosGenerar from "../pages/PresupuestosGenerar";
 import PresupuestosEnviar from "../pages/PresupuestosEnviar";
 import PresupuestosGuardadas from "../pages/PresupuestosGuardadas";
@@ -62,6 +64,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "taller"]}>
             <NotasPedidoGuardadas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "notas-pedido/pendientes",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <NotasPedidoPendientes />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "notas-pedido/deposito",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+            <NotasPedidoDeposito />
           </ProtectedRoute>
         ),
       },
