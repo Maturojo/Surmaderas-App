@@ -13,7 +13,7 @@ const NAV_ITEMS = [
       { label: "Generador", to: "/notas-pedido" },
       { label: "Listado de notas", to: "/notas-pedido/listado" },
       { label: "Notas guardadas", to: "/notas-pedido/guardadas" },
-      { label: "Notas pendientes", to: "/notas-pedido/pendientes" },
+      { label: "Notas en Proceso", to: "/notas-pedido/pendientes" },
       { label: "Notas en deposito", to: "/notas-pedido/deposito" },
     ],
   },
