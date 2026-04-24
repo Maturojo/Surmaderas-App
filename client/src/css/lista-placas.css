@@ -411,6 +411,42 @@
   text-align: right;
 }
 
+@media (max-width: 480px) {
+  .placas-hero {
+    padding: 14px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .placas-section {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .placas-toolbar {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .placas-sectionHeader h2 {
+    font-size: 20px;
+  }
+
+  .placas-actionBtn {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .placas-filter {
+    min-height: 40px;
+  }
+
+  .placas-configCard {
+    padding: 12px;
+    border-radius: 16px;
+  }
+}
+
 @media (max-width: 900px) {
   .placas-hero {
     grid-template-columns: 1fr;

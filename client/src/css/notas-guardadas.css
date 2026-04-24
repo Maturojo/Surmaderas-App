@@ -1178,3 +1178,56 @@
     justify-content: flex-start;
   }
 }
+
+@media (max-width: 480px) {
+  .ng-hero {
+    padding: 14px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .ng-title {
+    font-size: 24px;
+  }
+
+  .ng-tableCard {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .ng-sectionTitle {
+    font-size: 18px;
+  }
+
+  .ng-modal {
+    padding: 14px;
+    border-radius: 20px;
+    max-height: calc(100dvh - 20px);
+  }
+
+  .ng-modalBack {
+    padding: 10px;
+  }
+
+  .ng-providerModal {
+    padding: 14px;
+    border-radius: 20px;
+    max-height: calc(100dvh - 20px);
+  }
+
+  .ng-providerModalBack {
+    padding: 10px;
+  }
+
+  .ng-providerModalNote {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ng-tableBtn {
+    min-height: 40px;
+  }
+
+  .ng-quickActions {
+    grid-template-columns: 1fr;
+  }
+}
