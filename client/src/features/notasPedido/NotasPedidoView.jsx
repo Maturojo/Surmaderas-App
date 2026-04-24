@@ -362,7 +362,7 @@ export default function NotasPedidoView() {
       case "marco":
         return <MarcoFields it={it} setData={(patch) => setItemData(idx, patch)} />;
       case "calado":
-        return <CaladoFields it={it} setData={(patch) => setItemData(idx, patch)} />;
+        return <CaladoFields it={it} productos={productos} setData={(patch) => setItemData(idx, patch)} />;
       case "mueble":
         return <MuebleFields it={it} setData={(patch) => setItemData(idx, patch)} />;
       case "prestamo":

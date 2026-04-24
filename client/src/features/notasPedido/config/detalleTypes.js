@@ -4,7 +4,7 @@ export function buildDescripcionFromItem(item) {
   const tipo = item?.tipo || DEFAULT_TIPO;
   const d = item?.data || {};
 
-  // Prioridad: si el usuario escribió descripcion manual, úsala.
+  // Prioridad: si el usuario escribio descripcion manual, usala.
   const manual = (item?.descripcion || "").trim();
   if (manual) return manual;
 
@@ -34,10 +34,12 @@ export function buildDescripcionFromItem(item) {
 
   if (tipo === "calado") {
     const mat = d.material || "Material";
-    const dis = d.diseno || "Diseño";
-    const horas = d.horas ? `${d.horas} hs` : "";
+    const diseno = d.diseno || "";
+    const largo = d.largoCm ? `${d.largoCm}cm` : "";
+    const ancho = d.anchoCm ? `${d.anchoCm}cm` : "";
+    const medidas = [largo, ancho].filter(Boolean).join(" x ") || d.medidas || "";
     const obs = d.obs ? ` - ${d.obs}` : "";
-    return `Calado - ${mat} - ${dis}${horas ? " (" + horas + ")" : ""}${obs}`.trim();
+    return `Calado - ${mat}${diseno ? " - " + diseno : ""}${medidas ? " - " + medidas : ""}${obs}`.trim();
   }
 
   if (tipo === "mueble") {
@@ -49,11 +51,11 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "prestamo") {
-    const desc = d.descripcion || "Préstamo";
+    const desc = d.descripcion || "Prestamo";
     const dev = d.fechaDevolucion ? ` (Dev: ${d.fechaDevolucion})` : "";
     const obs = d.obs ? ` - ${d.obs}` : "";
     return `${desc}${dev}${obs}`.trim();
   }
 
-  return "Ítem";
+  return "Item";
 }
