@@ -754,7 +754,7 @@ export default function CotizadorMarcos() {
       ["Cantidad", String(cantidadVal)],
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
-      ["Paspartu", paspartuVal > 0 ? `${paspartuVal} mm · ${selectedPaspartuColor.nombre}` : "No"],
+      ["Paspartu", paspartuVal > 0 ? `${formatDimensionCm(paspartuVal)} · ${selectedPaspartuColor.nombre}` : "No"],
       ["Pintado", selectedPintado.nombre],
       ["Total estimado", quote.pricingEnabled ? formatCurrency(quote.total) : "Pendiente de seleccionar varilla", true],
     ];
@@ -1290,12 +1290,12 @@ export default function CotizadorMarcos() {
               <div style={twoColumnGridStyle}>
                 <NumberField
                   label="Paspartu"
-                  value={form.paspartuMm}
-                  onChange={(e) => setField("paspartuMm", e.target.value)}
+                  value={form.paspartuMm / 10}
+                  onChange={(e) => setField("paspartuMm", (parseFloat(e.target.value || 0) * 10).toString())}
                   min={0}
-                  step={1}
-                  suffix="mm"
-                  helper="Ingresa el ancho visible del paspartu."
+                  step={0.1}
+                  suffix="cm"
+                  helper="Ingresa el ancho visible del paspartu en centimetros."
                 />
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
@@ -1488,7 +1488,7 @@ export default function CotizadorMarcos() {
               <SummaryRow label={`${selectedFondo.nombre} m2`} value={`${formatNumber(quote.fondoAreaM2)} m2`} />
               <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalFondo) : "-"} />
               <SummaryRow
-                label={`Paspartu (${formatNumber(clampPositiveNumber(form.paspartuMm, 0), 0)} mm)`}
+                label={`Paspartu (${formatDimensionCm(clampPositiveNumber(form.paspartuMm, 0))})`}
                 value={quote.pricingEnabled ? `${selectedPaspartuColor.nombre} · ${formatNumber(quote.paspartuAreaM2)} m2 / ${formatCurrency(quote.subtotalPaspartu)}` : `${selectedPaspartuColor.nombre} · ${formatNumber(quote.paspartuAreaM2)} m2 / -`}
               />
               <SummaryRow label={`Pintado (${selectedPintado.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalPintado) : "-"} />
