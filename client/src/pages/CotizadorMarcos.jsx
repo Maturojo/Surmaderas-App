@@ -751,6 +751,10 @@ export default function CotizadorMarcos() {
   }
 
   function handlePrint() {
+    if (!quote.pricingEnabled) {
+      return;
+    }
+
     const imageDataUrl = glRef ? glRef.domElement.toDataURL("image/png") : null;
     const lines = buildSummaryLines();
     const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
@@ -1466,7 +1470,19 @@ export default function CotizadorMarcos() {
             <button
               type="button"
               onClick={handlePrint}
-              style={{ padding: "14px 0", borderRadius: 16, background: "#2d241c", color: "#fffaf3", border: "none", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: "0.02em" }}
+              disabled={!quote.pricingEnabled}
+              style={{
+                padding: "14px 0",
+                borderRadius: 16,
+                background: quote.pricingEnabled ? "#2d241c" : "#bfb6aa",
+                color: "#fffaf3",
+                border: "none",
+                fontSize: 15,
+                fontWeight: 800,
+                cursor: quote.pricingEnabled ? "pointer" : "not-allowed",
+                letterSpacing: "0.02em",
+                opacity: quote.pricingEnabled ? 1 : 0.72,
+              }}
             >
               Imprimir presupuesto
             </button>
