@@ -762,30 +762,64 @@ export default function CotizadorMarcos() {
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     @page{size:A4 portrait;margin:10mm}
-    body{font-family:system-ui,sans-serif;padding:0;color:#1a1a1a;background:#fff}
-    .sheet{width:190mm;min-height:125mm;margin:0 auto;padding:6mm 7mm 4mm;border-bottom:1.2px dashed #cfc6ba}
-    h1{font-size:18px;font-weight:900;margin-bottom:2px}
-    .sub{color:#666;font-size:10px;margin-bottom:12px}
-    .render{display:block;width:100%;max-width:64mm;max-height:38mm;object-fit:contain;margin:0 auto 8px;border-radius:10px;box-shadow:0 3px 16px rgba(0,0,0,.12)}
-    table{width:100%;border-collapse:collapse;margin-top:4px}
-    tr:nth-child(even){background:#f7f4f0}
-    td{padding:5px 8px;font-size:11px;vertical-align:top}
-    td:first-child{color:#5d544b;font-weight:600;width:55%}
-    td:last-child{font-weight:700;text-align:right}
-    .total td{font-size:14px;font-weight:900;border-top:2px solid #2d241c;padding-top:8px}
+    body{font-family:system-ui,sans-serif;padding:0;color:#2a211a;background:#fff7ef}
+    .sheet{width:190mm;min-height:125mm;margin:0 auto;padding:0 0 5mm;border-bottom:1.2px dashed #cfc6ba}
+    .card{background:linear-gradient(180deg,#fffdf9 0%,#fff7ee 100%);border:1px solid #e2d7c9;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(92,74,50,.08)}
+    .header{display:flex;justify-content:space-between;gap:12px;padding:10mm 10mm 7mm;background:linear-gradient(135deg,#2f241b 0%,#594332 100%);color:#fff8f0}
+    .brand{display:grid;gap:3px}
+    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
+    h1{font-size:20px;font-weight:900;line-height:1}
+    .sub{font-size:10px;opacity:.8}
+    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;border-radius:14px;background:rgba(255,248,240,.12);border:1px solid rgba(255,248,240,.18)}
+    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+    .meta-value{font-size:12px;font-weight:800}
+    .body{display:grid;grid-template-columns:${imageDataUrl ? "70mm 1fr" : "1fr"};gap:10px;padding:9mm 10mm 8mm}
+    .preview{display:${imageDataUrl ? "grid" : "none"};gap:6px;align-content:start}
+    .preview-card{background:#f4ece2;border:1px solid #e3d8ca;border-radius:14px;padding:8px}
+    .preview-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8a7457;margin-bottom:6px}
+    .render{display:block;width:100%;height:42mm;object-fit:contain;border-radius:10px;background:#fffdf9;box-shadow:inset 0 0 0 1px rgba(122,96,68,.08)}
+    table{width:100%;border-collapse:separate;border-spacing:0 5px}
+    tr{background:#f7f1e8}
+    td{padding:6px 9px;font-size:11px;vertical-align:top}
+    td:first-child{color:#6b5d4f;font-weight:700;width:54%;border-radius:10px 0 0 10px}
+    td:last-child{font-weight:800;text-align:right;color:#2d241c;border-radius:0 10px 10px 0}
+    .total{background:#2f241b}
+    .total td{font-size:14px;font-weight:900;color:#fff8f0;padding-top:9px;padding-bottom:9px}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{break-inside:avoid}}
   </style>
 </head>
 <body>
   <div class="sheet">
-  <h1>Presupuesto de Marco</h1>
-  <p class="sub">Sur Maderas &mdash; ${fecha}</p>
-  ${imageDataUrl ? `<img class="render" src="${imageDataUrl}" />` : ""}
-  <table>
-    ${lines.map(([label, value, strong]) =>
-      `<tr class="${strong ? "total" : ""}"><td>${label}</td><td>${value}</td></tr>`
-    ).join("")}
-  </table>
+    <div class="card">
+      <div class="header">
+        <div class="brand">
+          <div class="eyebrow">Sur Maderas</div>
+          <h1>Presupuesto de Marco</h1>
+          <p class="sub">Cotizacion rapida para cliente</p>
+        </div>
+        <div class="meta">
+          <div>
+            <div class="meta-label">Fecha</div>
+            <div class="meta-value">${fecha}</div>
+          </div>
+        </div>
+      </div>
+      <div class="body">
+        ${imageDataUrl ? `<div class="preview">
+          <div class="preview-card">
+            <div class="preview-label">Vista del marco</div>
+            <img class="render" src="${imageDataUrl}" />
+          </div>
+        </div>` : ""}
+        <div>
+          <table>
+            ${lines.map(([label, value, strong]) =>
+              `<tr class="${strong ? "total" : ""}"><td>${label}</td><td>${value}</td></tr>`
+            ).join("")}
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>`;
