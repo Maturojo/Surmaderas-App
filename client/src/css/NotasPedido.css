@@ -953,7 +953,7 @@
 
 @media (max-width: 980px) {
   .np-card {
-    padding: 20px;
+    padding: 16px;
     border-radius: 22px;
   }
 
@@ -968,7 +968,101 @@
   }
 
   .np-stat {
-    flex: 1 1 150px;
+    flex: 1 1 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .np-page {
+    padding: 12px 8px 32px;
+  }
+
+  .np-card {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .np-hero {
+    padding: 14px;
+    border-radius: 18px;
+    margin-bottom: 14px;
+    gap: 12px;
+  }
+
+  .np-title {
+    font-size: 24px;
+  }
+
+  .np-kicker {
+    font-size: 11px;
+  }
+
+  .np-sectionCard {
+    padding: 14px;
+    border-radius: 18px;
+    margin-top: 12px;
+  }
+
+  .np-sectionHead {
+    margin-bottom: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .np-section-title {
+    font-size: 16px;
+  }
+
+  .np-stat {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    padding: 10px 12px;
+  }
+
+  .np-statValue {
+    font-size: 18px;
+  }
+
+  .np-grid-2 {
+    gap: 14px;
+  }
+
+  .np-item-row {
+    padding: 10px;
+    border-radius: 14px;
+    gap: 8px;
+  }
+
+  .np-fields-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .np-fields-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .np-corte-top {
+    grid-template-columns: 1fr;
+  }
+
+  .np-btn {
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  .np-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .np-totals {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .np-trackingGrid {
+    grid-template-columns: 1fr;
   }
 }
 

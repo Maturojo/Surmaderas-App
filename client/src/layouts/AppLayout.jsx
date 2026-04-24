@@ -3,6 +3,16 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
 import ChatInternoWidget from "../features/chat/components/ChatInternoWidget";
 
+function HamburgerIcon({ open }) {
+  return (
+    <span className={`app-hamburgerIcon${open ? " is-open" : ""}`} aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </span>
+  );
+}
+
 const NAV_ITEMS = [
   { label: "Dashboard", to: "/dashboard", icon: "dashboard" },
   { label: "Calendario", to: "/calendario", icon: "calendar" },
@@ -158,6 +168,7 @@ export default function AppLayout() {
   const userName = auth?.user?.username || auth?.user?.name || "Equipo Sur Maderas";
   const userRole = auth?.user?.role;
   const [openGroups, setOpenGroups] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
@@ -203,6 +214,23 @@ export default function AppLayout() {
   function toggleGroup(label) {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   }
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") setSidebarOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
 
   useEffect(() => {
     function unlockSound() {
@@ -272,8 +300,25 @@ export default function AppLayout() {
   }, [chatUnreadCount, hasUnlockedSound]);
 
   return (
+    <>
+    <header className="app-mobileHeader">
+      <button
+        className="app-hamburger"
+        onClick={() => setSidebarOpen((v) => !v)}
+        aria-label={sidebarOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={sidebarOpen}
+      >
+        <HamburgerIcon open={sidebarOpen} />
+      </button>
+      <img className="app-mobileLogo" src="/logo-sur-maderas.png" alt="Sur Maderas" />
+      <span className="app-mobileTitle">Sur Maderas</span>
+    </header>
+
     <div className="app-shell">
-      <aside className="app-sidebar">
+      {sidebarOpen && (
+        <div className="app-sidebarOverlay" onClick={() => setSidebarOpen(false)} />
+      )}
+      <aside className={`app-sidebar${sidebarOpen ? " is-open" : ""}`}>
         <div className="app-brand">
           <div className="app-brandRow">
             <img className="app-brandLogo" src="/logo-sur-maderas.png" alt="Sur Maderas" />
@@ -374,5 +419,6 @@ export default function AppLayout() {
         <ChatInternoWidget unreadCount={chatUnreadCount} onUnreadChange={setChatUnreadCount} />
       ) : null}
     </div>
+    </>
   );
 }

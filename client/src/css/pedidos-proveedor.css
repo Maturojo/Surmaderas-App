@@ -572,3 +572,59 @@
     grid-column: auto;
   }
 }
+
+@media (max-width: 480px) {
+  .pp-hero {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .pp-title {
+    font-size: 26px;
+  }
+
+  .pp-formCard,
+  .pp-listCard {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .pp-orderCard {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .pp-addBtn,
+  .pp-removeBtn,
+  .pp-submitBtn,
+  .pp-deleteBtn,
+  .pp-viewBtn,
+  .pp-whatsappBtn,
+  .pp-newBtn {
+    min-height: 48px;
+  }
+
+  .pp-orderActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pp-orderActions > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pp-sectionBlock {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .pp-modalOverlay {
+    padding: 10px;
+  }
+
+  .pp-modalCard {
+    border-radius: 20px;
+    max-height: calc(100dvh - 20px);
+  }
+}
