@@ -761,19 +761,19 @@ export default function CotizadorMarcos() {
   <title>Presupuesto de Marco</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    @page{size:A5 portrait;margin:8mm}
+    @page{size:A4 portrait;margin:10mm}
     body{font-family:system-ui,sans-serif;padding:0;color:#1a1a1a;background:#fff}
-    .sheet{width:132mm;min-height:190mm;margin:0 auto;padding:8mm 7mm}
+    .sheet{width:190mm;min-height:125mm;margin:0 auto;padding:6mm 7mm 4mm;border-bottom:1.2px dashed #cfc6ba}
     h1{font-size:18px;font-weight:900;margin-bottom:2px}
     .sub{color:#666;font-size:10px;margin-bottom:12px}
-    .render{display:block;width:100%;max-width:72mm;max-height:46mm;object-fit:contain;margin:0 auto 10px;border-radius:10px;box-shadow:0 3px 16px rgba(0,0,0,.12)}
+    .render{display:block;width:100%;max-width:64mm;max-height:38mm;object-fit:contain;margin:0 auto 8px;border-radius:10px;box-shadow:0 3px 16px rgba(0,0,0,.12)}
     table{width:100%;border-collapse:collapse;margin-top:4px}
     tr:nth-child(even){background:#f7f4f0}
     td{padding:5px 8px;font-size:11px;vertical-align:top}
     td:first-child{color:#5d544b;font-weight:600;width:55%}
     td:last-child{font-weight:700;text-align:right}
     .total td{font-size:14px;font-weight:900;border-top:2px solid #2d241c;padding-top:8px}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{break-inside:avoid}}
   </style>
 </head>
 <body>
