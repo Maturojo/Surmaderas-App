@@ -129,8 +129,20 @@ const PINTADO_OPTIONS = [
   { id: "dorado", nombre: "Dorado", color: "#c7a459", extra: 14200 },
 ];
 
+const EMPTY_PROFILE = {
+  id: "",
+  codigo: "",
+  nombre: "Sin seleccionar",
+  precioMetro: 0,
+  frenteMm: 30,
+  profundidadMm: 18,
+  color: "#b78a52",
+  shape: "box",
+  veta: "#d7b079",
+};
+
 const INITIAL_FORM = {
-  profileId: INITIAL_PROFILES[0].id,
+  profileId: "",
   anchoMm: 700,
   altoMm: 1000,
   cantidad: 1,
@@ -156,6 +168,10 @@ function formatNumber(value, digits = 2) {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
+}
+
+function formatDimensionCm(mmValue, digits = 1) {
+  return `${formatNumber(clampPositiveNumber(mmValue, 0) / 10, digits)} cm`;
 }
 
 function clampPositiveNumber(value, fallback = 0) {
@@ -701,9 +717,7 @@ function FramePreview3D({
 
 export default function CotizadorMarcos() {
   const [form, setForm] = useState(INITIAL_FORM);
-  const [varillaSearch, setVarillaSearch] = useState(
-    `${INITIAL_PROFILES[0].codigo} - ${INITIAL_PROFILES[0].nombre}`
-  );
+  const [varillaSearch, setVarillaSearch] = useState("");
   const [presetSizeId, setPresetSizeId] = useState("personalizada");
   const [unidadMedida, setUnidadMedida] = useState("cm");
   const [imagenUrl, setImagenUrl] = useState(null);
@@ -722,11 +736,11 @@ export default function CotizadorMarcos() {
     const paspartuVal = clampPositiveNumber(form.paspartuMm, 0);
     const cantidadVal = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
     return [
-      ["Varilla seleccionada", `${selectedProfile.codigo} - ${selectedProfile.nombre}`],
-      ["Ancho de varilla", `${selectedProfile.frenteMm} mm`],
+      ["Varilla seleccionada", selectedProfile ? `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` : "Sin seleccionar"],
+      ["Ancho de varilla", selectedProfile ? formatDimensionCm(effectiveProfile.frenteMm) : "-"],
       ["Orientacion visual", form.orientacion === "horizontal" ? "Horizontal" : "Vertical"],
       ["Tipo de medida", form.tipoMedida === "interior" ? "Interior" : "Exterior"],
-      ["Medida cargada", `${quote.inputAnchoMm} x ${quote.inputAltoMm} mm`],
+      ["Medida cargada", `${formatDimensionCm(quote.inputAnchoMm)} x ${formatDimensionCm(quote.inputAltoMm)}`],
       ["Cantidad", String(cantidadVal)],
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
@@ -747,20 +761,23 @@ export default function CotizadorMarcos() {
   <title>Presupuesto de Marco</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:system-ui,sans-serif;padding:32px;color:#1a1a1a;max-width:680px;margin:0 auto}
-    h1{font-size:26px;font-weight:900;margin-bottom:4px}
-    .sub{color:#666;font-size:13px;margin-bottom:28px}
-    .render{display:block;width:100%;max-width:400px;margin:0 auto 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.14)}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
+    @page{size:A5 portrait;margin:8mm}
+    body{font-family:system-ui,sans-serif;padding:0;color:#1a1a1a;background:#fff}
+    .sheet{width:132mm;min-height:190mm;margin:0 auto;padding:8mm 7mm}
+    h1{font-size:18px;font-weight:900;margin-bottom:2px}
+    .sub{color:#666;font-size:10px;margin-bottom:12px}
+    .render{display:block;width:100%;max-width:72mm;max-height:46mm;object-fit:contain;margin:0 auto 10px;border-radius:10px;box-shadow:0 3px 16px rgba(0,0,0,.12)}
+    table{width:100%;border-collapse:collapse;margin-top:4px}
     tr:nth-child(even){background:#f7f4f0}
-    td{padding:9px 14px;font-size:14px}
+    td{padding:5px 8px;font-size:11px;vertical-align:top}
     td:first-child{color:#5d544b;font-weight:600;width:55%}
     td:last-child{font-weight:700;text-align:right}
-    .total td{font-size:18px;font-weight:900;border-top:2.5px solid #2d241c;padding-top:14px;margin-top:6px}
-    @media print{body{padding:16px}}
+    .total td{font-size:14px;font-weight:900;border-top:2px solid #2d241c;padding-top:8px}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
   </style>
 </head>
 <body>
+  <div class="sheet">
   <h1>Presupuesto de Marco</h1>
   <p class="sub">Sur Maderas &mdash; ${fecha}</p>
   ${imageDataUrl ? `<img class="render" src="${imageDataUrl}" />` : ""}
@@ -769,6 +786,7 @@ export default function CotizadorMarcos() {
       `<tr class="${strong ? "total" : ""}"><td>${label}</td><td>${value}</td></tr>`
     ).join("")}
   </table>
+  </div>
 </body>
 </html>`;
     const win = window.open("", "_blank");
@@ -794,9 +812,10 @@ export default function CotizadorMarcos() {
   );
 
   const selectedProfile = useMemo(
-    () => INITIAL_PROFILES.find((profile) => profile.id === form.profileId) || INITIAL_PROFILES[0],
+    () => INITIAL_PROFILES.find((profile) => profile.id === form.profileId) || null,
     [form.profileId]
   );
+  const effectiveProfile = selectedProfile || EMPTY_PROFILE;
   const filteredProfiles = useMemo(() => {
     const query = varillaSearch.trim().toLowerCase();
 
@@ -818,8 +837,8 @@ export default function CotizadorMarcos() {
     () => PINTADO_OPTIONS.find((option) => option.id === form.pintadoId) || PINTADO_OPTIONS[0],
     [form.pintadoId]
   );
-  const frameColor = selectedPintado.color || selectedProfile.color;
-  const normalizedFaceMm = clampPositiveNumber(selectedProfile.frenteMm, 0);
+  const frameColor = selectedPintado.color || effectiveProfile.color;
+  const normalizedFaceMm = clampPositiveNumber(effectiveProfile.frenteMm, 0);
   const espejoSinFondo =
     form.frente === "espejo" &&
     normalizedDimensions.ancho <= 1200 &&
@@ -851,7 +870,7 @@ export default function CotizadorMarcos() {
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
-    const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(selectedProfile.precioMetro, 0);
+    const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(effectiveProfile.precioMetro, 0);
 
     const frentePrecioM2 = form.frente === "espejo" ? MIRROR_PRICE_M2 : form.frente === "vidrio" ? GLASS_PRICE_M2 : 0;
     const subtotalVidrio = frenteAreaM2 * cantidad * frentePrecioM2;
@@ -895,7 +914,7 @@ export default function CotizadorMarcos() {
       anchoFinalMm: anchoMm,
       altoFinalMm: altoMm,
     };
-  }, [form, normalizedDimensions, normalizedFaceMm, selectedFondo, selectedPintado, selectedProfile]);
+  }, [effectiveProfile, form, normalizedDimensions, normalizedFaceMm, selectedFondo, selectedPintado, selectedProfile]);
 
   function setField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -914,6 +933,7 @@ export default function CotizadorMarcos() {
     const normalizedValue = String(nextValue || "").trim().toLowerCase();
 
     if (!normalizedValue) {
+      setField("profileId", "");
       return;
     }
 
@@ -1078,7 +1098,7 @@ export default function CotizadorMarcos() {
                     ))}
                   </datalist>
                   <span style={helperTextStyle}>
-                    Busca por codigo o nombre. Si el filtro queda vacio, se muestran todas las varillas cargadas.
+                    Busca por codigo o nombre. Si queda vacio, el vendedor debe elegir la varilla antes de cerrar el presupuesto.
                   </span>
                 </label>
 
@@ -1320,15 +1340,15 @@ export default function CotizadorMarcos() {
                 <FramePreview3D
                   anchoMm={normalizedDimensions.ancho}
                   altoMm={normalizedDimensions.alto}
-                  faceMm={selectedProfile.frenteMm}
-                  depthMm={selectedProfile.profundidadMm}
+                  faceMm={effectiveProfile.frenteMm}
+                  depthMm={effectiveProfile.profundidadMm}
                   color={frameColor}
                   frente={form.frente}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
                   paspartuMm={form.paspartuMm}
                   imagenUrl={imagenUrl}
-                  shapeType={selectedProfile.shape}
-                  veta={selectedProfile.veta}
+                  shapeType={effectiveProfile.shape}
+                  veta={effectiveProfile.veta}
                 />
               </Canvas>
             </div>
@@ -1362,25 +1382,25 @@ export default function CotizadorMarcos() {
             </div>
 
             <div style={{ marginTop: 12 }}>
-              <SummaryRow label="Varilla seleccionada" value={selectedProfile.nombre} />
-              <SummaryRow label="Ancho de varilla" value={`${formatNumber(selectedProfile.frenteMm, 0)} mm`} />
+              <SummaryRow label="Varilla seleccionada" value={selectedProfile ? effectiveProfile.nombre : "Sin seleccionar"} />
+              <SummaryRow label="Ancho de varilla" value={selectedProfile ? formatDimensionCm(effectiveProfile.frenteMm) : "-"} />
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
               <SummaryRow label="Tipo de medida" value={form.tipoMedida === "interior" ? "Interior" : "Exterior"} />
               <SummaryRow
                 label="Medida cargada"
-                value={`${quote.inputAnchoMm} x ${quote.inputAltoMm} mm`}
+                value={`${formatDimensionCm(quote.inputAnchoMm)} x ${formatDimensionCm(quote.inputAltoMm)}`}
               />
               {clampPositiveNumber(form.paspartuMm, 0) > 0 && form.tipoMedida === "interior" ? (
                 <SummaryRow
                   label="Interior + paspartu"
-                  value={`${quote.interiorConPaspartuAnchoMm} x ${quote.interiorConPaspartuAltoMm} mm`}
+                  value={`${formatDimensionCm(quote.interiorConPaspartuAnchoMm)} x ${formatDimensionCm(quote.interiorConPaspartuAltoMm)}`}
                 />
               ) : null}
               <SummaryRow
                 label="Medidas aplicadas"
-                value={`${quote.anchoFinalMm} x ${quote.altoFinalMm} mm`}
+                value={`${formatDimensionCm(quote.anchoFinalMm)} x ${formatDimensionCm(quote.altoFinalMm)}`}
               />
-              <SummaryRow label="Precio por metro" value={formatCurrency(selectedProfile.precioMetro)} />
+              <SummaryRow label="Precio por metro" value={formatCurrency(effectiveProfile.precioMetro)} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
               <SummaryRow label="Medias varillas cobradas" value={`${quote.mediasVarillasCobradas}`} />
