@@ -67,7 +67,20 @@ function inferProfileMeasures(nombre) {
 
 function createProfile({ codigo, nombre, precioMetro }) {
   const measures = inferProfileMeasures(nombre);
-  const isPine = /PINO/.test(String(nombre || "").toUpperCase());
+  const normalizedName = String(nombre || "").toUpperCase();
+  const isPine = /PINO/.test(normalizedName);
+  const shape = (() => {
+    if (isPine) return "pine-chata";
+    if (/ONDULADA/.test(normalizedName)) return "ondulada";
+    if (/MOLDURON/.test(normalizedName)) return "molduron";
+    if (/ITALIANA/.test(normalizedName)) return "italiana";
+    if (/CHANFLE/.test(normalizedName)) return "chanfle";
+    if (/BOMBE C\/GARGANTA|BOMBE C\/ GARGANTA|GARGANTA/.test(normalizedName)) return "bombe-garganta";
+    if (/BOMBE/.test(normalizedName)) return "bombe";
+    if (/BATEA/.test(normalizedName)) return "batea";
+    if (/CHATA/.test(normalizedName)) return "chata";
+    return "box";
+  })();
 
   return {
     id: createProfileId(codigo, nombre),
@@ -77,7 +90,7 @@ function createProfile({ codigo, nombre, precioMetro }) {
     frenteMm: measures.frenteMm,
     profundidadMm: measures.profundidadMm,
     color: isPine ? "#c59257" : "#b78a52",
-    shape: isPine ? "pine-chata" : "box",
+    shape,
     veta: isPine ? "#e2bf86" : "#d7b079",
   };
 }
@@ -427,11 +440,27 @@ function createFingerJointPineTexture(kind = "face") {
 function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
   const safeLength = Math.max(length, 0.01);
   const isPineChata = shapeType === "pine-chata";
+  const isBombe = shapeType === "bombe";
+  const isBombeGarganta = shapeType === "bombe-garganta";
+  const isChanfle = shapeType === "chanfle";
+  const isBatea = shapeType === "batea";
+  const isChata = shapeType === "chata";
+  const isItaliana = shapeType === "italiana";
+  const isMolduron = shapeType === "molduron";
+  const isOndulada = shapeType === "ondulada";
   const baseThickness = isPineChata ? depth * 0.72 : depth;
   const frontLipThickness = isPineChata ? depth * 0.18 : 0;
   const innerStepThickness = isPineChata ? depth * 0.12 : 0;
   const frontLipHeight = isPineChata ? face * 0.32 : 0;
   const innerStepWidth = isPineChata ? face * 0.56 : 0;
+  const frontPlateDepth = Math.max(depth * 0.08, 0.0025);
+  const sideTrimWidth = Math.max(face * 0.14, 0.003);
+  const centerStripWidth = Math.max(face * 0.18, 0.004);
+  const grooveWidth = Math.max(face * 0.11, 0.003);
+  const ridgeDepth = Math.max(depth * 0.1, 0.002);
+  const accentColor = isPineChata ? "#fff1cf" : new THREE.Color(color).offsetHSL(0, 0.02, 0.12).getStyle();
+  const shadowColor = isPineChata ? "#f3ddb2" : new THREE.Color(color).offsetHSL(0, 0, -0.14).getStyle();
+  const darkAccentColor = isPineChata ? "#ddc08e" : new THREE.Color(color).offsetHSL(0, 0, -0.22).getStyle();
   const pineFaceTexture = useMemo(() => {
     if (!isPineChata) {
       return null;
@@ -553,6 +582,135 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
               polygonOffset
               polygonOffsetFactor={-1}
             />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isChata ? (
+        <mesh position={[0, 0, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+          <boxGeometry args={[safeLength, face * 0.92, frontPlateDepth]} />
+          <meshStandardMaterial color={accentColor} roughness={0.54} metalness={0.12} />
+        </mesh>
+      ) : null}
+
+      {!isPineChata && isBatea ? (
+        <>
+          <mesh position={[0, face * 0.18, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.28, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.48} metalness={0.18} />
+          </mesh>
+          <mesh position={[0, -face * 0.22, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.56} metalness={0.16} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isBombe ? (
+        <>
+          <mesh position={[0, 0, baseThickness / 2 + ridgeDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.42, ridgeDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.44} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, face * 0.22, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={darkAccentColor} roughness={0.5} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.22, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={darkAccentColor} roughness={0.5} metalness={0.16} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isBombeGarganta ? (
+        <>
+          <mesh position={[0, face * 0.23, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.16, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.46} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.03, baseThickness / 2 + ridgeDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.26, ridgeDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.56} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.26, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.12, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.48} metalness={0.16} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isChanfle ? (
+        <>
+          <mesh position={[0, face * 0.25, baseThickness / 2 + frontPlateDepth / 2]} rotation={[0, 0, -0.24]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.48} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.18, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.58} metalness={0.14} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isItaliana ? (
+        <>
+          <mesh position={[0, face * 0.24, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.18, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.46} metalness={0.18} />
+          </mesh>
+          <mesh position={[0, 0, baseThickness / 2 + ridgeDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.2, ridgeDepth]} />
+            <meshStandardMaterial color={darkAccentColor} roughness={0.52} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.24, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.14, frontPlateDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.58} metalness={0.14} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isMolduron ? (
+        <>
+          <mesh position={[0, face * 0.29, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.16, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.44} metalness={0.18} />
+          </mesh>
+          <mesh position={[0, face * 0.06, baseThickness / 2 + ridgeDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.16, ridgeDepth]} />
+            <meshStandardMaterial color={darkAccentColor} roughness={0.48} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.14, baseThickness / 2 + ridgeDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.2, ridgeDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.5} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.33, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, face * 0.08, frontPlateDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.58} metalness={0.14} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && isOndulada ? (
+        <>
+          {[-0.28, -0.09, 0.09, 0.28].map((offset) => (
+            <mesh key={offset} position={[0, face * offset, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+              <boxGeometry args={[safeLength, grooveWidth, frontPlateDepth]} />
+              <meshStandardMaterial color={offset === -0.09 || offset === 0.28 ? accentColor : darkAccentColor} roughness={0.48} metalness={0.16} />
+            </mesh>
+          ))}
+        </>
+      ) : null}
+
+      {!isPineChata && !isBombe && !isBombeGarganta && !isChanfle && !isBatea && !isChata && !isItaliana && !isMolduron && !isOndulada ? (
+        <>
+          <mesh position={[0, face * 0.24, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, sideTrimWidth, frontPlateDepth]} />
+            <meshStandardMaterial color={accentColor} roughness={0.48} metalness={0.16} />
+          </mesh>
+          <mesh position={[0, -face * 0.18, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
+            <boxGeometry args={[safeLength, centerStripWidth, frontPlateDepth]} />
+            <meshStandardMaterial color={shadowColor} roughness={0.56} metalness={0.14} />
           </mesh>
         </>
       ) : null}
