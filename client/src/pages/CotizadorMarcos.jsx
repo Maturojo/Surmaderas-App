@@ -746,7 +746,7 @@ export default function CotizadorMarcos() {
       ["Frente", frenteLabel],
       ["Paspartu", paspartuVal > 0 ? `${paspartuVal} mm` : "No"],
       ["Pintado", selectedPintado.nombre],
-      ["Total estimado", formatCurrency(quote.total), true],
+      ["Total estimado", quote.pricingEnabled ? formatCurrency(quote.total) : "Pendiente de seleccionar varilla", true],
     ];
   }
 
@@ -879,6 +879,7 @@ export default function CotizadorMarcos() {
     normalizedDimensions.alto <= 1200;
 
   const quote = useMemo(() => {
+    const pricingEnabled = Boolean(selectedProfile);
     const inputAnchoMm = normalizedDimensions.ancho;
     const inputAltoMm = normalizedDimensions.alto;
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
@@ -904,16 +905,16 @@ export default function CotizadorMarcos() {
     const metrosMarcoUnitarios = (2 * (anchoMm + altoMm)) / 1000;
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
-    const subtotalVarilla = chargedBars.chargedMeters * clampPositiveNumber(effectiveProfile.precioMetro, 0);
+    const subtotalVarilla = pricingEnabled ? chargedBars.chargedMeters * clampPositiveNumber(effectiveProfile.precioMetro, 0) : 0;
 
     const frentePrecioM2 = form.frente === "espejo" ? MIRROR_PRICE_M2 : form.frente === "vidrio" ? GLASS_PRICE_M2 : 0;
-    const subtotalVidrio = frenteAreaM2 * cantidad * frentePrecioM2;
-    const subtotalFondo = fondoAreaM2 * cantidad * selectedFondo.precioM2;
-    const subtotalPaspartu = paspartuAreaM2 * cantidad * PASPARTU_PRICE_M2;
-    const subtotalPintado = selectedPintado.extra * cantidad;
+    const subtotalVidrio = pricingEnabled ? frenteAreaM2 * cantidad * frentePrecioM2 : 0;
+    const subtotalFondo = pricingEnabled ? fondoAreaM2 * cantidad * selectedFondo.precioM2 : 0;
+    const subtotalPaspartu = pricingEnabled ? paspartuAreaM2 * cantidad * PASPARTU_PRICE_M2 : 0;
+    const subtotalPintado = pricingEnabled ? selectedPintado.extra * cantidad : 0;
 
     const armadoSugerido = getArmadoSuggestion(anchoMm, altoMm);
-    const subtotalArmado = armadoSugerido.precio * cantidad;
+    const subtotalArmado = pricingEnabled ? armadoSugerido.precio * cantidad : 0;
 
     const total =
       subtotalVarilla +
@@ -941,6 +942,7 @@ export default function CotizadorMarcos() {
       armadoSugerido,
       subtotalArmado,
       total,
+      pricingEnabled,
       inputAnchoMm,
       inputAltoMm,
       interiorConPaspartuAnchoMm,
@@ -1088,7 +1090,9 @@ export default function CotizadorMarcos() {
             <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.8 }}>
               Resumen rapido
             </div>
-            <div style={{ fontSize: 30, lineHeight: 1, fontWeight: 900 }}>{formatCurrency(quote.total)}</div>
+            <div style={{ fontSize: 30, lineHeight: 1, fontWeight: 900 }}>
+              {quote.pricingEnabled ? formatCurrency(quote.total) : "Elegi una varilla"}
+            </div>
             <div style={{ fontSize: 14, opacity: 0.84 }}>
               {formatNumber(quote.varillasCobradas, 1)} varilla{quote.varillasCobradas === 1 ? "" : "s"} cobradas
             </div>
@@ -1434,27 +1438,27 @@ export default function CotizadorMarcos() {
                 label="Medidas aplicadas"
                 value={`${formatDimensionCm(quote.anchoFinalMm)} x ${formatDimensionCm(quote.altoFinalMm)}`}
               />
-              <SummaryRow label="Precio por metro" value={formatCurrency(effectiveProfile.precioMetro)} />
+              <SummaryRow label="Precio por metro" value={quote.pricingEnabled ? formatCurrency(effectiveProfile.precioMetro) : "-"} />
               <SummaryRow label="Perimetro por marco" value={`${formatNumber(quote.metrosMarcoUnitarios)} m`} />
               <SummaryRow label="Metros necesarios" value={`${formatNumber(quote.metrosMarcoTotales)} m`} />
               <SummaryRow label="Medias varillas cobradas" value={`${quote.mediasVarillasCobradas}`} />
               <SummaryRow label="Varillas cobradas" value={`${formatNumber(quote.varillasCobradas, 1)}`} />
               <SummaryRow label="Metros facturados" value={`${formatNumber(quote.metrosFacturados)} m`} />
-              <SummaryRow label="Subtotal varilla" value={formatCurrency(quote.subtotalVarilla)} />
+              <SummaryRow label="Subtotal varilla" value={quote.pricingEnabled ? formatCurrency(quote.subtotalVarilla) : "-"} />
               <SummaryRow label="Frente m2" value={`${formatNumber(quote.frenteAreaM2)} m2`} />
-              <SummaryRow label={`Subtotal frente (${form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "Sin frente"})`} value={formatCurrency(quote.subtotalVidrio)} />
+              <SummaryRow label={`Subtotal frente (${form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "Sin frente"})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalVidrio) : "-"} />
               <SummaryRow label={`${selectedFondo.nombre} m2`} value={`${formatNumber(quote.fondoAreaM2)} m2`} />
-              <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={formatCurrency(quote.subtotalFondo)} />
+              <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalFondo) : "-"} />
               <SummaryRow
                 label={`Paspartu (${formatNumber(clampPositiveNumber(form.paspartuMm, 0), 0)} mm)`}
-                value={`${formatNumber(quote.paspartuAreaM2)} m2 / ${formatCurrency(quote.subtotalPaspartu)}`}
+                value={quote.pricingEnabled ? `${formatNumber(quote.paspartuAreaM2)} m2 / ${formatCurrency(quote.subtotalPaspartu)}` : `${formatNumber(quote.paspartuAreaM2)} m2 / -`}
               />
-              <SummaryRow label={`Pintado (${selectedPintado.nombre})`} value={formatCurrency(quote.subtotalPintado)} />
+              <SummaryRow label={`Pintado (${selectedPintado.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalPintado) : "-"} />
               <SummaryRow
                 label={`Armado (${quote.armadoSugerido.etiqueta})`}
-                value={formatCurrency(quote.subtotalArmado)}
+                value={quote.pricingEnabled ? formatCurrency(quote.subtotalArmado) : "-"}
               />
-              <SummaryRow label="Total estimado" value={formatCurrency(quote.total)} strong />
+              <SummaryRow label="Total estimado" value={quote.pricingEnabled ? formatCurrency(quote.total) : "Pendiente de seleccionar varilla"} strong />
             </div>
           </article>
 
