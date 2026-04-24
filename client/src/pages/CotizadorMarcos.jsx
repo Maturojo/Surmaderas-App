@@ -129,6 +129,14 @@ const PINTADO_OPTIONS = [
   { id: "dorado", nombre: "Dorado", color: "#c7a459", extra: 14200 },
 ];
 
+const PASPARTU_COLOR_OPTIONS = [
+  { id: "blanco", nombre: "Blanco", color: "#f6f1e7" },
+  { id: "natural", nombre: "Natural", color: "#e8dcc6" },
+  { id: "negro", nombre: "Negro", color: "#2f2c2a" },
+  { id: "gris", nombre: "Gris", color: "#b9b4ae" },
+  { id: "marfil", nombre: "Marfil", color: "#efe4d0" },
+];
+
 const EMPTY_PROFILE = {
   id: "",
   codigo: "",
@@ -151,6 +159,7 @@ const INITIAL_FORM = {
   frente: "vidrio",
   fondoId: "fibrofacil",
   paspartuMm: 0,
+  paspartuColorId: "blanco",
   pintadoId: "sin-pintar",
   observaciones: "",
 };
@@ -593,6 +602,7 @@ function FramePreview3D({
   frente,
   fondoColor,
   paspartuMm,
+  paspartuColor,
   imagenUrl,
   shapeType,
   veta,
@@ -687,19 +697,19 @@ function FramePreview3D({
           <>
             <mesh position={[0, innerHeight / 2 - paspartuScene / 2, 0.008]}>
               <boxGeometry args={[innerWidth, paspartuScene, 0.012]} />
-              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+              <meshStandardMaterial color={paspartuColor} roughness={0.92} />
             </mesh>
             <mesh position={[0, -innerHeight / 2 + paspartuScene / 2, 0.008]}>
               <boxGeometry args={[innerWidth, paspartuScene, 0.012]} />
-              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+              <meshStandardMaterial color={paspartuColor} roughness={0.92} />
             </mesh>
             <mesh position={[-innerWidth / 2 + paspartuScene / 2, 0, 0.008]}>
               <boxGeometry args={[paspartuScene, openingHeight, 0.012]} />
-              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+              <meshStandardMaterial color={paspartuColor} roughness={0.92} />
             </mesh>
             <mesh position={[innerWidth / 2 - paspartuScene / 2, 0, 0.008]}>
               <boxGeometry args={[paspartuScene, openingHeight, 0.012]} />
-              <meshStandardMaterial color="#f6f1e7" roughness={0.92} />
+              <meshStandardMaterial color={paspartuColor} roughness={0.92} />
             </mesh>
           </>
         ) : null}
@@ -744,7 +754,7 @@ export default function CotizadorMarcos() {
       ["Cantidad", String(cantidadVal)],
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
-      ["Paspartu", paspartuVal > 0 ? `${paspartuVal} mm` : "No"],
+      ["Paspartu", paspartuVal > 0 ? `${paspartuVal} mm · ${selectedPaspartuColor.nombre}` : "No"],
       ["Pintado", selectedPintado.nombre],
       ["Total estimado", quote.pricingEnabled ? formatCurrency(quote.total) : "Pendiente de seleccionar varilla", true],
     ];
@@ -874,6 +884,10 @@ export default function CotizadorMarcos() {
   const selectedPintado = useMemo(
     () => PINTADO_OPTIONS.find((option) => option.id === form.pintadoId) || PINTADO_OPTIONS[0],
     [form.pintadoId]
+  );
+  const selectedPaspartuColor = useMemo(
+    () => PASPARTU_COLOR_OPTIONS.find((option) => option.id === form.paspartuColorId) || PASPARTU_COLOR_OPTIONS[0],
+    [form.paspartuColorId]
   );
   const frameColor = selectedPintado.color || effectiveProfile.color;
   const normalizedFaceMm = clampPositiveNumber(effectiveProfile.frenteMm, 0);
@@ -1285,6 +1299,26 @@ export default function CotizadorMarcos() {
                 />
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Color paspartu
+                  </span>
+                  <select
+                    value={form.paspartuColorId}
+                    onChange={(e) => setField("paspartuColorId", e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    {PASPARTU_COLOR_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <span style={helperTextStyle}>Se aplica en la vista y en el presupuesto.</span>
+                </label>
+              </div>
+
+              <div style={twoColumnGridStyle}>
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Frente
                   </span>
                   <select
@@ -1298,7 +1332,6 @@ export default function CotizadorMarcos() {
                   </select>
                   <span style={helperTextStyle}> </span>
                 </label>
-
                 <label style={{ ...selectWrapperStyle, opacity: espejoSinFondo ? 0.45 : 1 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Fondo
@@ -1388,6 +1421,7 @@ export default function CotizadorMarcos() {
                   frente={form.frente}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
                   paspartuMm={form.paspartuMm}
+                  paspartuColor={selectedPaspartuColor.color}
                   imagenUrl={imagenUrl}
                   shapeType={effectiveProfile.shape}
                   veta={effectiveProfile.veta}
@@ -1455,7 +1489,7 @@ export default function CotizadorMarcos() {
               <SummaryRow label={`Fondo (${selectedFondo.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalFondo) : "-"} />
               <SummaryRow
                 label={`Paspartu (${formatNumber(clampPositiveNumber(form.paspartuMm, 0), 0)} mm)`}
-                value={quote.pricingEnabled ? `${formatNumber(quote.paspartuAreaM2)} m2 / ${formatCurrency(quote.subtotalPaspartu)}` : `${formatNumber(quote.paspartuAreaM2)} m2 / -`}
+                value={quote.pricingEnabled ? `${selectedPaspartuColor.nombre} · ${formatNumber(quote.paspartuAreaM2)} m2 / ${formatCurrency(quote.subtotalPaspartu)}` : `${selectedPaspartuColor.nombre} · ${formatNumber(quote.paspartuAreaM2)} m2 / -`}
               />
               <SummaryRow label={`Pintado (${selectedPintado.nombre})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalPintado) : "-"} />
               <SummaryRow
