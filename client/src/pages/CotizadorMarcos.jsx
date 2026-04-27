@@ -66,7 +66,7 @@ function inferProfileMeasures(nombre) {
   };
 }
 
-function createProfile({ codigo, nombre, precioMetro, frenteMm, profundidadMm, shape: shapeOverride, color: colorOverride, veta: vetaOverride }) {
+function createProfile({ codigo, nombre, precioMetro, frenteMm, profundidadMm, shape: shapeOverride, color: colorOverride, veta: vetaOverride, liston = false }) {
   const measures =
     Number.isFinite(frenteMm) && Number.isFinite(profundidadMm)
       ? { frenteMm, profundidadMm }
@@ -97,6 +97,7 @@ function createProfile({ codigo, nombre, precioMetro, frenteMm, profundidadMm, s
     color: colorOverride || (isPine ? "#c59257" : "#b78a52"),
     shape,
     veta: vetaOverride || (isPine ? "#e2bf86" : "#d7b079"),
+    liston,
   };
 }
 
@@ -129,47 +130,47 @@ const INITIAL_PROFILES = [
   createProfile({ codigo: "MC918", nombre: "MOLDURON ESPECIAL 32 X 58", precioMetro: 5795 }),
   createProfile({ codigo: "MC914", nombre: "ONDULADA 14 X 32", precioMetro: 1639 }),
   createProfile({ codigo: "MC922", nombre: "ONDULADA 14 X 45", precioMetro: 2241 }),
-  createProfile({ codigo: "30105", nombre: "LISTON 1/2 X 1/2", precioMetro: 403, frenteMm: 13, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30106", nombre: "LISTON 1/2 X 3/4", precioMetro: 591, frenteMm: 19, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30107", nombre: "LISTON 1/2 X 1", precioMetro: 667, frenteMm: 25, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30108", nombre: "LISTON 1/2 X 1 1/2", precioMetro: 1014, frenteMm: 38, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30109", nombre: "LISTON 1/2 X 2", precioMetro: 1287, frenteMm: 51, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30110", nombre: "LISTON 1/2 X 3", precioMetro: 1923, frenteMm: 76, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30111", nombre: "LISTON 1/2 X 4", precioMetro: 2556, frenteMm: 102, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30112", nombre: "LISTON 1/2 X 5", precioMetro: 3199, frenteMm: 127, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30113", nombre: "LISTON 1/2 X 6", precioMetro: 3831, frenteMm: 152, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30122", nombre: "LISTON 3/4 X 3/4", precioMetro: 779, frenteMm: 19, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30123", nombre: "LISTON 3/4 X 1", precioMetro: 934, frenteMm: 25, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30124", nombre: "LISTON 3/4 X 1 1/2", precioMetro: 1446, frenteMm: 38, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30125", nombre: "LISTON 3/4 X 2", precioMetro: 1928, frenteMm: 51, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30126", nombre: "LISTON 3/4 X 3", precioMetro: 2876, frenteMm: 76, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30127", nombre: "LISTON 3/4 X 4", precioMetro: 3835, frenteMm: 102, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30128", nombre: "LISTON 3/4 X 5", precioMetro: 4817, frenteMm: 127, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30129", nombre: "LISTON 3/4 X 6", precioMetro: 4685, frenteMm: 152, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30138", nombre: "LISTON 1 X 1", precioMetro: 1178, frenteMm: 25, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30139", nombre: "LISTON 1 X 1 1/2", precioMetro: 1730, frenteMm: 38, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30140", nombre: "LISTON 1 X 2", precioMetro: 2308, frenteMm: 51, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30141", nombre: "LISTON 1 X 3", precioMetro: 3478, frenteMm: 76, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30142", nombre: "LISTON 1 X 4", precioMetro: 4625, frenteMm: 102, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30143", nombre: "LISTON 1 X 5", precioMetro: 5776, frenteMm: 127, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30144", nombre: "LISTON 1 X 6", precioMetro: 6955, frenteMm: 152, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30153", nombre: "LISTON 1 1/2 X 1 1/2", precioMetro: 2877, frenteMm: 38, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30154", nombre: "LISTON 1 1/2 X 2", precioMetro: 3842, frenteMm: 51, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30155", nombre: "LISTON 11/2 X 3", precioMetro: 5756, frenteMm: 76, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30170", nombre: "LISTON 2 X2", precioMetro: 5241, frenteMm: 51, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30171", nombre: "LISTON 2 X 3", precioMetro: 7917, frenteMm: 76, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30172", nombre: "LISTON 2 X 4", precioMetro: 10484, frenteMm: 102, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30111C", nombre: "LISTON 1/2 X 4", precioMetro: 2172, frenteMm: 102, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30112C", nombre: "LISTON 1/2 X 5", precioMetro: 2716, frenteMm: 127, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30113C", nombre: "LISTON 1/2 X 6", precioMetro: 3251, frenteMm: 152, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30127C", nombre: "LISTON 3/4 X 4", precioMetro: 3253, frenteMm: 102, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30128C", nombre: "LISTON 3/4 X 5", precioMetro: 4085, frenteMm: 127, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30129C", nombre: "LISTON 3/4 X 6", precioMetro: 3975, frenteMm: 152, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30140C", nombre: "LISTON 1 X 2", precioMetro: 1961, frenteMm: 51, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30142C", nombre: "LISTON 1 X 4", precioMetro: 3921, frenteMm: 102, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30143C", nombre: "LISTON 1 X 5", precioMetro: 4905, frenteMm: 127, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30170C", nombre: "LISTON 2 X 2", precioMetro: 4451, frenteMm: 51, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
-  createProfile({ codigo: "30172C", nombre: "LISTON 2 X 4", precioMetro: 8896, frenteMm: 102, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30105", nombre: "LISTON 1/2 X 1/2", precioMetro: 403, frenteMm: 13, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30106", nombre: "LISTON 1/2 X 3/4", precioMetro: 591, frenteMm: 19, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30107", nombre: "LISTON 1/2 X 1", precioMetro: 667, frenteMm: 25, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30108", nombre: "LISTON 1/2 X 1 1/2", precioMetro: 1014, frenteMm: 38, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30109", nombre: "LISTON 1/2 X 2", precioMetro: 1287, frenteMm: 51, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30110", nombre: "LISTON 1/2 X 3", precioMetro: 1923, frenteMm: 76, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30111", nombre: "LISTON 1/2 X 4", precioMetro: 2556, frenteMm: 102, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30112", nombre: "LISTON 1/2 X 5", precioMetro: 3199, frenteMm: 127, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30113", nombre: "LISTON 1/2 X 6", precioMetro: 3831, frenteMm: 152, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30122", nombre: "LISTON 3/4 X 3/4", precioMetro: 779, frenteMm: 19, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30123", nombre: "LISTON 3/4 X 1", precioMetro: 934, frenteMm: 25, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30124", nombre: "LISTON 3/4 X 1 1/2", precioMetro: 1446, frenteMm: 38, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30125", nombre: "LISTON 3/4 X 2", precioMetro: 1928, frenteMm: 51, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30126", nombre: "LISTON 3/4 X 3", precioMetro: 2876, frenteMm: 76, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30127", nombre: "LISTON 3/4 X 4", precioMetro: 3835, frenteMm: 102, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30128", nombre: "LISTON 3/4 X 5", precioMetro: 4817, frenteMm: 127, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30129", nombre: "LISTON 3/4 X 6", precioMetro: 4685, frenteMm: 152, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30138", nombre: "LISTON 1 X 1", precioMetro: 1178, frenteMm: 25, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30139", nombre: "LISTON 1 X 1 1/2", precioMetro: 1730, frenteMm: 38, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30140", nombre: "LISTON 1 X 2", precioMetro: 2308, frenteMm: 51, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30141", nombre: "LISTON 1 X 3", precioMetro: 3478, frenteMm: 76, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30142", nombre: "LISTON 1 X 4", precioMetro: 4625, frenteMm: 102, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30143", nombre: "LISTON 1 X 5", precioMetro: 5776, frenteMm: 127, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30144", nombre: "LISTON 1 X 6", precioMetro: 6955, frenteMm: 152, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30153", nombre: "LISTON 1 1/2 X 1 1/2", precioMetro: 2877, frenteMm: 38, profundidadMm: 38, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30154", nombre: "LISTON 1 1/2 X 2", precioMetro: 3842, frenteMm: 51, profundidadMm: 38, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30155", nombre: "LISTON 11/2 X 3", precioMetro: 5756, frenteMm: 76, profundidadMm: 38, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30170", nombre: "LISTON 2 X2", precioMetro: 5241, frenteMm: 51, profundidadMm: 51, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30171", nombre: "LISTON 2 X 3", precioMetro: 7917, frenteMm: 76, profundidadMm: 51, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30172", nombre: "LISTON 2 X 4", precioMetro: 10484, frenteMm: 102, profundidadMm: 51, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30111C", nombre: "LISTON 1/2 X 4", precioMetro: 2172, frenteMm: 102, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30112C", nombre: "LISTON 1/2 X 5", precioMetro: 2716, frenteMm: 127, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30113C", nombre: "LISTON 1/2 X 6", precioMetro: 3251, frenteMm: 152, profundidadMm: 13, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30127C", nombre: "LISTON 3/4 X 4", precioMetro: 3253, frenteMm: 102, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30128C", nombre: "LISTON 3/4 X 5", precioMetro: 4085, frenteMm: 127, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30129C", nombre: "LISTON 3/4 X 6", precioMetro: 3975, frenteMm: 152, profundidadMm: 19, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30140C", nombre: "LISTON 1 X 2", precioMetro: 1961, frenteMm: 51, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30142C", nombre: "LISTON 1 X 4", precioMetro: 3921, frenteMm: 102, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30143C", nombre: "LISTON 1 X 5", precioMetro: 4905, frenteMm: 127, profundidadMm: 25, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30170C", nombre: "LISTON 2 X 2", precioMetro: 4451, frenteMm: 51, profundidadMm: 51, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
+  createProfile({ codigo: "30172C", nombre: "LISTON 2 X 4", precioMetro: 8896, frenteMm: 102, profundidadMm: 51, shape: "pine-liston", color: "#d1b07d", veta: "#ead5ab", liston: true }),
 ];
 
 const FONDO_OPTIONS = [
@@ -206,10 +207,30 @@ const EMPTY_PROFILE = {
   color: "#b78a52",
   shape: "box",
   veta: "#d7b079",
+  liston: false,
 };
+
+function getProfileDisplayMeasures(profile, listonUso = "plano") {
+  const safeProfile = profile || EMPTY_PROFILE;
+  const frenteMm = clampPositiveNumber(safeProfile.frenteMm, 0);
+  const profundidadMm = clampPositiveNumber(safeProfile.profundidadMm, 0);
+
+  if (safeProfile.liston && listonUso === "canto") {
+    return {
+      frenteMm: profundidadMm,
+      profundidadMm: frenteMm,
+    };
+  }
+
+  return {
+    frenteMm,
+    profundidadMm,
+  };
+}
 
 const INITIAL_FORM = {
   profileId: "",
+  listonUso: "plano",
   anchoMm: 700,
   altoMm: 1000,
   cantidad: 1,
@@ -490,6 +511,7 @@ function createFingerJointPineTexture(kind = "face") {
 function ProfileFramePiece({ length, face, depth, position, rotation, color, shapeType, veta }) {
   const safeLength = Math.max(length, 0.01);
   const isPineChata = shapeType === "pine-chata";
+  const isPineListon = shapeType === "pine-liston";
   const isBombe = shapeType === "bombe";
   const isBombeGarganta = shapeType === "bombe-garganta";
   const isChanfle = shapeType === "chanfle";
@@ -512,7 +534,7 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
   const shadowColor = isPineChata ? "#f3ddb2" : new THREE.Color(color).offsetHSL(0, 0, -0.14).getStyle();
   const darkAccentColor = isPineChata ? "#ddc08e" : new THREE.Color(color).offsetHSL(0, 0, -0.22).getStyle();
   const pineFaceTexture = useMemo(() => {
-    if (!isPineChata) {
+    if (!isPineChata && !isPineListon) {
       return null;
     }
     const texture = createFingerJointPineTexture("face");
@@ -525,9 +547,9 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     repeated.repeat.set(Math.max(safeLength * 1.35, 2.2), 1.15);
     repeated.needsUpdate = true;
     return repeated;
-  }, [isPineChata, safeLength]);
+  }, [isPineChata, isPineListon, safeLength]);
   const pineEdgeTexture = useMemo(() => {
-    if (!isPineChata) {
+    if (!isPineChata && !isPineListon) {
       return null;
     }
     const texture = createFingerJointPineTexture("edge");
@@ -540,9 +562,9 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     repeated.repeat.set(Math.max(safeLength * 1.8, 3), 1);
     repeated.needsUpdate = true;
     return repeated;
-  }, [isPineChata, safeLength]);
+  }, [isPineChata, isPineListon, safeLength]);
   const pineBumpTexture = useMemo(() => {
-    if (!isPineChata || !pineFaceTexture) {
+    if ((!isPineChata && !isPineListon) || !pineFaceTexture) {
       return null;
     }
 
@@ -550,19 +572,19 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     texture.colorSpace = THREE.NoColorSpace;
     texture.needsUpdate = true;
     return texture;
-  }, [isPineChata, pineFaceTexture]);
+  }, [isPineChata, isPineListon, pineFaceTexture]);
 
   return (
     <group position={position} rotation={rotation}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[safeLength, face, baseThickness]} />
         <meshStandardMaterial
-          color={isPineChata ? "#ead8ac" : color}
-          roughness={isPineChata ? 0.68 : 0.5}
-          metalness={isPineChata ? 0.01 : 0.35}
+          color={isPineChata || isPineListon ? "#ead8ac" : color}
+          roughness={isPineChata || isPineListon ? 0.68 : 0.5}
+          metalness={isPineChata || isPineListon ? 0.01 : 0.35}
           map={pineEdgeTexture || pineFaceTexture}
           bumpMap={pineBumpTexture}
-          bumpScale={isPineChata ? 0.028 : 0}
+          bumpScale={isPineChata || isPineListon ? 0.028 : 0}
         />
       </mesh>
 
@@ -636,7 +658,33 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
         </>
       ) : null}
 
-      {!isPineChata && isChata ? (
+      {isPineListon ? (
+        <>
+          <mesh position={[0, 0, depth / 2 + 0.0012]} receiveShadow>
+            <planeGeometry args={[safeLength, face]} />
+            <meshStandardMaterial
+              color="#f3e0b4"
+              roughness={0.52}
+              metalness={0.01}
+              map={pineFaceTexture}
+              bumpMap={pineBumpTexture}
+              bumpScale={0.032}
+              polygonOffset
+              polygonOffsetFactor={-1}
+            />
+          </mesh>
+          <mesh position={[0, face / 2 - 0.0015, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
+            <planeGeometry args={[safeLength, depth]} />
+            <meshStandardMaterial color="#e3c894" roughness={0.64} metalness={0.01} map={pineEdgeTexture} />
+          </mesh>
+          <mesh position={[0, -face / 2 + 0.0015, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
+            <planeGeometry args={[safeLength, depth]} />
+            <meshStandardMaterial color="#d6b680" roughness={0.66} metalness={0.01} map={pineEdgeTexture} />
+          </mesh>
+        </>
+      ) : null}
+
+      {!isPineChata && !isPineListon && isChata ? (
         <mesh position={[0, 0, baseThickness / 2 + frontPlateDepth / 2]} receiveShadow>
           <boxGeometry args={[safeLength, face * 0.92, frontPlateDepth]} />
           <meshStandardMaterial color={accentColor} roughness={0.54} metalness={0.12} />
@@ -960,6 +1008,7 @@ export default function CotizadorMarcos() {
       ["Orientacion visual", form.orientacion === "horizontal" ? "Horizontal" : "Vertical"],
       ["Tipo de medida", form.tipoMedida === "interior" ? "Interior" : "Exterior"],
       ["Medida cargada", `${formatDimensionCm(quote.inputAnchoMm)} x ${formatDimensionCm(quote.inputAltoMm)}`],
+      ...(selectedProfile?.liston ? [["Colocacion", form.listonUso === "canto" ? "De canto" : "De plano"]] : []),
       ["Cantidad", String(cantidadVal)],
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
@@ -1087,7 +1136,7 @@ export default function CotizadorMarcos() {
           data: {
             cotizado: true,
             perfil: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}`,
-            anchoVarillaCm: formatDimensionCm(effectiveProfile.frenteMm),
+            anchoVarillaCm: formatDimensionCm(effectiveMeasures.frenteMm),
             orientacionVisual: form.orientacion === "horizontal" ? "Horizontal" : "Vertical",
             tipoMedida: form.tipoMedida === "interior" ? "Interior" : "Exterior",
             medidaCargada: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm),
@@ -1099,7 +1148,8 @@ export default function CotizadorMarcos() {
             obs: observaciones,
             resumenLineas: [
               { label: "Varilla seleccionada", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
-              { label: "Ancho de varilla", value: formatDimensionCm(effectiveProfile.frenteMm) },
+              { label: "Ancho de varilla", value: formatDimensionCm(effectiveMeasures.frenteMm) },
+              ...(selectedProfile?.liston ? [{ label: "Colocacion", value: form.listonUso === "canto" ? "De canto" : "De plano" }] : []),
               { label: "Orientacion visual", value: form.orientacion === "horizontal" ? "Horizontal" : "Vertical" },
               { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
               { label: "Medida cargada", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
@@ -1124,6 +1174,10 @@ export default function CotizadorMarcos() {
     [form.profileId]
   );
   const effectiveProfile = selectedProfile || EMPTY_PROFILE;
+  const effectiveMeasures = useMemo(
+    () => getProfileDisplayMeasures(effectiveProfile, form.listonUso),
+    [effectiveProfile, form.listonUso]
+  );
   const filteredProfiles = useMemo(() => {
     const query = varillaSearch.trim().toLowerCase();
 
@@ -1150,7 +1204,8 @@ export default function CotizadorMarcos() {
     [form.paspartuColorId]
   );
   const frameColor = selectedPintado.color || effectiveProfile.color;
-  const normalizedFaceMm = clampPositiveNumber(effectiveProfile.frenteMm, 0);
+  const normalizedFaceMm = clampPositiveNumber(effectiveMeasures.frenteMm, 0);
+  const normalizedDepthMm = clampPositiveNumber(effectiveMeasures.profundidadMm, 0);
   const espejoSinFondo =
     form.frente === "espejo" &&
     normalizedDimensions.ancho <= 1200 &&
@@ -1236,6 +1291,7 @@ export default function CotizadorMarcos() {
 
   function handleProfileChange(profileId) {
     setField("profileId", profileId);
+    setField("listonUso", "plano");
     const profile = INITIAL_PROFILES.find((item) => item.id === profileId);
     if (profile) {
       setVarillaSearch(`${profile.codigo} - ${profile.nombre}`);
@@ -1248,6 +1304,7 @@ export default function CotizadorMarcos() {
 
     if (!normalizedValue) {
       setField("profileId", "");
+      setField("listonUso", "plano");
       return;
     }
 
@@ -1260,6 +1317,9 @@ export default function CotizadorMarcos() {
 
     if (matchedProfile) {
       setField("profileId", matchedProfile.id);
+      if (!matchedProfile.liston) {
+        setField("listonUso", "plano");
+      }
     }
   }
 
@@ -1530,6 +1590,30 @@ export default function CotizadorMarcos() {
                 </label>
               </div>
 
+              {selectedProfile?.liston ? (
+                <div style={twoColumnGridStyle}>
+                  <label style={selectWrapperStyle}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                      Uso del liston
+                    </span>
+                    <select
+                      value={form.listonUso}
+                      onChange={(e) => setField("listonUso", e.target.value)}
+                      style={selectFieldStyle}
+                    >
+                      <option value="plano">De plano</option>
+                      <option value="canto">De canto</option>
+                    </select>
+                    <span style={helperTextStyle}>
+                      {form.listonUso === "canto"
+                        ? `Se toma ${formatDimensionCm(effectiveMeasures.frenteMm)} de frente y ${formatDimensionCm(effectiveMeasures.profundidadMm)} de profundidad.`
+                        : `Se toma ${formatDimensionCm(effectiveMeasures.frenteMm)} de frente y ${formatDimensionCm(effectiveMeasures.profundidadMm)} de profundidad.`}
+                    </span>
+                  </label>
+                  <div />
+                </div>
+              ) : null}
+
               <div style={twoColumnGridStyle}>
                 <label style={{ ...selectWrapperStyle, opacity: espejoSinFondo ? 0.45 : 1 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
@@ -1665,8 +1749,8 @@ export default function CotizadorMarcos() {
                 <FramePreview3D
                   anchoMm={normalizedDimensions.ancho}
                   altoMm={normalizedDimensions.alto}
-                  faceMm={effectiveProfile.frenteMm}
-                  depthMm={effectiveProfile.profundidadMm}
+                  faceMm={effectiveMeasures.frenteMm}
+                  depthMm={normalizedDepthMm}
                   color={frameColor}
                   frente={form.frente}
                   fondoColor={selectedFondo.precioM2 > 0 ? selectedFondo.color : null}
@@ -1709,7 +1793,10 @@ export default function CotizadorMarcos() {
 
             <div style={{ marginTop: 12 }}>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile ? effectiveProfile.nombre : "Sin seleccionar"} />
-              <SummaryRow label="Ancho de varilla" value={selectedProfile ? formatDimensionCm(effectiveProfile.frenteMm) : "-"} />
+              <SummaryRow label="Ancho de varilla" value={selectedProfile ? formatDimensionCm(effectiveMeasures.frenteMm) : "-"} />
+              {selectedProfile?.liston ? (
+                <SummaryRow label="Colocacion" value={form.listonUso === "canto" ? "De canto" : "De plano"} />
+              ) : null}
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
               <SummaryRow label="Tipo de medida" value={form.tipoMedida === "interior" ? "Interior" : "Exterior"} />
               <SummaryRow
