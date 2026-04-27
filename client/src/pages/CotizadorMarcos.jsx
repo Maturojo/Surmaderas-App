@@ -1286,9 +1286,102 @@ export default function CotizadorMarcos() {
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Configuracion del marco</div>
 
               <div style={twoColumnGridStyle}>
+                <div style={{ display: "grid", gap: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                      Medidas
+                    </span>
+                    <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1.5px solid #d6cfc8" }}>
+                      {["mm", "cm"].map((u) => (
+                        <button
+                          key={u}
+                          type="button"
+                          onClick={() => setUnidadMedida(u)}
+                          style={{
+                            padding: "2px 10px",
+                            fontSize: 11,
+                            fontWeight: 800,
+                            letterSpacing: "0.06em",
+                            border: "none",
+                            cursor: "pointer",
+                            background: unidadMedida === u ? "#5d544b" : "transparent",
+                            color: unidadMedida === u ? "#fff" : "#5d544b",
+                            transition: "background 0.15s",
+                          }}
+                        >
+                          {u.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <select
+                    value={presetSizeId}
+                    onChange={(e) => handlePresetSizeChange(e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    {PRESET_SIZE_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <div style={twoColumnGridStyle}>
+                    <input
+                      type="number"
+                      min={unidadMedida === "cm" ? "5" : "50"}
+                      step={unidadMedida === "cm" ? "0.1" : "1"}
+                      value={unidadMedida === "cm" ? form.anchoMm / 10 : form.anchoMm}
+                      onChange={(e) => {
+                        setPresetSizeId("personalizada");
+                        setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                      }}
+                      placeholder="Medida 1"
+                      style={rawMeasureInputStyle}
+                    />
+                    <input
+                      type="number"
+                      min={unidadMedida === "cm" ? "5" : "50"}
+                      step={unidadMedida === "cm" ? "0.1" : "1"}
+                      value={unidadMedida === "cm" ? form.altoMm / 10 : form.altoMm}
+                      onChange={(e) => {
+                        setPresetSizeId("personalizada");
+                        setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                      }}
+                      placeholder="Medida 2"
+                      style={rawMeasureInputStyle}
+                    />
+                  </div>
+                  <span style={helperTextStyle}>
+                    {unidadMedida === "cm"
+                      ? `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho / 10} cm, alto ${normalizedDimensions.alto / 10} cm`
+                      : `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
+                  </span>
+                </div>
+
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Tipo de varilla
+                    Tipo de medida
+                  </span>
+                  <select
+                    value={form.tipoMedida}
+                    onChange={(e) => setField("tipoMedida", e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    <option value="exterior">Exterior</option>
+                    <option value="interior">Interior</option>
+                  </select>
+                  <span style={helperTextStyle}>
+                    {form.tipoMedida === "interior"
+                      ? "La app suma automaticamente el frente de la varilla para obtener la medida final."
+                      : "La medida cargada se toma como total exterior del marco."}
+                  </span>
+                </label>
+              </div>
+
+              <div style={twoColumnGridStyle}>
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Varilla
                   </span>
                   <input
                     type="text"
@@ -1316,180 +1409,26 @@ export default function CotizadorMarcos() {
                   </span>
                 </label>
 
-                <NumberField
-                  label="Cantidad"
-                  value={form.cantidad}
-                  onChange={(e) => setField("cantidad", e.target.value)}
-                  min={1}
-                  step={1}
-                  suffix="u"
-                />
-
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Orientacion
+                    Pintado
                   </span>
                   <select
-                    value={form.orientacion}
-                    onChange={(e) => handleOrientationChange(e.target.value)}
+                    value={form.pintadoId}
+                    onChange={(e) => setField("pintadoId", e.target.value)}
                     style={selectFieldStyle}
                   >
-                    <option value="vertical">Vertical</option>
-                    <option value="horizontal">Horizontal</option>
-                  </select>
-                  <span style={helperTextStyle}> </span>
-                </label>
-                <label style={selectWrapperStyle}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Tipo de medida
-                  </span>
-                  <select
-                    value={form.tipoMedida}
-                    onChange={(e) => setField("tipoMedida", e.target.value)}
-                    style={selectFieldStyle}
-                  >
-                    <option value="exterior">Exterior</option>
-                    <option value="interior">Interior</option>
-                  </select>
-                  <span style={helperTextStyle}>
-                    {form.tipoMedida === "interior"
-                      ? "La app suma automaticamente el frente de la varilla para obtener la medida final."
-                      : "La medida cargada se toma como total exterior del marco."}
-                  </span>
-                </label>
-              </div>
-
-              <div style={{ display: "grid", gap: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Medidas
-                  </span>
-                  <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1.5px solid #d6cfc8" }}>
-                    {["mm", "cm"].map((u) => (
-                      <button
-                        key={u}
-                        type="button"
-                        onClick={() => setUnidadMedida(u)}
-                        style={{
-                          padding: "2px 10px",
-                          fontSize: 11,
-                          fontWeight: 800,
-                          letterSpacing: "0.06em",
-                          border: "none",
-                          cursor: "pointer",
-                          background: unidadMedida === u ? "#5d544b" : "transparent",
-                          color: unidadMedida === u ? "#fff" : "#5d544b",
-                          transition: "background 0.15s",
-                        }}
-                      >
-                        {u.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <label style={selectWrapperStyle}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Medida predeterminada
-                  </span>
-                  <select
-                    value={presetSizeId}
-                    onChange={(e) => handlePresetSizeChange(e.target.value)}
-                    style={selectFieldStyle}
-                  >
-                    {PRESET_SIZE_OPTIONS.map((option) => (
+                    {PINTADO_OPTIONS.map((option) => (
                       <option key={option.id} value={option.id}>
                         {option.nombre}
                       </option>
                     ))}
                   </select>
-                  <span style={helperTextStyle}>
-                    La medida elegida se interpreta como {form.tipoMedida === "interior" ? "interior" : "exterior"}.
-                  </span>
-                </label>
-                <div style={twoColumnGridStyle}>
-                  <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
-                    <input
-                      type="number"
-                      min={unidadMedida === "cm" ? "5" : "50"}
-                      step={unidadMedida === "cm" ? "0.1" : "1"}
-                      value={unidadMedida === "cm" ? form.anchoMm / 10 : form.anchoMm}
-                      onChange={(e) => {
-                        setPresetSizeId("personalizada");
-                        setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
-                      }}
-                      placeholder="Medida 1"
-                      style={rawMeasureInputStyle}
-                    />
-                    <span style={helperTextStyle}>Se ordena automaticamente segun la orientacion.</span>
-                  </div>
-
-                  <div style={{ display: "grid", gap: 6, alignContent: "start" }}>
-                    <input
-                      type="number"
-                      min={unidadMedida === "cm" ? "5" : "50"}
-                      step={unidadMedida === "cm" ? "0.1" : "1"}
-                      value={unidadMedida === "cm" ? form.altoMm / 10 : form.altoMm}
-                      onChange={(e) => {
-                        setPresetSizeId("personalizada");
-                        setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
-                      }}
-                      placeholder="Medida 2"
-                      style={rawMeasureInputStyle}
-                    />
-                    <span style={helperTextStyle}>
-                      {unidadMedida === "cm"
-                        ? `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho / 10} cm, alto ${normalizedDimensions.alto / 10} cm`
-                        : `${form.orientacion === "horizontal" ? "Horizontal" : "Vertical"}: ancho ${normalizedDimensions.ancho} mm, alto ${normalizedDimensions.alto} mm`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div style={twoColumnGridStyle}>
-                <NumberField
-                  label="Paspartu"
-                  value={form.paspartuMm / 10}
-                  onChange={(e) => setField("paspartuMm", (parseFloat(e.target.value || 0) * 10).toString())}
-                  min={0}
-                  step={0.1}
-                  suffix="cm"
-                  helper="Ingresa el ancho visible del paspartu en centimetros."
-                />
-                <label style={selectWrapperStyle}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Color paspartu
-                  </span>
-                  <select
-                    value={form.paspartuColorId}
-                    onChange={(e) => setField("paspartuColorId", e.target.value)}
-                    style={selectFieldStyle}
-                  >
-                    {PASPARTU_COLOR_OPTIONS.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.nombre}
-                      </option>
-                    ))}
-                  </select>
-                  <span style={helperTextStyle}>Se aplica en la vista y en el presupuesto.</span>
-                </label>
-              </div>
-
-              <div style={twoColumnGridStyle}>
-                <label style={selectWrapperStyle}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Frente
-                  </span>
-                  <select
-                    value={form.frente}
-                    onChange={(e) => setField("frente", e.target.value)}
-                    style={selectFieldStyle}
-                  >
-                    <option value="no">No</option>
-                    <option value="vidrio">Vidrio</option>
-                    <option value="espejo">Espejo</option>
-                  </select>
                   <span style={helperTextStyle}> </span>
                 </label>
+              </div>
+
+              <div style={twoColumnGridStyle}>
                 <label style={{ ...selectWrapperStyle, opacity: espejoSinFondo ? 0.45 : 1 }}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Fondo
@@ -1510,27 +1449,78 @@ export default function CotizadorMarcos() {
                     {espejoSinFondo ? "No aplica en espejo bajo 120 cm." : " "}
                   </span>
                 </label>
+
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Vidrio
+                  </span>
+                  <select
+                    value={form.frente}
+                    onChange={(e) => setField("frente", e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    <option value="no">No</option>
+                    <option value="vidrio">Vidrio</option>
+                    <option value="espejo">Espejo</option>
+                  </select>
+                  <span style={helperTextStyle}> </span>
+                </label>
               </div>
 
               <div style={twoColumnGridStyle}>
+                <NumberField
+                  label="Paspartu"
+                  value={form.paspartuMm / 10}
+                  onChange={(e) => setField("paspartuMm", (parseFloat(e.target.value || 0) * 10).toString())}
+                  min={0}
+                  step={0.1}
+                  suffix="cm"
+                  helper="Ingresa el ancho visible del paspartu en centimetros."
+                />
+
                 <label style={selectWrapperStyle}>
                   <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                    Pintado
+                    Material
                   </span>
                   <select
-                    value={form.pintadoId}
-                    onChange={(e) => setField("pintadoId", e.target.value)}
+                    value={form.paspartuColorId}
+                    onChange={(e) => setField("paspartuColorId", e.target.value)}
                     style={selectFieldStyle}
                   >
-                    {PINTADO_OPTIONS.map((option) => (
+                    {PASPARTU_COLOR_OPTIONS.map((option) => (
                       <option key={option.id} value={option.id}>
                         {option.nombre}
                       </option>
                     ))}
                   </select>
+                  <span style={helperTextStyle}>Se aplica en la vista y en el presupuesto.</span>
+                </label>
+              </div>
+
+              <div style={twoColumnGridStyle}>
+                <label style={selectWrapperStyle}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    Orientacion
+                  </span>
+                  <select
+                    value={form.orientacion}
+                    onChange={(e) => handleOrientationChange(e.target.value)}
+                    style={selectFieldStyle}
+                  >
+                    <option value="vertical">Vertical</option>
+                    <option value="horizontal">Horizontal</option>
+                  </select>
                   <span style={helperTextStyle}> </span>
                 </label>
-                <div />
+
+                <NumberField
+                  label="Cantidad"
+                  value={form.cantidad}
+                  onChange={(e) => setField("cantidad", e.target.value)}
+                  min={1}
+                  step={1}
+                  suffix="u"
+                />
               </div>
 
               <label style={{ display: "grid", gap: 6 }}>
