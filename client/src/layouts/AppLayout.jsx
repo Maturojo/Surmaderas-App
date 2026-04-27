@@ -17,14 +17,14 @@ const NAV_ITEMS = [
   { label: "Dashboard", to: "/dashboard", icon: "dashboard" },
   { label: "Calendario", to: "/calendario", icon: "calendar" },
   {
-    label: "Notas de pedido",
+    label: "Pedidos",
     icon: "notes",
     children: [
-      { label: "Generador", to: "/notas-pedido" },
-      { label: "Listado de notas", to: "/notas-pedido/listado" },
-      { label: "Notas guardadas", to: "/notas-pedido/guardadas" },
-      { label: "Notas en Proceso", to: "/notas-pedido/pendientes" },
-      { label: "Notas en deposito", to: "/notas-pedido/deposito" },
+      { label: "Generador de pedidos", to: "/notas-pedido" },
+      { label: "Pedidos en caja", to: "/notas-pedido/listado" },
+      { label: "Pedidos para pasar", to: "/notas-pedido/guardadas" },
+      { label: "Pedidos en taller", to: "/notas-pedido/pendientes" },
+      { label: "Pedidos en depositos", to: "/notas-pedido/deposito" },
     ],
   },
   {

@@ -79,10 +79,10 @@ export default function NotasPedidoListadoView() {
     const tipo = String(payload?.tipo || "").toLowerCase();
     const message =
       tipo === "pago"
-        ? `La nota ${nota?.numero || ""} se guardo en caja como pagada y paso a Notas guardadas.`
+        ? `El pedido ${nota?.numero || ""} se guardo en caja como pagado y paso a Pedidos para pasar.`
         : tipo === "seña" || tipo === "sena" || tipo === "senia"
-          ? `La nota ${nota?.numero || ""} se guardo en caja como señada y paso a Notas guardadas.`
-          : `La nota ${nota?.numero || ""} se guardo sin pagar y paso a Notas guardadas como pendiente.`;
+          ? `El pedido ${nota?.numero || ""} se guardo en caja como señado y paso a Pedidos para pasar.`
+          : `El pedido ${nota?.numero || ""} se guardo sin pagar y paso a Pedidos para pasar como pendiente.`;
     setFlash({
       kind: "success",
       message,
@@ -124,8 +124,8 @@ export default function NotasPedidoListadoView() {
       <div className="npl-head">
         <div>
           <div className="npl-eyebrow">Caja</div>
-          <h1>Listado de notas</h1>
-          <p className="npl-sub">Stand by de caja: solo se ven notas pendientes hasta guardar el pago o seña.</p>
+          <h1>Pedidos en caja</h1>
+          <p className="npl-sub">Stand by de caja: solo se ven pedidos pendientes hasta guardar el pago o seña.</p>
         </div>
 
         <div className="npl-headStats">

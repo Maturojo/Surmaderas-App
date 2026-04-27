@@ -13,19 +13,19 @@ const CARDS = [
   },
   {
     label: "Caja",
-    title: "Listado de notas en espera",
+    title: "Pedidos en caja",
     copy: "Aca vive el circuito de espera hasta que el cliente paga o deja seña.",
     to: "/notas-pedido/listado",
   },
   {
     label: "Ventas",
-    title: "Nueva nota de pedido",
+    title: "Generador de pedidos",
     copy: "Genera pedidos en mostrador con cliente, entrega, detalle e importe.",
     to: "/notas-pedido",
   },
   {
     label: "Archivo",
-    title: "Notas guardadas",
+    title: "Pedidos para pasar",
     copy: "Consulta, imprime o comparte pedidos ya cerrados en caja.",
     to: "/notas-pedido/guardadas",
   },
@@ -40,7 +40,7 @@ const VENTAS_CARDS = [
   },
   {
     label: "Ventas",
-    title: "Nueva nota de pedido",
+    title: "Generador de pedidos",
     copy: "Genera pedidos en mostrador con cliente, entrega, detalle e importe.",
     to: "/notas-pedido",
   },

@@ -770,8 +770,8 @@ export default function NotaDetalleModal({
       <div className="npl-modal npl-modal--nice" onClick={(e) => e.stopPropagation()}>
         <div className="npl-modalHeader npl-modalHeader--nice">
           <div>
-            <div className="npl-modalTitle">Vista previa de nota</div>
-            <div className="npl-modalSub">{detalle?.numero ? `Nota ${detalle.numero}` : "Nota de pedido"}</div>
+            <div className="npl-modalTitle">Vista previa de pedido</div>
+            <div className="npl-modalSub">{detalle?.numero ? `Pedido ${detalle.numero}` : "Pedido"}</div>
           </div>
 
           <button className="npl-btnGhost" onClick={onClose}>Cerrar</button>

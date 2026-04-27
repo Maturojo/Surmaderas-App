@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarTodosLosProductos } from "../../../services/productosService";
+import { listarProductosEstandar } from "../../../services/productosService";
 
 export function useProductos() {
   const [productos, setProductos] = useState([]);
@@ -8,11 +8,11 @@ export function useProductos() {
   useEffect(() => {
     (async () => {
       try {
-        const productosArray = await listarTodosLosProductos({ pageSize: 200 });
+        const productosArray = await listarProductosEstandar({ limit: 5000 });
         setProductos(productosArray);
 
         const map = {};
-        for (const p of productosArray) map[p._id] = p;
+        for (const p of productosArray) map[p._id || p.codigo] = p;
         setProductosMap(map);
       } catch (e) {
         console.error(e);

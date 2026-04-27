@@ -20,6 +20,23 @@ export async function listarProductos({ q = "", page = 1, limit = 25 } = {}) {
   return data;
 }
 
+export async function listarProductosEstandar({ q = "", limit = 5000 } = {}) {
+  const url = new URL(`${API_URL}/api/productos/estandar`);
+  if (q) url.searchParams.set("q", q);
+  url.searchParams.set("limit", String(limit));
+
+  const res = await apiFetch(url.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.message || `Error ${res.status}`);
+  return Array.isArray(data?.items) ? data.items : [];
+}
+
 export async function obtenerProductosCatalogo({ q = "", categoria = "", subcategoria = "", page = 1, limit = 60 } = {}) {
   const url = new URL(`${API_URL}/api/productos`);
   if (q) url.searchParams.set("q", q);

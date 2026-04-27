@@ -152,26 +152,26 @@ async function enviarNotaWhatsappConAdjunto({ nota, telefonoWhatsapp, mensaje, e
 
 const VIEW_CONFIG = {
   all: {
-    title: "Notas guardadas",
+    title: "Pedidos para pasar",
     subtitle:
-      "Organizá qué sale al taller, qué va a proveedores y qué ya quedó finalizado sin perder de vista el estado comercial de cada pedido.",
+      "Organiza que sale al taller, que va a proveedores y que queda pendiente de derivar sin perder de vista el estado comercial de cada pedido.",
     sectionTitle: "Plan del día",
-    sectionSubtitle: "Visualizá rápido destino, estado operativo y total de cada nota.",
-    emptyMessage: "No hay notas guardadas.",
+    sectionSubtitle: "Visualiza rapido destino, estado operativo y total de cada pedido.",
+    emptyMessage: "No hay pedidos para pasar.",
   },
   pendientes: {
-    title: "Notas en Proceso",
-    subtitle: "Acá están las notas enviadas a proveedor que están en proceso.",
-    sectionTitle: "En Proceso",
-    sectionSubtitle: "Notas enviadas a proveedor que todavía no se finalizaron.",
-    emptyMessage: "No hay notas en proceso.",
+    title: "Pedidos en taller",
+    subtitle: "Aca estan los pedidos que ya fueron pasados al taller.",
+    sectionTitle: "Taller",
+    sectionSubtitle: "Pedidos en taller que todavia no se finalizaron.",
+    emptyMessage: "No hay pedidos en taller.",
   },
   deposito: {
-    title: "Notas en depósito",
-    subtitle: "Acá ves las notas finalizadas que ya quedaron listas en depósito.",
-    sectionTitle: "Depósito",
-    sectionSubtitle: "Listado de notas que ya terminaron su circuito operativo.",
-    emptyMessage: "No hay notas en depósito.",
+    title: "Pedidos en depositos",
+    subtitle: "Aca ves los pedidos finalizados que ya quedaron listos en deposito.",
+    sectionTitle: "Depositos",
+    sectionSubtitle: "Listado de pedidos que ya terminaron su circuito operativo.",
+    emptyMessage: "No hay pedidos en depositos.",
   },
 };
 
@@ -679,7 +679,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         </div>
         <div className="ng-stats">
           <article className="ng-statCard">
-            <span className="ng-statLabel">Notas visibles</span>
+            <span className="ng-statLabel">Pedidos visibles</span>
             <strong className="ng-statValue">{resumen.totalNotas}</strong>
           </article>
           <article className="ng-statCard">
