@@ -66,11 +66,15 @@ function inferProfileMeasures(nombre) {
   };
 }
 
-function createProfile({ codigo, nombre, precioMetro }) {
-  const measures = inferProfileMeasures(nombre);
+function createProfile({ codigo, nombre, precioMetro, frenteMm, profundidadMm, shape: shapeOverride, color: colorOverride, veta: vetaOverride }) {
+  const measures =
+    Number.isFinite(frenteMm) && Number.isFinite(profundidadMm)
+      ? { frenteMm, profundidadMm }
+      : inferProfileMeasures(nombre);
   const normalizedName = String(nombre || "").toUpperCase();
   const isPine = /PINO/.test(normalizedName);
   const shape = (() => {
+    if (shapeOverride) return shapeOverride;
     if (isPine) return "pine-chata";
     if (/ONDULADA/.test(normalizedName)) return "ondulada";
     if (/MOLDURON/.test(normalizedName)) return "molduron";
@@ -90,9 +94,9 @@ function createProfile({ codigo, nombre, precioMetro }) {
     precioMetro,
     frenteMm: measures.frenteMm,
     profundidadMm: measures.profundidadMm,
-    color: isPine ? "#c59257" : "#b78a52",
+    color: colorOverride || (isPine ? "#c59257" : "#b78a52"),
     shape,
-    veta: isPine ? "#e2bf86" : "#d7b079",
+    veta: vetaOverride || (isPine ? "#e2bf86" : "#d7b079"),
   };
 }
 
@@ -125,6 +129,47 @@ const INITIAL_PROFILES = [
   createProfile({ codigo: "MC918", nombre: "MOLDURON ESPECIAL 32 X 58", precioMetro: 5795 }),
   createProfile({ codigo: "MC914", nombre: "ONDULADA 14 X 32", precioMetro: 1639 }),
   createProfile({ codigo: "MC922", nombre: "ONDULADA 14 X 45", precioMetro: 2241 }),
+  createProfile({ codigo: "30105", nombre: "LISTON 1/2 X 1/2", precioMetro: 403, frenteMm: 13, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30106", nombre: "LISTON 1/2 X 3/4", precioMetro: 591, frenteMm: 19, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30107", nombre: "LISTON 1/2 X 1", precioMetro: 667, frenteMm: 25, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30108", nombre: "LISTON 1/2 X 1 1/2", precioMetro: 1014, frenteMm: 38, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30109", nombre: "LISTON 1/2 X 2", precioMetro: 1287, frenteMm: 51, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30110", nombre: "LISTON 1/2 X 3", precioMetro: 1923, frenteMm: 76, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30111", nombre: "LISTON 1/2 X 4", precioMetro: 2556, frenteMm: 102, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30112", nombre: "LISTON 1/2 X 5", precioMetro: 3199, frenteMm: 127, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30113", nombre: "LISTON 1/2 X 6", precioMetro: 3831, frenteMm: 152, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30122", nombre: "LISTON 3/4 X 3/4", precioMetro: 779, frenteMm: 19, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30123", nombre: "LISTON 3/4 X 1", precioMetro: 934, frenteMm: 25, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30124", nombre: "LISTON 3/4 X 1 1/2", precioMetro: 1446, frenteMm: 38, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30125", nombre: "LISTON 3/4 X 2", precioMetro: 1928, frenteMm: 51, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30126", nombre: "LISTON 3/4 X 3", precioMetro: 2876, frenteMm: 76, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30127", nombre: "LISTON 3/4 X 4", precioMetro: 3835, frenteMm: 102, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30128", nombre: "LISTON 3/4 X 5", precioMetro: 4817, frenteMm: 127, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30129", nombre: "LISTON 3/4 X 6", precioMetro: 4685, frenteMm: 152, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30138", nombre: "LISTON 1 X 1", precioMetro: 1178, frenteMm: 25, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30139", nombre: "LISTON 1 X 1 1/2", precioMetro: 1730, frenteMm: 38, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30140", nombre: "LISTON 1 X 2", precioMetro: 2308, frenteMm: 51, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30141", nombre: "LISTON 1 X 3", precioMetro: 3478, frenteMm: 76, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30142", nombre: "LISTON 1 X 4", precioMetro: 4625, frenteMm: 102, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30143", nombre: "LISTON 1 X 5", precioMetro: 5776, frenteMm: 127, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30144", nombre: "LISTON 1 X 6", precioMetro: 6955, frenteMm: 152, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30153", nombre: "LISTON 1 1/2 X 1 1/2", precioMetro: 2877, frenteMm: 38, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30154", nombre: "LISTON 1 1/2 X 2", precioMetro: 3842, frenteMm: 51, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30155", nombre: "LISTON 11/2 X 3", precioMetro: 5756, frenteMm: 76, profundidadMm: 38, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30170", nombre: "LISTON 2 X2", precioMetro: 5241, frenteMm: 51, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30171", nombre: "LISTON 2 X 3", precioMetro: 7917, frenteMm: 76, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30172", nombre: "LISTON 2 X 4", precioMetro: 10484, frenteMm: 102, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30111C", nombre: "LISTON 1/2 X 4", precioMetro: 2172, frenteMm: 102, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30112C", nombre: "LISTON 1/2 X 5", precioMetro: 2716, frenteMm: 127, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30113C", nombre: "LISTON 1/2 X 6", precioMetro: 3251, frenteMm: 152, profundidadMm: 13, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30127C", nombre: "LISTON 3/4 X 4", precioMetro: 3253, frenteMm: 102, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30128C", nombre: "LISTON 3/4 X 5", precioMetro: 4085, frenteMm: 127, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30129C", nombre: "LISTON 3/4 X 6", precioMetro: 3975, frenteMm: 152, profundidadMm: 19, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30140C", nombre: "LISTON 1 X 2", precioMetro: 1961, frenteMm: 51, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30142C", nombre: "LISTON 1 X 4", precioMetro: 3921, frenteMm: 102, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30143C", nombre: "LISTON 1 X 5", precioMetro: 4905, frenteMm: 127, profundidadMm: 25, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30170C", nombre: "LISTON 2 X 2", precioMetro: 4451, frenteMm: 51, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
+  createProfile({ codigo: "30172C", nombre: "LISTON 2 X 4", precioMetro: 8896, frenteMm: 102, profundidadMm: 51, shape: "chata", color: "#d1b07d", veta: "#ead5ab" }),
 ];
 
 const FONDO_OPTIONS = [

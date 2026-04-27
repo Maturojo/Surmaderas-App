@@ -1842,107 +1842,77 @@
   {
     "codigo": "30105",
     "nombre": "LISTON 1/2 X 1/2",
-    "precio": 403,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 403
   },
   {
     "codigo": "30106",
     "nombre": "LISTON 1/2 X 3/4",
-    "precio": 591,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 591
   },
   {
     "codigo": "30107",
     "nombre": "LISTON 1/2 X 1",
-    "precio": 667,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 667
   },
   {
     "codigo": "30108",
     "nombre": "LISTON 1/2 X 1 1/2",
-    "precio": 1014,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1014
   },
   {
     "codigo": "30110",
     "nombre": "LISTON 1/2 X 3",
-    "precio": 1923,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1923
   },
   {
     "codigo": "30122",
     "nombre": "LISTON 3/4 X 3/4",
-    "precio": 779,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 779
   },
   {
     "codigo": "30123",
     "nombre": "LISTON 3/4 X 1",
-    "precio": 934,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 934
   },
   {
     "codigo": "30124",
     "nombre": "LISTON 3/4 X 1 1/2",
-    "precio": 1446,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1446
   },
   {
     "codigo": "30125",
     "nombre": "LISTON 3/4 X 2",
-    "precio": 1928,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1928
   },
   {
     "codigo": "30138",
     "nombre": "LISTON 1 X 1",
-    "precio": 1178,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1178
   },
   {
     "codigo": "30139",
     "nombre": "LISTON 1 X 1 1/2",
-    "precio": 1730,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1730
   },
   {
     "codigo": "30140",
     "nombre": "LISTON 1 X 2",
-    "precio": 2308,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2308
   },
   {
     "codigo": "30153",
     "nombre": "LISTON 1 1/2 X 1 1/2",
-    "precio": 2877,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2877
   },
   {
     "codigo": "30154",
     "nombre": "LISTON 1 1/2 X 2",
-    "precio": 3842,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3842
   },
   {
     "codigo": "30170",
     "nombre": "LISTON 2 X2",
-    "precio": 5241,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 5241
   },
   {
     "codigo": "MO552",
@@ -2392,100 +2362,72 @@
   {
     "codigo": "30109",
     "nombre": "LISTON 1/2 X 2",
-    "precio": 1287,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1287
   },
   {
     "codigo": "30111",
     "nombre": "LISTON 1/2 X 4",
-    "precio": 2556,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2556
   },
   {
     "codigo": "30112",
     "nombre": "LISTON 1/2 X 5",
-    "precio": 3199,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3199
   },
   {
     "codigo": "30113",
     "nombre": "LISTON 1/2 X 6",
-    "precio": 3831,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3831
   },
   {
     "codigo": "30126",
     "nombre": "LISTON 3/4 X 3",
-    "precio": 2876,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2876
   },
   {
     "codigo": "30127",
     "nombre": "LISTON 3/4 X 4",
-    "precio": 3835,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3835
   },
   {
     "codigo": "30128",
     "nombre": "LISTON 3/4 X 5",
-    "precio": 4817,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4817
   },
   {
     "codigo": "30129",
     "nombre": "LISTON 3/4 X 6",
-    "precio": 4685,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4685
   },
   {
     "codigo": "30141",
     "nombre": "LISTON 1 X 3",
-    "precio": 3478,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3478
   },
   {
     "codigo": "30142",
     "nombre": "LISTON 1 X 4",
-    "precio": 4625,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4625
   },
   {
     "codigo": "30143",
     "nombre": "LISTON 1 X 5",
-    "precio": 5776,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 5776
   },
   {
     "codigo": "30144",
     "nombre": "LISTON 1 X 6",
-    "precio": 6955,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 6955
   },
   {
     "codigo": "30171",
     "nombre": "LISTON 2 X 3",
-    "precio": 7917,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 7917
   },
   {
     "codigo": "30172",
     "nombre": "LISTON 2 X 4",
-    "precio": 10484,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 10484
   },
   {
     "codigo": "T3",
@@ -6375,9 +6317,7 @@
   {
     "codigo": "30155",
     "nombre": "LISTON 11/2 X 3",
-    "precio": 5756,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 5756
   },
   {
     "codigo": "JAC",
@@ -8967,79 +8907,57 @@
   {
     "codigo": "30111C",
     "nombre": "LISTON  1/2 X 4",
-    "precio": 2172,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2172
   },
   {
     "codigo": "30112C",
     "nombre": "LISTON 1/2 X 5",
-    "precio": 2716,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 2716
   },
   {
     "codigo": "30113C",
     "nombre": "LISTON 1/2 X6",
-    "precio": 3251,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3251
   },
   {
     "codigo": "30127C",
     "nombre": "LISTON 3/4 X 4",
-    "precio": 3253,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3253
   },
   {
     "codigo": "30128C",
     "nombre": "LISTON 3/4 X5",
-    "precio": 4085,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4085
   },
   {
     "codigo": "30129C",
     "nombre": "LISTON 3/4X6",
-    "precio": 3975,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3975
   },
   {
     "codigo": "30142C",
     "nombre": "LISTON 1X4",
-    "precio": 3921,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 3921
   },
   {
     "codigo": "30143C",
     "nombre": "LISTON 1X5",
-    "precio": 4905,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4905
   },
   {
     "codigo": "30140C",
     "nombre": "LISTON 1X2",
-    "precio": 1961,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 1961
   },
   {
     "codigo": "30170C",
     "nombre": "LISTON 2X2",
-    "precio": 4451,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 4451
   },
   {
     "codigo": "30172C",
     "nombre": "LISTON 2X4",
-    "precio": 8896,
-    "categoria": "Varilla",
-    "subcategoria": "Listones"
+    "precio": 8896
   },
   {
     "codigo": "AF23",

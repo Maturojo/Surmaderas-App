@@ -21,15 +21,12 @@ async function run() {
     const codigo = String(it.codigo || "").trim();
     const nombre = String(it.nombre || "").trim();
     const precio = Number(it.precio || 0);
-    const categoria = String(it.categoria || "").trim();
-    const subcategoria = String(it.subcategoria || "").trim();
-    const unidad = String(it.unidad || "u").trim() || "u";
 
     if (!codigo || !nombre || !Number.isFinite(precio)) continue;
 
     await Producto.updateOne(
       { codigo },
-      { $set: { codigo, nombre, precio, categoria, subcategoria, unidad, activo: true } },
+      { $set: { codigo, nombre, precio, activo: true } },
       { upsert: true }
     );
 

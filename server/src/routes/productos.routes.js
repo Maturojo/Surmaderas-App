@@ -38,9 +38,9 @@ router.get("/estandar", async (req, res) => {
         codigo: limpiarValor(item?.codigo),
         nombre: limpiarValor(item?.nombre),
         precio: Number(item?.precio || 0),
-        categoria: limpiarValor(item?.categoria) || "Producto estándar",
-        subcategoria: limpiarValor(item?.subcategoria) || "ART",
-        unidad: limpiarValor(item?.unidad) || "u",
+        categoria: "Producto estándar",
+        subcategoria: "ART",
+        unidad: "u",
         activo: true,
       }))
       .filter((item) => item.codigo && item.nombre);
