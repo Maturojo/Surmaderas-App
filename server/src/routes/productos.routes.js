@@ -1,10 +1,13 @@
 ﻿import { Router } from "express";
+import fs from "fs";
+import path from "path";
 import Producto from "../models/Producto.js";
 import Categoria from "../models/Categoria.js";
 import Subcategoria from "../models/Subcategoria.js";
 import HistorialAccion from "../models/HistorialAccion.js";
 
 const router = Router();
+const productosArtPath = path.resolve(process.cwd(), "src/seed/productos_art.json");
 
 function limpiarValor(valor = "") {
   return String(valor || "").trim();
@@ -17,6 +20,50 @@ function normalizarProducto(p) {
     subcategoria: limpiarValor(p?.subcategoria) || "Sin subcategoria",
   };
 }
+
+function cargarProductosArtJson() {
+  const raw = fs.readFileSync(productosArtPath, "utf8");
+  const items = JSON.parse(raw);
+  return Array.isArray(items) ? items : [];
+}
+
+router.get("/estandar", async (req, res) => {
+  try {
+    const q = limpiarValor(req.query.q).toLowerCase();
+    const limit = Math.min(5000, Math.max(1, parseInt(req.query.limit || "5000", 10)));
+
+    let items = cargarProductosArtJson()
+      .map((item) => ({
+        _id: String(item?.codigo || ""),
+        codigo: limpiarValor(item?.codigo),
+        nombre: limpiarValor(item?.nombre),
+        precio: Number(item?.precio || 0),
+        categoria: limpiarValor(item?.categoria) || "Producto estándar",
+        subcategoria: limpiarValor(item?.subcategoria) || "ART",
+        unidad: limpiarValor(item?.unidad) || "u",
+        activo: true,
+      }))
+      .filter((item) => item.codigo && item.nombre);
+
+    if (q) {
+      items = items.filter(
+        (item) =>
+          item.codigo.toLowerCase().includes(q) ||
+          item.nombre.toLowerCase().includes(q)
+      );
+    }
+
+    items.sort((a, b) => {
+      const byName = a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" });
+      if (byName !== 0) return byName;
+      return a.codigo.localeCompare(b.codigo, "es", { sensitivity: "base" });
+    });
+
+    res.json({ items: items.slice(0, limit), total: items.length, page: 1, limit });
+  } catch (error) {
+    res.status(500).json({ message: error?.message || "Error obteniendo productos estándar" });
+  }
+});
 
 router.get("/", async (req, res) => {
   try {
