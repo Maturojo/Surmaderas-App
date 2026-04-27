@@ -24,6 +24,15 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "marco") {
+    if (Array.isArray(d.resumenLineas) && d.resumenLineas.length > 0) {
+      const resumen = d.resumenLineas
+        .filter((linea) => linea?.label && linea?.value)
+        .map((linea) => `${linea.label}: ${linea.value}`)
+        .join(" | ");
+      const obs = d.obs ? ` | Observaciones: ${d.obs}` : "";
+      return resumen ? `${resumen}${obs}`.trim() : `Marco${obs}`.trim();
+    }
+
     const a = d.anchoMm ? `${d.anchoMm}mm` : "";
     const h = d.altoMm ? `${d.altoMm}mm` : "";
     const perfil = d.perfil || "Moldura";

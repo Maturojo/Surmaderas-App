@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -194,6 +195,10 @@ function formatNumber(value, digits = 2) {
 
 function formatDimensionCm(mmValue, digits = 1) {
   return `${formatNumber(clampPositiveNumber(mmValue, 0) / 10, digits)} cm`;
+}
+
+function formatDimensionCmPair(anchoMm, altoMm, digits = 1) {
+  return `${formatDimensionCm(anchoMm, digits)} x ${formatDimensionCm(altoMm, digits)}`;
 }
 
 function clampPositiveNumber(value, fallback = 0) {
@@ -884,6 +889,7 @@ function FramePreview3D({
 }
 
 export default function CotizadorMarcos() {
+  const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);
   const [varillaSearch, setVarillaSearch] = useState("");
   const [presetSizeId, setPresetSizeId] = useState("personalizada");
@@ -1011,6 +1017,57 @@ export default function CotizadorMarcos() {
       ...lines.map(([label, value]) => `*${label}:* ${value}`),
     ].join("\n");
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  function handleEnviarAGenerarPedido() {
+    if (!quote.pricingEnabled) {
+      return;
+    }
+
+    const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
+    const frenteLabel = form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "No";
+    const fondoLabel = selectedFondo.precioM2 > 0 && !espejoSinFondo ? selectedFondo.nombre : "No";
+    const paspartuVal = clampPositiveNumber(form.paspartuMm, 0);
+    const paspartuLabel = paspartuVal > 0 ? `${formatDimensionCm(paspartuVal)} - ${selectedPaspartuColor.nombre}` : "No";
+    const itemPrecioUnitario = cantidad > 0 ? quote.total / cantidad : quote.total;
+    const observaciones = String(form.observaciones || "").trim();
+
+    navigate("/notas-pedido", {
+      state: {
+        prefillMarco: {
+          descripcion: "",
+          cantidad,
+          precio: String(Math.round(itemPrecioUnitario)),
+          especial: false,
+          data: {
+            cotizado: true,
+            perfil: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}`,
+            anchoVarillaCm: formatDimensionCm(effectiveProfile.frenteMm),
+            orientacionVisual: form.orientacion === "horizontal" ? "Horizontal" : "Vertical",
+            tipoMedida: form.tipoMedida === "interior" ? "Interior" : "Exterior",
+            medidaCargada: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm),
+            cantidad: String(cantidad),
+            fondo: fondoLabel,
+            frente: frenteLabel,
+            paspartu: paspartuLabel,
+            pintado: selectedPintado.nombre,
+            obs: observaciones,
+            resumenLineas: [
+              { label: "Varilla seleccionada", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
+              { label: "Ancho de varilla", value: formatDimensionCm(effectiveProfile.frenteMm) },
+              { label: "Orientacion visual", value: form.orientacion === "horizontal" ? "Horizontal" : "Vertical" },
+              { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
+              { label: "Medida cargada", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
+              { label: "Cantidad", value: String(cantidad) },
+              { label: "Fondo", value: fondoLabel },
+              { label: "Frente", value: frenteLabel },
+              { label: "Paspartu", value: paspartuLabel },
+              { label: "Pintado", value: selectedPintado.nombre },
+            ],
+          },
+        },
+      },
+    });
   }
   const normalizedDimensions = useMemo(
     () => normalizeDimensionsByOrientation(form.anchoMm, form.altoMm, form.orientacion),
@@ -1676,6 +1733,24 @@ export default function CotizadorMarcos() {
               Enviar por WhatsApp
             </button>
           </div>
+          <button
+            type="button"
+            onClick={handleEnviarAGenerarPedido}
+            disabled={!quote.pricingEnabled}
+            style={{
+              padding: "14px 18px",
+              borderRadius: 16,
+              background: quote.pricingEnabled ? "#c59257" : "#d6cdc2",
+              color: quote.pricingEnabled ? "#2d241c" : "#7f7469",
+              border: "none",
+              fontSize: 15,
+              fontWeight: 900,
+              cursor: quote.pricingEnabled ? "pointer" : "not-allowed",
+              letterSpacing: "0.02em",
+            }}
+          >
+            Enviar a generar pedido
+          </button>
         </div>
       </section>
     </div>

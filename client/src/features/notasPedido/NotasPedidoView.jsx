@@ -1,5 +1,6 @@
 ﻿import { useMemo, useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { crearNotaPedido, listarNotasPedido } from "../../services/notasPedido";
 import { useProductos } from "./hooks/useProductos";
@@ -96,9 +97,12 @@ function getEstadoComercial(nota) {
 }
 
 export default function NotasPedidoView() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { productos } = useProductos();
   const acItemsRef = useRef({});
   const rootRef = useRef(null);
+  const prefillMarcoConsumidoRef = useRef(false);
 
   const [fecha, setFecha] = useState(() => formatDateYYYYMMDD(new Date()));
   const [diasHabiles, setDiasHabiles] = useState(15);
@@ -173,6 +177,30 @@ export default function NotasPedidoView() {
   useEffect(() => {
     loadSeguimiento();
   }, []);
+
+  useEffect(() => {
+    const prefillMarco = location.state?.prefillMarco;
+
+    if (!prefillMarco || prefillMarcoConsumidoRef.current) {
+      return;
+    }
+
+    prefillMarcoConsumidoRef.current = true;
+
+    setItems([
+      {
+        ...emptyItem,
+        tipo: "marco",
+        descripcion: prefillMarco.descripcion || "",
+        cantidad: Number(prefillMarco.cantidad || 1),
+        precio: prefillMarco.precio || "",
+        especial: Boolean(prefillMarco.especial),
+        data: prefillMarco.data || {},
+      },
+    ]);
+
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
 
   const subtotal = useMemo(
     () =>
@@ -379,7 +407,7 @@ export default function NotasPedidoView() {
         <div className="np-hero">
           <div>
             <div className="np-kicker">Sur Maderas</div>
-            <h1 className="np-title">Generador de Nota de Pedido</h1>
+            <h1 className="np-title">Generador de pedidos</h1>
             <p className="np-copy">
               Armá la nota en el momento, con cliente, entrega y detalle del trabajo listos para pasar a caja.
             </p>
@@ -625,9 +653,9 @@ export default function NotasPedidoView() {
         <div className="np-sectionCard np-sectionCard--tracking">
           <div className="np-sectionHead np-sectionHead--tracking">
             <div>
-              <h2 className="np-section-title">Seguimiento de notas</h2>
+              <h2 className="np-section-title">Seguimiento de pedidos</h2>
               <span className="np-sectionHint">
-                Estos dos bloques quedan aparte del generador, pero dentro del módulo de notas de pedido.
+                Estos dos bloques quedan aparte del generador, pero dentro del modulo de pedidos.
               </span>
             </div>
             <button
@@ -646,8 +674,8 @@ export default function NotasPedidoView() {
             <section className="np-trackingPanel">
               <div className="np-trackingPanelHead">
                 <div>
-                  <h3 className="np-trackingTitle">Notas en proceso</h3>
-                  <p className="np-trackingCopy">Las notas que ya entraron a taller se siguen desde acá.</p>
+                  <h3 className="np-trackingTitle">Pedidos en taller</h3>
+                  <p className="np-trackingCopy">Los pedidos que ya entraron a taller se siguen desde aca.</p>
                 </div>
                 <span className="np-trackingCount">{notasEnProceso.length}</span>
               </div>
@@ -656,7 +684,7 @@ export default function NotasPedidoView() {
                 {seguimientoLoading ? (
                   <div className="np-trackingEmpty">Cargando...</div>
                 ) : notasEnProceso.length === 0 ? (
-                  <div className="np-trackingEmpty">Todavía no hay notas en proceso.</div>
+                  <div className="np-trackingEmpty">Todavia no hay pedidos en taller.</div>
                 ) : (
                   notasEnProceso.map((nota) => (
                     <article className="np-trackItem" key={`proceso-${nota?._id || nota?.numero}`}>
@@ -682,8 +710,8 @@ export default function NotasPedidoView() {
             <section className="np-trackingPanel">
               <div className="np-trackingPanelHead">
                 <div>
-                  <h3 className="np-trackingTitle">Notas en depósito</h3>
-                  <p className="np-trackingCopy">Las notas finalizadas y listas para entrega quedan acá.</p>
+                  <h3 className="np-trackingTitle">Pedidos en depositos</h3>
+                  <p className="np-trackingCopy">Los pedidos finalizados y listos para entrega quedan aca.</p>
                 </div>
                 <span className="np-trackingCount">{notasEnDeposito.length}</span>
               </div>
@@ -692,7 +720,7 @@ export default function NotasPedidoView() {
                 {seguimientoLoading ? (
                   <div className="np-trackingEmpty">Cargando...</div>
                 ) : notasEnDeposito.length === 0 ? (
-                  <div className="np-trackingEmpty">Todavía no hay notas en depósito.</div>
+                  <div className="np-trackingEmpty">Todavia no hay pedidos en depositos.</div>
                 ) : (
                   notasEnDeposito.map((nota) => (
                     <article className="np-trackItem" key={`deposito-${nota?._id || nota?.numero}`}>
