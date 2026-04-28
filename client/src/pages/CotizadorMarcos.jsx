@@ -534,7 +534,7 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
   const shadowColor = isPineChata ? "#f3ddb2" : new THREE.Color(color).offsetHSL(0, 0, -0.14).getStyle();
   const darkAccentColor = isPineChata ? "#ddc08e" : new THREE.Color(color).offsetHSL(0, 0, -0.22).getStyle();
   const pineFaceTexture = useMemo(() => {
-    if (!isPineChata && !isPineListon) {
+    if (!isPineChata) {
       return null;
     }
     const texture = createFingerJointPineTexture("face");
@@ -547,9 +547,9 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     repeated.repeat.set(Math.max(safeLength * 1.35, 2.2), 1.15);
     repeated.needsUpdate = true;
     return repeated;
-  }, [isPineChata, isPineListon, safeLength]);
+  }, [isPineChata, safeLength]);
   const pineEdgeTexture = useMemo(() => {
-    if (!isPineChata && !isPineListon) {
+    if (!isPineChata) {
       return null;
     }
     const texture = createFingerJointPineTexture("edge");
@@ -562,9 +562,9 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     repeated.repeat.set(Math.max(safeLength * 1.8, 3), 1);
     repeated.needsUpdate = true;
     return repeated;
-  }, [isPineChata, isPineListon, safeLength]);
+  }, [isPineChata, safeLength]);
   const pineBumpTexture = useMemo(() => {
-    if ((!isPineChata && !isPineListon) || !pineFaceTexture) {
+    if (!isPineChata || !pineFaceTexture) {
       return null;
     }
 
@@ -572,7 +572,7 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
     texture.colorSpace = THREE.NoColorSpace;
     texture.needsUpdate = true;
     return texture;
-  }, [isPineChata, isPineListon, pineFaceTexture]);
+  }, [isPineChata, pineFaceTexture]);
 
   return (
     <group position={position} rotation={rotation}>
@@ -582,9 +582,9 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
           color={isPineChata || isPineListon ? "#ead8ac" : color}
           roughness={isPineChata || isPineListon ? 0.68 : 0.5}
           metalness={isPineChata || isPineListon ? 0.01 : 0.35}
-          map={pineEdgeTexture || pineFaceTexture}
-          bumpMap={pineBumpTexture}
-          bumpScale={isPineChata || isPineListon ? 0.028 : 0}
+          map={isPineChata ? pineEdgeTexture || pineFaceTexture : null}
+          bumpMap={isPineChata ? pineBumpTexture : null}
+          bumpScale={isPineChata ? 0.028 : 0}
         />
       </mesh>
 
@@ -654,32 +654,6 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
               polygonOffset
               polygonOffsetFactor={-1}
             />
-          </mesh>
-        </>
-      ) : null}
-
-      {isPineListon ? (
-        <>
-          <mesh position={[0, 0, depth / 2 + 0.0012]} receiveShadow>
-            <planeGeometry args={[safeLength, face]} />
-            <meshStandardMaterial
-              color="#f3e0b4"
-              roughness={0.52}
-              metalness={0.01}
-              map={pineFaceTexture}
-              bumpMap={pineBumpTexture}
-              bumpScale={0.032}
-              polygonOffset
-              polygonOffsetFactor={-1}
-            />
-          </mesh>
-          <mesh position={[0, face / 2 - 0.0015, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
-            <planeGeometry args={[safeLength, depth]} />
-            <meshStandardMaterial color="#e3c894" roughness={0.64} metalness={0.01} map={pineEdgeTexture} />
-          </mesh>
-          <mesh position={[0, -face / 2 + 0.0015, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
-            <planeGeometry args={[safeLength, depth]} />
-            <meshStandardMaterial color="#d6b680" roughness={0.66} metalness={0.01} map={pineEdgeTexture} />
           </mesh>
         </>
       ) : null}
