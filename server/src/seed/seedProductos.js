@@ -1,10 +1,12 @@
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import Producto from "../models/Producto.js";
 
-const filePath = path.resolve("src/seed/productos_art.json");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const filePath = path.resolve(__dirname, "productos_art.json");
 
 async function run() {
   if (!process.env.MONGODB_URI) throw new Error("Falta MONGODB_URI en .env");

@@ -1,13 +1,15 @@
 ﻿import { Router } from "express";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import Producto from "../models/Producto.js";
 import Categoria from "../models/Categoria.js";
 import Subcategoria from "../models/Subcategoria.js";
 import HistorialAccion from "../models/HistorialAccion.js";
 
 const router = Router();
-const productosArtPath = path.resolve(process.cwd(), "src/seed/productos_art.json");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const productosArtPath = path.resolve(__dirname, "../seed/productos_art.json");
 
 function limpiarValor(valor = "") {
   return String(valor || "").trim();
