@@ -367,6 +367,11 @@
   color: #2f7a45;
 }
 
+.ng-inlineBadge--local {
+  background: #e8f4ea;
+  color: #2f7a45;
+}
+
 .ng-muted {
   color: #8a8178;
 }
@@ -582,6 +587,12 @@
   border: 1px solid rgba(73, 58, 38, 0.1);
   background: #fff;
   color: #33281f;
+}
+
+.ng-quickBtn--ready {
+  border-color: rgba(47, 122, 69, 0.2);
+  background: #eef8f0;
+  color: #27633a;
 }
 
 .ng-summaryCard {

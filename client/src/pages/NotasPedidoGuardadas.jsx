@@ -79,7 +79,7 @@ function getEstadoComercial(nota) {
 function getEstadoOperativoLabel(estado) {
   if (estado === "Enviado a proveedor") return "Enviada a proveedor";
   if (estado === "En taller") return "Enviada a taller";
-  if (estado === "Finalizado") return "Finalizada";
+  if (estado === "Finalizado") return "Listo para retirar";
   return "Pendiente";
 }
 
@@ -461,11 +461,50 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     await abrirEditarPago(nota);
   }
 
+  async function marcarListoParaRetirar(nota) {
+    if (!nota?._id) return;
+    setActionsOpenId("");
+
+    const res = await Swal.fire({
+      icon: "question",
+      title: "¿Marcar listo para retirar?",
+      text: "La nota queda en depósito/local y no se envía a proveedor ni a taller.",
+      showCancelButton: true,
+      confirmButtonText: "Marcar listo",
+      cancelButtonText: "Cancelar",
+    });
+    if (!res.isConfirmed) return;
+
+    try {
+      await actualizarOperacionNota(nota._id, {
+        estadoOperativo: "Finalizado",
+        proveedores: [],
+      });
+      await load();
+      if (gestionNota?._id === nota._id) {
+        cerrarGestion();
+      }
+      await Swal.fire({
+        icon: "success",
+        title: "Listo para retirar",
+        text: "La nota quedó marcada para retiro en local.",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e?.message || "No se pudo marcar la nota como lista para retirar.",
+      });
+    }
+  }
+
   function toggleActionsMenu(event, notaId) {
     const rect = event.currentTarget.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
     const menuWidth = 220;
-    const menuHeight = 94;
+    const menuHeight = 138;
     const placement = spaceBelow < 150 ? "up" : "down";
     setActionsMenuPlacement(placement);
     setActionsMenuPosition({
@@ -857,6 +896,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       </div>
                     ) : n?.estadoOperativo === "En taller" ? (
                       <span className="ng-inlineBadge ng-inlineBadge--taller">Taller</span>
+                    ) : n?.estadoOperativo === "Finalizado" ? (
+                      <span className="ng-inlineBadge ng-inlineBadge--local">Local / depósito</span>
                     ) : (
                       <span className="ng-muted">-</span>
                     )}
@@ -887,6 +928,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                           >
                             <button type="button" onClick={() => abrirEditarPago(n)}>
                               Modificar estado de pago
+                            </button>
+                            <button type="button" onClick={() => marcarListoParaRetirar(n)}>
+                              Listo para retirar
                             </button>
                             <button type="button" className="danger" onClick={() => borrarNota(n)}>
                               Borrar
@@ -999,6 +1043,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                               <button type="button" onClick={() => abrirEditarPago(n)}>
                                 Modificar estado de pago
                               </button>
+                              <button type="button" onClick={() => marcarListoParaRetirar(n)}>
+                                Listo para retirar
+                              </button>
                               <button type="button" className="danger" onClick={() => borrarNota(n)}>
                                 Borrar
                               </button>
@@ -1048,6 +1095,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 <div className="ng-quickActions">
                   <button className="ng-quickBtn" onClick={abrirPromptProveedor}>
                     Enviar a
+                  </button>
+                  <button className="ng-quickBtn ng-quickBtn--ready" onClick={() => marcarListoParaRetirar(gestionNota)}>
+                    Listo para retirar
                   </button>
                 </div>
 
