@@ -120,6 +120,83 @@ const turneroErrorStyle = {
   textAlign: "center",
 };
 
+function ymd(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function addDays(date, amount) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+
+function formatEntrega(value) {
+  if (!value) return "Sin fecha";
+  const [year, month, day] = String(value).split("-");
+  if (!year || !month || !day) return String(value);
+  return `${day}/${month}/${year}`;
+}
+
+function buildDeliveryAlerts(events = [], todayKey, tomorrowKey) {
+  const notes = events
+    .filter((item) => item?.type === "nota-pedido" && !item.completado)
+    .sort((a, b) => {
+      if (a.fecha !== b.fecha) return String(a.fecha || "").localeCompare(String(b.fecha || ""));
+      return String(a.numero || "").localeCompare(String(b.numero || ""));
+    });
+
+  return {
+    overdue: notes.filter((item) => item.fecha && item.fecha < todayKey),
+    today: notes.filter((item) => item.fecha === todayKey),
+    tomorrow: notes.filter((item) => item.fecha === tomorrowKey),
+  };
+}
+
+function DeliveryAlertColumn({ title, tone, items, emptyText, canOpenNote }) {
+  return (
+    <article className={`dashboard-alertColumn dashboard-alertColumn--${tone}`}>
+      <div className="dashboard-alertColumnHead">
+        <span>{title}</span>
+        <strong>{items.length}</strong>
+      </div>
+
+      {items.length > 0 ? (
+        <div className="dashboard-alertList">
+          {items.slice(0, 4).map((item) => (
+            <div key={item.id} className="dashboard-alertItem">
+              <div className="dashboard-alertItemMain">
+                <strong>{item.numero || "Nota de pedido"}</strong>
+                <span>{item.cliente?.nombre || "Sin cliente"}</span>
+              </div>
+              <div className="dashboard-alertItemMeta">
+                <span>{formatEntrega(item.fecha)}</span>
+                <span>{item.estadoOperativo || "Pendiente"}</span>
+              </div>
+              <div className="dashboard-alertActions">
+                {canOpenNote ? (
+                  <Link className="dashboard-alertLink" to={`/notas-pedido/listado?nota=${item.sourceId || item._id}`}>
+                    Ver nota
+                  </Link>
+                ) : null}
+                <Link className="dashboard-alertLink" to="/calendario">
+                  Calendario
+                </Link>
+              </div>
+            </div>
+          ))}
+          {items.length > 4 ? (
+            <Link className="dashboard-alertMore" to="/calendario">
+              Ver {items.length - 4} mas en calendario
+            </Link>
+          ) : null}
+        </div>
+      ) : (
+        <p className="dashboard-alertEmpty">{emptyText}</p>
+      )}
+    </article>
+  );
+}
+
 export default function Dashboard() {
   const userRole = getUserRole();
   const [turnero, setTurnero] = useState(null);
@@ -127,11 +204,15 @@ export default function Dashboard() {
   const [isTakingTurno, setIsTakingTurno] = useState(false);
   const [turneroError, setTurneroError] = useState("");
   const [todayEvents, setTodayEvents] = useState([]);
+  const [deliveryAlerts, setDeliveryAlerts] = useState({ overdue: [], today: [], tomorrow: [] });
+  const [deliveryAlertsError, setDeliveryAlertsError] = useState("");
 
   const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todayKey = ymd(today);
+  const tomorrowKey = ymd(addDays(today, 1));
   const todayNumber = today.getDate();
   const cards = userRole === "ventas" ? VENTAS_CARDS : CARDS;
+  const canOpenNote = userRole !== "ventas";
 
   useEffect(() => {
     let cancelled = false;
@@ -174,24 +255,31 @@ export default function Dashboard() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadTodayEvents() {
+    async function loadOperationalCalendar() {
       try {
-        const data = await obtenerCalendario({ fecha: todayKey });
+        const [todayData, alertData] = await Promise.all([
+          obtenerCalendario({ fecha: todayKey }),
+          obtenerCalendario({ desde: "2000-01-01", hasta: tomorrowKey }),
+        ]);
         if (!cancelled) {
-          setTodayEvents(Array.isArray(data?.byDay?.[todayKey]) ? data.byDay[todayKey] : []);
+          setTodayEvents(Array.isArray(todayData?.byDay?.[todayKey]) ? todayData.byDay[todayKey] : []);
+          setDeliveryAlerts(buildDeliveryAlerts(alertData?.eventos || [], todayKey, tomorrowKey));
+          setDeliveryAlertsError("");
         }
-      } catch {
+      } catch (error) {
         if (!cancelled) {
           setTodayEvents([]);
+          setDeliveryAlerts({ overdue: [], today: [], tomorrow: [] });
+          setDeliveryAlertsError(error.message || "No se pudieron cargar las alertas operativas");
         }
       }
     }
 
-    loadTodayEvents();
+    loadOperationalCalendar();
     return () => {
       cancelled = true;
     };
-  }, [todayKey]);
+  }, [todayKey, tomorrowKey]);
 
   async function handleTakeTurno() {
     try {
@@ -284,6 +372,44 @@ export default function Dashboard() {
             </Link>
           </article>
         ))}
+      </section>
+
+      <section className="dashboard-alertsPanel">
+        <div className="dashboard-alertsHeader">
+          <div>
+            <div className="dashboard-kicker">Alertas operativas</div>
+            <h2>Entregas de notas de pedido</h2>
+          </div>
+          <Link className="dashboard-alertCalendarLink" to="/calendario">
+            Abrir calendario
+          </Link>
+        </div>
+
+        {deliveryAlertsError ? <div className="dashboard-alertError">{deliveryAlertsError}</div> : null}
+
+        <div className="dashboard-alertsGrid">
+          <DeliveryAlertColumn
+            title="Atrasadas"
+            tone="danger"
+            items={deliveryAlerts.overdue}
+            emptyText="No hay notas atrasadas pendientes."
+            canOpenNote={canOpenNote}
+          />
+          <DeliveryAlertColumn
+            title="Entrega hoy"
+            tone="today"
+            items={deliveryAlerts.today}
+            emptyText="No hay entregas de notas para hoy."
+            canOpenNote={canOpenNote}
+          />
+          <DeliveryAlertColumn
+            title="Entrega manana"
+            tone="tomorrow"
+            items={deliveryAlerts.tomorrow}
+            emptyText="No hay entregas cargadas para manana."
+            canOpenNote={canOpenNote}
+          />
+        </div>
       </section>
     </div>
   );

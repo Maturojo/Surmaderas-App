@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { listarNotasPedido, obtenerNotaPedido } from "../../../services/notasPedido";
 
 export function useNotasPedidoListado({ initialLimit = 25 } = {}) {
-  const [q, setQ] = useState("");
+  const [searchParams] = useSearchParams();
+  const initialQ = searchParams.get("q") || "";
+  const initialOpenId = searchParams.get("nota") || "";
+  const [q, setQ] = useState(initialQ);
   const [page, setPage] = useState(1);
   const [limit] = useState(initialLimit);
 
@@ -70,6 +74,9 @@ export function useNotasPedidoListado({ initialLimit = 25 } = {}) {
   // carga inicial
   useEffect(() => {
     cargar(1);
+    if (initialOpenId) {
+      abrirDetalle(initialOpenId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

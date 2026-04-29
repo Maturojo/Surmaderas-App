@@ -229,6 +229,57 @@
   background: #fcfaf6;
 }
 
+.ng-table tbody tr.ng-rowDue--ok td {
+  background: #f1faef;
+}
+
+.ng-table tbody tr.ng-rowDue--warning td {
+  background: #fff8df;
+}
+
+.ng-table tbody tr.ng-rowDue--danger td {
+  background: #fff1f1;
+}
+
+.ng-table tbody tr.ng-rowDue--ok:hover td {
+  background: #e9f7e6;
+}
+
+.ng-table tbody tr.ng-rowDue--warning:hover td {
+  background: #fff1c5;
+}
+
+.ng-table tbody tr.ng-rowDue--danger:hover td {
+  background: #ffe5e5;
+}
+
+.ng-table tbody tr.ng-rowDue--ok td:first-child,
+.ng-table tbody tr.ng-rowDue--warning td:first-child,
+.ng-table tbody tr.ng-rowDue--danger td:first-child {
+  position: relative;
+}
+
+.ng-table tbody tr.ng-rowDue--ok td:first-child::before,
+.ng-table tbody tr.ng-rowDue--warning td:first-child::before,
+.ng-table tbody tr.ng-rowDue--danger td:first-child::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+}
+
+.ng-table tbody tr.ng-rowDue--ok td:first-child::before {
+  background: #48a868;
+}
+
+.ng-table tbody tr.ng-rowDue--warning td:first-child::before {
+  background: #d89b1d;
+}
+
+.ng-table tbody tr.ng-rowDue--danger td:first-child::before {
+  background: #d24d4d;
+}
+
 .ng-tableMessage {
   padding: 24px;
   text-align: center;
@@ -324,6 +375,7 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .ng-tableBtn {
@@ -347,6 +399,58 @@
   background: #fff4f4;
   color: #9a3131;
   border-color: rgba(154, 49, 49, 0.16);
+}
+
+.ng-tableBtn--icon {
+  width: 40px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.ng-actionsMenu {
+  position: relative;
+  display: inline-flex;
+}
+
+.ng-actionsDropdown {
+  position: fixed;
+  z-index: 100;
+  min-width: 220px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fffdf9;
+  box-shadow: 0 18px 34px rgba(56, 44, 29, 0.16);
+  display: grid;
+  gap: 4px;
+}
+
+.ng-actionsDropdown button {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #342b23;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ng-actionsDropdown button:hover {
+  background: #f7f1e7;
+}
+
+.ng-actionsDropdown button.danger {
+  color: #9a3131;
+}
+
+.ng-actionsDropdown button.danger:hover {
+  background: #fff4f4;
 }
 
 .ng-modalBack {

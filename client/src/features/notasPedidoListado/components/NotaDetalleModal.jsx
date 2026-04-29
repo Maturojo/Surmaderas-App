@@ -296,6 +296,7 @@ export default function NotaDetalleModal({
   onRefresh,
   onGuardarCaja,
   soloVistaPrevia = false,
+  permitirEditarCajaGuardada = false,
 }) {
   const [tipo, setTipo] = useState("");
   const [monto, setMonto] = useState("");
@@ -975,7 +976,7 @@ export default function NotaDetalleModal({
 
                   <button
                     className="npl-btn"
-                    disabled={detalle?.caja?.guardada === true}
+                    disabled={detalle?.caja?.guardada === true && !permitirEditarCajaGuardada}
                     onClick={async () => {
                       try {
                         let payloadTipo = tipo;
@@ -1050,7 +1051,7 @@ export default function NotaDetalleModal({
                       }
                     }}
                   >
-                    Guardar caja
+                    {detalle?.caja?.guardada ? "Guardar cambios de caja" : "Guardar caja"}
                   </button>
                 </div>
               </div>

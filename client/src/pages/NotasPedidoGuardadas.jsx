@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import {
   actualizarOperacionNota,
   eliminarNotaPedido,
+  guardarCajaNota,
   listarNotasPedido,
   listarProveedores,
   obtenerNotaPedido,
@@ -35,6 +36,28 @@ function fmtDate(isoOrYmd) {
   const d = new Date(isoOrYmd);
   if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleDateString("es-AR");
+}
+
+function parseYmd(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+}
+
+function startOfToday() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+function getEntregaUrgencyClass(entrega) {
+  const entregaDate = parseYmd(entrega);
+  if (!entregaDate) return "";
+
+  const diffDays = Math.floor((entregaDate.getTime() - startOfToday().getTime()) / 86400000);
+  if (diffDays < 0) return "ng-rowDue--danger";
+  if (diffDays <= 3) return "ng-rowDue--warning";
+  if (diffDays > 4) return "ng-rowDue--ok";
+  return "";
 }
 
 function estadoOperativoClase(estado) {
@@ -185,6 +208,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const [detalle, setDetalle] = useState(null);
   const [detalleLoading, setDetalleLoading] = useState(false);
   const [detalleError, setDetalleError] = useState("");
+  const [detalleModoCaja, setDetalleModoCaja] = useState(false);
+  const [actionsOpenId, setActionsOpenId] = useState("");
+  const [actionsMenuPlacement, setActionsMenuPlacement] = useState("down");
+  const [actionsMenuPosition, setActionsMenuPosition] = useState({ top: 0, left: 0 });
 
   const [gestionOpen, setGestionOpen] = useState(false);
   const [gestionNota, setGestionNota] = useState(null);
@@ -224,6 +251,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   }, [view]);
 
   async function abrirDetalle(id) {
+    setDetalleModoCaja(false);
     setOpenId(id);
     setDetalle(null);
     setDetalleError("");
@@ -244,6 +272,25 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     setDetalle(null);
     setDetalleError("");
     setDetalleLoading(false);
+    setDetalleModoCaja(false);
+  }
+
+  async function abrirEditarPago(nota) {
+    setActionsOpenId("");
+    setDetalleModoCaja(true);
+    setOpenId(nota._id);
+    setDetalle(null);
+    setDetalleError("");
+    setDetalleLoading(true);
+
+    try {
+      const item = await obtenerNotaPedido(nota._id);
+      setDetalle(item);
+    } catch (e) {
+      setDetalleError(e?.message || "Error cargando estado de pago");
+    } finally {
+      setDetalleLoading(false);
+    }
   }
 
   async function abrirGestion(nota) {
@@ -398,6 +445,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const copy = VIEW_CONFIG[view] || VIEW_CONFIG.all;
 
   async function borrarNota(nota) {
+    setActionsOpenId("");
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
     if (!ok) return;
 
@@ -405,6 +453,26 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     if (openId === nota._id) cerrarDetalle();
     if (gestionNota?._id === nota._id) cerrarGestion();
     await load();
+  }
+
+  async function guardarEstadoPago(nota, payload) {
+    await guardarCajaNota(nota._id, payload);
+    await load();
+    await abrirEditarPago(nota);
+  }
+
+  function toggleActionsMenu(event, notaId) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const menuWidth = 220;
+    const menuHeight = 94;
+    const placement = spaceBelow < 150 ? "up" : "down";
+    setActionsMenuPlacement(placement);
+    setActionsMenuPosition({
+      top: placement === "up" ? Math.max(8, rect.top - menuHeight - 8) : rect.bottom + 8,
+      left: Math.min(window.innerWidth - menuWidth - 8, Math.max(8, rect.right - menuWidth)),
+    });
+    setActionsOpenId((current) => (current === notaId ? "" : notaId));
   }
 
   function agregarProveedorAsignado() {
@@ -754,8 +822,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
             ) : guardadas.length === 0 ? (
               <tr><td className="ng-tableMessage" colSpan={10}>{copy.emptyMessage}</td></tr>
             ) : (
-              guardadas.map((n) => (
-                <tr key={n?._id || n?.id || n?.numero}>
+                guardadas.map((n) => (
+                <tr key={n?._id || n?.id || n?.numero} className={getEntregaUrgencyClass(n?.entrega)}>
                   <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                   <td>{fmtDate(n?.fecha)}</td>
                   <td>{n?.entrega ?? "-"}</td>
@@ -802,9 +870,30 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                       Gestionar
                       </button>
-                      <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
-                      Borrar
-                      </button>
+                      <div className="ng-actionsMenu">
+                        <button
+                          type="button"
+                          className="ng-tableBtn ng-tableBtn--icon"
+                          aria-label="Mas acciones"
+                          aria-expanded={actionsOpenId === n._id}
+                          onClick={(event) => toggleActionsMenu(event, n._id)}
+                        >
+                          ...
+                        </button>
+                        {actionsOpenId === n._id ? (
+                          <div
+                            className={`ng-actionsDropdown ng-actionsDropdown--${actionsMenuPlacement}`}
+                            style={{ top: actionsMenuPosition.top, left: actionsMenuPosition.left }}
+                          >
+                            <button type="button" onClick={() => abrirEditarPago(n)}>
+                              Modificar estado de pago
+                            </button>
+                            <button type="button" className="danger" onClick={() => borrarNota(n)}>
+                              Borrar
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -848,8 +937,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
               ) : guardadasProveedor.length === 0 ? (
                 <tr><td className="ng-tableMessage" colSpan={8}>Todavía no hay notas enviadas a proveedor.</td></tr>
               ) : (
-                guardadasProveedor.map((n) => (
-                  <tr key={`prov-${n?._id || n?.id || n?.numero}`}>
+                  guardadasProveedor.map((n) => (
+                  <tr key={`prov-${n?._id || n?.id || n?.numero}`} className={getEntregaUrgencyClass(n?.entrega)}>
                     <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                     <td>
                       <div className="ng-clientCell">
@@ -892,9 +981,30 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                         <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                           Gestionar
                         </button>
-                        <button className="ng-tableBtn ng-tableBtn--danger" onClick={() => borrarNota(n)}>
-                          Borrar
-                        </button>
+                        <div className="ng-actionsMenu">
+                          <button
+                            type="button"
+                            className="ng-tableBtn ng-tableBtn--icon"
+                            aria-label="Mas acciones"
+                            aria-expanded={actionsOpenId === n._id}
+                            onClick={(event) => toggleActionsMenu(event, n._id)}
+                          >
+                            ...
+                          </button>
+                          {actionsOpenId === n._id ? (
+                            <div
+                              className={`ng-actionsDropdown ng-actionsDropdown--${actionsMenuPlacement}`}
+                              style={{ top: actionsMenuPosition.top, left: actionsMenuPosition.left }}
+                            >
+                              <button type="button" onClick={() => abrirEditarPago(n)}>
+                                Modificar estado de pago
+                              </button>
+                              <button type="button" className="danger" onClick={() => borrarNota(n)}>
+                                Borrar
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -1398,8 +1508,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         detalle={detalle}
         loading={detalleLoading}
         error={detalleError}
-        onRefresh={() => abrirDetalle(openId)}
-        soloVistaPrevia
+        onRefresh={() => (detalleModoCaja ? abrirEditarPago({ _id: openId }) : abrirDetalle(openId))}
+        onGuardarCaja={guardarEstadoPago}
+        soloVistaPrevia={!detalleModoCaja}
+        permitirEditarCajaGuardada={detalleModoCaja}
       />
     </div>
   );

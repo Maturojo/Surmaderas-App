@@ -588,6 +588,19 @@ function ProfileFramePiece({ length, face, depth, position, rotation, color, sha
         />
       </mesh>
 
+      {isPineListon ? (
+        <mesh position={[0, 0, depth / 2 + 0.0016]} receiveShadow>
+          <planeGeometry args={[safeLength, face]} />
+          <meshStandardMaterial
+            color="#ead8ac"
+            roughness={0.6}
+            metalness={0.01}
+            polygonOffset
+            polygonOffsetFactor={-2}
+          />
+        </mesh>
+      ) : null}
+
       {isPineChata ? (
         <>
           <mesh position={[0, face * 0.22, baseThickness / 2 - frontLipThickness / 2]} castShadow receiveShadow>

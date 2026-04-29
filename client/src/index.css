@@ -448,6 +448,184 @@ textarea {
   gap: 18px;
 }
 
+.dashboard-alertsPanel {
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid var(--sm-line);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+}
+
+.dashboard-alertsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dashboard-alertsHeader h2 {
+  margin: 4px 0 0;
+  color: #2b2723;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.dashboard-alertCalendarLink,
+.dashboard-alertLink,
+.dashboard-alertMore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sm-line-strong);
+  background: #fffaf4;
+  color: #3d3127;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.dashboard-alertCalendarLink {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.dashboard-alertsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dashboard-alertColumn {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: linear-gradient(180deg, #fffdfa 0%, #f7f2eb 100%);
+}
+
+.dashboard-alertColumn--danger {
+  background: linear-gradient(180deg, #fff5f2 0%, #f9f1eb 100%);
+}
+
+.dashboard-alertColumn--today {
+  background: linear-gradient(180deg, #f3fbf4 0%, #f8f3ea 100%);
+}
+
+.dashboard-alertColumn--tomorrow {
+  background: linear-gradient(180deg, #f4f7fb 0%, #f8f3ea 100%);
+}
+
+.dashboard-alertColumnHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dashboard-alertColumnHead span {
+  color: #5f5448;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-alertColumnHead strong {
+  min-width: 36px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(73, 58, 38, 0.08);
+  color: #2b2723;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.dashboard-alertList {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-alertItem {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.dashboard-alertItemMain,
+.dashboard-alertItemMeta {
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dashboard-alertItemMain strong,
+.dashboard-alertItemMain span,
+.dashboard-alertItemMeta span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-alertItemMain strong {
+  color: #2b2723;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.dashboard-alertItemMain span {
+  color: #5c5147;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-alertItemMeta {
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-alertActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dashboard-alertEmpty {
+  min-height: 78px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--sm-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.dashboard-alertError {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff0f0;
+  color: #9d2f2f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .dashboard-hero {
   padding: 26px 28px;
   border-radius: 28px;
@@ -1939,6 +2117,7 @@ textarea {
 
   .login-card,
   .dashboard-grid,
+  .dashboard-alertsGrid,
   .config-usersGrid,
   .config-turneroGrid,
   .chat-layout {
@@ -1995,8 +2174,13 @@ textarea {
 
   .login-brandPane,
   .login-formPane,
-  .dashboard-hero {
+  .dashboard-hero,
+  .dashboard-alertsPanel {
     padding: 18px;
+  }
+
+  .dashboard-alertsHeader {
+    flex-direction: column;
   }
 
   .login-card {
@@ -2098,6 +2282,21 @@ textarea {
   .dashboard-hero {
     padding: 14px;
     border-radius: 20px;
+  }
+
+  .dashboard-alertsPanel {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .dashboard-alertsHeader h2 {
+    font-size: 20px;
+  }
+
+  .dashboard-alertItemMain,
+  .dashboard-alertItemMeta {
+    flex-direction: column;
+    gap: 4px;
   }
 
   .dashboard-grid {
