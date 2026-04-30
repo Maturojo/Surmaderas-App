@@ -421,7 +421,7 @@
 
 .ng-actionsDropdown {
   position: fixed;
-  z-index: 100;
+  z-index: 10000;
   min-width: 220px;
   padding: 8px;
   border-radius: 14px;
@@ -456,6 +456,80 @@
 
 .ng-actionsDropdown button.danger:hover {
   background: #fff4f4;
+}
+
+.ng-actionsModalBack {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(43, 35, 27, 0.42);
+}
+
+.ng-actionsModal {
+  width: min(440px, 100%);
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(73, 58, 38, 0.12);
+  background: #fffdf9;
+  box-shadow: 0 24px 70px rgba(43, 35, 27, 0.28);
+}
+
+.ng-actionsModalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.ng-actionsModalList {
+  display: grid;
+  gap: 8px;
+}
+
+.ng-actionsModalList button {
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  border-radius: 14px;
+  background: #fffaf4;
+  color: #342b23;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ng-actionsModalList button:hover {
+  background: #f7f1e7;
+}
+
+.ng-actionsModalList button span,
+.ng-actionsModalList button small {
+  display: block;
+}
+
+.ng-actionsModalList button span {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ng-actionsModalList button small {
+  margin-top: 3px;
+  color: #7b7065;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ng-actionsModalList button.danger {
+  background: #fff4f4;
+  color: #9a3131;
+}
+
+.ng-actionsModalList button.danger small {
+  color: #9a6464;
 }
 
 .ng-modalBack {
@@ -593,6 +667,12 @@
   border-color: rgba(47, 122, 69, 0.2);
   background: #eef8f0;
   color: #27633a;
+}
+
+.ng-quickBtn--done {
+  border-color: rgba(49, 39, 31, 0.18);
+  background: #31271f;
+  color: #fffaf4;
 }
 
 .ng-summaryCard {

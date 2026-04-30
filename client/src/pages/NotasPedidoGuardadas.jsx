@@ -210,8 +210,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const [detalleError, setDetalleError] = useState("");
   const [detalleModoCaja, setDetalleModoCaja] = useState(false);
   const [actionsOpenId, setActionsOpenId] = useState("");
-  const [actionsMenuPlacement, setActionsMenuPlacement] = useState("down");
-  const [actionsMenuPosition, setActionsMenuPosition] = useState({ top: 0, left: 0 });
+  const [actionsNota, setActionsNota] = useState(null);
 
   const [gestionOpen, setGestionOpen] = useState(false);
   const [gestionNota, setGestionNota] = useState(null);
@@ -276,7 +275,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   }
 
   async function abrirEditarPago(nota) {
-    setActionsOpenId("");
+    cerrarAccionesNota();
     setDetalleModoCaja(true);
     setOpenId(nota._id);
     setDetalle(null);
@@ -445,7 +444,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const copy = VIEW_CONFIG[view] || VIEW_CONFIG.all;
 
   async function borrarNota(nota) {
-    setActionsOpenId("");
+    cerrarAccionesNota();
     const ok = window.confirm(`Se va a borrar la nota ${nota?.numero || ""}.`);
     if (!ok) return;
 
@@ -463,7 +462,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
 
   async function marcarListoParaRetirar(nota) {
     if (!nota?._id) return;
-    setActionsOpenId("");
+    cerrarAccionesNota();
 
     const res = await Swal.fire({
       icon: "question",
@@ -500,18 +499,15 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     }
   }
 
-  function toggleActionsMenu(event, notaId) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const menuWidth = 220;
-    const menuHeight = 138;
-    const placement = spaceBelow < 150 ? "up" : "down";
-    setActionsMenuPlacement(placement);
-    setActionsMenuPosition({
-      top: placement === "up" ? Math.max(8, rect.top - menuHeight - 8) : rect.bottom + 8,
-      left: Math.min(window.innerWidth - menuWidth - 8, Math.max(8, rect.right - menuWidth)),
-    });
-    setActionsOpenId((current) => (current === notaId ? "" : notaId));
+  function abrirAccionesNota(event, nota) {
+    event.stopPropagation();
+    setActionsOpenId(nota?._id || nota?.id || nota?.numero || "");
+    setActionsNota(nota);
+  }
+
+  function cerrarAccionesNota() {
+    setActionsOpenId("");
+    setActionsNota(null);
   }
 
   function agregarProveedorAsignado() {
@@ -861,8 +857,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
             ) : guardadas.length === 0 ? (
               <tr><td className="ng-tableMessage" colSpan={10}>{copy.emptyMessage}</td></tr>
             ) : (
-                guardadas.map((n) => (
-                <tr key={n?._id || n?.id || n?.numero} className={getEntregaUrgencyClass(n?.entrega)}>
+                guardadas.map((n) => {
+                const notaId = n?._id || n?.id || n?.numero;
+                return (
+                <tr key={notaId} className={getEntregaUrgencyClass(n?.entrega)}>
                   <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                   <td>{fmtDate(n?.fecha)}</td>
                   <td>{n?.entrega ?? "-"}</td>
@@ -916,32 +914,17 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                           type="button"
                           className="ng-tableBtn ng-tableBtn--icon"
                           aria-label="Mas acciones"
-                          aria-expanded={actionsOpenId === n._id}
-                          onClick={(event) => toggleActionsMenu(event, n._id)}
+                          aria-expanded={actionsOpenId === notaId}
+                          onClick={(event) => abrirAccionesNota(event, n)}
                         >
                           ...
                         </button>
-                        {actionsOpenId === n._id ? (
-                          <div
-                            className={`ng-actionsDropdown ng-actionsDropdown--${actionsMenuPlacement}`}
-                            style={{ top: actionsMenuPosition.top, left: actionsMenuPosition.left }}
-                          >
-                            <button type="button" onClick={() => abrirEditarPago(n)}>
-                              Modificar estado de pago
-                            </button>
-                            <button type="button" onClick={() => marcarListoParaRetirar(n)}>
-                              Listo para retirar
-                            </button>
-                            <button type="button" className="danger" onClick={() => borrarNota(n)}>
-                              Borrar
-                            </button>
-                          </div>
-                        ) : null}
                       </div>
                     </div>
                   </td>
                 </tr>
-              ))
+              );
+              })
             )}
           </tbody>
           </table>
@@ -981,8 +964,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
               ) : guardadasProveedor.length === 0 ? (
                 <tr><td className="ng-tableMessage" colSpan={8}>Todavía no hay notas enviadas a proveedor.</td></tr>
               ) : (
-                  guardadasProveedor.map((n) => (
-                  <tr key={`prov-${n?._id || n?.id || n?.numero}`} className={getEntregaUrgencyClass(n?.entrega)}>
+                  guardadasProveedor.map((n) => {
+                  const notaId = n?._id || n?.id || n?.numero;
+                  return (
+                  <tr key={`prov-${notaId}`} className={getEntregaUrgencyClass(n?.entrega)}>
                     <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
                     <td>
                       <div className="ng-clientCell">
@@ -1030,32 +1015,17 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                             type="button"
                             className="ng-tableBtn ng-tableBtn--icon"
                             aria-label="Mas acciones"
-                            aria-expanded={actionsOpenId === n._id}
-                            onClick={(event) => toggleActionsMenu(event, n._id)}
+                            aria-expanded={actionsOpenId === notaId}
+                            onClick={(event) => abrirAccionesNota(event, n)}
                           >
                             ...
                           </button>
-                          {actionsOpenId === n._id ? (
-                            <div
-                              className={`ng-actionsDropdown ng-actionsDropdown--${actionsMenuPlacement}`}
-                              style={{ top: actionsMenuPosition.top, left: actionsMenuPosition.left }}
-                            >
-                              <button type="button" onClick={() => abrirEditarPago(n)}>
-                                Modificar estado de pago
-                              </button>
-                              <button type="button" onClick={() => marcarListoParaRetirar(n)}>
-                                Listo para retirar
-                              </button>
-                              <button type="button" className="danger" onClick={() => borrarNota(n)}>
-                                Borrar
-                              </button>
-                            </div>
-                          ) : null}
                         </div>
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                  })
               )}
             </tbody>
           </table>
@@ -1095,6 +1065,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 <div className="ng-quickActions">
                   <button className="ng-quickBtn" onClick={abrirPromptProveedor}>
                     Enviar a
+                  </button>
+                  <button className="ng-quickBtn ng-quickBtn--done" onClick={abrirTerminado}>
+                    Terminada
                   </button>
                   <button className="ng-quickBtn ng-quickBtn--ready" onClick={() => marcarListoParaRetirar(gestionNota)}>
                     Listo para retirar
@@ -1548,6 +1521,39 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      ) : null}
+
+      {actionsNota ? (
+        <div className="ng-actionsModalBack" onClick={cerrarAccionesNota}>
+          <div className="ng-actionsModal" onClick={(e) => e.stopPropagation()}>
+            <div className="ng-actionsModalHead">
+              <div>
+                <div className="ng-inlinePromptTitle">Acciones del pedido</div>
+                <div className="ng-inlinePromptSub">
+                  {actionsNota?.numero || "Nota"} - {getNotaClienteNombre(actionsNota)}
+                </div>
+              </div>
+              <button className="ng-inlinePromptClose" onClick={cerrarAccionesNota}>
+                Cerrar
+              </button>
+            </div>
+
+            <div className="ng-actionsModalList">
+              <button type="button" onClick={() => abrirEditarPago(actionsNota)}>
+                <span>Modificar estado de pago</span>
+                <small>Editar seña, pago o comprobante de caja.</small>
+              </button>
+              <button type="button" onClick={() => marcarListoParaRetirar(actionsNota)}>
+                <span>Listo para retirar</span>
+                <small>Dejarlo en local/depósito sin pasar por proveedor ni taller.</small>
+              </button>
+              <button type="button" className="danger" onClick={() => borrarNota(actionsNota)}>
+                <span>Borrar pedido</span>
+                <small>Eliminar esta nota de pedido.</small>
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
