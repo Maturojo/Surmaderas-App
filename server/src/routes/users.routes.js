@@ -7,6 +7,33 @@ const router = Router();
 
 router.use(requireAuth, requireRole("admin"));
 
+const VALID_ROLES = ["admin", "ventas", "taller"];
+
+function sanitizeUser(user) {
+  return {
+    id: user._id,
+    name: user.name,
+    username: user.username,
+    role: user.role,
+    isActive: user.isActive,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+}
+
+async function wouldLeaveNoActiveAdmins(user, nextRole, nextIsActive) {
+  const wasActiveAdmin = user.role === "admin" && user.isActive !== false;
+  const remainsActiveAdmin = nextRole === "admin" && nextIsActive !== false;
+  if (!wasActiveAdmin || remainsActiveAdmin) return false;
+
+  const otherActiveAdmins = await User.countDocuments({
+    _id: { $ne: user._id },
+    role: "admin",
+    isActive: true,
+  });
+  return otherActiveAdmins === 0;
+}
+
 router.get("/", async (_req, res) => {
   try {
     const users = await User.find({}, { passwordHash: 0 }).sort({ createdAt: -1 });
@@ -25,8 +52,12 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Nombre, usuario y clave son obligatorios" });
     }
 
-    if (!["admin", "ventas", "taller"].includes(role)) {
+    if (!VALID_ROLES.includes(role)) {
       return res.status(400).json({ message: "Rol invalido" });
+    }
+
+    if (String(password).length < 6) {
+      return res.status(400).json({ message: "La clave debe tener al menos 6 caracteres" });
     }
 
     const normalizedUsername = String(username).trim().toLowerCase();
@@ -48,14 +79,7 @@ router.post("/", async (req, res) => {
 
     return res.status(201).json({
       message: "Usuario creado correctamente",
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        role: user.role,
-        isActive: user.isActive,
-        createdAt: user.createdAt,
-      },
+      user: sanitizeUser(user),
     });
   } catch (error) {
     console.error("Error creando usuario:", error?.message || error);
@@ -72,7 +96,7 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ message: "Nombre y usuario son obligatorios" });
     }
 
-    if (!["admin", "ventas", "taller"].includes(role)) {
+    if (!VALID_ROLES.includes(role)) {
       return res.status(400).json({ message: "Rol invalido" });
     }
 
@@ -88,12 +112,20 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ message: "Ese nombre de usuario ya existe" });
     }
 
+    const nextIsActive = isActive !== false;
+    if (await wouldLeaveNoActiveAdmins(user, role, nextIsActive)) {
+      return res.status(400).json({ message: "Tiene que quedar al menos un administrador activo" });
+    }
+
     user.name = String(name).trim();
     user.username = normalizedUsername;
     user.role = role;
-    user.isActive = isActive !== false;
+    user.isActive = nextIsActive;
 
     if (password) {
+      if (String(password).length < 6) {
+        return res.status(400).json({ message: "La clave debe tener al menos 6 caracteres" });
+      }
       user.passwordHash = await bcrypt.hash(String(password), 10);
     }
 
@@ -101,15 +133,7 @@ router.put("/:id", async (req, res) => {
 
     return res.json({
       message: "Usuario actualizado correctamente",
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        role: user.role,
-        isActive: user.isActive,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+      user: sanitizeUser(user),
     });
   } catch (error) {
     console.error("Error actualizando usuario:", error?.message || error);

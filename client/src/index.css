@@ -306,7 +306,6 @@ textarea {
   border-radius: 32px;
   border: 1px solid var(--sm-line);
   background: rgba(255, 255, 255, 0.34);
-  backdrop-filter: blur(10px);
 }
 
 .login-shell {
@@ -838,6 +837,36 @@ textarea {
   grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr) minmax(280px, 360px);
 }
 
+.config-usersStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.config-usersStat {
+  padding: 16px 18px;
+  border: 1px solid var(--sm-line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 10px 22px rgba(56, 44, 29, 0.05);
+}
+
+.config-usersStat span {
+  display: block;
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.config-usersStat strong {
+  display: block;
+  margin-top: 6px;
+  color: #2b2723;
+  font-size: 28px;
+  font-weight: 950;
+}
+
 .config-turneroGrid {
   display: grid;
   grid-template-columns: minmax(320px, 420px) minmax(320px, 1fr);
@@ -858,6 +887,39 @@ textarea {
   color: #2b2723;
 }
 
+.config-usersToolbar {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.config-usersSearch {
+  display: grid;
+  gap: 6px;
+}
+
+.config-usersSearch span {
+  color: #584f46;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.config-usersSearch input,
+.config-usersFilters select {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--sm-line-strong);
+  border-radius: 12px;
+  background: #fbfaf8;
+  color: #2b2723;
+}
+
+.config-usersFilters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 .config-usersField {
   display: grid;
   gap: 8px;
@@ -871,7 +933,8 @@ textarea {
 }
 
 .config-usersField input,
-.config-usersField select {
+.config-usersField select,
+.config-usersField textarea {
   min-height: 48px;
   padding: 0 14px;
   border-radius: 14px;
