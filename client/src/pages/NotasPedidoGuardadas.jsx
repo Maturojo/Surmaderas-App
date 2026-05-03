@@ -872,25 +872,25 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 const notaId = n?._id || n?.id || n?.numero;
                 return (
                 <tr key={notaId} className={getEntregaUrgencyClass(n?.entrega)}>
-                  <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
-                  <td>{fmtDate(n?.fecha)}</td>
-                  <td>{n?.entrega ?? "-"}</td>
-                  <td>
+                  <td className="ng-cellStrong" data-label="Numero">{n?.numero ?? "-"}</td>
+                  <td data-label="Fecha">{fmtDate(n?.fecha)}</td>
+                  <td data-label="Entrega">{n?.entrega ?? "-"}</td>
+                  <td data-label="Cliente">
                     <div className="ng-clientCell">
                       <strong>{getNotaClienteNombre(n)}</strong>
                       <span>{n?.cliente?.telefono || "Sin telefono"}</span>
                     </div>
                   </td>
-                  <td>{n?.vendedor ?? "-"}</td>
-                  <td>
+                  <td data-label="Vendedor">{n?.vendedor ?? "-"}</td>
+                  <td data-label="Estado">
                     <EstadoComercialCell nota={n} />
                   </td>
-                  <td>
+                  <td data-label="Operativo">
                     <span className={`ng-statusPill ${estadoOperativoClase(n?.estadoOperativo || "Pendiente")}`}>
                       {getEstadoOperativoLabel(n?.estadoOperativo)}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Destino">
                     {Array.isArray(n?.proveedores) && n.proveedores.length > 0 ? (
                       <div className="ng-destinos">
                         {n.proveedores.map((prov, idx) => (
@@ -911,8 +911,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       <span className="ng-muted">-</span>
                     )}
                   </td>
-                  <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
-                  <td>
+                  <td className="ng-cellStrong" data-label="Total">${toARS(getNotaTotal(n))}</td>
+                  <td data-label="Acciones">
                     <div className="ng-actions">
                       <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                       Ver
