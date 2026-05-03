@@ -968,7 +968,22 @@ function FramePreview3D({
   );
 }
 
+function useIsMobile(maxWidth = 820) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${maxWidth}px)`);
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, [maxWidth]);
+
+  return isMobile;
+}
+
 export default function CotizadorMarcos() {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);
   const [varillaSearch, setVarillaSearch] = useState("");
@@ -1337,8 +1352,8 @@ export default function CotizadorMarcos() {
     gap: 18,
   };
   const panelStyle = {
-    padding: 22,
-    borderRadius: 28,
+    padding: isMobile ? 16 : 22,
+    borderRadius: isMobile ? 18 : 28,
     background: "rgba(255,255,255,0.84)",
     border: "1px solid rgba(73, 58, 38, 0.1)",
     boxShadow: "0 18px 42px rgba(55, 43, 29, 0.08)",
@@ -1347,7 +1362,7 @@ export default function CotizadorMarcos() {
   const twoColumnGridStyle = {
     display: "grid",
     gap: 12,
-    gridTemplateColumns: "repeat(2, minmax(0,1fr))",
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))",
     alignItems: "start",
   };
   const selectFieldStyle = {
@@ -1387,7 +1402,7 @@ export default function CotizadorMarcos() {
             "radial-gradient(circle at top right, rgba(194, 174, 142, 0.2), transparent 24%), linear-gradient(135deg, #fff8ef 0%, #efe7db 100%)",
         }}
       >
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "minmax(0, 1.2fr) minmax(280px, 0.8fr)" }}>
+        <div style={{ display: "grid", gap: 12, gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.2fr) minmax(280px, 0.8fr)" }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: "#8a7457" }}>
               Marcos
@@ -1428,7 +1443,7 @@ export default function CotizadorMarcos() {
         </div>
       </section>
 
-      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "minmax(0, 0.95fr) minmax(380px, 1.05fr)" }}>
+      <section style={{ display: "grid", gap: 18, gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.95fr) minmax(380px, 1.05fr)" }}>
         <div style={{ display: "grid", gap: 18 }}>
           <article style={panelStyle}>
             <div style={{ display: "grid", gap: 18 }}>
@@ -1731,7 +1746,7 @@ export default function CotizadorMarcos() {
               </div>
             </div>
 
-            <div style={{ height: 470, marginTop: 12 }}>
+            <div style={{ height: isMobile ? 330 : 470, marginTop: 12 }}>
               <Canvas camera={{ position: [0, 0, 2.2], fov: 40 }} gl={{ preserveDrawingBuffer: true }} onCreated={({ gl }) => setGlRef(gl)}>
                 <FramePreview3D
                   anchoMm={normalizedDimensions.ancho}
@@ -1824,7 +1839,7 @@ export default function CotizadorMarcos() {
             </div>
           </article>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <button
               type="button"
               onClick={handlePrint}

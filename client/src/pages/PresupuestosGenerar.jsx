@@ -50,7 +50,22 @@ function draftToForm(draft) {
   };
 }
 
+function useIsMobile(maxWidth = 760) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${maxWidth}px)`);
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, [maxWidth]);
+
+  return isMobile;
+}
+
 export default function PresupuestosGenerar() {
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [savedDrafts, setSavedDrafts] = useState(() => listPresupuestoDrafts());
   const [selectedDraftId, setSelectedDraftId] = useState(() => searchParams.get("draft") || "");
@@ -136,21 +151,21 @@ export default function PresupuestosGenerar() {
     gap: 18,
   };
   const heroStyle = {
-    padding: "24px 26px",
-    borderRadius: 28,
+    padding: isMobile ? 18 : "24px 26px",
+    borderRadius: isMobile ? 18 : 28,
     border: "1px solid rgba(70,55,38,0.1)",
     background:
       "radial-gradient(circle at top right, rgba(214,191,160,0.22), transparent 24%), linear-gradient(135deg,#fff8ef,#f4ece1)",
     boxShadow: "0 18px 42px rgba(70,55,38,0.08)",
   };
   const panelStyle = {
-    padding: 20,
-    borderRadius: 24,
+    padding: isMobile ? 16 : 20,
+    borderRadius: isMobile ? 18 : 24,
     background: "rgba(255,255,255,0.86)",
     border: "1px solid rgba(70,55,38,0.09)",
     boxShadow: "0 14px 32px rgba(69,54,38,0.08)",
   };
-  const grid2 = { display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 };
+  const grid2 = { display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 12 };
   const inputStyle = {
     width: "100%",
     minHeight: 46,
@@ -173,7 +188,7 @@ export default function PresupuestosGenerar() {
         <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: "#8a7457" }}>
           Presupuestos
         </div>
-        <h1 style={{ margin: "8px 0 10px", fontSize: 36, lineHeight: 1, fontWeight: 900, color: "#28231d" }}>
+        <h1 style={{ margin: "8px 0 10px", fontSize: isMobile ? 30 : 36, lineHeight: 1, fontWeight: 900, color: "#28231d" }}>
           Generar presupuesto oficial
         </h1>
         <p style={{ margin: 0, maxWidth: 760, color: "#6f655a" }}>

@@ -1,5 +1,6 @@
 ﻿import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
 import CameraImageUploadField from "../features/presupuestos/components/CameraImageUploadField";
 import { listPresupuestoDrafts, savePresupuestoDraft } from "../services/presupuestos";
 
@@ -40,7 +41,22 @@ function emptyForm() {
   };
 }
 
+function useIsMobile(maxWidth = 760) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${maxWidth}px)`);
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, [maxWidth]);
+
+  return isMobile;
+}
+
 export default function PresupuestosEnviar() {
+  const isMobile = useIsMobile();
   const [form, setForm] = useState(() => emptyForm());
   const [drafts, setDrafts] = useState(() => listPresupuestoDrafts());
 
@@ -99,18 +115,18 @@ export default function PresupuestosEnviar() {
   };
   const heroStyle = {
     display: "grid",
-    gridTemplateColumns: "minmax(0,1.2fr) minmax(260px,.8fr)",
+    gridTemplateColumns: isMobile ? "1fr" : "minmax(0,1.2fr) minmax(260px,.8fr)",
     gap: 18,
-    padding: "24px 26px",
-    borderRadius: 28,
+    padding: isMobile ? 18 : "24px 26px",
+    borderRadius: isMobile ? 18 : 28,
     border: "1px solid rgba(70,55,38,0.1)",
     background:
       "radial-gradient(circle at top right, rgba(183,213,188,0.18), transparent 24%), linear-gradient(135deg,#fff8ef,#edf5ef)",
     boxShadow: "0 18px 42px rgba(70,55,38,0.08)",
   };
   const panelStyle = {
-    padding: 20,
-    borderRadius: 24,
+    padding: isMobile ? 16 : 20,
+    borderRadius: isMobile ? 18 : 24,
     background: "rgba(255,255,255,0.86)",
     border: "1px solid rgba(70,55,38,0.09)",
     boxShadow: "0 14px 32px rgba(69,54,38,0.08)",
@@ -138,7 +154,7 @@ export default function PresupuestosEnviar() {
           <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: "#7e765c" }}>
             Presupuestos
           </div>
-          <h1 style={{ margin: "8px 0 10px", fontSize: 36, lineHeight: 1, fontWeight: 900, color: "#28231d" }}>
+          <h1 style={{ margin: "8px 0 10px", fontSize: isMobile ? 30 : 36, lineHeight: 1, fontWeight: 900, color: "#28231d" }}>
             Cargar datos
           </h1>
           <p style={{ margin: 0, maxWidth: 700, color: "#6f655a" }}>
@@ -159,7 +175,7 @@ export default function PresupuestosEnviar() {
         <div style={{ display: "grid", gap: 14 }}>
           <div style={{ fontSize: 22, fontWeight: 900, color: "#2a241d" }}>Nueva carga</div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 12 }}>
             <div>
               <label style={{ display: "block", marginBottom: 6, fontSize: 12, color: "#5f574d", fontWeight: 700 }}>
                 Nombre del cliente

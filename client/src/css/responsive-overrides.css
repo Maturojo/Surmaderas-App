@@ -1,0 +1,165 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+canvas,
+video,
+svg {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+#root,
+.app-shell,
+.app-main,
+.app-mainInner,
+.app-content,
+.page,
+.dashboard-page,
+.notas-page,
+.productos-page,
+.proveedores-page,
+.pedidos-proveedor-page,
+.lista-placas-page {
+  min-width: 0;
+}
+
+.table-responsive,
+.table-wrapper,
+.tabla-wrapper,
+.productos-table-wrap,
+.pedidos-table-wrap,
+.notas-table-wrap,
+.users-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 900px) {
+  .app-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-mainInner {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .dashboard-grid,
+  .dashboard-cards,
+  .productos-grid,
+  .proveedores-grid,
+  .pedidos-proveedor-grid,
+  .lista-placas-grid,
+  .notas-grid,
+  .calendar-grid,
+  .chat-grid,
+  .users-grid,
+  .survey-grid,
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .app-mainInner {
+    padding: 12px;
+  }
+
+  .page-title,
+  .section-title,
+  h1 {
+    font-size: clamp(1.65rem, 9vw, 2.2rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  .card,
+  .panel,
+  .modal,
+  .swal2-popup,
+  .productos-card,
+  .proveedor-card,
+  .pedido-card,
+  .nota-card,
+  .dashboard-card,
+  .survey-card {
+    max-width: calc(100vw - 24px);
+  }
+
+  .modal,
+  .modal-content,
+  .modal-dialog,
+  .swal2-popup {
+    width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow: auto;
+  }
+
+  .modal-backdrop,
+  .overlay,
+  .dialog-backdrop {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
+  }
+
+  .actions,
+  .button-row,
+  .toolbar,
+  .filters,
+  .filter-row,
+  .search-row,
+  .form-actions,
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .actions > *,
+  .button-row > *,
+  .toolbar > *,
+  .filters > *,
+  .filter-row > *,
+  .search-row > *,
+  .form-actions > *,
+  .modal-actions > * {
+    flex: 1 1 100%;
+  }
+
+  table {
+    min-width: 620px;
+  }
+
+  .chat-widget,
+  .chat-panel {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}

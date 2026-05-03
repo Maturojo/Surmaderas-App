@@ -78,7 +78,22 @@ function openNewPresupuesto(setForm, setDetalleAbierto, setIsModalOpen) {
   setIsModalOpen(true);
 }
 
+function useIsMobile(maxWidth = 760) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${maxWidth}px)`);
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, [maxWidth]);
+
+  return isMobile;
+}
+
 export default function PresupuestosProveedorEspecial() {
+  const isMobile = useIsMobile();
   const [proveedores, setProveedores] = useState([]);
   const [presupuestos, setPresupuestos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -199,13 +214,13 @@ export default function PresupuestosProveedorEspecial() {
 
   return (
     <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gap: 20 }}>
-      <section style={{ ...box({ display: "grid", gridTemplateColumns: "minmax(0,1.1fr) minmax(440px,.9fr)", gap: 18, padding: "26px 28px", borderRadius: 30 }), background: "radial-gradient(circle at top right, rgba(210,186,151,0.24), transparent 24%), linear-gradient(135deg,#fff8ef,#eef3e7)" }}>
+      <section style={{ ...box({ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0,1.1fr) minmax(440px,.9fr)", gap: 18, padding: isMobile ? 18 : "26px 28px", borderRadius: isMobile ? 18 : 30 }), background: "radial-gradient(circle at top right, rgba(210,186,151,0.24), transparent 24%), linear-gradient(135deg,#fff8ef,#eef3e7)" }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.14em", textTransform: "uppercase", color: "#7d745e" }}>Presupuestos</div>
-          <h1 style={{ margin: "8px 0 10px", fontSize: 38, lineHeight: 1.02, color: "#28231d" }}>Proveedores para pedidos especiales</h1>
+          <h1 style={{ margin: "8px 0 10px", fontSize: isMobile ? 30 : 38, lineHeight: 1.02, color: "#28231d" }}>Proveedores para pedidos especiales</h1>
           <p style={{ margin: 0, maxWidth: 720, color: "#6f655a", fontSize: 15 }}>Cada presupuesto queda en una card con miniatura, precio proveedor, precio final y una vista completa para abrir cuando lo necesites.</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(160px, 220px)", gap: 12, justifyContent: "end" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(160px, 220px)", gap: 12, justifyContent: isMobile ? "stretch" : "end" }}>
           <div style={box({ padding: 18, display: "grid", gap: 6 })}>
             <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "#7b7166", fontWeight: 800 }}>Guardado</div>
             <div style={{ fontSize: 26, fontWeight: 900, color: "#2a241d", lineHeight: 1.05 }}>{resumen.cantidad}</div>
@@ -215,7 +230,7 @@ export default function PresupuestosProveedorEspecial() {
 
       {isModalOpen ? (
         <Overlay onClose={() => setIsModalOpen(false)} zIndex={70}>
-          <div style={box({ width: "min(820px, 100%)", maxHeight: "90vh", overflow: "auto", display: "grid", gap: 16, padding: 24 })}>
+          <div style={box({ width: "min(820px, calc(100vw - 24px))", maxHeight: "calc(100dvh - 24px)", overflow: "auto", display: "grid", gap: 16, padding: isMobile ? 16 : 24 })}>
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 22, color: "#2a241d" }}>{form.id ? "Editar presupuesto" : "Nuevo presupuesto"}</h2>
@@ -236,7 +251,7 @@ export default function PresupuestosProveedorEspecial() {
                 <span style={{ fontSize: 12, color: "#655c51", fontWeight: 700 }}>Pedido especial</span>
                 <input value={form.descripcionPedido} onChange={(event) => setForm((prev) => ({ ...prev, descripcionPedido: event.target.value }))} placeholder="Ej: Mueble para TV con puertas corredizas" style={input} />
               </label>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0,1fr))", gap: 12 }}>
                 <label style={{ display: "grid", gap: 6 }}>
                   <span style={{ fontSize: 12, color: "#655c51", fontWeight: 700 }}>Materiales</span>
                   <input value={form.materiales} onChange={(event) => setForm((prev) => ({ ...prev, materiales: event.target.value }))} placeholder="Ej: Melamina blanca 18mm" style={input} />
@@ -250,7 +265,7 @@ export default function PresupuestosProveedorEspecial() {
                   <input value={form.terminacion} onChange={(event) => setForm((prev) => ({ ...prev, terminacion: event.target.value }))} placeholder="Ej: Laca blanca mate" style={input} />
                 </label>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0,1fr))", gap: 12 }}>
                 <label style={{ display: "grid", gap: 6 }}><span style={{ fontSize: 12, color: "#655c51", fontWeight: 700 }}>Precio proveedor</span><input type="number" min="0" step="1" value={form.monto} onChange={(event) => setForm((prev) => ({ ...prev, monto: event.target.value }))} placeholder="Opcional" style={input} /></label>
                 <label style={{ display: "grid", gap: 6 }}><span style={{ fontSize: 12, color: "#655c51", fontWeight: 700 }}>Precio final</span><input type="number" min="0" step="1" value={form.precioCliente} onChange={(event) => setForm((prev) => ({ ...prev, precioCliente: event.target.value }))} placeholder="450000" style={input} /></label>
                 <label style={{ display: "grid", gap: 6 }}><span style={{ fontSize: 12, color: "#655c51", fontWeight: 700 }}>Fecha</span><input type="date" value={form.fechaPresupuesto} onChange={(event) => setForm((prev) => ({ ...prev, fechaPresupuesto: event.target.value }))} style={input} /></label>
@@ -271,7 +286,7 @@ export default function PresupuestosProveedorEspecial() {
 
       {detalleAbierto ? (
         <Overlay onClose={() => setDetalleAbierto(null)} zIndex={75}>
-          <div style={box({ width: "min(980px, 100%)", maxHeight: "92vh", overflow: "auto", display: "grid", gap: 18, padding: 24 })}>
+          <div style={box({ width: "min(980px, calc(100vw - 24px))", maxHeight: "calc(100dvh - 24px)", overflow: "auto", display: "grid", gap: 18, padding: isMobile ? 16 : 24 })}>
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
               <div style={{ display: "grid", gap: 8 }}>
                 <span style={{ ...estiloProveedor(detalleAbierto?.proveedorColor || colorProveedorPorNombre(detalleAbierto?.proveedorNombre)), display: "inline-flex", width: "fit-content" }}>{detalleAbierto?.proveedorNombre}</span>
@@ -280,7 +295,7 @@ export default function PresupuestosProveedorEspecial() {
               </div>
               <button type="button" onClick={() => setDetalleAbierto(null)} style={btn(false)}>Cerrar</button>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 18 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(280px, 360px) minmax(0, 1fr)", gap: 18 }}>
               <div style={{ display: "grid", gap: 10 }}>
                 <div style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#7c705f" }}>Referencia visual</div>
                 {detalleAbierto?.foto?.dataUrl ? <img src={detalleAbierto.foto.dataUrl} alt={`Referencia de ${detalleAbierto?.descripcionPedido || "presupuesto"}`} style={{ width: "100%", borderRadius: 18, border: "1px solid rgba(70,55,38,0.08)", background: "#fff", objectFit: "cover", boxShadow: "0 12px 26px rgba(70,55,38,0.08)" }} /> : <div style={{ minHeight: 280, borderRadius: 18, border: "1px dashed rgba(70,55,38,0.18)", display: "grid", placeItems: "center", color: "#85796c", background: "#faf6ef" }}>Sin imagen</div>}
@@ -289,12 +304,12 @@ export default function PresupuestosProveedorEspecial() {
                 </div>
               </div>
               <div style={{ display: "grid", gap: 14 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 12 }}>
                   <div style={{ padding: 18, borderRadius: 18, background: "linear-gradient(180deg,#f8f0e4,#f2e7d7)", border: "1px solid rgba(70,55,38,0.08)" }}><div style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#7c705f" }}>Precio proveedor</div><div style={{ marginTop: 8, fontSize: 30, fontWeight: 900, color: "#2a241d", lineHeight: 1.05 }}>{formatMontoOpcional(detalleAbierto?.monto)}</div><div style={{ marginTop: 8, fontSize: 13, color: "#756a5d" }}>Valor que paso el proveedor para hacer el trabajo.</div></div>
                   <div style={{ padding: 18, borderRadius: 18, background: "linear-gradient(180deg,#eef7e7,#e2f0d6)", border: "1px solid rgba(70,55,38,0.08)" }}><div style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#66725b" }}>Precio final</div><div style={{ marginTop: 8, fontSize: 30, fontWeight: 900, color: "#24301d", lineHeight: 1.05 }}>{formatMonto(detalleAbierto?.precioCliente)}</div><div style={{ marginTop: 8, fontSize: 13, color: "#5f6b58" }}>Valor que se informo o se presupuestó al cliente.</div></div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 12 }}>
                   <div style={{ padding: 14, borderRadius: 16, background: "#fbf8f3", border: "1px solid rgba(70,55,38,0.08)", display: "grid", gap: 6 }}>
                     <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#847869" }}>Proveedor</div>
                     <div style={{ fontSize: 16, fontWeight: 800, color: "#2a241d" }}>{detalleAbierto?.proveedorNombre}</div>
@@ -305,7 +320,7 @@ export default function PresupuestosProveedorEspecial() {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0,1fr))", gap: 12 }}>
                   <div style={{ padding: 14, borderRadius: 16, background: "#fbf8f3", border: "1px solid rgba(70,55,38,0.08)", display: "grid", gap: 6 }}>
                     <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#847869" }}>Materiales</div>
                     <div style={{ fontSize: 15, fontWeight: 700, color: "#2a241d" }}>{detalleAbierto?.materiales || "-"}</div>
@@ -352,7 +367,7 @@ export default function PresupuestosProveedorEspecial() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(220px,1fr) 240px auto", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(220px,1fr) 240px auto", gap: 10 }}>
           <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Buscar presupuesto..." style={input} />
           <select value={filtroProveedor} onChange={(event) => setFiltroProveedor(event.target.value)} style={input}>
             <option value="">Todos los proveedores</option>
@@ -361,13 +376,13 @@ export default function PresupuestosProveedorEspecial() {
           <button type="button" onClick={() => { setQ(""); setFiltroProveedor(""); }} style={{ ...btn(false), background: q || filtroProveedor ? "#fff8ef" : "#f5f1ea" }}>Limpiar</button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 14, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 14, alignItems: "start" }}>
           {loading ? <div style={{ color: "#6b6155" }}>Cargando presupuestos...</div> : presupuestos.length === 0 ? <div style={{ color: "#6b6155" }}>Todavia no hay presupuestos especiales cargados.</div> : presupuestos.map((item) => {
             const color = item?.proveedorColor || colorProveedorPorNombre(item?.proveedorNombre);
             const matchImporte = q && (formatMonto(item?.monto).toLowerCase().includes(q.toLowerCase()) || formatMonto(item?.precioCliente).toLowerCase().includes(q.toLowerCase()));
             return (
               <article key={item._id} style={{ borderRadius: 16, border: "1px solid rgba(70,55,38,0.08)", background: "#fbf8f3", padding: 10, display: "grid", gap: 8, borderLeft: `6px solid ${color}` }}>
-                <div style={{ display: "grid", gridTemplateColumns: "64px minmax(0,1fr)", gap: 10, alignItems: "start" }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "64px minmax(0,1fr)", gap: 10, alignItems: "start" }}>
                   {item?.foto?.dataUrl ? <img src={item.foto.dataUrl} alt={`Referencia de ${item?.proveedorNombre || "proveedor"}`} style={{ width: 64, height: 64, borderRadius: 10, border: "1px solid rgba(70,55,38,0.08)", background: "#fff", objectFit: "cover" }} /> : <div style={{ width: 64, height: 64, borderRadius: 10, border: "1px dashed rgba(70,55,38,0.16)", background: "#faf6ef", display: "grid", placeItems: "center", color: "#948677", fontSize: 10, textAlign: "center", padding: 6, lineHeight: 1.1 }}>Sin imagen</div>}
                   <div style={{ display: "grid", gap: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
@@ -381,7 +396,7 @@ export default function PresupuestosProveedorEspecial() {
                         {matchImporte ? <div style={{ color: "#6b5229", fontWeight: 700 }}>Coincidio por monto</div> : null}
                       </div>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 8 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 8 }}>
                       <div style={{ padding: 8, borderRadius: 10, background: "#f5eee4" }}><div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7b7060", fontWeight: 800 }}>Proveedor</div><div style={{ marginTop: 3, fontSize: 16, fontWeight: 900, color: "#2a241d", lineHeight: 1.1 }}>{formatMontoOpcional(item?.monto)}</div></div>
                       <div style={{ padding: 8, borderRadius: 10, background: "#edf4e7" }}><div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", color: "#66725b", fontWeight: 800 }}>Final</div><div style={{ marginTop: 3, fontSize: 16, fontWeight: 900, color: "#24301d", lineHeight: 1.1 }}>{formatMonto(item?.precioCliente)}</div></div>
                     </div>
