@@ -74,6 +74,22 @@ function roundMoney(value) {
   return Math.round(Number(value || 0) * 100) / 100;
 }
 
+function normalizeComprobantesCaja(caja = {}) {
+  const list = Array.isArray(caja?.comprobantes) ? caja.comprobantes : [];
+  const normalized = list.filter((item) => item?.dataUrl);
+  if (normalized.length) return normalized;
+  return caja?.comprobante?.dataUrl ? [caja.comprobante] : [];
+}
+
+function parseComprobanteMonto(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  return parseMoney(value);
+}
+
+function sumComprobantesMonto(comprobantes = []) {
+  return comprobantes.reduce((sum, item) => sum + parseComprobanteMonto(item?.monto), 0);
+}
+
 function moneyTokenToNumber(raw) {
   const compact = String(raw || "").replace(/[^\d.,]/g, "");
   if (!compact) return 0;
@@ -302,8 +318,7 @@ export default function NotaDetalleModal({
   const [monto, setMonto] = useState("");
   const [metodo, setMetodo] = useState("");
   const [notaCaja, setNotaCaja] = useState("");
-  const [comprobante, setComprobante] = useState(null);
-  const [montoComprobante, setMontoComprobante] = useState("");
+  const [comprobantes, setComprobantes] = useState([]);
   const [leyendoComprobante, setLeyendoComprobante] = useState(false);
   const [ocrTexto, setOcrTexto] = useState("");
   const [lightboxSrc, setLightboxSrc] = useState(null);
@@ -327,8 +342,7 @@ export default function NotaDetalleModal({
     setMonto(String(detalle?.caja?.monto ?? getNotaTotal(detalle)));
     setMetodo(detalle?.caja?.metodo || "");
     setNotaCaja(detalle?.caja?.nota || "");
-    setComprobante(detalle?.caja?.comprobante?.dataUrl ? detalle.caja.comprobante : null);
-    setMontoComprobante(detalle?.caja?.comprobante?.monto ? String(detalle.caja.comprobante.monto) : "");
+    setComprobantes(normalizeComprobantesCaja(detalle?.caja));
     setOcrTexto("");
     const descuentoInicial = Number(detalle?.caja?.descuento ?? detalle?.totales?.descuento ?? 0);
     const subtotalInicial = Number(detalle?.caja?.subtotal ?? detalle?.totales?.subtotal ?? getNotaTotal(detalle));
@@ -444,7 +458,8 @@ export default function NotaDetalleModal({
   const total = Math.max(0, roundMoney(subtotal - descuentoMonto));
   const adelanto = tipo === "seña" ? Math.min(total, Math.max(0, parseMoney(monto))) : 0;
   const resta = tipo === "pago" ? 0 : Math.max(0, roundMoney(total - adelanto));
-  const puedeComprobante = tipo === "pago" || tipo === "seña" || !!detalle?.caja?.comprobante?.dataUrl;
+  const comprobantesGuardados = normalizeComprobantesCaja(detalle?.caja);
+  const puedeComprobante = tipo === "pago" || tipo === "seña" || comprobantesGuardados.length > 0;
   const requiereComprobante = tipo === "pago" || (tipo === "seña" && metodo !== "Efectivo");
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
@@ -508,8 +523,7 @@ export default function NotaDetalleModal({
       setOcrTexto(getOcrDebugText(result));
 
       if (montoDetectado > 0) {
-        setMontoComprobante(String(Math.round(montoDetectado * 100) / 100));
-        return;
+        return Math.round(montoDetectado * 100) / 100;
       }
 
       await Swal.fire({
@@ -526,13 +540,18 @@ export default function NotaDetalleModal({
     } finally {
       setLeyendoComprobante(false);
     }
+
+    return 0;
   }
 
   async function cargarComprobanteDesdeArchivo(file) {
     try {
       const next = await readImageFile(file);
-      setComprobante(next);
-      await leerMontoDesdeComprobante(next);
+      const montoDetectado = await leerMontoDesdeComprobante(next);
+      setComprobantes((prev) => [
+        ...prev,
+        { ...next, monto: montoDetectado > 0 ? String(montoDetectado) : "" },
+      ]);
     } catch (e) {
       await Swal.fire({
         title: "Comprobante no valido",
@@ -548,8 +567,21 @@ export default function NotaDetalleModal({
       tipo: "image/png",
       dataUrl,
     };
-    setComprobante(next);
-    await leerMontoDesdeComprobante(next);
+    const montoDetectado = await leerMontoDesdeComprobante(next);
+    setComprobantes((prev) => [
+      ...prev,
+      { ...next, monto: montoDetectado > 0 ? String(montoDetectado) : "" },
+    ]);
+  }
+
+  function quitarComprobante(index) {
+    setComprobantes((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  function actualizarMontoComprobante(index, value) {
+    setComprobantes((prev) =>
+      prev.map((item, itemIndex) => (itemIndex === index ? { ...item, monto: value } : item))
+    );
   }
 
   function abrirCamaraFallback() {
@@ -660,9 +692,12 @@ export default function NotaDetalleModal({
       resta: esOperacionConPago ? resta : 0,
       metodo,
       nota: notaCaja,
-      comprobante: puedeComprobante
-        ? { ...(comprobante || {}), monto: parseMoney(montoComprobante) }
+      comprobante: puedeComprobante && comprobantes[0]
+        ? { ...comprobantes[0], monto: parseComprobanteMonto(comprobantes[0].monto) }
         : null,
+      comprobantes: puedeComprobante
+        ? comprobantes.map((item) => ({ ...item, monto: parseComprobanteMonto(item.monto) }))
+        : [],
     };
   }
 
@@ -679,29 +714,30 @@ export default function NotaDetalleModal({
       return false;
     }
 
-    if (!comprobante?.dataUrl) {
+    if (!comprobantes.length) {
       await Swal.fire({
         title: "Falta comprobante",
-        text: "Para este medio de pago tenés que adjuntar, pegar o sacar foto del comprobante.",
+        text: "Para este medio de pago tenés que adjuntar, pegar o sacar foto de al menos un comprobante.",
         icon: "warning",
       });
       return false;
     }
 
-    const montoComprobanteNumero = parseMoney(montoComprobante);
-    if (!(montoComprobanteNumero > 0)) {
+    const comprobanteSinMonto = comprobantes.find((item) => !(parseComprobanteMonto(item?.monto) > 0));
+    if (comprobanteSinMonto) {
       await Swal.fire({
         title: "Falta monto del comprobante",
-        text: "Cargá el monto que figura en el comprobante para compararlo con la seña o el pago.",
+        text: "Cargá el monto que figura en cada comprobante para compararlo con la seña o el pago.",
         icon: "warning",
       });
       return false;
     }
 
-    if (!sameMoney(montoComprobanteNumero, montoCaja)) {
+    const montoComprobantesNumero = sumComprobantesMonto(comprobantes);
+    if (!sameMoney(montoComprobantesNumero, montoCaja)) {
       await Swal.fire({
         title: "El monto no coincide",
-        text: `El comprobante dice $${toARS(montoComprobanteNumero)} y en caja figura $${toARS(montoCaja)}.`,
+        text: `Los comprobantes suman $${toARS(montoComprobantesNumero)} y en caja figura $${toARS(montoCaja)}.`,
         icon: "warning",
       });
       return false;
@@ -869,13 +905,13 @@ export default function NotaDetalleModal({
                         {!puedeComprobante
                           ? "Se habilita cuando el tipo es Seña o Pago."
                           : requiereComprobante
-                            ? "Obligatorio para guardar. Adjuntá una imagen, pegala con Ctrl+V o sacá una foto."
-                            : "Opcional. Podés adjuntar una imagen, pegarla con Ctrl+V o sacar una foto."}
+                            ? "Obligatorio para guardar. Podés adjuntar uno o más comprobantes hasta completar el monto."
+                            : "Opcional. Podés adjuntar una o más imágenes, pegarlas con Ctrl+V o sacar fotos."}
                       </div>
                     </div>
-                    {puedeComprobante && comprobante?.dataUrl ? (
-                      <button className="npl-btnGhost" type="button" onClick={() => setComprobante(null)}>
-                        Quitar
+                    {puedeComprobante && comprobantes.length > 0 ? (
+                      <button className="npl-btnGhost" type="button" onClick={() => setComprobantes([])}>
+                        Quitar todos
                       </button>
                     ) : null}
                   </div>
@@ -908,45 +944,55 @@ export default function NotaDetalleModal({
                         onChange={(e) => cargarComprobanteDesdeArchivo(e.target.files?.[0])}
                       />
 
-                      {comprobante?.dataUrl ? (
-                        <div className="npl-proofPreview">
-                          <img
-                            src={comprobante.dataUrl}
-                            alt="Comprobante de pago"
-                            className="npl-proofThumb"
-                            onClick={() => setLightboxSrc(comprobante.dataUrl)}
-                          />
-                        <div>
-                          <strong>{comprobante.nombre || "Comprobante"}</strong>
-                          <span>
-                            {leyendoComprobante
-                              ? "Leyendo monto automáticamente..."
-                              : detalle?.caja?.guardada
-                                ? "Guardado con la caja."
-                                : "Listo para guardar con la caja."}
-                          </span>
-                          <button className="npl-proofVerBtn" type="button" onClick={() => setLightboxSrc(comprobante.dataUrl)}>
-                            Ver completo
-                          </button>
+                      {comprobantes.length > 0 ? (
+                        <div className="npl-proofList">
+                          {comprobantes.map((item, index) => (
+                            <div className="npl-proofPreview" key={`${item.nombre || "comprobante"}-${index}`}>
+                              <img
+                                src={item.dataUrl}
+                                alt={`Comprobante de pago ${index + 1}`}
+                                className="npl-proofThumb"
+                                onClick={() => setLightboxSrc(item.dataUrl)}
+                              />
+                              <div>
+                                <strong>{item.nombre || `Comprobante ${index + 1}`}</strong>
+                                <span>
+                                  {leyendoComprobante
+                                    ? "Leyendo monto automáticamente..."
+                                    : detalle?.caja?.guardada
+                                      ? "Guardado con la caja."
+                                      : "Listo para guardar con la caja."}
+                                </span>
+                                <div className="npl-proofItemActions">
+                                  <button className="npl-proofVerBtn" type="button" onClick={() => setLightboxSrc(item.dataUrl)}>
+                                    Ver completo
+                                  </button>
+                                  <button className="npl-proofVerBtn" type="button" onClick={() => quitarComprobante(index)}>
+                                    Quitar
+                                  </button>
+                                </div>
+                                <label className="npl-proofItemAmount">
+                                  <span>Monto</span>
+                                  <input
+                                    value={item.monto ?? ""}
+                                    onChange={(e) => actualizarMontoComprobante(index, e.target.value)}
+                                    disabled={leyendoComprobante}
+                                    placeholder="Ej: 214172"
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      </div>
                       ) : (
                         <div className="npl-proofEmpty">También podés hacer click acá y pegar una captura con Ctrl+V.</div>
                       )}
 
                       <div className="npl-proofAmount">
-                        <label className="npl-k" htmlFor="montoComprobante">Monto que figura en el comprobante</label>
-                        <input
-                          id="montoComprobante"
-                          value={montoComprobante}
-                          onChange={(e) => setMontoComprobante(e.target.value)}
-                          disabled={leyendoComprobante}
-                          placeholder="Ej: 214172"
-                        />
                         <span>
                           {leyendoComprobante
                             ? "Leyendo la imagen para completar el monto..."
-                            : "Se completa automáticamente desde la imagen y debe coincidir con la seña o pago."}
+                            : `Total comprobantes: $${toARS(sumComprobantesMonto(comprobantes))}. La suma debe coincidir con la seña o pago.`}
                         </span>
                         {ocrTexto ? <span>Texto detectado: {ocrTexto.slice(0, 140)}</span> : null}
                       </div>
@@ -1088,31 +1134,35 @@ export default function NotaDetalleModal({
                     </div>
                   );
                 })()}
-                {detalle?.caja?.comprobante?.dataUrl ? (
+                {comprobantesGuardados.length > 0 ? (
                   <div className="npl-soloComprobanteBox npl-noPrint">
                     <div className="npl-soloComprobanteHeader">
                       <div>
-                        <div className="npl-k">Comprobante de pago</div>
+                        <div className="npl-k">Comprobantes de pago</div>
                         <div className="npl-proofHint">
                           {detalle.caja.metodo && <span>{detalle.caja.metodo} · </span>}
                           {detalle.caja.tipo && <span>{detalle.caja.tipo} · </span>}
-                          {detalle.caja.comprobante.monto > 0 && <span>${toARS(detalle.caja.comprobante.monto)}</span>}
+                          <span>${toARS(sumComprobantesMonto(comprobantesGuardados))}</span>
                         </div>
                       </div>
-                      <button
-                        className="npl-btnGhost"
-                        type="button"
-                        onClick={() => setLightboxSrc(detalle.caja.comprobante.dataUrl)}
-                      >
-                        Ver completo
-                      </button>
                     </div>
-                    <img
-                      src={detalle.caja.comprobante.dataUrl}
-                      alt="Comprobante de pago"
-                      className="npl-soloComprobanteImg npl-proofThumb"
-                      onClick={() => setLightboxSrc(detalle.caja.comprobante.dataUrl)}
-                    />
+                    <div className="npl-soloComprobanteGrid">
+                      {comprobantesGuardados.map((item, index) => (
+                        <button
+                          key={`${item.nombre || "comprobante"}-${index}`}
+                          type="button"
+                          className="npl-soloComprobanteItem"
+                          onClick={() => setLightboxSrc(item.dataUrl)}
+                        >
+                          <img
+                            src={item.dataUrl}
+                            alt={`Comprobante de pago ${index + 1}`}
+                            className="npl-soloComprobanteImg npl-proofThumb"
+                          />
+                          <span>{item.monto > 0 ? `$${toARS(item.monto)}` : `Comprobante ${index + 1}`}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
                 <div className="npl-modalActions npl-modalActions--preview">

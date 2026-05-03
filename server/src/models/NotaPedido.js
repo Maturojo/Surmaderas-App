@@ -41,6 +41,17 @@ const CajaSchema = new mongoose.Schema(
       dataUrl: { type: String, default: "" },
       monto: { type: Number, default: 0 },
     },
+    comprobantes: {
+      type: [
+        {
+          nombre: { type: String, default: "" },
+          tipo: { type: String, default: "" },
+          dataUrl: { type: String, default: "" },
+          monto: { type: Number, default: 0 },
+        },
+      ],
+      default: [],
+    },
   },
   { _id: false }
 );

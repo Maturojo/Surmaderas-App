@@ -1911,6 +1911,37 @@
   background: #fff;
 }
 
+.npl-proofList {
+  display: grid;
+  gap: 10px;
+}
+
+.npl-proofItemActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.npl-proofItemAmount {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  color: #756b61;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.npl-proofItemAmount input {
+  width: min(220px, 100%);
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(48, 41, 33, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  color: #231f1a;
+  font-weight: 800;
+}
+
 .npl-previewLogo {
   width: 95px;
   object-fit: contain;
@@ -2087,6 +2118,26 @@
 .npl-soloComprobanteImg {
   width: 120px !important;
   height: 96px !important;
+}
+
+.npl-soloComprobanteGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.npl-soloComprobanteItem {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #534940;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
 }
 
 .npl-refImgGrid {

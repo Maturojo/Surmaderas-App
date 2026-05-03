@@ -76,6 +76,17 @@ function getEstadoComercial(nota) {
   return "pendiente";
 }
 
+function getComprobantesCaja(caja = {}) {
+  const list = Array.isArray(caja?.comprobantes) ? caja.comprobantes : [];
+  const normalized = list.filter((item) => item?.dataUrl);
+  if (normalized.length) return normalized;
+  return caja?.comprobante?.dataUrl ? [caja.comprobante] : [];
+}
+
+function getMontoComprobantes(comprobantes = []) {
+  return comprobantes.reduce((sum, item) => sum + Number(item?.monto || 0), 0);
+}
+
 function getEstadoOperativoLabel(estado) {
   if (estado === "Enviado a proveedor") return "Enviada a proveedor";
   if (estado === "En taller") return "Enviada a taller";
@@ -1126,30 +1137,26 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                     </div>
                   );
                 })()}
-                {gestionNota?.caja?.comprobante?.dataUrl ? (
+                {getComprobantesCaja(gestionNota?.caja).length > 0 ? (
                   <div className="ng-clientActionsCard">
-                    <div className="ng-clientActionsTitle">Comprobante de pago</div>
+                    <div className="ng-clientActionsTitle">Comprobantes de pago</div>
                     <div className="ng-clientActionsSub">
                       {gestionNota.caja.metodo && <span>{gestionNota.caja.metodo} · </span>}
                       {gestionNota.caja.tipo && <span>{gestionNota.caja.tipo} · </span>}
-                      {gestionNota.caja.comprobante.monto > 0 && <span>${toARS(gestionNota.caja.comprobante.monto)}</span>}
+                      <span>${toARS(getMontoComprobantes(getComprobantesCaja(gestionNota?.caja)))}</span>
                     </div>
-                    <div className="ng-clientProofRow">
-                      <button
-                        type="button"
-                        className="ng-clientProofThumb"
-                        onClick={() => abrirComprobantePreview(gestionNota.caja.comprobante.dataUrl, "Comprobante de pago")}
-                      >
-                        <img src={gestionNota.caja.comprobante.dataUrl} alt="Comprobante de pago" />
-                      </button>
-                      <div className="ng-clientProofActions">
+                    <div className="ng-proofGrid">
+                      {getComprobantesCaja(gestionNota?.caja).map((item, index) => (
                         <button
-                          className="ng-actionBtn ng-actionBtn--ghost"
-                          onClick={() => abrirComprobantePreview(gestionNota.caja.comprobante.dataUrl, "Comprobante de pago")}
+                          key={`${item.nombre || "comprobante"}-${index}`}
+                          type="button"
+                          className="ng-clientProofThumb"
+                          onClick={() => abrirComprobantePreview(item.dataUrl, `Comprobante de pago ${index + 1}`)}
                         >
-                          Ver completo
+                          <img src={item.dataUrl} alt={`Comprobante de pago ${index + 1}`} />
+                          <span>{item.monto > 0 ? `$${toARS(item.monto)}` : `Comprobante ${index + 1}`}</span>
                         </button>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 ) : null}

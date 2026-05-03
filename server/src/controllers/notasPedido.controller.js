@@ -34,6 +34,28 @@ function sameMoney(a, b) {
   return Math.round(Number(a || 0) * 100) === Math.round(Number(b || 0) * 100);
 }
 
+function normalizeComprobantePayload(item = {}) {
+  if (!item?.dataUrl) return null;
+  return {
+    nombre: String(item?.nombre || "comprobante"),
+    tipo: String(item?.tipo || ""),
+    dataUrl: String(item?.dataUrl || ""),
+    monto: Number(item?.monto || 0),
+  };
+}
+
+function normalizeComprobantesPayload({ comprobantes, comprobante }) {
+  const list = Array.isArray(comprobantes) ? comprobantes : [];
+  const normalized = list.map(normalizeComprobantePayload).filter(Boolean);
+  const legacy = normalizeComprobantePayload(comprobante);
+  if (!normalized.length && legacy) return [legacy];
+  return normalized;
+}
+
+function sumComprobantesMonto(comprobantes = []) {
+  return comprobantes.reduce((sum, item) => sum + Number(item?.monto || 0), 0);
+}
+
 function normalizeNotaPayload(body = {}) {
   const clienteBody = body?.cliente;
   const cliente =
@@ -150,6 +172,8 @@ export async function listarNotasPedido(req, res) {
       "caja.fecha",
       "caja.metodo",
       "caja.nota",
+      "caja.comprobantes",
+      "caja.comprobante",
     ].join(" ");
 
     const [items, total] = await Promise.all([
@@ -222,6 +246,7 @@ export async function guardarCajaNota(req, res) {
       metodo = "",
       nota = "",
       comprobante = null,
+      comprobantes = [],
     } = req.body;
 
     const notaActual = await NotaPedido.findById(id);
@@ -245,32 +270,26 @@ export async function guardarCajaNota(req, res) {
     const metodoTexto = String(metodo || "");
     const esEfectivo = metodoTexto.toLowerCase() === "efectivo";
     const guardaComprobante = esPago || (esSena && !esEfectivo);
-    const montoComprobante = Number(comprobante?.monto || 0);
-    const comprobantePayload =
-      (esSena || esPago) && comprobante?.dataUrl
-        ? {
-            nombre: String(comprobante?.nombre || "comprobante"),
-            tipo: String(comprobante?.tipo || ""),
-            dataUrl: String(comprobante?.dataUrl || ""),
-            monto: montoComprobante,
-          }
-        : undefined;
+    const comprobantesPayload = (esSena || esPago)
+      ? normalizeComprobantesPayload({ comprobantes, comprobante })
+      : [];
+    const montoComprobantes = sumComprobantesMonto(comprobantesPayload);
 
     if (esSena && !(montoNumero > 0)) {
       return res.status(400).json({ message: "Si la nota queda señada, el monto debe ser mayor a 0" });
     }
 
     if (guardaComprobante) {
-      if (!comprobantePayload?.dataUrl) {
-        return res.status(400).json({ message: "Tenes que adjuntar el comprobante para este medio de pago" });
+      if (!comprobantesPayload.length) {
+        return res.status(400).json({ message: "Tenes que adjuntar al menos un comprobante para este medio de pago" });
       }
 
-      if (!(montoComprobante > 0)) {
-        return res.status(400).json({ message: "Tenes que cargar el monto que figura en el comprobante" });
+      if (comprobantesPayload.some((item) => !(Number(item?.monto || 0) > 0))) {
+        return res.status(400).json({ message: "Tenes que cargar el monto de cada comprobante" });
       }
 
-      if (!sameMoney(montoComprobante, montoNumero)) {
-        return res.status(400).json({ message: "El monto del comprobante no coincide con el monto de caja" });
+      if (!sameMoney(montoComprobantes, montoNumero)) {
+        return res.status(400).json({ message: "La suma de los comprobantes no coincide con el monto de caja" });
       }
     }
 
@@ -287,7 +306,8 @@ export async function guardarCajaNota(req, res) {
         resta: guardarImportesNota ? restaCaja : 0,
         metodo: esSena || esPago ? metodoTexto : "",
         nota: String(nota || ""),
-        comprobante: comprobantePayload,
+        comprobante: comprobantesPayload[0],
+        comprobantes: comprobantesPayload,
         fecha: new Date(),
       },
     };

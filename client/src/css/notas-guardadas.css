@@ -732,6 +732,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   width: 100%;
   padding: 10px;
   border-radius: 18px;
@@ -763,6 +764,30 @@
   height: auto;
   object-fit: contain;
   object-position: center;
+}
+
+.ng-clientProofThumb span {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2f261d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ng-proofGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.ng-proofGrid .ng-clientProofThumb {
+  min-height: 120px;
 }
 
 .ng-clientProofPlaceholder {
