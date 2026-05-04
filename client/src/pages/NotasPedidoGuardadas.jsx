@@ -61,7 +61,7 @@ function getEntregaUrgencyClass(entrega) {
 }
 
 function estadoOperativoClase(estado) {
-  if (estado === "Finalizado") return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (estado === "Finalizado") return "bg-sky-50 text-sky-700 border-sky-200";
   if (estado === "En taller") return "bg-amber-50 text-amber-700 border-amber-200";
   if (estado === "Enviado a proveedor") return "bg-sky-50 text-sky-700 border-sky-200";
   return "bg-slate-50 text-slate-700 border-slate-200";
@@ -241,6 +241,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const [terminadoOpcion, setTerminadoOpcion] = useState(null);
   const [terminadoFoto, setTerminadoFoto] = useState(null);
   const [terminadoLoading, setTerminadoLoading] = useState(false);
+  const [savingAvisoId, setSavingAvisoId] = useState("");
 
   async function load() {
     setLoading(true);
@@ -416,7 +417,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     const filteredByView = items.filter((n) => {
       if (view === "pendientes") return n?.estadoOperativo === "Enviado a proveedor";
       if (view === "deposito") return n?.estadoOperativo === "Finalizado";
-      return n?.estadoOperativo !== "Enviado a proveedor";
+      return !["Enviado a proveedor", "Finalizado"].includes(n?.estadoOperativo);
     });
 
     return filteredByView
@@ -453,6 +454,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   );
 
   const copy = VIEW_CONFIG[view] || VIEW_CONFIG.all;
+  const mostrarAvisoCliente = view === "deposito";
+  const tableColSpan = mostrarAvisoCliente ? 11 : 10;
 
   async function borrarNota(nota) {
     cerrarAccionesNota();
@@ -489,6 +492,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
       await actualizarOperacionNota(nota._id, {
         estadoOperativo: "Finalizado",
         proveedores: [],
+        clienteAvisado: Boolean(nota?.clienteAvisado),
       });
       await load();
       if (gestionNota?._id === nota._id) {
@@ -507,6 +511,38 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         title: "Error",
         text: e?.message || "No se pudo marcar la nota como lista para retirar.",
       });
+    }
+  }
+
+  async function cambiarAvisoCliente(nota, avisado) {
+    if (!nota?._id) return;
+
+    try {
+      setSavingAvisoId(nota._id);
+      await actualizarOperacionNota(nota._id, {
+        estadoOperativo: nota?.estadoOperativo || "Finalizado",
+        proveedores: Array.isArray(nota?.proveedores) ? nota.proveedores : [],
+        clienteAvisado: avisado,
+      });
+      setItems((prev) =>
+        prev.map((item) =>
+          item?._id === nota._id
+            ? {
+                ...item,
+                clienteAvisado: avisado,
+                clienteAvisadoFecha: avisado ? new Date().toISOString() : null,
+              }
+            : item
+        )
+      );
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e?.message || "No se pudo actualizar el aviso al cliente.",
+      });
+    } finally {
+      setSavingAvisoId("");
     }
   }
 
@@ -680,6 +716,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
       await actualizarOperacionNota(gestionNota._id, {
         estadoOperativo,
         proveedores: asignaciones,
+        clienteAvisado: Boolean(gestionNota?.clienteAvisado),
       });
       await load();
       cerrarGestion();
@@ -743,6 +780,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
       await actualizarOperacionNota(gestionNota._id, {
         estadoOperativo: "Finalizado",
         proveedores: asignaciones,
+        clienteAvisado: Boolean(telefonoWhatsapp),
       });
       await load();
       cerrarTerminado();
@@ -857,6 +895,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
               <th>Estado</th>
               <th>Operativo</th>
               <th>Destino</th>
+              {mostrarAvisoCliente ? <th>Aviso</th> : null}
               <th>Total</th>
               <th>Acciones</th>
             </tr>
@@ -864,14 +903,14 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
 
           <tbody>
             {loading ? (
-              <tr><td className="ng-tableMessage" colSpan={10}>Cargando...</td></tr>
+              <tr><td className="ng-tableMessage" colSpan={tableColSpan}>Cargando...</td></tr>
             ) : guardadas.length === 0 ? (
-              <tr><td className="ng-tableMessage" colSpan={10}>{copy.emptyMessage}</td></tr>
+              <tr><td className="ng-tableMessage" colSpan={tableColSpan}>{copy.emptyMessage}</td></tr>
             ) : (
                 guardadas.map((n) => {
                 const notaId = n?._id || n?.id || n?.numero;
                 return (
-                <tr key={notaId} className={getEntregaUrgencyClass(n?.entrega)}>
+                <tr key={notaId} className={mostrarAvisoCliente ? "ng-rowDeposito" : getEntregaUrgencyClass(n?.entrega)}>
                   <td className="ng-cellStrong" data-label="Numero">{n?.numero ?? "-"}</td>
                   <td data-label="Fecha">{fmtDate(n?.fecha)}</td>
                   <td data-label="Entrega">{n?.entrega ?? "-"}</td>
@@ -911,6 +950,22 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       <span className="ng-muted">-</span>
                     )}
                   </td>
+                  {mostrarAvisoCliente ? (
+                    <td data-label="Aviso">
+                      <button
+                        type="button"
+                        className={`ng-avisoBtn ${n?.clienteAvisado ? "ng-avisoBtn--ok" : ""}`}
+                        onClick={() => cambiarAvisoCliente(n, !n?.clienteAvisado)}
+                        disabled={savingAvisoId === n?._id}
+                      >
+                        {savingAvisoId === n?._id
+                          ? "Guardando..."
+                          : n?.clienteAvisado
+                            ? "Cliente avisado"
+                            : "Sin avisar"}
+                      </button>
+                    </td>
+                  ) : null}
                   <td className="ng-cellStrong" data-label="Total">${toARS(getNotaTotal(n))}</td>
                   <td data-label="Acciones">
                     <div className="ng-actions">

@@ -107,6 +107,7 @@ function enrichNota(doc) {
   item.clienteTelefono = getClienteTelefono(item);
   item.total = Number(item?.totales?.total ?? item?.total ?? 0);
   item.estadoOperativo = item?.estadoOperativo || "Pendiente";
+  item.clienteAvisado = Boolean(item?.clienteAvisado);
   item.proveedores = Array.isArray(item?.proveedores) ? item.proveedores : [];
   return item;
 }
@@ -156,6 +157,8 @@ export async function listarNotasPedido(req, res) {
       "vendedor",
       "estado",
       "estadoOperativo",
+      "clienteAvisado",
+      "clienteAvisadoFecha",
       "proveedores",
       "total",
       "totales",
@@ -333,6 +336,8 @@ export async function actualizarOperacionNota(req, res) {
   try {
     const { id } = req.params;
     const estadoOperativo = String(req.body?.estadoOperativo || "Pendiente").trim() || "Pendiente";
+    const cambiaAvisoCliente = typeof req.body?.clienteAvisado === "boolean";
+    const clienteAvisado = Boolean(req.body?.clienteAvisado);
     const proveedores = Array.isArray(req.body?.proveedores)
       ? req.body.proveedores
           .map((item) => ({
@@ -357,7 +362,18 @@ export async function actualizarOperacionNota(req, res) {
 
     const updated = await NotaPedido.findByIdAndUpdate(
       id,
-      { $set: { estadoOperativo, proveedores } },
+      {
+        $set: {
+          estadoOperativo,
+          proveedores,
+          ...(cambiaAvisoCliente
+            ? {
+                clienteAvisado,
+                clienteAvisadoFecha: clienteAvisado ? new Date() : null,
+              }
+            : {}),
+        },
+      },
       { new: true }
     );
 

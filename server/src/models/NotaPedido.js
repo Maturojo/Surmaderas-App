@@ -88,6 +88,8 @@ const NotaPedidoSchema = new mongoose.Schema(
       enum: ["Pendiente", "En taller", "Enviado a proveedor", "Finalizado"],
       default: "Pendiente",
     },
+    clienteAvisado: { type: Boolean, default: false },
+    clienteAvisadoFecha: { type: Date, default: null },
     proveedores: { type: [ProveedorAsignadoSchema], default: [] },
   },
   { timestamps: true }

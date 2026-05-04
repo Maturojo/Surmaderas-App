@@ -253,15 +253,26 @@
   background: #ffe5e5;
 }
 
+.ng-table tbody tr.ng-rowDeposito td,
+.ng-table tbody tr.ng-rowDeposito:hover td {
+  background: #f6fbff;
+}
+
+.ng-table tbody tr.ng-rowDeposito td:first-child::before {
+  background: #4b8dcc;
+}
+
 .ng-table tbody tr.ng-rowDue--ok td:first-child,
 .ng-table tbody tr.ng-rowDue--warning td:first-child,
-.ng-table tbody tr.ng-rowDue--danger td:first-child {
+.ng-table tbody tr.ng-rowDue--danger td:first-child,
+.ng-table tbody tr.ng-rowDeposito td:first-child {
   position: relative;
 }
 
 .ng-table tbody tr.ng-rowDue--ok td:first-child::before,
 .ng-table tbody tr.ng-rowDue--warning td:first-child::before,
-.ng-table tbody tr.ng-rowDue--danger td:first-child::before {
+.ng-table tbody tr.ng-rowDue--danger td:first-child::before,
+.ng-table tbody tr.ng-rowDeposito td:first-child::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
@@ -363,13 +374,36 @@
 }
 
 .ng-inlineBadge--deposito {
-  background: #e8f4ea;
-  color: #2f7a45;
+  background: #e9f4ff;
+  color: #2e648f;
 }
 
 .ng-inlineBadge--local {
-  background: #e8f4ea;
-  color: #2f7a45;
+  background: #e9f4ff;
+  color: #2e648f;
+}
+
+.ng-avisoBtn {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #c7dcf2;
+  border-radius: 999px;
+  background: #f6fbff;
+  color: #2e648f;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ng-avisoBtn--ok {
+  background: #e9f4ff;
+  color: #1d5f96;
+}
+
+.ng-avisoBtn:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .ng-muted {
