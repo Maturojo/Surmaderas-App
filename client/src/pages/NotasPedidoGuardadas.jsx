@@ -884,7 +884,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         </div>
 
         <div className="ng-tableWrap">
-          <table className="ng-table">
+          <table className={`ng-table ${mostrarAvisoCliente ? "ng-table--deposito" : ""}`}>
             <thead>
             <tr>
               <th>Numero</th>
