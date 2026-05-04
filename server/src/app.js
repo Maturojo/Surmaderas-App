@@ -23,7 +23,24 @@ function getAllowedOrigins() {
     ...extraOrigins,
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://surmaderas-gestion-client.vercel.app",
   ].filter(Boolean);
+}
+
+function isAllowedVercelClientOrigin(origin) {
+  try {
+    const { hostname, protocol } = new URL(origin);
+    const normalizedHost = hostname.toLowerCase();
+    return (
+      protocol === "https:" &&
+      normalizedHost.endsWith(".vercel.app") &&
+      normalizedHost.includes("surmaderas")
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function createApp() {
@@ -35,6 +52,7 @@ export function createApp() {
       origin(origin, callback) {
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
+        if (isAllowedVercelClientOrigin(origin)) return callback(null, true);
         return callback(new Error(`CORS bloqueado para origin: ${origin}`), false);
       },
       credentials: true,
