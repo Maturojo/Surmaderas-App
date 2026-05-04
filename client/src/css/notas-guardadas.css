@@ -1453,6 +1453,96 @@
 }
 
 @media (max-width: 640px) {
+  .ng-page {
+    gap: 12px;
+  }
+
+  .ng-hero {
+    padding: 14px;
+    border-radius: 18px;
+    gap: 14px;
+  }
+
+  .ng-kicker {
+    margin-bottom: 6px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .ng-title {
+    font-size: 28px;
+    line-height: 1.02;
+  }
+
+  .ng-subtitle {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .ng-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ng-statCard {
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .ng-statLabel {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .ng-statValue {
+    margin-top: 5px;
+    font-size: 22px;
+  }
+
+  .ng-toolbar {
+    padding: 10px;
+    border-radius: 18px;
+    gap: 8px;
+  }
+
+  .ng-search {
+    min-height: 46px;
+    border-radius: 14px;
+  }
+
+  .ng-refreshBtn {
+    min-height: 44px;
+    border-radius: 14px;
+  }
+
+  .ng-tableCard {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .ng-tableHead {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .ng-sectionTitle {
+    font-size: 20px;
+  }
+
+  .ng-sectionSub {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .ng-resultsPill {
+    width: fit-content;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
   .ng-tableWrap {
     overflow: visible;
     border: 0;
@@ -1477,11 +1567,23 @@
   }
 
   .ng-table tbody tr {
-    padding: 12px;
+    padding: 12px 12px 10px;
     border: 1px solid rgba(73, 58, 38, 0.08);
     border-radius: 18px;
     background: #fffdf9;
     box-shadow: 0 12px 26px rgba(55, 43, 29, 0.06);
+  }
+
+  .ng-table tbody tr.ng-rowDue--ok {
+    background: #f7fff4;
+  }
+
+  .ng-table tbody tr.ng-rowDue--warning {
+    background: #fffaf0;
+  }
+
+  .ng-table tbody tr.ng-rowDue--danger {
+    background: #fff7f7;
   }
 
   .ng-table tbody tr.ng-rowDue--ok,
@@ -1528,12 +1630,13 @@
 
   .ng-table td {
     display: grid;
-    grid-template-columns: 96px minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 8px;
     align-items: start;
-    padding: 10px 0;
+    padding: 8px 0;
     border-bottom: 1px solid rgba(73, 58, 38, 0.07);
     white-space: normal;
+    font-size: 13px;
   }
 
   .ng-table td:last-child {
@@ -1544,10 +1647,78 @@
   .ng-table td::before {
     content: attr(data-label);
     color: #7a7065;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
+  }
+
+  .ng-table td[data-label="Numero"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 0 9px;
+    font-size: 17px;
+  }
+
+  .ng-table td[data-label="Numero"]::before {
+    content: "Pedido";
+    color: #8a765a;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ng-table td[data-label="Fecha"],
+  .ng-table td[data-label="Vendedor"] {
+    display: none;
+  }
+
+  .ng-table td[data-label="Cliente"] {
+    display: block;
+    padding-top: 6px;
+  }
+
+  .ng-table td[data-label="Cliente"]::before {
+    content: none;
+  }
+
+  .ng-clientCell {
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(73, 58, 38, 0.06);
+  }
+
+  .ng-clientCell strong {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .ng-clientCell span {
+    margin-top: 3px;
+  }
+
+  .ng-table td[data-label="Estado"],
+  .ng-table td[data-label="Operativo"],
+  .ng-table td[data-label="Destino"] {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .ng-table td[data-label="Total"] {
+    align-items: center;
+    font-size: 16px;
+  }
+
+  .ng-table td[data-label="Acciones"] {
+    display: block;
+    padding-top: 10px;
+  }
+
+  .ng-table td[data-label="Acciones"]::before {
+    content: none;
   }
 
   .ng-tableMessage {
@@ -1578,17 +1749,38 @@
 
   .ng-actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px;
     gap: 8px;
   }
 
   .ng-tableBtn {
     width: 100%;
     min-height: 42px;
+    padding: 0 10px;
+    border-radius: 12px;
   }
 
   .ng-actionsMenu,
   .ng-actionsMenu .ng-tableBtn {
+    width: 100%;
+  }
+
+  .ng-tableBtn--icon {
+    width: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ng-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .ng-tableBtn--icon {
     width: 100%;
   }
 }
