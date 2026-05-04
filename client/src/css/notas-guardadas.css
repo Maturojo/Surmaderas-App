@@ -213,7 +213,7 @@
 .ng-table th,
 .ng-table td {
   min-width: 0;
-  padding: 15px 10px;
+  padding: 12px 10px;
   border-bottom: 1px solid rgba(73, 58, 38, 0.08);
   text-align: left;
   font-size: 13px;
@@ -242,7 +242,7 @@
 
 .ng-table th:nth-child(1),
 .ng-table td:nth-child(1) {
-  width: 12%;
+  width: 11%;
 }
 
 .ng-table th:nth-child(2),
@@ -251,7 +251,7 @@
 .ng-table td:nth-child(3),
 .ng-table th:nth-child(5),
 .ng-table td:nth-child(5) {
-  width: 8%;
+  width: 7%;
 }
 
 .ng-table th:nth-child(4),
@@ -261,21 +261,27 @@
 
 .ng-table th:nth-child(6),
 .ng-table td:nth-child(6) {
-  width: 9%;
+  width: 8%;
 }
 
 .ng-table th:nth-child(7),
-.ng-table td:nth-child(7),
+.ng-table td:nth-child(7) {
+  width: 10%;
+}
+
 .ng-table th:nth-child(8),
 .ng-table td:nth-child(8) {
-  width: 11%;
+  width: 8%;
 }
 
 .ng-table th:nth-child(9),
-.ng-table td:nth-child(9),
+.ng-table td:nth-child(9) {
+  width: 9%;
+}
+
 .ng-table th:nth-child(10),
 .ng-table td:nth-child(10) {
-  width: 10%;
+  width: 16%;
 }
 
 .ng-table th:nth-child(11),
@@ -285,17 +291,17 @@
 
 .ng-table--deposito th:nth-child(9),
 .ng-table--deposito td:nth-child(9) {
-  width: 9%;
+  width: 8%;
 }
 
 .ng-table--deposito th:nth-child(10),
 .ng-table--deposito td:nth-child(10) {
-  width: 10%;
+  width: 9%;
 }
 
 .ng-table--deposito th:nth-child(11),
 .ng-table--deposito td:nth-child(11) {
-  width: 11%;
+  width: 15%;
 }
 
 .ng-table tbody tr:hover td {
@@ -398,7 +404,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 32px;
+  min-height: 30px;
   max-width: 100%;
   padding: 0 12px;
   border-radius: 999px;
@@ -424,7 +430,7 @@
 
 .ng-stateMeta {
   color: #6f665d;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -440,7 +446,7 @@
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  min-height: 30px;
+  min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -503,7 +509,7 @@
 
 .ng-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   justify-content: flex-end;
   align-items: center;
@@ -512,8 +518,8 @@
 }
 
 .ng-tableBtn {
-  min-height: 36px;
-  padding: 0 10px;
+  min-height: 34px;
+  padding: 0 9px;
   border-radius: 12px;
   border: 1px solid rgba(73, 58, 38, 0.12);
   background: #fff;
@@ -536,7 +542,7 @@
 }
 
 .ng-tableBtn--icon {
-  width: 36px;
+  width: 34px;
   padding: 0;
   font-size: 18px;
   line-height: 1;
@@ -1681,22 +1687,22 @@
   .ng-table {
     min-width: 0;
     border-collapse: separate;
-    border-spacing: 0 12px;
+    border-spacing: 0 10px;
   }
 
   .ng-table thead {
     display: none;
   }
 
-  .ng-table tbody,
-  .ng-table tr,
-  .ng-table td {
+  .ng-table tbody {
     display: block;
-    width: 100%;
   }
 
   .ng-table tbody tr {
-    padding: 12px 12px 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px 10px;
+    padding: 12px;
     border: 1px solid rgba(73, 58, 38, 0.08);
     border-radius: 18px;
     background: #fffdf9;
@@ -1759,11 +1765,11 @@
 
   .ng-table td {
     display: grid;
-    grid-template-columns: 78px minmax(0, 1fr);
-    gap: 8px;
+    gap: 4px;
     align-items: start;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(73, 58, 38, 0.07);
+    width: 100%;
+    padding: 0;
+    border-bottom: 0;
     white-space: normal;
     font-size: 13px;
   }
@@ -1776,19 +1782,16 @@
   .ng-table td::before {
     content: attr(data-label);
     color: #7a7065;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 900;
     letter-spacing: 0.03em;
     text-transform: uppercase;
   }
 
   .ng-table td[data-label="Numero"] {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 0 0 9px;
-    font-size: 17px;
+    order: 1;
+    font-size: 14px;
+    line-height: 1.25;
   }
 
   .ng-table td[data-label="Numero"]::before {
@@ -1805,9 +1808,14 @@
     display: none;
   }
 
+  .ng-table td[data-label="Entrega"] {
+    order: 4;
+  }
+
   .ng-table td[data-label="Cliente"] {
+    order: 3;
     display: block;
-    padding-top: 6px;
+    grid-column: 1 / -1;
   }
 
   .ng-table td[data-label="Cliente"]::before {
@@ -1815,14 +1823,14 @@
   }
 
   .ng-clientCell {
-    padding: 10px;
-    border-radius: 14px;
+    padding: 8px 10px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.72);
     border: 1px solid rgba(73, 58, 38, 0.06);
   }
 
   .ng-clientCell strong {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.2;
   }
 
@@ -1830,20 +1838,34 @@
     margin-top: 3px;
   }
 
-  .ng-table td[data-label="Estado"],
-  .ng-table td[data-label="Operativo"],
+  .ng-table td[data-label="Estado"] {
+    order: 5;
+  }
+
+  .ng-table td[data-label="Operativo"] {
+    order: 6;
+  }
+
   .ng-table td[data-label="Destino"] {
-    grid-template-columns: 78px minmax(0, 1fr);
+    order: 7;
+  }
+
+  .ng-table td[data-label="Aviso"] {
+    order: 8;
   }
 
   .ng-table td[data-label="Total"] {
-    align-items: center;
-    font-size: 16px;
+    order: 2;
+    align-items: end;
+    text-align: right;
+    font-size: 15px;
   }
 
   .ng-table td[data-label="Acciones"] {
+    order: 9;
     display: block;
-    padding-top: 10px;
+    grid-column: 1 / -1;
+    padding-top: 4px;
   }
 
   .ng-table td[data-label="Acciones"]::before {
@@ -1869,7 +1891,8 @@
 
   .ng-statusPill,
   .ng-destinoTag,
-  .ng-inlineBadge {
+  .ng-inlineBadge,
+  .ng-avisoBtn {
     width: fit-content;
     max-width: 100%;
     white-space: normal;
@@ -1879,12 +1902,12 @@
   .ng-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px;
-    gap: 8px;
+    gap: 7px;
   }
 
   .ng-tableBtn {
     width: 100%;
-    min-height: 42px;
+    min-height: 38px;
     padding: 0 10px;
     border-radius: 12px;
   }
