@@ -1,4 +1,23 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+function getDefaultApiUrl() {
+  if (typeof window === "undefined") {
+    return "http://localhost:4000";
+  }
+
+  const host = window.location.hostname || "localhost";
+  const isLocalHost = host === "localhost" || host === "127.0.0.1";
+
+  if (isLocalHost) {
+    return `http://${host}:4000`;
+  }
+
+  if (window.location.protocol === "https:") {
+    return "https://surmaderas-gestion-server.vercel.app";
+  }
+
+  return `http://${host}:4000`;
+}
+
+const API_URL = import.meta.env.VITE_API_URL || getDefaultApiUrl();
 const KEY = "sm_auth";
 
 export function getToken() {
