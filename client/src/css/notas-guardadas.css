@@ -1927,6 +1927,154 @@
   }
 }
 
+@media (max-width: 900px) {
+  .ng-tableWrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid rgba(73, 58, 38, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ng-tableWrap::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .ng-tableWrap::-webkit-scrollbar-track {
+    background: #f0ebe3;
+    border-radius: 999px;
+  }
+
+  .ng-tableWrap::-webkit-scrollbar-thumb {
+    background: #9c8d7a;
+    border-radius: 999px;
+  }
+
+  .ng-table {
+    display: table;
+    width: 100%;
+    min-width: 1060px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .ng-table--deposito {
+    min-width: 1180px;
+  }
+
+  .ng-table thead {
+    display: table-header-group;
+  }
+
+  .ng-table tbody {
+    display: table-row-group;
+    width: auto;
+  }
+
+  .ng-table tbody tr {
+    display: table-row;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .ng-table th,
+  .ng-table td {
+    display: table-cell;
+    width: auto !important;
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  .ng-table td::before,
+  .ng-table td[data-label="Numero"]::before,
+  .ng-table td[data-label="Acciones"]::before {
+    content: none;
+  }
+
+  .ng-table td[data-label="Fecha"],
+  .ng-table td[data-label="Vendedor"],
+  .ng-table td[data-label="Cliente"],
+  .ng-table td[data-label="Entrega"],
+  .ng-table td[data-label="Estado"],
+  .ng-table td[data-label="Operativo"],
+  .ng-table td[data-label="Destino"],
+  .ng-table td[data-label="Aviso"],
+  .ng-table td[data-label="Total"],
+  .ng-table td[data-label="Acciones"] {
+    display: table-cell;
+    grid-column: auto;
+    order: initial;
+    text-align: left;
+  }
+
+  .ng-table tbody tr:hover td,
+  .ng-table tbody tr.ng-rowDue--ok td,
+  .ng-table tbody tr.ng-rowDue--warning td,
+  .ng-table tbody tr.ng-rowDue--danger td,
+  .ng-table tbody tr.ng-rowDeposito td,
+  .ng-table tbody tr.ng-rowDue--ok:hover td,
+  .ng-table tbody tr.ng-rowDue--warning:hover td,
+  .ng-table tbody tr.ng-rowDue--danger:hover td,
+  .ng-table tbody tr.ng-rowDeposito:hover td {
+    background: inherit;
+  }
+
+  .ng-table tbody tr.ng-rowDue--ok td {
+    background: #f1faef;
+  }
+
+  .ng-table tbody tr.ng-rowDue--warning td {
+    background: #fff8df;
+  }
+
+  .ng-table tbody tr.ng-rowDue--danger td {
+    background: #fff1f1;
+  }
+
+  .ng-table tbody tr.ng-rowDeposito td {
+    background: #f6fbff;
+  }
+
+  .ng-clientCell {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .ng-clientCell strong {
+    font-size: 14px;
+  }
+
+  .ng-statusPill,
+  .ng-destinoTag,
+  .ng-inlineBadge,
+  .ng-avisoBtn {
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .ng-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .ng-tableBtn {
+    width: auto;
+    min-height: 34px;
+  }
+
+  .ng-tableBtn--icon {
+    width: 36px;
+    min-width: 36px;
+  }
+}
+
 @media (max-width: 380px) {
   .ng-stats {
     grid-template-columns: 1fr;
