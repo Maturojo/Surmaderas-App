@@ -2098,7 +2098,7 @@
 
 .ng-table {
   display: table !important;
-  min-width: 1120px;
+  min-width: 1240px;
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
@@ -2106,7 +2106,27 @@
 }
 
 .ng-table--deposito {
-  min-width: 1240px;
+  min-width: 1360px;
+}
+
+.ng-table th:nth-child(10),
+.ng-table td:nth-child(10) {
+  width: 120px !important;
+}
+
+.ng-table th:nth-child(11),
+.ng-table td:nth-child(11) {
+  width: 190px !important;
+}
+
+.ng-table--deposito th:nth-child(10),
+.ng-table--deposito td:nth-child(10) {
+  width: 120px !important;
+}
+
+.ng-table--deposito th:nth-child(11),
+.ng-table--deposito td:nth-child(11) {
+  width: 190px !important;
 }
 
 .ng-table thead {
@@ -2177,6 +2197,8 @@
   display: flex !important;
   flex-wrap: nowrap !important;
   justify-content: flex-end;
+  gap: 8px;
+  min-width: 170px;
 }
 
 .ng-tableBtn {
