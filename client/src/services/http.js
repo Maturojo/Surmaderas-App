@@ -17,7 +17,21 @@ function getDefaultApiUrl() {
   return `http://${host}:4000`;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || getDefaultApiUrl();
+function getApiUrl() {
+  const configured = String(import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
+  if (!configured || typeof window === "undefined") return configured || getDefaultApiUrl();
+
+  const host = window.location.hostname || "localhost";
+  const isLocalHost = host === "localhost" || host === "127.0.0.1";
+
+  if (!isLocalHost && /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?/i.test(configured)) {
+    return getDefaultApiUrl();
+  }
+
+  return configured;
+}
+
+const API_URL = getApiUrl();
 const KEY = "sm_auth";
 
 export function getToken() {
@@ -39,7 +53,23 @@ export function clearAuth() {
 }
 
 export async function apiFetch(input, init = {}) {
-  const response = await fetch(input, init);
+  let response;
+  try {
+    response = await fetch(input, init);
+  } catch (error) {
+    const fallbackApiUrl = getDefaultApiUrl();
+    try {
+      const originalUrl = new URL(String(input));
+      const fallbackUrl = new URL(fallbackApiUrl);
+      if (originalUrl.origin !== fallbackUrl.origin) {
+        response = await fetch(`${fallbackApiUrl}${originalUrl.pathname}${originalUrl.search}`, init);
+      } else {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+  }
   const cloned = response.clone();
   const data = await cloned.json().catch(() => null);
   const message = data?.message || data?.error || "";
