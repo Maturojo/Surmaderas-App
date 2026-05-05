@@ -2088,3 +2088,97 @@
     width: 100%;
   }
 }
+
+/* Operative order tables: keep the full table readable and scroll sideways. */
+.ng-tableWrap {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ng-table {
+  display: table !important;
+  min-width: 1120px;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.ng-table--deposito {
+  min-width: 1240px;
+}
+
+.ng-table thead {
+  display: table-header-group !important;
+}
+
+.ng-table tbody {
+  display: table-row-group !important;
+}
+
+.ng-table tbody tr {
+  display: table-row !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.ng-table th,
+.ng-table td {
+  display: table-cell !important;
+  width: auto !important;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.ng-table td::before {
+  content: none !important;
+}
+
+.ng-table td[data-label="Fecha"],
+.ng-table td[data-label="Vendedor"],
+.ng-table td[data-label="Cliente"],
+.ng-table td[data-label="Entrega"],
+.ng-table td[data-label="Estado"],
+.ng-table td[data-label="Operativo"],
+.ng-table td[data-label="Destino"],
+.ng-table td[data-label="Aviso"],
+.ng-table td[data-label="Total"],
+.ng-table td[data-label="Acciones"] {
+  display: table-cell !important;
+  grid-column: auto !important;
+  order: initial !important;
+  text-align: left;
+}
+
+.ng-table td[data-label="Acciones"] {
+  padding-top: 12px !important;
+}
+
+.ng-clientCell {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.ng-statusPill,
+.ng-destinoTag,
+.ng-inlineBadge,
+.ng-avisoBtn {
+  width: fit-content;
+  white-space: nowrap !important;
+}
+
+.ng-actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end;
+}
+
+.ng-tableBtn {
+  width: auto !important;
+}
