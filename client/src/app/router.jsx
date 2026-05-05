@@ -13,9 +13,12 @@ import Proveedores from "../pages/Proveedores";
 import PedidosProveedor from "../pages/PedidosProveedor";
 import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
 import CotizadorMarcos from "../pages/CotizadorMarcos.jsx";
+import CotizadorCortes from "../pages/CotizadorCortes.jsx";
 import UserManagement from "../pages/UserManagement.jsx";
 import TurneroSettings from "../pages/TurneroSettings.jsx";
 import ChatInterno from "../pages/ChatInterno.jsx";
+import FormularioClientes from "../pages/FormularioClientes.jsx";
+import EncuestasCupones from "../pages/EncuestasCupones.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
@@ -29,6 +32,7 @@ import { getDefaultHomeByRole, getUserRole } from "../services/auth";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
+  { path: "/formulario-clientes", element: <FormularioClientes /> },
   {
     path: "/",
     element: (
@@ -150,6 +154,15 @@ export const router = createBrowserRouter([
       },
       { path: "generador-3d", element: <GeneradorMueble3D /> },
       { path: "marcos", element: <CotizadorMarcos /> },
+      { path: "cotizador-cortes", element: <CotizadorCortes /> },
+      {
+        path: "encuestas",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
+            <EncuestasCupones />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "configuracion/usuarios",
         element: (

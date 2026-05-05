@@ -38,8 +38,10 @@ const NAV_ITEMS = [
     ],
   },
   { label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
+  { label: "Cotizador de cortes", to: "/cotizador-cortes", icon: "scissors" },
   { label: "Productos", to: "/productos", icon: "products" },
   { label: "Placas", to: "/placas", icon: "layers" },
+  { label: "Encuestas", to: "/encuestas", icon: "survey" },
   {
     label: "Proveedores",
     icon: "suppliers",
@@ -59,8 +61,10 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/presupuestos/proveedores",
   "/productos",
   "/placas",
+  "/encuestas",
   "/generador-3d",
   "/marcos",
+  "/cotizador-cortes",
 ]);
 
 function SidebarIcon({ name }) {
@@ -150,6 +154,23 @@ function SidebarIcon({ name }) {
           <rect x="8" y="8" width="8" height="8" rx="1.5" />
         </svg>
       );
+    case "scissors":
+      return (
+        <svg {...common}>
+          <circle cx="6" cy="6" r="3" />
+          <circle cx="6" cy="18" r="3" />
+          <line x1="20" y1="4" x2="8.12" y2="15.88" />
+          <line x1="14.47" y1="14.48" x2="20" y2="20" />
+          <line x1="8.12" y1="8.12" x2="12" y2="12" />
+        </svg>
+      );
+    case "survey":
+      return (
+        <svg {...common}>
+          <path d="M7 4.5h10a2 2 0 0 1 2 2V20l-3-2H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2Z" />
+          <path d="M8 9h8M8 12.5h5M8 16h3" />
+        </svg>
+      );
     case "settings":
       return (
         <svg {...common}>
@@ -216,7 +237,11 @@ export default function AppLayout() {
   }
 
   useEffect(() => {
-    setSidebarOpen(false);
+    const frame = window.requestAnimationFrame(() => {
+      setSidebarOpen(false);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [location.pathname]);
 
   useEffect(() => {

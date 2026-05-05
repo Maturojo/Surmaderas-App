@@ -1685,6 +1685,8 @@
   }
 
   .ng-table {
+    display: block;
+    width: 100%;
     min-width: 0;
     border-collapse: separate;
     border-spacing: 0 10px;
@@ -1696,6 +1698,7 @@
 
   .ng-table tbody {
     display: block;
+    width: 100%;
   }
 
   .ng-table tbody tr {
@@ -1767,7 +1770,8 @@
     display: grid;
     gap: 4px;
     align-items: start;
-    width: 100%;
+    width: auto !important;
+    min-width: 0;
     padding: 0;
     border-bottom: 0;
     white-space: normal;

@@ -943,6 +943,12 @@ textarea {
   outline: none;
 }
 
+.config-usersField textarea {
+  min-height: 112px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
 .config-usersCheckbox {
   display: flex;
   align-items: center;
@@ -1090,6 +1096,450 @@ textarea {
   line-height: 0.95;
   font-weight: 900;
   color: #2f241a;
+}
+
+.survey-public {
+  min-height: 100vh;
+  padding: 28px 16px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(180, 126, 64, 0.18), transparent 30%),
+    linear-gradient(135deg, #f6efe6 0%, #eef2ed 100%);
+}
+
+.survey-card {
+  width: min(100%, 620px);
+  padding: 28px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(101, 80, 55, 0.14);
+  box-shadow: 0 24px 70px rgba(55, 44, 34, 0.14);
+}
+
+.survey-logo {
+  width: 124px;
+  height: auto;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.survey-progress {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.survey-progress span {
+  height: 8px;
+  border-radius: 999px;
+  background: #e8ded1;
+}
+
+.survey-progress span.active {
+  background: #3d3127;
+}
+
+.survey-kicker {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a6f4d;
+}
+
+.survey-card h1 {
+  margin: 8px 0 12px;
+  color: #2d261f;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.survey-card p {
+  color: #655b50;
+  line-height: 1.55;
+}
+
+.survey-field,
+.survey-block {
+  display: grid;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.survey-field span,
+.survey-label {
+  color: #55493e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.survey-field input,
+.survey-field select,
+.survey-field textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(74, 58, 39, 0.2);
+  background: #fbfaf8;
+  color: #2d261f;
+  outline: none;
+}
+
+.survey-field textarea {
+  min-height: 120px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.survey-chips,
+.survey-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.survey-chips button,
+.survey-secondary {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(74, 58, 39, 0.18);
+  background: #fffaf4;
+  color: #3d3127;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.survey-chips button.active {
+  background: #3d3127;
+  color: #fffaf4;
+}
+
+.survey-stars {
+  display: flex;
+  gap: 8px;
+}
+
+.survey-stars button {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(74, 58, 39, 0.18);
+  background: #fffaf4;
+  color: #b38b49;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.config-usersEditButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.survey-stars button.active {
+  background: #fff1c9;
+  border-color: #c99a43;
+}
+
+.survey-checks {
+  display: grid;
+  gap: 10px;
+}
+
+.survey-checks label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(74, 58, 39, 0.14);
+  border-radius: 14px;
+  background: #fbfaf8;
+  color: #4d4339;
+  font-weight: 700;
+}
+
+.survey-primary {
+  min-height: 52px;
+  padding: 0 18px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
+  color: #fffdf8;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+}
+
+.survey-primary:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.survey-actions .survey-primary {
+  margin-top: 0;
+}
+
+.survey-message {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.survey-message.error {
+  background: #fff0f0;
+  color: #9d2f2f;
+}
+
+.survey-done {
+  text-align: center;
+}
+
+.survey-done .survey-logo {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.survey-coupon {
+  margin: 22px auto;
+  padding: 20px;
+  border-radius: 20px;
+  background: #f7efe3;
+  border: 1px dashed #b89b72;
+  display: grid;
+  gap: 6px;
+}
+
+.survey-coupon span {
+  color: #7b684e;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.survey-coupon strong {
+  color: #2d261f;
+  font-size: clamp(32px, 8vw, 54px);
+  letter-spacing: 0.04em;
+}
+
+.survey-googleReview {
+  margin: 18px 0 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8f5f0;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  display: grid;
+  gap: 8px;
+}
+
+.survey-googleReview span:first-child {
+  color: #7b684e;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.survey-googleReview p {
+  margin: 0;
+}
+
+.survey-googleStars {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.survey-googleStars span {
+  color: #d9d0c4;
+}
+
+.survey-googleStars span.active {
+  color: #f2c94c;
+}
+
+.survey-adminStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.survey-adminStats article {
+  padding: 18px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--sm-line);
+  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+}
+
+.survey-adminStats span {
+  color: var(--sm-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.survey-adminStats strong {
+  display: block;
+  margin-top: 8px;
+  color: #2b2723;
+  font-size: 34px;
+}
+
+.survey-adminGrid {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.survey-publicLink {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8f5f0;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  color: #3d3127;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.survey-adminActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.survey-validationMeta {
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.survey-couponLookup {
+  margin-top: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.survey-couponState {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.survey-couponState.active {
+  background: #e7f4e8;
+  color: #2e6d37;
+}
+
+.survey-couponState.used {
+  background: #fff0f0;
+  color: #9d2f2f;
+}
+
+.survey-couponDetails {
+  display: grid;
+  gap: 10px;
+}
+
+.survey-couponDetails div {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: #f8f5f0;
+}
+
+.survey-couponDetails span,
+.survey-couponDetails strong,
+.survey-couponDetails small {
+  display: block;
+}
+
+.survey-couponDetails span {
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.survey-couponDetails strong {
+  margin-top: 4px;
+  color: #2b2723;
+}
+
+.survey-couponDetails small {
+  margin-top: 3px;
+  color: var(--sm-muted);
+}
+
+.survey-tableWrap {
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.survey-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.survey-table th,
+.survey-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(73, 58, 38, 0.1);
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+}
+
+.survey-table th {
+  color: #695a48;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.survey-table td strong,
+.survey-table td span {
+  display: block;
+}
+
+.survey-table td span {
+  margin-top: 4px;
+  color: var(--sm-muted);
+}
+
+.survey-table .survey-used {
+  color: #9d2f2f;
+  font-weight: 900;
+}
+
+.survey-table .survey-active {
+  color: #2f6b38;
+  font-weight: 900;
 }
 
 .chat-shell {
@@ -2183,8 +2633,17 @@ textarea {
   .dashboard-alertsGrid,
   .config-usersGrid,
   .config-turneroGrid,
+  .survey-adminGrid,
   .chat-layout {
     grid-template-columns: 1fr;
+  }
+
+  .config-usersStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .survey-adminStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .dashboard-heroLayout {
@@ -2324,6 +2783,30 @@ textarea {
 
   .config-usersGrid--triple {
     grid-template-columns: 1fr;
+  }
+
+  .survey-public {
+    padding: 14px;
+  }
+
+  .survey-card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .survey-adminStats {
+    grid-template-columns: 1fr;
+  }
+
+  .survey-adminActions,
+  .survey-actions {
+    flex-direction: column;
+  }
+
+  .survey-secondary,
+  .survey-primary,
+  .survey-adminActions .config-usersSecondaryButton {
+    width: 100%;
   }
 }
 
@@ -2482,8 +2965,22 @@ textarea {
     font-size: 17px;
   }
 
+  .config-usersStats,
+  .config-usersFilters {
+    grid-template-columns: 1fr;
+  }
+
   .config-turneroValue {
     font-size: 44px;
+  }
+
+  .survey-stars {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .survey-stars button {
+    width: 100%;
   }
 }
 
