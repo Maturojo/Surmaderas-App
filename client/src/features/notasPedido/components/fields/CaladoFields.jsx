@@ -1,20 +1,6 @@
 import React, { useMemo } from "react";
 import CameraImageUploadField from "../../../presupuestos/components/CameraImageUploadField";
-
-const FALLBACK_MATERIALES_CALADO = [
-  "FIBRO FACIL 3 MM",
-  "FIBRO FACIL 5.5 MM",
-  "FIBRO FACIL 9 MM",
-  "FIBRO FACIL 12 MM",
-  "FIBRO FACIL 15 MM",
-  "TABLERO PINO 15 MM",
-  "TABLERO PINO 18 MM",
-  "FENOLICO 12 MM",
-  "FENOLICO 18 MM",
-  "CHAPADUR BLANCO 3 MM",
-  "CHAPADUR NEGRO 3 MM",
-  "TERCIADO 3 MM",
-];
+import { CORTE_MATERIALES } from "../../config/corteMateriales";
 
 function numOrEmpty(v) {
   return v === 0 ? 0 : v || "";
@@ -28,23 +14,9 @@ function normalizar(value = "") {
     .toUpperCase();
 }
 
-function esMaterialCalado(producto) {
-  const nombre = normalizar(producto?.nombre);
-  const codigo = normalizar(producto?.codigo);
+function esMaterial(producto) {
   const categoria = normalizar(producto?.categoria);
-  const esMaterial = categoria === "MATERIALES" || categoria === "MATERIAL";
-
-  if (!esMaterial) return false;
-
-  return (
-    nombre.includes("FIBRO FACIL") ||
-    nombre.includes("TABLERO PINO") ||
-    nombre.includes("FENOLICO") ||
-    nombre.includes("TERCIADO") ||
-    nombre.includes("CHAPADUR") ||
-    nombre.includes("FIBRO PLUS BLANCO/NEGRO") ||
-    codigo === "CHB"
-  );
+  return categoria === "MATERIALES" || categoria === "MATERIAL";
 }
 
 export default function CaladoFields({ it, setData, productos = [] }) {
@@ -54,7 +26,7 @@ export default function CaladoFields({ it, setData, productos = [] }) {
   const areaM2 = largoCm > 0 && anchoCm > 0 ? (largoCm / 100) * (anchoCm / 100) : 0;
   const materiales = useMemo(() => {
     const desdeProductos = (Array.isArray(productos) ? productos : [])
-      .filter(esMaterialCalado)
+      .filter(esMaterial)
       .map((producto) => ({
         value: producto.nombre,
         label: producto.codigo ? `${producto.nombre} (${producto.codigo})` : producto.nombre,
@@ -63,7 +35,10 @@ export default function CaladoFields({ it, setData, productos = [] }) {
 
     return desdeProductos.length
       ? desdeProductos
-      : FALLBACK_MATERIALES_CALADO.map((material) => ({ value: material, label: material }));
+      : CORTE_MATERIALES.map((material) => ({
+          value: material.descripcion,
+          label: material.code ? `${material.descripcion} (${material.code})` : material.descripcion,
+        }));
   }, [productos]);
 
   return (
