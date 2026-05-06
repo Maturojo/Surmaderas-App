@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { obtenerCalendario } from "../services/calendar";
 import { getUserRole } from "../services/auth";
 import { getTurnero, takeTurno } from "../services/turnero";
+import { getStats } from "../services/whatsappApi";
 
 const CARDS = [
   {
@@ -206,6 +207,7 @@ export default function Dashboard() {
   const [todayEvents, setTodayEvents] = useState([]);
   const [deliveryAlerts, setDeliveryAlerts] = useState({ overdue: [], today: [], tomorrow: [] });
   const [deliveryAlertsError, setDeliveryAlertsError] = useState("");
+  const [waStats, setWaStats] = useState(null);
 
   const today = new Date();
   const todayKey = ymd(today);
@@ -280,6 +282,10 @@ export default function Dashboard() {
       cancelled = true;
     };
   }, [todayKey, tomorrowKey]);
+
+  useEffect(() => {
+    getStats().then(setWaStats).catch(() => setWaStats(null));
+  }, []);
 
   async function handleTakeTurno() {
     try {
@@ -373,6 +379,45 @@ export default function Dashboard() {
           </article>
         ))}
       </section>
+
+      {waStats && (
+        <section className="dashboard-alertsPanel" style={{ marginBottom: "0" }}>
+          <div className="dashboard-alertsHeader">
+            <div>
+              <div className="dashboard-kicker">WhatsApp</div>
+              <h2>Actividad de hoy</h2>
+            </div>
+            <Link className="dashboard-alertCalendarLink" to="/whatsapp">
+              Abrir panel
+            </Link>
+          </div>
+          <div className="dashboard-alertsGrid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+            <article className="dashboard-alertColumn dashboard-alertColumn--tomorrow">
+              <div className="dashboard-alertColumnHead">
+                <span>Mensajes hoy</span>
+                <strong>{waStats.byDay?.[todayKey] ?? 0}</strong>
+              </div>
+              <p className="dashboard-alertEmpty" style={{ marginTop: "8px" }}>Mensajes recibidos</p>
+            </article>
+            <article className="dashboard-alertColumn dashboard-alertColumn--today">
+              <div className="dashboard-alertColumnHead">
+                <span>Conversaciones activas</span>
+                <strong>{(waStats.byStatus?.bot ?? 0) + (waStats.byStatus?.human ?? 0)}</strong>
+              </div>
+              <p className="dashboard-alertEmpty" style={{ marginTop: "8px" }}>
+                {waStats.byStatus?.human ?? 0} esperando agente
+              </p>
+            </article>
+            <article className="dashboard-alertColumn dashboard-alertColumn--danger">
+              <div className="dashboard-alertColumnHead">
+                <span>En mano humana</span>
+                <strong>{waStats.byStatus?.human ?? 0}</strong>
+              </div>
+              <p className="dashboard-alertEmpty" style={{ marginTop: "8px" }}>Requieren respuesta</p>
+            </article>
+          </div>
+        </section>
+      )}
 
       <section className="dashboard-alertsPanel">
         <div className="dashboard-alertsHeader">

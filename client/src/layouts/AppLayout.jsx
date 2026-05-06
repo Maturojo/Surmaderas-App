@@ -51,6 +51,16 @@ const NAV_ITEMS = [
     ],
   },
   { label: "Generador 3D", to: "/generador-3d", icon: "cube" },
+  {
+    label: "WhatsApp",
+    icon: "whatsapp",
+    children: [
+      { label: "Conversaciones", to: "/whatsapp" },
+      { label: "FAQs del bot", to: "/whatsapp/faqs" },
+      { label: "Estadísticas", to: "/whatsapp/stats" },
+      { label: "Configuración", to: "/whatsapp/settings" },
+    ],
+  },
 ];
 
 const VENTAS_ALLOWED_PATHS = new Set([
@@ -65,6 +75,7 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/generador-3d",
   "/marcos",
   "/cotizador-cortes",
+  "/whatsapp",
 ]);
 
 function SidebarIcon({ name }) {
@@ -169,6 +180,13 @@ function SidebarIcon({ name }) {
         <svg {...common}>
           <path d="M7 4.5h10a2 2 0 0 1 2 2V20l-3-2H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2Z" />
           <path d="M8 9h8M8 12.5h5M8 16h3" />
+        </svg>
+      );
+    case "whatsapp":
+      return (
+        <svg {...common}>
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.07-1.35A9.93 9.93 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" />
+          <path d="M8.5 9.5c.5 1 1.5 2.5 3 3.5s2.5 1.2 3.5 1c.3-.6.5-1.2.5-1.5-.7-.4-1.5-.7-2-.9-.3.3-.6.8-.9 1-1-.5-2-1.5-2.5-2.5.2-.3.7-.6 1-.9-.2-.5-.5-1.3-.9-2-.3 0-.9.2-1.5.5-.2 1 0 2 .8 3.3" />
         </svg>
       );
     case "settings":

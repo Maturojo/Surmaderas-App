@@ -1,5 +1,10 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
+import WaConversations from "../pages/WaConversations";
+import WaFAQs from "../pages/WaFAQs";
+import WaStats from "../pages/WaStats";
+import WaSettings from "../pages/WaSettings";
+
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import AppLayout from "../layouts/AppLayout";
@@ -160,6 +165,38 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
             <EncuestasCupones />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <WaConversations />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/faqs",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <WaFAQs />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/stats",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <WaStats />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/settings",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <WaSettings />
           </ProtectedRoute>
         ),
       },
