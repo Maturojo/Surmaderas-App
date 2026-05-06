@@ -17,8 +17,15 @@ function getDefaultApiUrl() {
   return `http://${host}:4000`;
 }
 
+function normalizeConfiguredUrl(value) {
+  return String(value || "")
+    .replace(/\\r|\\n|\r|\n/g, "")
+    .trim()
+    .replace(/\/+$/, "");
+}
+
 function getApiUrl() {
-  const configured = String(import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
+  const configured = normalizeConfiguredUrl(import.meta.env.VITE_API_URL);
   if (!configured || typeof window === "undefined") return configured || getDefaultApiUrl();
 
   const host = window.location.hostname || "localhost";

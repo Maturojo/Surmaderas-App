@@ -2,6 +2,13 @@ import axios from 'axios';
 
 const LOCAL_WA_URL = 'http://localhost:3001';
 
+function normalizeConfiguredUrl(value) {
+  return String(value || '')
+    .replace(/\\r|\\n|\r|\n/g, '')
+    .trim()
+    .replace(/\/+$/, '');
+}
+
 function getDefaultWaUrl() {
   if (typeof window === 'undefined') return LOCAL_WA_URL;
 
@@ -12,7 +19,7 @@ function getDefaultWaUrl() {
 }
 
 function getWaUrl() {
-  const configured = String(import.meta.env.VITE_WA_API_URL || '').trim().replace(/\/+$/, '');
+  const configured = normalizeConfiguredUrl(import.meta.env.VITE_WA_API_URL);
   if (configured && typeof window !== 'undefined') {
     const host = window.location.hostname || 'localhost';
     const isLocalHost = host === 'localhost' || host === '127.0.0.1';
