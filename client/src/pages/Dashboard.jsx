@@ -284,7 +284,7 @@ export default function Dashboard() {
   }, [todayKey, tomorrowKey]);
 
   useEffect(() => {
-    getStats().then(setWaStats).catch(() => setWaStats(null));
+    getStats().then(({ data }) => setWaStats(data)).catch(() => setWaStats(null));
   }, []);
 
   async function handleTakeTurno() {

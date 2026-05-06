@@ -8,12 +8,18 @@ export default function FAQs() {
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => { load(); }, []);
 
   const load = async () => {
-    const { data } = await getFAQs();
-    setFaqs(data);
+    try {
+      const { data } = await getFAQs();
+      setFaqs(data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'No se pudieron cargar las FAQs.');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -49,6 +55,7 @@ export default function FAQs() {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: 20 }}>
+      {error && <div style={{ gridColumn: '1 / -1', padding: 14, color: '#9a3412', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8 }}>{error}</div>}
       {/* Formulario */}
       <div style={{ background: '#fff', borderRadius: 10, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.08)', alignSelf: 'start' }}>
         <h3 style={{ margin: '0 0 16px', fontWeight: 700 }}>{editing ? 'Editar FAQ' : 'Nueva FAQ'}</h3>

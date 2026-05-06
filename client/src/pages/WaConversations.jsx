@@ -1,8 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { getConversations, getConversation, replyToConversation, updateStatus, updateTags, waSocket } from '../services/whatsappApi';
-
-const socket = io(waSocket);
+import {
+  addNote,
+  getConversations,
+  getConversation,
+  getQuickReplies,
+  isWhatsAppConfigured,
+  replyToConversation,
+  updateStatus,
+  updateTags,
+  waSocket,
+  whatsappConfigMessage,
+} from '../services/whatsappApi';
 
 const STATUS_COLORS = { bot: '#25D366', human: '#f59e0b', closed: '#9ca3af' };
 const STATUS_LABELS = { bot: '🤖 Bot', human: '👤 Agente', closed: '✅ Cerrado' };
@@ -29,11 +38,21 @@ export default function WaConversations() {
   const [filterStatus, setFilterStatus] = useState('');
   const [filterTag, setFilterTag] = useState('');
   const [showTagMenu, setShowTagMenu] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [newNote, setNewNote] = useState('');
+  const [quickReplies, setQuickReplies] = useState([]);
+  const [showQR, setShowQR] = useState(false);
+  const [error, setError] = useState(isWhatsAppConfigured ? '' : whatsappConfigMessage);
   const bottomRef = useRef();
 
   useEffect(() => {
+    if (!isWhatsAppConfigured) return;
+    const socket = io(waSocket);
+
     loadList();
     if (Notification.permission === 'default') Notification.requestPermission();
+
+    getQuickReplies().then(({ data }) => setQuickReplies(data)).catch(() => {});
 
     socket.on('new_message', ({ phone, name, message }) => {
       playSound();
@@ -47,7 +66,7 @@ export default function WaConversations() {
     socket.on('agent_reply', ({ phone, message }) => {
       setChat(prev => prev?.phone === phone ? { ...prev, messages: [...prev.messages, message] } : prev);
     });
-    return () => socket.off();
+    return () => socket.disconnect();
   }, []);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chat?.messages]);
@@ -58,14 +77,24 @@ export default function WaConversations() {
     if (search) params.search = search;
     if (filterStatus) params.status = filterStatus;
     if (filterTag) params.tag = filterTag;
-    const { data } = await getConversations(params);
-    setList(data);
+    try {
+      const { data } = await getConversations(params);
+      setList(data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'No se pudo cargar WhatsApp.');
+    }
   };
 
   const selectConv = async (phone) => {
     setSelected(phone);
-    const { data } = await getConversation(phone);
-    setChat(data);
+    try {
+      const { data } = await getConversation(phone);
+      setChat(data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'No se pudo cargar la conversacion.');
+    }
   };
 
   const sendReply = async () => {
@@ -82,6 +111,13 @@ export default function WaConversations() {
     loadList();
   };
 
+  const saveNote = async () => {
+    if (!newNote.trim()) return;
+    const { data } = await addNote(selected, newNote);
+    setChat(prev => ({ ...prev, notes: [...(prev.notes || []), data] }));
+    setNewNote('');
+  };
+
   const toggleTag = async (tag) => {
     const current = chat.tags || [];
     const newTags = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag];
@@ -92,6 +128,11 @@ export default function WaConversations() {
 
   return (
     <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 100px)' }}>
+      {error && (
+        <div style={{ position: 'fixed', right: 24, bottom: 24, maxWidth: 360, background: '#fff7ed', color: '#9a3412', border: '1px solid #fed7aa', borderRadius: 8, padding: '12px 14px', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 20 }}>
+          {error}
+        </div>
+      )}
       {/* Lista */}
       <div style={{ width: 340, background: '#fff', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '12px 12px 8px', borderBottom: '1px solid #eee' }}>
@@ -206,11 +247,57 @@ export default function WaConversations() {
               <div ref={bottomRef} />
             </div>
 
+            {/* Notas internas */}
+            <div style={{ borderTop: '1px solid #eee', background: '#fffbeb' }}>
+              <button onClick={() => setShowNotes(!showNotes)}
+                style={{ width: '100%', padding: '7px 16px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 12, color: '#92400e', textAlign: 'left', fontWeight: 600 }}>
+                📝 Notas internas {chat.notes?.length > 0 ? `(${chat.notes.length})` : ''} {showNotes ? '▲' : '▼'}
+              </button>
+              {showNotes && (
+                <div style={{ padding: '0 16px 12px' }}>
+                  {(chat.notes || []).map((n, i) => (
+                    <div key={i} style={{ fontSize: 12, background: '#fef3c7', borderRadius: 6, padding: '6px 10px', marginBottom: 6, color: '#78350f' }}>
+                      <div style={{ fontWeight: 600, marginBottom: 2 }}>{n.author} · {new Date(n.timestamp).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}</div>
+                      {n.body}
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                    <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveNote()}
+                      placeholder="Nueva nota interna..." style={{ flex: 1, padding: '6px 10px', borderRadius: 6, border: '1px solid #fcd34d', fontSize: 12 }} />
+                    <button onClick={saveNote} style={{ padding: '6px 14px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+                      Guardar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {chat.status !== 'closed' && (
-              <div style={{ padding: 16, borderTop: '1px solid #eee', display: 'flex', gap: 8 }}>
-                <input value={reply} onChange={e => setReply(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendReply()}
-                  placeholder="Escribir respuesta manual..."
-                  style={{ flex: 1, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd', outline: 'none', fontSize: 14 }} />
+              <div style={{ padding: 16, borderTop: '1px solid #eee', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                <div style={{ flex: 1, position: 'relative' }}>
+                  <input value={reply} onChange={e => setReply(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendReply()}
+                    placeholder="Escribir respuesta manual..."
+                    style={{ width: '100%', padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd', outline: 'none', fontSize: 14, boxSizing: 'border-box' }} />
+                  {quickReplies.length > 0 && (
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <button onClick={() => setShowQR(!showQR)}
+                        style={{ position: 'absolute', right: 8, top: -30, padding: '4px 10px', background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: 6, cursor: 'pointer', fontSize: 11, color: '#555' }}>
+                        ⚡ Respuestas rápidas
+                      </button>
+                      {showQR && (
+                        <div style={{ position: 'absolute', bottom: 10, right: 0, background: '#fff', border: '1px solid #eee', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 20, minWidth: 260, maxHeight: 240, overflow: 'auto' }}>
+                          {quickReplies.filter(q => q.active).map(q => (
+                            <div key={q._id} onClick={() => { setReply(q.body); setShowQR(false); }}
+                              style={{ padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #f5f5f5' }}>
+                              <div style={{ fontWeight: 600, fontSize: 13, color: '#333' }}>{q.title}</div>
+                              <div style={{ fontSize: 11, color: '#888', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{q.body}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <button onClick={sendReply}
                   style={{ padding: '8px 20px', background: '#25D366', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600 }}>
                   Enviar

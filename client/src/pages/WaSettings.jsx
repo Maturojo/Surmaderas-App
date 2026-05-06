@@ -17,9 +17,16 @@ export default function WaSettings() {
   });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    getConfig().then(({ data }) => { setForm(f => ({ ...f, ...data })); setLoading(false); });
+    getConfig()
+      .then(({ data }) => {
+        setForm(f => ({ ...f, ...data }));
+        setError('');
+      })
+      .catch((err) => setError(err.message || 'No se pudo cargar la configuracion.'))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleSave = async (e) => {
@@ -60,6 +67,7 @@ export default function WaSettings() {
   return (
     <div style={{ maxWidth: 680, padding: '24px 0' }}>
       <h3 style={{ margin: '0 0 20px', fontWeight: 700 }}>⚙️ Configuración del bot</h3>
+      {error && <div style={{ marginBottom: 16, padding: 14, color: '#9a3412', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8 }}>{error}</div>}
       <form onSubmit={handleSave}>
 
         <Section title="🤖 Contestador automático">

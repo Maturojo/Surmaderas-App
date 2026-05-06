@@ -6,12 +6,20 @@ const COLORS = ['#25D366', '#f59e0b', '#9ca3af'];
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    getStats().then(({ data }) => setStats(data));
+    getStats()
+      .then(({ data }) => {
+        setStats(data);
+        setError('');
+      })
+      .catch((err) => setError(err.message || 'No se pudieron cargar las estadisticas.'));
   }, []);
 
-  if (!stats) return <div style={{ padding: 40, color: '#aaa' }}>Cargando estadísticas...</div>;
+  if (error) return <div style={{ padding: 40, color: '#9a3412', background: '#fff7ed', borderRadius: 10 }}>{error}</div>;
+
+  if (!stats) return <div style={{ padding: 40, color: '#aaa' }}>{error || 'Cargando...'}</div>;
 
   const statusData = stats.byStatus.map(s => ({ name: { bot: 'Bot', human: 'Agente', closed: 'Cerrado' }[s._id] || s._id, value: s.count }));
   const msgData = stats.msgStats.map(m => ({ name: { customer: 'Clientes', bot: 'Bot', agent: 'Agentes' }[m._id] || m._id, mensajes: m.count }));
