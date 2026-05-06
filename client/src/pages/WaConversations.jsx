@@ -99,10 +99,15 @@ export default function WaConversations() {
 
   const sendReply = async () => {
     if (!reply.trim()) return;
-    await replyToConversation(selected, reply);
-    setReply('');
-    const { data } = await getConversation(selected);
-    setChat(data);
+    try {
+      await replyToConversation(selected, reply);
+      setReply('');
+      const { data } = await getConversation(selected);
+      setChat(data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'No se pudo enviar la respuesta.');
+    }
   };
 
   const changeStatus = async (status) => {
@@ -113,9 +118,14 @@ export default function WaConversations() {
 
   const saveNote = async () => {
     if (!newNote.trim()) return;
-    const { data } = await addNote(selected, newNote);
-    setChat(prev => ({ ...prev, notes: [...(prev.notes || []), data] }));
-    setNewNote('');
+    try {
+      const { data } = await addNote(selected, newNote);
+      setChat(prev => ({ ...prev, notes: [...(prev.notes || []), data] }));
+      setNewNote('');
+      setError('');
+    } catch (err) {
+      setError(err.message || 'No se pudo guardar la nota.');
+    }
   };
 
   const toggleTag = async (tag) => {

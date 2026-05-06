@@ -56,7 +56,10 @@ const NAV_ITEMS = [
     icon: "whatsapp",
     children: [
       { label: "Conversaciones", to: "/whatsapp" },
+      { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
+      { label: "Broadcast", to: "/whatsapp/broadcast" },
       { label: "FAQs del bot", to: "/whatsapp/faqs" },
+      { label: "Respuestas rápidas", to: "/whatsapp/quick-replies" },
       { label: "Estadísticas", to: "/whatsapp/stats" },
       { label: "Configuración", to: "/whatsapp/settings" },
     ],

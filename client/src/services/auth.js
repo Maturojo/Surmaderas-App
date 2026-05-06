@@ -1,5 +1,6 @@
+import { API_URL } from "./http";
+
 const KEY = "sm_auth";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export function login(payload) {
   localStorage.setItem(KEY, JSON.stringify(payload));

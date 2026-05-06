@@ -13,6 +13,15 @@ function getDefaultWaUrl() {
 
 function getWaUrl() {
   const configured = String(import.meta.env.VITE_WA_API_URL || '').trim().replace(/\/+$/, '');
+  if (configured && typeof window !== 'undefined') {
+    const host = window.location.hostname || 'localhost';
+    const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+
+    if (!isLocalHost && /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?/i.test(configured)) {
+      return '';
+    }
+  }
+
   return configured || getDefaultWaUrl();
 }
 

@@ -4,6 +4,9 @@ import WaConversations from "../pages/WaConversations";
 import WaFAQs from "../pages/WaFAQs";
 import WaStats from "../pages/WaStats";
 import WaSettings from "../pages/WaSettings";
+import WaQuickReplies from "../pages/WaQuickReplies";
+import WaBroadcast from "../pages/WaBroadcast";
+import WaBudgetRequests from "../pages/WaBudgetRequests";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
@@ -197,6 +200,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
             <WaSettings />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/quick-replies",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <WaQuickReplies />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/broadcast",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <WaBroadcast />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/presupuestos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <WaBudgetRequests />
           </ProtectedRoute>
         ),
       },
