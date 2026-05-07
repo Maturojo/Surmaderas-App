@@ -55,6 +55,7 @@ const NAV_ITEMS = [
     label: "WhatsApp",
     icon: "whatsapp",
     children: [
+      { label: "Control manual", to: "/whatsapp/control" },
       { label: "Conversaciones", to: "/whatsapp" },
       { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
       { label: "Broadcast", to: "/whatsapp/broadcast" },
@@ -79,6 +80,7 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/marcos",
   "/cotizador-cortes",
   "/whatsapp",
+  "/whatsapp/control",
 ]);
 
 function SidebarIcon({ name }) {

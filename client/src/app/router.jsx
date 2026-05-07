@@ -7,6 +7,7 @@ import WaSettings from "../pages/WaSettings";
 import WaQuickReplies from "../pages/WaQuickReplies";
 import WaBroadcast from "../pages/WaBroadcast";
 import WaBudgetRequests from "../pages/WaBudgetRequests";
+import WaInbox from "../pages/WaInbox";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
@@ -176,6 +177,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "ventas"]}>
             <WaConversations />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "whatsapp/control",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <WaInbox />
           </ProtectedRoute>
         ),
       },
