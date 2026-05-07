@@ -199,10 +199,9 @@
 
 .ng-tableWrap {
   max-width: 100%;
-  max-height: calc(100dvh - 260px);
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable both-edges;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
   border-radius: 22px;
   border: 1px solid rgba(73, 58, 38, 0.08);
   background: rgba(255, 255, 255, 0.96);
@@ -2096,10 +2095,10 @@
 /* Operative order tables: keep the full table readable and scroll sideways. */
 .ng-tableWrap {
   overflow-x: auto !important;
-  overflow-y: auto !important;
-  max-height: calc(100dvh - 260px);
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable both-edges;
+  overflow-y: hidden !important;
+  max-height: none;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -2123,7 +2122,7 @@
 
 .ng-table th:nth-child(11),
 .ng-table td:nth-child(11) {
-  width: 230px !important;
+  width: 250px !important;
 }
 
 .ng-table--deposito th:nth-child(10),
@@ -2133,7 +2132,7 @@
 
 .ng-table--deposito th:nth-child(11),
 .ng-table--deposito td:nth-child(11) {
-  width: 190px !important;
+  width: 250px !important;
 }
 
 .ng-table thead {
@@ -2184,8 +2183,38 @@
 
 .ng-table td[data-label="Acciones"] {
   padding-top: 12px !important;
-  padding-right: 18px !important;
+  padding-right: 22px !important;
   overflow: visible !important;
+}
+
+.ng-table th:last-child,
+.ng-table td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: #fffdf9;
+  box-shadow: -12px 0 20px rgba(55, 43, 29, 0.08);
+}
+
+.ng-table th:last-child {
+  z-index: 3;
+  background: #f7f1e7;
+}
+
+.ng-table tbody tr.ng-rowDue--ok td:last-child {
+  background: #f1faef;
+}
+
+.ng-table tbody tr.ng-rowDue--warning td:last-child {
+  background: #fff8df;
+}
+
+.ng-table tbody tr.ng-rowDue--danger td:last-child {
+  background: #fff1f1;
+}
+
+.ng-table tbody tr.ng-rowDeposito td:last-child {
+  background: #f6fbff;
 }
 
 .ng-clientCell {
@@ -2205,9 +2234,9 @@
 .ng-actions {
   display: flex !important;
   flex-wrap: nowrap !important;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
-  min-width: 210px;
+  min-width: 220px;
 }
 
 .ng-tableBtn {
