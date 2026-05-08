@@ -17,4 +17,24 @@ router.post("/", requireAuth, async (req, res) => {
   res.status(201).json(created);
 });
 
+router.put("/:id", requireAuth, async (req, res) => {
+  const { name, phone, email, notes } = req.body || {};
+  if (!name) return res.status(400).json({ message: "Nombre requerido" });
+
+  const updated = await Client.findByIdAndUpdate(
+    req.params.id,
+    { name, phone, email, notes },
+    { new: true }
+  );
+
+  if (!updated) return res.status(404).json({ message: "Cliente no encontrado" });
+  res.json(updated);
+});
+
+router.delete("/:id", requireAuth, async (req, res) => {
+  const deleted = await Client.findByIdAndDelete(req.params.id);
+  if (!deleted) return res.status(404).json({ message: "Cliente no encontrado" });
+  res.json({ message: "Cliente eliminado" });
+});
+
 export default router;

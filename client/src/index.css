@@ -1189,6 +1189,26 @@ textarea {
   outline: none;
 }
 
+.survey-field input.is-invalid {
+  border-color: #c84040;
+  box-shadow: 0 0 0 3px rgba(200, 64, 64, 0.12);
+  background: #fff7f7;
+}
+
+.survey-field input.is-valid {
+  border-color: #4f9c5f;
+  box-shadow: 0 0 0 3px rgba(79, 156, 95, 0.12);
+}
+
+.survey-fieldHint {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.survey-fieldHint.error {
+  color: #9d2f2f;
+}
+
 .survey-field textarea {
   min-height: 120px;
   padding: 12px 14px;
@@ -1334,6 +1354,12 @@ textarea {
   color: #2d261f;
   font-size: clamp(32px, 8vw, 54px);
   letter-spacing: 0.04em;
+}
+
+.survey-coupon small {
+  color: #7b684e;
+  font-size: 15px;
+  font-weight: 900;
 }
 
 .survey-googleReview {
@@ -1540,6 +1566,449 @@ textarea {
 .survey-table .survey-active {
   color: #2f6b38;
   font-weight: 900;
+}
+
+.monthly-sales {
+  display: grid;
+  gap: 16px;
+}
+
+.monthly-salesHero {
+  min-height: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 26px;
+}
+
+.monthly-salesHero .dashboard-title {
+  margin-bottom: 0;
+  font-size: 36px;
+}
+
+.monthly-salesHero .dashboard-copy {
+  max-width: none;
+  margin: 0;
+  text-align: right;
+  font-size: 16px;
+}
+
+.monthly-salesToolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.monthly-salesTabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.monthly-salesTab {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--sm-line-strong);
+  background: #fffaf4;
+  color: #4d4034;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.monthly-salesTab.active {
+  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
+  border-color: transparent;
+  color: #fffdf8;
+  box-shadow: 0 12px 24px rgba(55, 44, 34, 0.15);
+}
+
+.monthly-salesMonth {
+  min-width: 210px;
+  margin-top: 0;
+}
+
+.monthly-salesMonth input {
+  font-weight: 850;
+}
+
+.monthly-salesStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.monthly-salesStats article,
+.monthly-salesWeeks article {
+  padding: 15px 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--sm-line);
+  box-shadow: 0 10px 22px rgba(56, 44, 29, 0.05);
+}
+
+.monthly-salesStats article {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.monthly-salesStats article::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 3px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: #d7c7ad;
+}
+
+.monthly-salesStats .monthly-salesStat--strong {
+  border-color: rgba(47, 117, 80, 0.28);
+  background: #f7fbf7;
+}
+
+.monthly-salesStats .monthly-salesStat--strong::after {
+  background: #43a267;
+}
+
+.monthly-salesStats .monthly-salesStat--accent {
+  border-color: rgba(126, 91, 44, 0.24);
+  background: #fffaf1;
+}
+
+.monthly-salesStats span,
+.monthly-salesWeeks span {
+  display: block;
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.monthly-salesStats strong {
+  display: block;
+  margin-top: 8px;
+  color: #2b2723;
+  font-size: 20px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.monthly-salesGrid {
+  display: grid;
+  grid-template-columns: minmax(320px, 430px) minmax(280px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.monthly-salesGrid--list {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+}
+
+.monthly-salesPanel {
+  max-width: 720px;
+}
+
+.monthly-salesTwoCol {
+  display: grid;
+  grid-template-columns: minmax(320px, 440px) minmax(320px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.monthly-salesConfigList {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.monthly-salesConfigList article {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: #f8f5f0;
+}
+
+.monthly-salesConfigList span,
+.monthly-salesTransferTotal {
+  display: block;
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.monthly-salesConfigList strong {
+  display: block;
+  margin-top: 6px;
+  color: #2b2723;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.monthly-salesSide {
+  display: grid;
+  gap: 16px;
+}
+
+.monthly-salesCancel {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.monthly-salesWeeks {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.monthly-salesWeeks strong,
+.monthly-salesWeeks small {
+  display: block;
+  margin-top: 5px;
+}
+
+.monthly-salesWeeks strong {
+  color: #2b2723;
+  font-size: 20px;
+}
+
+.monthly-salesWeeks small {
+  color: var(--sm-muted);
+}
+
+.monthly-salesTable {
+  min-width: 1220px;
+}
+
+.monthly-salesTable th:nth-child(10),
+.monthly-salesTable td:nth-child(10) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.monthly-salesTable td:nth-child(10) {
+  min-width: 120px;
+}
+
+.monthly-salesTable--transfers {
+  min-width: 920px;
+}
+
+.monthly-salesTransferTotal {
+  margin-top: 10px;
+  color: #2b2723;
+  font-size: 14px;
+}
+
+.monthly-salesTransferHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.monthly-salesTransferControls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.monthly-salesTransferDate {
+  min-width: 180px;
+  margin-top: 0;
+}
+
+.monthly-salesTransferSheet {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  background: #d8ecfb;
+}
+
+.monthly-salesTransfersList {
+  min-width: 980px;
+}
+
+.monthly-salesTransfersList th:nth-child(6),
+.monthly-salesTransfersList td:nth-child(6) {
+  text-align: right;
+}
+
+.monthly-salesTransfersList th:nth-child(7),
+.monthly-salesTransfersList td:nth-child(7) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.monthly-salesTransferSheet th {
+  background: #126f91;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.monthly-salesTransferSheet th,
+.monthly-salesTransferSheet td {
+  padding: 8px 10px;
+  border: 1px solid #2aa7df;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.monthly-salesTransferSheet td:nth-child(5) {
+  white-space: normal;
+  min-width: 180px;
+}
+
+.monthly-salesTransferSheet td:nth-child(6),
+.monthly-salesTransferSheet th:nth-child(6) {
+  text-align: right;
+}
+
+.monthly-salesTransferTotalRow td {
+  background: #d8ecfb;
+  color: #111111;
+  font-weight: 950;
+}
+
+.monthly-salesStatus {
+  display: inline-flex;
+  min-width: 82px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.monthly-salesStatus.pagado {
+  background: #00b56a;
+  color: #ffffff;
+}
+
+.monthly-salesStatus.senado {
+  background: #ffcc22;
+  color: #5f4200;
+}
+
+.monthly-salesStatus.pendiente {
+  background: #ffd0d6;
+  color: #8a2633;
+}
+
+.monthly-salesType {
+  display: inline-flex;
+  min-width: 48px;
+  min-height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.monthly-salesType.normal {
+  background: #efe8dc;
+  color: #5f4d38;
+}
+
+.monthly-salesType.especial {
+  background: #e7f4e8;
+  color: #2e6d37;
+}
+
+.monthly-salesStatus.recibida,
+.monthly-salesStatus.conciliada {
+  background: #e7f4e8;
+  color: #2e6d37;
+}
+
+.monthly-salesActions {
+  white-space: nowrap;
+}
+
+.monthly-salesActions button {
+  min-height: 32px;
+  margin-right: 6px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--sm-line-strong);
+  background: #fffaf4;
+  color: #3d3127;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .monthly-salesPrintArea,
+  .monthly-salesPrintArea * {
+    visibility: visible !important;
+  }
+
+  .monthly-salesPrintArea {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  .monthly-salesNoPrint {
+    display: none !important;
+  }
+
+  .survey-tableWrap {
+    overflow: visible !important;
+  }
+
+  .monthly-salesTransferSheet {
+    min-width: 0 !important;
+    font-size: 12px !important;
+  }
+
+  .monthly-salesTransferSheet th,
+  .monthly-salesTransferSheet td {
+    padding: 5px 6px !important;
+    border: 1px solid #1499d1 !important;
+  }
+
+  .monthly-salesTransferSheet th {
+    color: #ffffff !important;
+    background: #126f91 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .monthly-salesTransferSheet td,
+  .monthly-salesTransferTotalRow td {
+    background: #d8ecfb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
 .chat-shell {
@@ -2634,6 +3103,8 @@ textarea {
   .config-usersGrid,
   .config-turneroGrid,
   .survey-adminGrid,
+  .monthly-salesGrid,
+  .monthly-salesTwoCol,
   .chat-layout {
     grid-template-columns: 1fr;
   }
@@ -2642,7 +3113,8 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .survey-adminStats {
+  .survey-adminStats,
+  .monthly-salesStats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2794,7 +3266,8 @@ textarea {
     border-radius: 22px;
   }
 
-  .survey-adminStats {
+  .survey-adminStats,
+  .monthly-salesStats {
     grid-template-columns: 1fr;
   }
 

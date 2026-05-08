@@ -9,6 +9,7 @@ const ProductoSchema = new mongoose.Schema(
     subcategoria: { type: String, default: "", trim: true, index: true },
     unidad: { type: String, default: "u" },
     activo: { type: Boolean, default: true },
+    imagen: { type: String, default: '' }, // URL de imagen para WhatsApp
   },
   { timestamps: true }
 );

@@ -24,11 +24,17 @@ const REASON_OPTIONS = [
   { value: "a_medida", label: "Pueden hacerlo a medida" },
 ];
 
+const BRANCH_OPTIONS = [
+  { value: "luro", label: "Luro" },
+  { value: "independencia", label: "Independencia" },
+];
+
 const GOOGLE_REVIEW_URL =
   "https://www.google.com/search?q=Sur+Maderas+Av.+Pedro+Luro+5020+Mar+del+Plata&ludocid=6929333339189515291#lrd=0x0:0x6029eff574a9941b,3,,,,";
 
 const INITIAL_FORM = {
   fullName: "",
+  branch: "",
   phone: "",
   email: "",
   ivaCondition: "consumidor_final",
@@ -41,6 +47,53 @@ const INITIAL_FORM = {
   npsChoice: "",
   improvement: "",
 };
+
+function normalizePhone(value) {
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("54")) digits = digits.slice(2);
+  while (digits.startsWith("0")) digits = digits.slice(1);
+
+  if (digits.startsWith("15")) {
+    digits = `911${digits.slice(2)}`;
+  } else if (digits.length >= 5 && digits.slice(2, 4) === "15") {
+    digits = `9${digits.slice(0, 2)}${digits.slice(4)}`;
+  } else if (digits.length >= 6 && digits.slice(3, 5) === "15") {
+    digits = `9${digits.slice(0, 3)}${digits.slice(5)}`;
+  } else if (digits.length === 10 && !digits.startsWith("9")) {
+    digits = `9${digits}`;
+  }
+
+  return digits.slice(0, 11);
+}
+
+function formatPhone(value) {
+  const digits = normalizePhone(value);
+  if (digits.startsWith("911")) {
+    return [digits.slice(0, 1), digits.slice(1, 3), digits.slice(3, 7), digits.slice(7)]
+      .filter(Boolean)
+      .join(" ");
+  }
+  return [digits.slice(0, 1), digits.slice(1, 4), digits.slice(4, 7), digits.slice(7)]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function isEmailValid(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isTaxIdValid(type, value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (type === "DNI") return digits.length >= 7 && digits.length <= 8;
+  return digits.length === 11;
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat("es-AR", { dateStyle: "short" }).format(new Date(value));
+}
 
 function toggleValue(list, value, maxItems = Infinity) {
   if (list.includes(value)) {
@@ -66,24 +119,38 @@ export default function FormularioClientes() {
     () => IVA_OPTIONS.find((item) => item.value === form.ivaCondition) || IVA_OPTIONS[0],
     [form.ivaCondition]
   );
+  const phoneIsValid = normalizePhone(form.phone).length === 11;
+  const emailIsValid = !form.email || isEmailValid(form.email);
+  const taxIdIsValid = !form.taxId || isTaxIdValid(selectedIva.taxIdType, form.taxId);
 
   function handleChange(event) {
     const { name, value } = event.target;
+    const nextValue = name === "phone" ? formatPhone(value) : value;
     setForm((current) => ({
       ...current,
-      [name]: value,
+      [name]: nextValue,
       ...(name === "ivaCondition" ? { taxId: "" } : {}),
     }));
   }
 
   function validateStepOne() {
-    if (!form.fullName || !form.phone || !form.email || !form.taxId || !form.address) {
+    if (!form.fullName || !form.branch || !form.phone || !form.email || !form.taxId || !form.address) {
       setError("Completa tus datos para activar el descuento.");
       return false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    if (!phoneIsValid) {
+      setError("Ingresa un celular argentino valido de 11 digitos, sin 0 ni 15.");
+      return false;
+    }
+
+    if (!isEmailValid(form.email)) {
       setError("Ingresa un mail valido.");
+      return false;
+    }
+
+    if (!isTaxIdValid(selectedIva.taxIdType, form.taxId)) {
+      setError(`Ingresa un ${selectedIva.taxIdType} valido.`);
       return false;
     }
 
@@ -133,6 +200,10 @@ export default function FormularioClientes() {
     ctx.fillText("15% OFF", 540, 390);
     ctx.font = "34px Arial";
     ctx.fillText("Activo para tu proxima compra", 540, 470);
+    if (coupon.expiresAt) {
+      ctx.font = "30px Arial";
+      ctx.fillText(`Valido hasta el ${formatDate(coupon.expiresAt)}`, 540, 520);
+    }
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(190, 570, 700, 170);
     ctx.strokeStyle = "#c8b69e";
@@ -167,6 +238,7 @@ export default function FormularioClientes() {
           <div className="survey-coupon">
             <span>Numero de cupon</span>
             <strong>{coupon.code}</strong>
+            {coupon.expiresAt ? <small>Valido hasta el {formatDate(coupon.expiresAt)}</small> : null}
           </div>
 
           {submittedRating ? (
@@ -218,20 +290,46 @@ export default function FormularioClientes() {
             </label>
 
             <label className="survey-field">
+              <span>Sucursal</span>
+              <select name="branch" value={form.branch} onChange={handleChange} required>
+                <option value="">Selecciona una sucursal</option>
+                {BRANCH_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="survey-field">
               <span>Celular</span>
               <input
+                className={form.phone ? (phoneIsValid ? "is-valid" : "is-invalid") : ""}
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
                 inputMode="tel"
-                placeholder="Ej: 223 555 1234"
+                placeholder="Ej: 9 223 555 1234"
                 required
               />
+              {form.phone && !phoneIsValid ? (
+                <small className="survey-fieldHint error">Usa 11 digitos, sin 0 ni 15.</small>
+              ) : null}
             </label>
 
             <label className="survey-field">
               <span>Mail</span>
-              <input name="email" type="email" value={form.email} onChange={handleChange} required />
+              <input
+                className={form.email ? (emailIsValid ? "is-valid" : "is-invalid") : ""}
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+              {form.email && !emailIsValid ? (
+                <small className="survey-fieldHint error">Ingresa un mail valido.</small>
+              ) : null}
             </label>
 
             <label className="survey-field">
@@ -248,12 +346,16 @@ export default function FormularioClientes() {
             <label className="survey-field">
               <span>{selectedIva.taxIdType}</span>
               <input
+                className={form.taxId ? (taxIdIsValid ? "is-valid" : "is-invalid") : ""}
                 name="taxId"
                 value={form.taxId}
                 onChange={handleChange}
                 inputMode="numeric"
                 required
               />
+              {form.taxId && !taxIdIsValid ? (
+                <small className="survey-fieldHint error">Revisa la cantidad de digitos.</small>
+              ) : null}
             </label>
 
             <label className="survey-field">

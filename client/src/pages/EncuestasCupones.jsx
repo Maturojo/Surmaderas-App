@@ -25,6 +25,8 @@ const LABELS = {
   seguro: "Seguro",
   probablemente: "Probablemente",
   no_se: "No se",
+  luro: "Luro",
+  independencia: "Independencia",
 };
 
 function label(value) {
@@ -37,6 +39,16 @@ function formatDate(value) {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function isExpired(item) {
+  return item?.couponExpiresAt && new Date(item.couponExpiresAt).getTime() < Date.now();
+}
+
+function getCouponStatus(item) {
+  if (item?.couponUsed) return { label: "Usado", className: "survey-used" };
+  if (isExpired(item)) return { label: "Vencido", className: "survey-used" };
+  return { label: "Activo", className: "survey-active" };
 }
 
 export default function EncuestasCupones() {
@@ -159,6 +171,10 @@ export default function EncuestasCupones() {
           <strong>{summary?.usedCoupons ?? 0}</strong>
         </article>
         <article>
+          <span>Cupones vencidos</span>
+          <strong>{summary?.expiredCoupons ?? 0}</strong>
+        </article>
+        <article>
           <span>Promedio</span>
           <strong>{summary?.averageRating ?? "-"}</strong>
         </article>
@@ -189,8 +205,10 @@ export default function EncuestasCupones() {
 
           {selectedCoupon ? (
             <div className="survey-couponLookup">
-              <div className={selectedCoupon.couponUsed ? "survey-couponState used" : "survey-couponState active"}>
-                {selectedCoupon.couponUsed ? "Ya fue usado" : "Disponible para usar"}
+              <div className={selectedCoupon.couponUsed || isExpired(selectedCoupon) ? "survey-couponState used" : "survey-couponState active"}>
+                {getCouponStatus(selectedCoupon).label === "Activo"
+                  ? "Disponible para usar"
+                  : getCouponStatus(selectedCoupon).label}
               </div>
 
               <div className="survey-couponDetails">
@@ -208,6 +226,10 @@ export default function EncuestasCupones() {
                   <small>{selectedCoupon.email}</small>
                 </div>
                 <div>
+                  <span>Sucursal</span>
+                  <strong>{label(selectedCoupon.branch)}</strong>
+                </div>
+                <div>
                   <span>Documento</span>
                   <strong>
                     {selectedCoupon.taxIdType} {selectedCoupon.taxId}
@@ -221,6 +243,10 @@ export default function EncuestasCupones() {
                   <span>Experiencia</span>
                   <strong>{selectedCoupon.rating ? `${selectedCoupon.rating}/5` : "-"}</strong>
                 </div>
+                <div>
+                  <span>Vencimiento</span>
+                  <strong>{formatDate(selectedCoupon.couponExpiresAt)}</strong>
+                </div>
                 {selectedCoupon.couponUsed ? (
                   <div>
                     <span>Uso</span>
@@ -230,7 +256,7 @@ export default function EncuestasCupones() {
                 ) : null}
               </div>
 
-              {!selectedCoupon.couponUsed ? (
+              {!selectedCoupon.couponUsed && !isExpired(selectedCoupon) ? (
                 <button
                   className="config-usersSubmit"
                   disabled={isValidating}
@@ -277,6 +303,7 @@ export default function EncuestasCupones() {
                   <th>Fecha</th>
                   <th>Cliente</th>
                   <th>Contacto</th>
+                  <th>Sucursal</th>
                   <th>IVA</th>
                   <th>Experiencia</th>
                   <th>Compra</th>
@@ -284,7 +311,9 @@ export default function EncuestasCupones() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map((item) => {
+                  const status = getCouponStatus(item);
+                  return (
                   <tr key={item._id}>
                     <td>{formatDate(item.createdAt)}</td>
                     <td>
@@ -295,6 +324,7 @@ export default function EncuestasCupones() {
                       <strong>{item.phone}</strong>
                       <span>{item.email}</span>
                     </td>
+                    <td>{label(item.branch)}</td>
                     <td>{label(item.ivaCondition)}</td>
                     <td>{item.rating ? `${item.rating}/5` : "-"}</td>
                     <td>
@@ -303,12 +333,12 @@ export default function EncuestasCupones() {
                     </td>
                     <td>
                       <strong>{item.couponCode}</strong>
-                      <span className={item.couponUsed ? "survey-used" : "survey-active"}>
-                        {item.couponUsed ? "Usado" : "Activo"}
-                      </span>
+                      <span className={status.className}>{status.label}</span>
+                      <span>Vence: {formatDate(item.couponExpiresAt)}</span>
                     </td>
                   </tr>
-                ))}
+                );
+                })}
               </tbody>
             </table>
           </div>

@@ -43,6 +43,16 @@ const NAV_ITEMS = [
   { label: "Placas", to: "/placas", icon: "layers" },
   { label: "Encuestas", to: "/encuestas", icon: "survey" },
   {
+    label: "Ventas",
+    icon: "sales",
+    children: [
+      { label: "Ventas del mes", to: "/ventas/lista" },
+      { label: "Nueva venta", to: "/ventas/nueva" },
+      { label: "Objetivos y configuracion", to: "/ventas/objetivos" },
+      { label: "Transferencias", to: "/ventas/transferencias" },
+    ],
+  },
+  {
     label: "Proveedores",
     icon: "suppliers",
     children: [
@@ -76,6 +86,10 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/productos",
   "/placas",
   "/encuestas",
+  "/ventas/lista",
+  "/ventas/nueva",
+  "/ventas/objetivos",
+  "/ventas/transferencias",
   "/generador-3d",
   "/marcos",
   "/cotizador-cortes",
@@ -185,6 +199,16 @@ function SidebarIcon({ name }) {
         <svg {...common}>
           <path d="M7 4.5h10a2 2 0 0 1 2 2V20l-3-2H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2Z" />
           <path d="M8 9h8M8 12.5h5M8 16h3" />
+        </svg>
+      );
+    case "sales":
+      return (
+        <svg {...common}>
+          <path d="M4 19V5" />
+          <path d="M4 19h16" />
+          <rect x="7" y="11" width="3" height="5" rx="1" />
+          <rect x="12" y="8" width="3" height="8" rx="1" />
+          <rect x="17" y="4" width="3" height="12" rx="1" />
         </svg>
       );
     case "whatsapp":

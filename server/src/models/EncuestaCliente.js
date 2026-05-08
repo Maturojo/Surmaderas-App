@@ -4,7 +4,9 @@ const EncuestaClienteSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true },
     phone: { type: String, required: true, trim: true },
+    phoneNormalized: { type: String, default: "", trim: true, index: true },
     email: { type: String, required: true, trim: true, lowercase: true },
+    branch: { type: String, enum: ["luro", "independencia", ""], default: "" },
     ivaCondition: {
       type: String,
       required: true,
@@ -29,9 +31,12 @@ const EncuestaClienteSchema = new mongoose.Schema(
     improvement: { type: String, default: "", trim: true },
     couponCode: { type: String, required: true, unique: true, trim: true },
     couponDiscount: { type: Number, required: true, default: 15 },
+    couponExpiresAt: { type: Date, default: null },
     couponUsed: { type: Boolean, default: false },
     couponUsedAt: { type: Date, default: null },
     couponUsedBy: { type: String, default: "" },
+    welcomeNotificationSentAt: { type: Date, default: null },
+    reminderNotificationSentAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

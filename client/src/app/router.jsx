@@ -28,6 +28,7 @@ import TurneroSettings from "../pages/TurneroSettings.jsx";
 import ChatInterno from "../pages/ChatInterno.jsx";
 import FormularioClientes from "../pages/FormularioClientes.jsx";
 import EncuestasCupones from "../pages/EncuestasCupones.jsx";
+import VentasMensuales from "../pages/VentasMensuales.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
@@ -169,6 +170,46 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
             <EncuestasCupones />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ventas-mensuales",
+        element: <Navigate to="/ventas/lista" replace />,
+      },
+      {
+        path: "ventas",
+        element: <Navigate to="/ventas/lista" replace />,
+      },
+      {
+        path: "ventas/lista",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <VentasMensuales section="lista" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ventas/nueva",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <VentasMensuales section="nueva" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ventas/objetivos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <VentasMensuales section="objetivos" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ventas/transferencias",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <VentasMensuales section="transferencias" />
           </ProtectedRoute>
         ),
       },

@@ -19,9 +19,51 @@ const REASON_OPTIONS = new Set([
   "precio",
   "a_medida",
 ]);
+const BRANCH_OPTIONS = new Set(["luro", "independencia"]);
 
 function normalizeText(value) {
   return String(value || "").trim();
+}
+
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function normalizePhone(value) {
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("54")) digits = digits.slice(2);
+  while (digits.startsWith("0")) digits = digits.slice(1);
+
+  if (digits.startsWith("15")) {
+    digits = `911${digits.slice(2)}`;
+  } else if (digits.length >= 5 && digits.slice(2, 4) === "15") {
+    digits = `9${digits.slice(0, 2)}${digits.slice(4)}`;
+  } else if (digits.length >= 6 && digits.slice(3, 5) === "15") {
+    digits = `9${digits.slice(0, 3)}${digits.slice(5)}`;
+  } else if (digits.length === 10 && !digits.startsWith("9")) {
+    digits = `9${digits}`;
+  }
+
+  return digits;
+}
+
+function formatPhoneForDisplay(value) {
+  const digits = normalizePhone(value);
+  if (digits.startsWith("911") && digits.length === 11) {
+    return `${digits.slice(0, 1)} ${digits.slice(1, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+  }
+  if (digits.length === 11) {
+    return `${digits.slice(0, 1)} ${digits.slice(1, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+  }
+  return value;
+}
+
+function isExpired(coupon) {
+  return coupon?.couponExpiresAt && new Date(coupon.couponExpiresAt).getTime() < Date.now();
 }
 
 function normalizeArray(value, allowedSet, maxItems = 10) {
@@ -53,15 +95,25 @@ async function createCouponCode() {
 router.post("/", async (req, res) => {
   try {
     const fullName = normalizeText(req.body?.fullName);
-    const phone = normalizeText(req.body?.phone);
+    const phoneNormalized = normalizePhone(req.body?.phone);
+    const phone = formatPhoneForDisplay(req.body?.phone);
     const email = normalizeText(req.body?.email).toLowerCase();
+    const branch = normalizeText(req.body?.branch);
     const ivaCondition = normalizeText(req.body?.ivaCondition);
     const address = normalizeText(req.body?.address);
     const taxId = normalizeText(req.body?.taxId).replace(/[^\d-]/g, "");
     const taxIdType = IVA_TO_TAX_ID[ivaCondition];
 
-    if (!fullName || !phone || !email || !ivaCondition || !taxId || !address) {
+    if (!fullName || !phoneNormalized || !email || !ivaCondition || !taxId || !address || !branch) {
       return res.status(400).json({ message: "Completa todos los datos obligatorios" });
+    }
+
+    if (!BRANCH_OPTIONS.has(branch)) {
+      return res.status(400).json({ message: "Selecciona una sucursal valida" });
+    }
+
+    if (phoneNormalized.length !== 11) {
+      return res.status(400).json({ message: "Ingresa un celular argentino valido de 11 digitos, sin 0 ni 15" });
     }
 
     if (!taxIdType) {
@@ -72,6 +124,23 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Ingresa un mail valido" });
     }
 
+    const existing = await EncuestaCliente.findOne({
+      $or: [{ email }, { taxId }, { phoneNormalized }, { phone }],
+    }).lean();
+
+    if (existing) {
+      const repeatedField =
+        existing.email === email
+          ? "mail"
+          : existing.taxId === taxId
+            ? taxIdType
+            : "celular";
+
+      return res.status(409).json({
+        message: `Ya existe un registro con ese ${repeatedField}. Si ya tenes cupon, consultalo en caja.`,
+      });
+    }
+
     const rating = Number(req.body?.rating);
     const ratingValue = Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : null;
     const choiceReasons = normalizeArray(req.body?.choiceReasons, REASON_OPTIONS, 3);
@@ -79,7 +148,9 @@ router.post("/", async (req, res) => {
     const encuesta = await EncuestaCliente.create({
       fullName,
       phone,
+      phoneNormalized,
       email,
+      branch,
       ivaCondition,
       taxIdType,
       taxId,
@@ -96,6 +167,7 @@ router.post("/", async (req, res) => {
       improvement: normalizeText(req.body?.improvement),
       couponCode: await createCouponCode(),
       couponDiscount: 15,
+      couponExpiresAt: addDays(new Date(), 30),
     });
 
     return res.status(201).json({
@@ -103,6 +175,7 @@ router.post("/", async (req, res) => {
       coupon: {
         code: encuesta.couponCode,
         discount: encuesta.couponDiscount,
+        expiresAt: encuesta.couponExpiresAt,
       },
     });
   } catch (error) {
@@ -116,6 +189,7 @@ router.get("/", requireAuth, requireRole("admin", "taller", "ventas"), async (_r
     const encuestas = await EncuestaCliente.find({}).sort({ createdAt: -1 }).lean();
     const total = encuestas.length;
     const usedCoupons = encuestas.filter((item) => item.couponUsed).length;
+    const expiredCoupons = encuestas.filter((item) => !item.couponUsed && isExpired(item)).length;
     const ratings = encuestas.map((item) => item.rating).filter(Boolean);
     const averageRating =
       ratings.length > 0
@@ -125,8 +199,9 @@ router.get("/", requireAuth, requireRole("admin", "taller", "ventas"), async (_r
     return res.json({
       summary: {
         total,
-        activeCoupons: total - usedCoupons,
+        activeCoupons: encuestas.filter((item) => !item.couponUsed && !isExpired(item)).length,
         usedCoupons,
+        expiredCoupons,
         averageRating,
       },
       items: encuestas,
@@ -145,6 +220,7 @@ router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), asy
       "nombre",
       "celular",
       "mail",
+      "sucursal",
       "iva",
       "tipo_documento",
       "documento",
@@ -157,6 +233,7 @@ router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), asy
       "mejora",
       "cupon",
       "cupon_usado",
+      "cupon_vencimiento",
       "fecha_uso",
       "usado_por",
     ];
@@ -166,6 +243,7 @@ router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), asy
       item.fullName,
       item.phone,
       item.email,
+      item.branch || "",
       item.ivaCondition,
       item.taxIdType,
       item.taxId,
@@ -178,6 +256,7 @@ router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), asy
       item.improvement,
       item.couponCode,
       item.couponUsed ? "si" : "no",
+      item.couponExpiresAt?.toISOString?.() || "",
       item.couponUsedAt?.toISOString?.() || "",
       item.couponUsedBy || "",
     ]);
@@ -212,7 +291,11 @@ router.post(
       }
 
       return res.json({
-        message: coupon.couponUsed ? "Cupon ya utilizado" : "Cupon disponible para usar",
+        message: coupon.couponUsed
+          ? "Cupon ya utilizado"
+          : isExpired(coupon)
+            ? "Cupon vencido"
+            : "Cupon disponible para usar",
         coupon,
       });
     } catch (error) {
@@ -243,6 +326,13 @@ router.post(
       if (coupon.couponUsed) {
         return res.status(409).json({
           message: "Cupon ya utilizado",
+          coupon,
+        });
+      }
+
+      if (isExpired(coupon)) {
+        return res.status(409).json({
+          message: "Cupon vencido",
           coupon,
         });
       }

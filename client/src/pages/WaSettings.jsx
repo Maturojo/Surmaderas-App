@@ -6,9 +6,28 @@ const DAYS = [
   { value: '4', label: 'Jue' }, { value: '5', label: 'Vie' }, { value: '6', label: 'Sáb' }, { value: '0', label: 'Dom' },
 ];
 
+function Section({ title, children }) {
+  return (
+    <div style={{ background: '#fff', borderRadius: 10, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16 }}>
+      <h4 style={{ margin: '0 0 16px', fontWeight: 700, color: '#333', borderBottom: '1px solid #f0f0f0', paddingBottom: 10 }}>{title}</h4>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, hint, children }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {label && <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>{label}</label>}
+      {children}
+      {hint && <div style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>{hint}</div>}
+    </div>
+  );
+}
+
 export default function WaSettings() {
   const [form, setForm] = useState({
-    bot_enabled: 'true',
+    bot_enabled: 'false',
     business_name: '', instagram: '',
     default_response: '',
     welcome_message: '', welcome_enabled: 'true',
@@ -45,21 +64,6 @@ export default function WaSettings() {
   const activeDays = form.schedule_days ? form.schedule_days.split(',') : [];
 
   if (loading) return <div style={{ padding: 40, color: '#aaa' }}>Cargando...</div>;
-
-  const Section = ({ title, children }) => (
-    <div style={{ background: '#fff', borderRadius: 10, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16 }}>
-      <h4 style={{ margin: '0 0 16px', fontWeight: 700, color: '#333', borderBottom: '1px solid #f0f0f0', paddingBottom: 10 }}>{title}</h4>
-      {children}
-    </div>
-  );
-
-  const Field = ({ label, hint, children }) => (
-    <div style={{ marginBottom: 14 }}>
-      {label && <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>{label}</label>}
-      {children}
-      {hint && <div style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>{hint}</div>}
-    </div>
-  );
 
   const inputStyle = { width: '100%', padding: '9px 13px', borderRadius: 7, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box' };
   const textareaStyle = { ...inputStyle, resize: 'vertical' };

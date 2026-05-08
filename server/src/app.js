@@ -11,7 +11,9 @@ import turneroRoutes from "./routes/turnero.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import calendarRoutes from "./routes/calendar.routes.js";
+import clientsRoutes from "./routes/clients.routes.js";
 import encuestasRoutes from "./routes/encuestas.routes.js";
+import ventasMensualesRoutes from "./routes/ventasMensuales.routes.js";
 
 function getAllowedOrigins() {
   const extraOrigins = String(process.env.CORS_ORIGINS || "")
@@ -73,7 +75,9 @@ export function createApp() {
   app.use("/api/users", usersRoutes);
   app.use("/api/chat", chatRoutes);
   app.use("/api/calendar", calendarRoutes);
+  app.use("/api/clients", clientsRoutes);
   app.use("/api/encuestas", encuestasRoutes);
+  app.use("/api/ventas-mensuales", ventasMensualesRoutes);
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
