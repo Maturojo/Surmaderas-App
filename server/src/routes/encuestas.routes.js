@@ -353,4 +353,80 @@ router.post(
   }
 );
 
+// ── Panel público de sucursal (sin autenticación) ─────────────────────────────
+
+const VALID_BRANCHES = new Set(["luro", "independencia"]);
+
+router.get("/sucursal/:branch", async (req, res) => {
+  const branch = req.params.branch?.toLowerCase();
+  if (!VALID_BRANCHES.has(branch)) {
+    return res.status(400).json({ message: "Sucursal no válida" });
+  }
+
+  try {
+    const encuestas = await EncuestaCliente.find({ branch })
+      .sort({ createdAt: -1 })
+      .select("fullName couponCode couponDiscount couponUsed couponExpiresAt couponUsedAt couponUsedBy createdAt")
+      .lean();
+
+    const now = Date.now();
+    const items = encuestas.map((item) => ({
+      id: item._id,
+      fullName: item.fullName,
+      couponCode: item.couponCode,
+      couponDiscount: item.couponDiscount,
+      couponUsed: item.couponUsed,
+      couponUsedAt: item.couponUsedAt,
+      couponUsedBy: item.couponUsedBy,
+      couponExpiresAt: item.couponExpiresAt,
+      expired: item.couponExpiresAt ? new Date(item.couponExpiresAt).getTime() < now : false,
+      createdAt: item.createdAt,
+    }));
+
+    const active = items.filter((i) => !i.couponUsed && !i.expired).length;
+    const used = items.filter((i) => i.couponUsed).length;
+    const expired = items.filter((i) => !i.couponUsed && i.expired).length;
+
+    return res.json({ summary: { active, used, expired, total: items.length }, items });
+  } catch (error) {
+    console.error("Error panel sucursal:", error?.message || error);
+    return res.status(500).json({ message: "No se pudieron cargar los cupones" });
+  }
+});
+
+router.post("/sucursal/:branch/validar", async (req, res) => {
+  const branch = req.params.branch?.toLowerCase();
+  if (!VALID_BRANCHES.has(branch)) {
+    return res.status(400).json({ message: "Sucursal no válida" });
+  }
+
+  try {
+    const couponCode = normalizeText(req.body?.couponCode).toUpperCase();
+    if (!couponCode) {
+      return res.status(400).json({ message: "Ingresá el código de cupón" });
+    }
+
+    const coupon = await EncuestaCliente.findOne({ couponCode, branch });
+    if (!coupon) {
+      return res.status(404).json({ message: "Cupón no encontrado en esta sucursal" });
+    }
+    if (coupon.couponUsed) {
+      return res.status(409).json({ message: "El cupón ya fue utilizado", coupon });
+    }
+    if (coupon.couponExpiresAt && new Date(coupon.couponExpiresAt).getTime() < Date.now()) {
+      return res.status(409).json({ message: "El cupón está vencido", coupon });
+    }
+
+    coupon.couponUsed = true;
+    coupon.couponUsedAt = new Date();
+    coupon.couponUsedBy = "Sucursal";
+    await coupon.save();
+
+    return res.json({ message: "Cupón canjeado correctamente", coupon });
+  } catch (error) {
+    console.error("Error validando cupón en sucursal:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo canjear el cupón" });
+  }
+});
+
 export default router;
