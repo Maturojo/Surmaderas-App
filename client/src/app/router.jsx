@@ -43,6 +43,8 @@ import { getDefaultHomeByRole, getUserRole } from "../services/auth";
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/formulario-clientes", element: <FormularioClientes /> },
+  { path: "/cupones-independencia", element: <FormularioClientes defaultBranch="independencia" /> },
+  { path: "/cupones-luro", element: <FormularioClientes defaultBranch="luro" /> },
   {
     path: "/",
     element: (

@@ -107,9 +107,9 @@ function toggleValue(list, value, maxItems = Infinity) {
   return [...list, value];
 }
 
-export default function FormularioClientes() {
+export default function FormularioClientes({ defaultBranch = "" }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState(INITIAL_FORM);
+  const [form, setForm] = useState({ ...INITIAL_FORM, branch: defaultBranch });
   const [coupon, setCoupon] = useState(null);
   const [submittedRating, setSubmittedRating] = useState(0);
   const [error, setError] = useState("");
