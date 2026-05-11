@@ -298,7 +298,9 @@ export default function VentasMensuales({ section = "lista" }) {
     setForm((current) => {
       if (current.id) return { ...current, client };
 
-      const saleType = inferSaleType(client);
+      const inferred = inferSaleType(client);
+      // Solo forzar "especial" si el cliente es especial; no resetear si el usuario eligió "especial" manualmente
+      const saleType = inferred === "especial" ? "especial" : current.saleType;
       return {
         ...current,
         client,
