@@ -203,7 +203,11 @@ export default function VentasMensuales({ section = "lista" }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const todayKey = toLocalDateKey(new Date());
   const weeklyTotals = useMemo(() => getWeeklyTotals(items, month), [items, month]);
+  const dailySales = useMemo(() => items.filter((item) => isSameInputDate(item.date, todayKey)), [items, todayKey]);
+  const dailySalesTotal = useMemo(() => dailySales.reduce((sum, item) => sum + (item.total || 0), 0), [dailySales]);
+  const dailySalesCommission = useMemo(() => dailySales.reduce((sum, item) => sum + (item.commission || 0), 0), [dailySales]);
   const dailyTransfers = useMemo(
     () => transfers.filter((item) => isSameInputDate(item.date, transferDate)),
     [transfers, transferDate]
@@ -512,6 +516,44 @@ export default function VentasMensuales({ section = "lista" }) {
     );
   }
 
+  function renderDailySales() {
+    if (isLoading || dailySales.length === 0) return null;
+    return (
+      <div className="config-usersCard monthly-salesTableCard">
+        <div className="monthly-salesDayHeader">
+          <div className="config-usersCardTitle">Ventas del día</div>
+          <div className="monthly-salesDaySummary">
+            {dailySales.length} venta{dailySales.length !== 1 ? "s" : ""} · Total {formatMoney(dailySalesTotal)} · Comisión {formatMoney(dailySalesCommission)}
+          </div>
+        </div>
+        <div className="survey-tableWrap">
+          <table className="survey-table monthly-salesTable">
+            <thead>
+              <tr>
+                <th>Cliente</th><th>Tipo</th><th>Contacto</th><th>Categoria</th><th>Subcategoria</th><th>Descripcion</th><th>Total</th><th>Comision</th><th>Pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dailySales.map((item) => (
+                <tr key={item._id}>
+                  <td>{item.client}</td>
+                  <td><span className={`monthly-salesType ${item.saleType === "especial" ? "especial" : "normal"}`}>{item.saleType === "especial" ? "5%" : "10%"}</span></td>
+                  <td>{item.contact}</td>
+                  <td>{item.category}</td>
+                  <td>{item.subcategory}</td>
+                  <td>{item.description}</td>
+                  <td>{formatMoney(item.total)}</td>
+                  <td>{formatMoney(item.commission)}</td>
+                  <td><span className={`monthly-salesStatus ${item.paymentStatus}`}>{PAYMENT_OPTIONS.find((o) => o.value === item.paymentStatus)?.label}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   function renderSalesTable() {
     return (
       <div className="config-usersCard monthly-salesTableCard">
@@ -754,6 +796,7 @@ export default function VentasMensuales({ section = "lista" }) {
       {section === "lista" ? (
         <>
           {renderStats()}
+          {renderDailySales()}
           <div className="monthly-salesGrid monthly-salesGrid--list">
             {renderSalesTable()}
             {renderWeeks()}

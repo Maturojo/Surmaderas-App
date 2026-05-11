@@ -1854,6 +1854,21 @@ textarea {
   font-size: 14px;
 }
 
+.monthly-salesDayHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.monthly-salesDaySummary {
+  color: #6b5b4a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .monthly-salesTransferHead {
   display: flex;
   align-items: flex-start;
