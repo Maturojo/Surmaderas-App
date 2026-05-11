@@ -1854,6 +1854,10 @@ textarea {
   font-size: 14px;
 }
 
+.monthly-salesTableCard {
+  overflow: hidden;
+}
+
 .monthly-salesDayHeader {
   display: flex;
   align-items: baseline;
