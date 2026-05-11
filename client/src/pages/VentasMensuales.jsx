@@ -312,7 +312,13 @@ export default function VentasMensuales({ section = "lista" }) {
 
   function handleMoneyBlur(event) {
     const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: formatMoneyInput(value) }));
+    setForm((current) => {
+      const next = { ...current, [name]: formatMoneyInput(value) };
+      if (name === "total" && !current.id) {
+        next.commission = calculateCommission(next.total, next.saleType);
+      }
+      return next;
+    });
   }
 
   function editItem(item) {
