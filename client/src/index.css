@@ -2016,6 +2016,11 @@ textarea {
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 16px;
+  }
+
   body {
     background: #ffffff !important;
   }
