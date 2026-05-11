@@ -83,7 +83,7 @@ function formatMoney(value) {
 }
 
 function formatMoneyInput(value) {
-  const amount = parseAmount(value);
+  const amount = typeof value === "number" ? value : parseAmount(value);
   if (!amount) return "";
   const hasCents = Math.round(amount * 100) % 100 !== 0;
   return `$${new Intl.NumberFormat("es-AR", {
