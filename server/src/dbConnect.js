@@ -13,7 +13,9 @@ export async function ensureDbConnection() {
 
   if (!connectionPromise) {
     connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 8000,
+      socketTimeoutMS: 20000,
+      bufferCommands: false,
     });
   }
 
