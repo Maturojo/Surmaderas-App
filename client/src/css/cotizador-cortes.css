@@ -8,12 +8,10 @@
 
 .cc-hero {
   padding: 28px 32px;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at top left, rgba(217, 167, 108, 0.22), transparent 40%),
-    linear-gradient(135deg, #fffaf2 0%, #efe3d2 100%);
-  border: 1px solid rgba(84, 61, 35, 0.12);
-  box-shadow: 0 16px 40px rgba(73, 54, 31, 0.07);
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--sm-line);
+  box-shadow: var(--sm-shadow);
 }
 
 .cc-kicker {
@@ -48,10 +46,10 @@
 
 .cc-card {
   background: #fff;
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 28px 28px 24px;
-  border: 1px solid rgba(84, 61, 35, 0.09);
-  box-shadow: 0 4px 16px rgba(73, 54, 31, 0.05);
+  border: 1px solid var(--sm-line);
+  box-shadow: var(--sm-shadow);
 }
 
 .cc-stepHeader {
@@ -84,24 +82,24 @@
 .cc-select {
   width: 100%;
   padding: 13px 36px 13px 16px;
-  border: 1.5px solid #e0d5c8;
-  border-radius: 10px;
+  border: 1.5px solid var(--sm-line);
+  border-radius: 4px;
   font-size: 15px;
-  color: #2d2117;
-  background: #faf8f5;
+  color: var(--sm-text);
+  background: #fff;
   cursor: pointer;
   transition: border-color 0.2s;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath stroke='%23896846' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='m1 1 5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath stroke='%23C8603A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='m1 1 5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
 }
 
 .cc-select:focus {
   outline: none;
-  border-color: #896846;
-  box-shadow: 0 0 0 3px rgba(137, 104, 70, 0.12);
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 3px rgba(200, 96, 58, 0.12);
 }
 
 .cc-preview {
@@ -172,19 +170,19 @@
 
 .cc-input {
   padding: 13px 14px;
-  border: 1.5px solid #e0d5c8;
-  border-radius: 10px;
+  border: 1.5px solid var(--sm-line);
+  border-radius: 4px;
   font-size: 15px;
-  color: #2d2117;
-  background: #faf8f5;
+  color: var(--sm-text);
+  background: #fff;
   transition: border-color 0.2s;
   width: 100%;
 }
 
 .cc-input:focus {
   outline: none;
-  border-color: #896846;
-  box-shadow: 0 0 0 3px rgba(137, 104, 70, 0.12);
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 3px rgba(200, 96, 58, 0.12);
 }
 
 .cc-input--readonly {
@@ -197,22 +195,22 @@
   width: 100%;
   padding: 16px;
   margin-top: 16px;
-  background: #2d2117;
+  background: var(--sm-accent);
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
 }
 
-.cc-btnCalc:hover { background: #4a3728; }
+.cc-btnCalc:hover { background: var(--sm-accent-dark); }
 .cc-btnCalc:active { transform: scale(0.98); }
 
 .cc-result {
-  background: #2d2117;
-  border-radius: 14px;
+  background: var(--sm-accent);
+  border-radius: 4px;
   padding: 18px 28px;
   display: flex;
   justify-content: space-between;
@@ -247,8 +245,8 @@
 }
 
 .cc-table thead th {
-  background: #2d2117;
-  color: #f5e8d4;
+  background: var(--sm-navy);
+  color: #fff;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -325,8 +323,8 @@
 .cc-btnWa:hover { background: #fff; color: #25d366; }
 
 .cc-totalStrip {
-  background: #2d2117;
-  border-radius: 14px;
+  background: var(--sm-navy);
+  border-radius: 4px;
   padding: 20px 28px;
   display: flex;
   justify-content: space-between;

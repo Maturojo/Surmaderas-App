@@ -8,11 +8,9 @@
   grid-template-columns: minmax(0, 1.2fr) auto minmax(320px, 0.8fr);
   gap: 18px;
   padding: 26px 28px;
-  border-radius: 28px;
+  border-radius: 8px;
   border: 1px solid var(--sm-line);
-  background:
-    radial-gradient(circle at top right, rgba(178, 207, 181, 0.18), transparent 28%),
-    linear-gradient(135deg, #fff9ef 0%, #eef5ef 100%);
+  background: #fff;
   box-shadow: var(--sm-shadow);
 }
 
@@ -54,25 +52,25 @@
   min-height: 48px;
   padding: 0 18px;
   border: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  border-radius: 4px;
+  background: var(--sm-accent);
+  color: #fff;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+  box-shadow: var(--sm-shadow);
 }
 
 .pp-stat,
 .pp-formCard,
 .pp-listCard {
   border: 1px solid var(--sm-line);
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 14px 30px rgba(55, 43, 29, 0.06);
+  background: #fff;
+  box-shadow: var(--sm-shadow);
 }
 
 .pp-stat {
   padding: 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   text-align: left;
   cursor: pointer;
   transition:
@@ -112,7 +110,7 @@
 .pp-formCard,
 .pp-listCard {
   padding: 22px;
-  border-radius: 28px;
+  border-radius: 8px;
 }
 
 .pp-sectionHead {
@@ -175,9 +173,9 @@
   min-height: 48px;
   width: 100%;
   padding: 0 14px;
-  border-radius: 16px;
-  border: 1px solid var(--sm-line-strong);
-  background: #fbfaf8;
+  border-radius: 4px;
+  border: 1.5px solid var(--sm-line);
+  background: #fff;
   outline: none;
 }
 
@@ -254,9 +252,9 @@
 
 .pp-sectionBlock {
   padding: 18px;
-  border-radius: 22px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: linear-gradient(180deg, #fffdf9 0%, #faf6ef 100%);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: var(--sm-bg);
 }
 
 .pp-sectionBlockHead {
@@ -346,9 +344,9 @@
 .pp-submitBtn {
   padding: 0 18px;
   border: 0;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
-  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+  background: var(--sm-accent);
+  color: #fff;
+  box-shadow: none;
 }
 
 .pp-filters {
@@ -416,9 +414,9 @@
 
 .pp-orderCard {
   padding: 16px;
-  border-radius: 22px;
+  border-radius: 8px;
   border: 1px solid var(--sm-line);
-  background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(250,247,242,0.92) 100%);
+  background: #fff;
 }
 
 .pp-orderTop {

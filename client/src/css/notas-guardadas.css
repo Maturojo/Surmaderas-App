@@ -9,12 +9,10 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   gap: 18px;
   padding: 26px 28px;
-  border-radius: 28px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background:
-    radial-gradient(circle at top right, rgba(197, 176, 141, 0.18), transparent 32%),
-    linear-gradient(135deg, rgba(255, 249, 239, 0.96) 0%, rgba(246, 241, 233, 0.9) 100%);
-  box-shadow: 0 18px 40px rgba(55, 43, 29, 0.08);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
+  box-shadow: var(--sm-shadow);
 }
 
 .ng-kicker {
@@ -78,10 +76,10 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border-radius: 24px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 14px 32px rgba(55, 43, 29, 0.05);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
+  box-shadow: var(--sm-shadow);
 }
 
 .ng-search {
@@ -92,13 +90,13 @@
   gap: 10px;
   min-height: 52px;
   padding: 0 14px;
-  border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: #fcfaf7;
+  border-radius: 4px;
+  border: 1.5px solid var(--sm-line);
+  background: #fff;
 }
 
 .ng-searchIcon {
-  color: #8f8171;
+  color: var(--sm-muted);
   font-size: 18px;
 }
 
@@ -118,13 +116,13 @@
 .ng-refreshBtn {
   min-height: 52px;
   padding: 0 18px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
-  border-radius: 18px;
-  background: linear-gradient(135deg, #31271f 0%, #534131 100%);
-  color: #fffaf4;
+  border: 0;
+  border-radius: 4px;
+  background: var(--sm-accent);
+  color: #fff;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(55, 43, 29, 0.16);
+  box-shadow: none;
 }
 
 .ng-refreshBtn:disabled {
@@ -143,10 +141,10 @@
 
 .ng-tableCard {
   padding: 16px;
-  border-radius: 28px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 18px 42px rgba(55, 43, 29, 0.06);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
+  box-shadow: var(--sm-shadow);
   max-width: 100%;
   min-width: 0;
   overflow: visible;
@@ -202,9 +200,9 @@
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
-  border-radius: 22px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: rgba(255, 255, 255, 0.96);
+  border-radius: 4px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
 }
 
 .ng-table {
@@ -533,9 +531,9 @@
 }
 
 .ng-tableBtn--dark {
-  background: #31271f;
-  color: #fffaf4;
-  border-color: #31271f;
+  background: var(--sm-navy);
+  color: #fff;
+  border-color: var(--sm-navy);
 }
 
 .ng-tableBtn--danger {
@@ -687,12 +685,10 @@
   max-height: calc(100vh - 44px);
   overflow: auto;
   padding: 22px;
-  border-radius: 28px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background:
-    radial-gradient(circle at top right, rgba(197, 176, 141, 0.12), transparent 28%),
-    #fffcf7;
-  box-shadow: 0 26px 60px rgba(20, 15, 10, 0.22);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.18);
 }
 
 .ng-modalHeader {
@@ -816,9 +812,9 @@
 .ng-summaryCard {
   margin-top: 18px;
   padding: 18px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #f7f1e7 0%, #fcfaf7 100%);
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border-radius: 8px;
+  background: var(--sm-bg);
+  border: 1px solid var(--sm-line);
 }
 
 .ng-inlinePrompt {
@@ -1435,10 +1431,10 @@
 }
 
 .ng-actionBtn--primary {
-  background: linear-gradient(135deg, #2f261e 0%, #4a3c2f 100%);
-  border-color: #2f261e;
-  color: #fffdf8;
-  box-shadow: 0 12px 24px rgba(47, 38, 30, 0.16);
+  background: var(--sm-accent);
+  border-color: var(--sm-accent);
+  color: #fff;
+  box-shadow: none;
 }
 
 .bg-emerald-50.text-emerald-700.border-emerald-200 {

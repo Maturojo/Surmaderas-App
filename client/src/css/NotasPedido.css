@@ -706,20 +706,17 @@
   display: flex;
   justify-content: center;
   padding: 32px 16px 48px;
-  background:
-    radial-gradient(circle at top left, rgba(197, 170, 133, 0.22), transparent 30%),
-    radial-gradient(circle at top right, rgba(103, 81, 55, 0.16), transparent 24%),
-    linear-gradient(180deg, #efe4d4 0%, #e7d9c7 100%);
+  background: var(--sm-bg);
 }
 
 .np-card {
   width: 100%;
   max-width: 1180px;
   padding: 30px;
-  border-radius: 28px;
-  border: 1px solid rgba(74, 56, 37, 0.08);
-  background: rgba(255, 251, 246, 0.92);
-  box-shadow: 0 22px 48px rgba(66, 45, 24, 0.14);
+  border-radius: 8px;
+  border: 1px solid var(--sm-line);
+  background: #fff;
+  box-shadow: var(--sm-shadow);
   overflow: hidden;
 }
 
@@ -730,9 +727,9 @@
   gap: 20px;
   margin-bottom: 22px;
   padding: 24px 26px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #fff7ee 0%, #f4e8d9 100%);
-  border: 1px solid rgba(109, 82, 52, 0.1);
+  border-radius: 8px;
+  background: var(--sm-bg);
+  border: 1px solid var(--sm-line);
 }
 
 .np-kicker {
@@ -768,9 +765,9 @@
 .np-stat {
   min-width: 138px;
   padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(77, 56, 34, 0.08);
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--sm-line);
 }
 
 .np-statLabel {
@@ -793,10 +790,10 @@
 .np-sectionCard {
   margin-top: 18px;
   padding: 22px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid rgba(92, 68, 42, 0.08);
-  box-shadow: 0 12px 30px rgba(86, 65, 42, 0.06);
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--sm-line);
+  box-shadow: var(--sm-shadow);
 }
 
 .np-sectionHead {
@@ -841,18 +838,18 @@
 }
 
 .np-input {
-  border: 1px solid rgba(97, 74, 48, 0.14);
-  border-radius: 14px;
+  border: 1.5px solid var(--sm-line);
+  border-radius: 4px;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #231b14;
+  background: #fff;
+  color: var(--sm-text);
   font-size: 14px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.04s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .np-input:focus {
-  border-color: #b89469;
-  box-shadow: 0 0 0 4px rgba(195, 162, 118, 0.18);
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 3px rgba(200, 96, 58, 0.12);
 }
 
 .np-input--error {
@@ -887,18 +884,18 @@
 }
 
 .np-item-row {
-  border: 1px solid rgba(114, 88, 60, 0.1);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #fffdfa 0%, #fff7ef 100%);
-  box-shadow: 0 10px 24px rgba(81, 60, 35, 0.05);
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: none;
 }
 
 .np-check {
   min-height: 44px;
   padding: 0 8px;
-  border-radius: 12px;
-  background: #f7efe4;
-  color: #6b5948;
+  border-radius: 4px;
+  background: var(--sm-bg);
+  color: var(--sm-text);
   font-weight: 700;
 }
 
@@ -916,17 +913,17 @@
 
 .np-btn {
   min-height: 46px;
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 0 18px;
-  box-shadow: 0 10px 24px rgba(56, 41, 24, 0.14);
+  box-shadow: none;
 }
 
 .np-btn-green {
-  background: linear-gradient(135deg, #1a7a4d 0%, #2c9a68 100%);
+  background: var(--sm-accent);
 }
 
 .np-btn-secondary {
-  background: linear-gradient(135deg, #4b3826 0%, #6a5038 100%);
+  background: var(--sm-navy);
 }
 
 .np-totals {
@@ -940,15 +937,15 @@
 
 .np-ac-list {
   margin-top: 8px;
-  border: 1px solid rgba(109, 86, 58, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 16px 38px rgba(57, 38, 18, 0.14);
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: var(--sm-shadow);
 }
 
 .np-ac-item.is-active,
 .np-ac-item:hover {
-  background: rgba(212, 187, 151, 0.2);
+  background: var(--sm-accent-soft);
 }
 
 @media (max-width: 980px) {
@@ -1094,9 +1091,9 @@
 }
 
 .np-trackingPanel {
-  border: 1px solid #eadfcd;
-  border-radius: 18px;
-  background: #fbf8f2;
+  border: 1px solid var(--sm-line);
+  border-radius: 8px;
+  background: #fff;
   padding: 18px;
 }
 
@@ -1139,8 +1136,8 @@
 }
 
 .np-trackItem {
-  border: 1px solid #eadfcd;
-  border-radius: 14px;
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
   background: #fff;
   padding: 14px;
   display: grid;
