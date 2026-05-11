@@ -32,6 +32,7 @@ const PAYMENT_OPTIONS = [
 ];
 
 const SALE_TYPE_OPTIONS = [
+  { value: "", label: "— Seleccionar tipo —" },
   { value: "normal", label: "Normal 10%" },
   { value: "especial", label: "Cliente especial 5%" },
 ];
@@ -48,7 +49,7 @@ const INITIAL_FORM = {
   description: "",
   total: "",
   commission: "",
-  saleType: "normal",
+  saleType: "",
   paymentStatus: "pagado",
 };
 
@@ -123,6 +124,7 @@ function getCommissionRate(saleType) {
 }
 
 function calculateCommission(total, saleType) {
+  if (!saleType) return "";
   return formatMoneyInput(Math.round(parseAmount(total) * getCommissionRate(saleType) * 100) / 100);
 }
 
@@ -500,7 +502,7 @@ export default function VentasMensuales({ section = "lista" }) {
         <label className="config-usersField"><span>Categoria</span><select name="category" value={form.category} onChange={handleChange}>{config.categories.map((option) => <option key={option}>{option}</option>)}</select></label>
         <label className="config-usersField"><span>Subcategoria</span><select name="subcategory" value={form.subcategory} onChange={handleChange}><option value="">Sin subcategoria</option>{config.subcategories.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
         <label className="config-usersField"><span>Descripcion</span><textarea name="description" value={form.description} onChange={handleChange} rows="3" /></label>
-        <label className="config-usersField"><span>Tipo de venta</span><select name="saleType" value={form.saleType} onChange={handleChange}>{SALE_TYPE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label className="config-usersField"><span>Tipo de venta</span><select name="saleType" value={form.saleType} onChange={handleChange} required>{SALE_TYPE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         <label className="config-usersField"><span>Total</span><input name="total" value={form.total} onChange={handleChange} onBlur={handleMoneyBlur} inputMode="decimal" placeholder="$50.000" required /></label>
         <label className="config-usersField"><span>Comision</span><input name="commission" value={form.commission} readOnly inputMode="decimal" placeholder="$5.000" /></label>
         <label className="config-usersField"><span>Pago</span><select name="paymentStatus" value={form.paymentStatus} onChange={handleChange}>{PAYMENT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
