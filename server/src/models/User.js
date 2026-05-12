@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ["admin", "ventas", "taller"], default: "ventas" },
     isActive: { type: Boolean, default: true },
+    allowedModules: { type: [String], default: [] },
   },
   { timestamps: true }
 );

@@ -14,9 +14,10 @@ function HamburgerIcon({ open }) {
 }
 
 const NAV_ITEMS = [
-  { label: "Dashboard", to: "/dashboard", icon: "dashboard" },
-  { label: "Calendario", to: "/calendario", icon: "calendar" },
+  { key: "dashboard", label: "Dashboard", to: "/dashboard", icon: "dashboard" },
+  { key: "calendario", label: "Calendario", to: "/calendario", icon: "calendar" },
   {
+    key: "pedidos",
     label: "Pedidos",
     icon: "notes",
     children: [
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
     ],
   },
   {
+    key: "presupuestos",
     label: "Presupuestos",
     icon: "budget",
     children: [
@@ -37,12 +39,13 @@ const NAV_ITEMS = [
       { label: "Proveedores especiales", to: "/presupuestos/proveedores" },
     ],
   },
-  { label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
-  { label: "Cotizador de cortes", to: "/cotizador-cortes", icon: "scissors" },
-  { label: "Productos", to: "/productos", icon: "products" },
-  { label: "Placas", to: "/placas", icon: "layers" },
-  { label: "Encuestas", to: "/encuestas", icon: "survey" },
+  { key: "marcos", label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
+  { key: "cotizador-cortes", label: "Cotizador de cortes", to: "/cotizador-cortes", icon: "scissors" },
+  { key: "productos", label: "Productos", to: "/productos", icon: "products" },
+  { key: "placas", label: "Placas", to: "/placas", icon: "layers" },
+  { key: "encuestas", label: "Encuestas", to: "/encuestas", icon: "survey" },
   {
+    key: "ventas",
     label: "Ventas",
     icon: "sales",
     children: [
@@ -53,6 +56,7 @@ const NAV_ITEMS = [
     ],
   },
   {
+    key: "proveedores",
     label: "Proveedores",
     icon: "suppliers",
     children: [
@@ -60,8 +64,9 @@ const NAV_ITEMS = [
       { label: "Pedidos", to: "/pedidos-proveedor" },
     ],
   },
-  { label: "Generador 3D", to: "/generador-3d", icon: "cube" },
+  { key: "generador-3d", label: "Generador 3D", to: "/generador-3d", icon: "cube" },
   {
+    key: "whatsapp",
     label: "WhatsApp",
     icon: "whatsapp",
     children: [
@@ -241,8 +246,12 @@ export default function AppLayout() {
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
 
-  const baseNavItems =
-    userRole === "ventas"
+  const customModules = auth?.user?.allowedModules;
+  const hasCustomModules = Array.isArray(customModules) && customModules.length > 0;
+
+  const baseNavItems = hasCustomModules
+    ? NAV_ITEMS.filter((item) => customModules.includes(item.key))
+    : userRole === "ventas"
       ? NAV_ITEMS
           .map((item) => {
             if (item.children) {

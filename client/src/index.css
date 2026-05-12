@@ -1095,6 +1095,50 @@ textarea {
   color: var(--sm-muted);
 }
 
+.config-usersModules {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--sm-surface-alt, #f5f5f5);
+  border-radius: 8px;
+  border: 1px solid var(--sm-border, #e0e0e0);
+}
+
+.config-usersModulesTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sm-text);
+}
+
+.config-usersModulesHint {
+  font-weight: 400;
+  color: var(--sm-muted);
+}
+
+.config-usersModulesList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+
+.config-usersModuleItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--sm-text);
+}
+
+.config-usersModuleItem input[type="checkbox"] {
+  accent-color: var(--sm-accent, #2563eb);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .config-turneroPreview {
   margin-top: 18px;
 }

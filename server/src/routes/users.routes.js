@@ -16,6 +16,7 @@ function sanitizeUser(user) {
     username: user.username,
     role: user.role,
     isActive: user.isActive,
+    allowedModules: user.allowedModules || [],
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -46,7 +47,7 @@ router.get("/", async (_req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, username, password, role, isActive } = req.body || {};
+    const { name, username, password, role, isActive, allowedModules } = req.body || {};
 
     if (!name || !username || !password) {
       return res.status(400).json({ message: "Nombre, usuario y clave son obligatorios" });
@@ -75,6 +76,7 @@ router.post("/", async (req, res) => {
       passwordHash,
       role,
       isActive: isActive !== false,
+      allowedModules: role === "admin" ? [] : (Array.isArray(allowedModules) ? allowedModules : []),
     });
 
     return res.status(201).json({
@@ -90,7 +92,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, username, password, role, isActive } = req.body || {};
+    const { name, username, password, role, isActive, allowedModules } = req.body || {};
 
     if (!name || !username) {
       return res.status(400).json({ message: "Nombre y usuario son obligatorios" });
@@ -121,6 +123,7 @@ router.put("/:id", async (req, res) => {
     user.username = normalizedUsername;
     user.role = role;
     user.isActive = nextIsActive;
+    user.allowedModules = role === "admin" ? [] : (Array.isArray(allowedModules) ? allowedModules : []);
 
     if (password) {
       if (String(password).length < 6) {

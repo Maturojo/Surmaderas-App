@@ -2,12 +2,29 @@
 import { getAuth } from "../services/auth";
 import { createUser, getUsers, updateUser } from "../services/users";
 
+const ALL_MODULES = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "calendario", label: "Calendario" },
+  { key: "pedidos", label: "Pedidos" },
+  { key: "presupuestos", label: "Presupuestos" },
+  { key: "marcos", label: "Cotizador de marcos" },
+  { key: "cotizador-cortes", label: "Cotizador de cortes" },
+  { key: "productos", label: "Productos" },
+  { key: "placas", label: "Placas" },
+  { key: "encuestas", label: "Encuestas" },
+  { key: "ventas", label: "Ventas" },
+  { key: "proveedores", label: "Proveedores" },
+  { key: "generador-3d", label: "Generador 3D" },
+  { key: "whatsapp", label: "WhatsApp" },
+];
+
 const INITIAL_CREATE_FORM = {
   name: "",
   username: "",
   password: "",
   role: "ventas",
   isActive: true,
+  allowedModules: [],
 };
 
 const INITIAL_EDIT_FORM = {
@@ -17,6 +34,7 @@ const INITIAL_EDIT_FORM = {
   password: "",
   role: "ventas",
   isActive: true,
+  allowedModules: [],
 };
 
 const ROLES = [
@@ -131,6 +149,30 @@ export default function UserManagement() {
     }));
   }
 
+  function toggleCreateModule(key) {
+    setCreateForm((current) => {
+      const has = current.allowedModules.includes(key);
+      return {
+        ...current,
+        allowedModules: has
+          ? current.allowedModules.filter((k) => k !== key)
+          : [...current.allowedModules, key],
+      };
+    });
+  }
+
+  function toggleEditModule(key) {
+    setEditForm((current) => {
+      const has = current.allowedModules.includes(key);
+      return {
+        ...current,
+        allowedModules: has
+          ? current.allowedModules.filter((k) => k !== key)
+          : [...current.allowedModules, key],
+      };
+    });
+  }
+
   function startEdit(user) {
     setEditForm({
       id: user._id || user.id,
@@ -139,6 +181,7 @@ export default function UserManagement() {
       password: "",
       role: user.role || "ventas",
       isActive: user.isActive !== false,
+      allowedModules: user.allowedModules || [],
     });
     setError("");
     setSuccess("");
@@ -159,7 +202,10 @@ export default function UserManagement() {
 
     try {
       setIsCreating(true);
-      const response = await createUser(createForm);
+      const response = await createUser({
+        ...createForm,
+        allowedModules: createForm.role === "admin" ? [] : createForm.allowedModules,
+      });
       setUsers((current) => [response.user, ...current]);
       setCreateForm(INITIAL_CREATE_FORM);
       setSuccess("Usuario creado correctamente");
@@ -189,6 +235,7 @@ export default function UserManagement() {
         password: editForm.password,
         role: editForm.role,
         isActive: editForm.isActive,
+        allowedModules: editForm.role === "admin" ? [] : editForm.allowedModules,
       });
 
       setUsers((current) =>
@@ -217,6 +264,7 @@ export default function UserManagement() {
         username: user.username,
         role: user.role,
         isActive: nextIsActive,
+        allowedModules: user.allowedModules || [],
       });
 
       setUsers((current) =>
@@ -324,6 +372,29 @@ export default function UserManagement() {
               ))}
             </select>
           </label>
+
+          {createForm.role !== "admin" ? (
+            <div className="config-usersModules">
+              <div className="config-usersModulesTitle">
+                Modulos visibles
+                {createForm.allowedModules.length === 0 ? (
+                  <span className="config-usersModulesHint"> (predeterminados del rol)</span>
+                ) : null}
+              </div>
+              <div className="config-usersModulesList">
+                {ALL_MODULES.map((mod) => (
+                  <label key={mod.key} className="config-usersModuleItem">
+                    <input
+                      type="checkbox"
+                      checked={createForm.allowedModules.includes(mod.key)}
+                      onChange={() => toggleCreateModule(mod.key)}
+                    />
+                    <span>{mod.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <label className="config-usersCheckbox">
             <input
@@ -459,6 +530,38 @@ export default function UserManagement() {
                   ))}
                 </select>
               </label>
+
+              {editForm.role !== "admin" ? (
+                <div className="config-usersModules">
+                  <div className="config-usersModulesTitle">
+                    Modulos visibles
+                    {editForm.allowedModules.length === 0 ? (
+                      <span className="config-usersModulesHint"> (predeterminados del rol)</span>
+                    ) : null}
+                  </div>
+                  <div className="config-usersModulesList">
+                    {ALL_MODULES.map((mod) => (
+                      <label key={mod.key} className="config-usersModuleItem">
+                        <input
+                          type="checkbox"
+                          checked={editForm.allowedModules.includes(mod.key)}
+                          onChange={() => toggleEditModule(mod.key)}
+                        />
+                        <span>{mod.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {editForm.allowedModules.length > 0 ? (
+                    <button
+                      type="button"
+                      className="config-usersSecondaryButton"
+                      onClick={() => setEditForm((f) => ({ ...f, allowedModules: [] }))}
+                    >
+                      Resetear a predeterminados del rol
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
 
               <label className="config-usersCheckbox">
                 <input
