@@ -179,25 +179,40 @@ export default function NotasPedidoView() {
   }, []);
 
   useEffect(() => {
+    const prefillMarcos = location.state?.prefillMarcos;
     const prefillMarco = location.state?.prefillMarco;
 
-    if (!prefillMarco || prefillMarcoConsumidoRef.current) {
+    if (!prefillMarcos && !prefillMarco || prefillMarcoConsumidoRef.current) {
       return;
     }
 
     prefillMarcoConsumidoRef.current = true;
 
-    setItems([
-      {
-        ...emptyItem,
-        tipo: "marco",
-        descripcion: prefillMarco.descripcion || "",
-        cantidad: Number(prefillMarco.cantidad || 1),
-        precio: prefillMarco.precio || "",
-        especial: Boolean(prefillMarco.especial),
-        data: prefillMarco.data || {},
-      },
-    ]);
+    if (Array.isArray(prefillMarcos) && prefillMarcos.length > 0) {
+      setItems(
+        prefillMarcos.map((marco) => ({
+          ...emptyItem,
+          tipo: "marco",
+          descripcion: marco.descripcion || "",
+          cantidad: Number(marco.cantidad || 1),
+          precio: marco.precio || "",
+          especial: Boolean(marco.especial),
+          data: marco.data || {},
+        }))
+      );
+    } else if (prefillMarco) {
+      setItems([
+        {
+          ...emptyItem,
+          tipo: "marco",
+          descripcion: prefillMarco.descripcion || "",
+          cantidad: Number(prefillMarco.cantidad || 1),
+          precio: prefillMarco.precio || "",
+          especial: Boolean(prefillMarco.especial),
+          data: prefillMarco.data || {},
+        },
+      ]);
+    }
 
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, navigate]);

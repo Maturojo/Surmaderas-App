@@ -991,6 +991,7 @@ export default function CotizadorMarcos() {
   const [unidadMedida, setUnidadMedida] = useState("cm");
   const [imagenUrl, setImagenUrl] = useState(null);
   const [glRef, setGlRef] = useState(null);
+  const [listaMarcos, setListaMarcos] = useState([]);
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0];
@@ -1115,11 +1116,7 @@ export default function CotizadorMarcos() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
-  function handleEnviarAGenerarPedido() {
-    if (!quote.pricingEnabled) {
-      return;
-    }
-
+  function buildMarcoPayload() {
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
     const frenteLabel = form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "No";
     const fondoLabel = selectedFondo.precioM2 > 0 && !espejoSinFondo ? selectedFondo.nombre : "No";
@@ -1128,41 +1125,56 @@ export default function CotizadorMarcos() {
     const itemPrecioUnitario = cantidad > 0 ? quote.total / cantidad : quote.total;
     const observaciones = String(form.observaciones || "").trim();
 
+    return {
+      descripcion: "",
+      cantidad,
+      precio: String(Math.round(itemPrecioUnitario)),
+      especial: false,
+      data: {
+        cotizado: true,
+        perfil: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}`,
+        anchoVarillaCm: formatDimensionCm(effectiveMeasures.frenteMm),
+        orientacionVisual: form.orientacion === "horizontal" ? "Horizontal" : "Vertical",
+        tipoMedida: form.tipoMedida === "interior" ? "Interior" : "Exterior",
+        medidaCargada: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm),
+        cantidad: String(cantidad),
+        fondo: fondoLabel,
+        frente: frenteLabel,
+        paspartu: paspartuLabel,
+        pintado: selectedPintado.nombre,
+        obs: observaciones,
+        resumenLineas: [
+          { label: "Varilla seleccionada", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
+          { label: "Ancho de varilla", value: formatDimensionCm(effectiveMeasures.frenteMm) },
+          ...(selectedProfile?.liston ? [{ label: "Colocacion", value: form.listonUso === "canto" ? "De canto" : "De plano" }] : []),
+          { label: "Orientacion visual", value: form.orientacion === "horizontal" ? "Horizontal" : "Vertical" },
+          { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
+          { label: "Medida cargada", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
+          { label: "Cantidad", value: String(cantidad) },
+          { label: "Fondo", value: fondoLabel },
+          { label: "Frente", value: frenteLabel },
+          { label: "Paspartu", value: paspartuLabel },
+          { label: "Pintado", value: selectedPintado.nombre },
+        ],
+      },
+    };
+  }
+
+  function handleAgregarALista() {
+    if (!quote.pricingEnabled) return;
+    setListaMarcos((prev) => [...prev, buildMarcoPayload()]);
+  }
+
+  function handleQuitarDeLista(index) {
+    setListaMarcos((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function handleEnviarAGenerarPedido() {
+    if (listaMarcos.length === 0) return;
+
     navigate("/notas-pedido", {
       state: {
-        prefillMarco: {
-          descripcion: "",
-          cantidad,
-          precio: String(Math.round(itemPrecioUnitario)),
-          especial: false,
-          data: {
-            cotizado: true,
-            perfil: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}`,
-            anchoVarillaCm: formatDimensionCm(effectiveMeasures.frenteMm),
-            orientacionVisual: form.orientacion === "horizontal" ? "Horizontal" : "Vertical",
-            tipoMedida: form.tipoMedida === "interior" ? "Interior" : "Exterior",
-            medidaCargada: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm),
-            cantidad: String(cantidad),
-            fondo: fondoLabel,
-            frente: frenteLabel,
-            paspartu: paspartuLabel,
-            pintado: selectedPintado.nombre,
-            obs: observaciones,
-            resumenLineas: [
-              { label: "Varilla seleccionada", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
-              { label: "Ancho de varilla", value: formatDimensionCm(effectiveMeasures.frenteMm) },
-              ...(selectedProfile?.liston ? [{ label: "Colocacion", value: form.listonUso === "canto" ? "De canto" : "De plano" }] : []),
-              { label: "Orientacion visual", value: form.orientacion === "horizontal" ? "Horizontal" : "Vertical" },
-              { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
-              { label: "Medida cargada", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
-              { label: "Cantidad", value: String(cantidad) },
-              { label: "Fondo", value: fondoLabel },
-              { label: "Frente", value: frenteLabel },
-              { label: "Paspartu", value: paspartuLabel },
-              { label: "Pintado", value: selectedPintado.nombre },
-            ],
-          },
-        },
+        prefillMarcos: listaMarcos,
       },
     });
   }
@@ -1867,15 +1879,16 @@ export default function CotizadorMarcos() {
               Enviar por WhatsApp
             </button>
           </div>
+
           <button
             type="button"
-            onClick={handleEnviarAGenerarPedido}
+            onClick={handleAgregarALista}
             disabled={!quote.pricingEnabled}
             style={{
               padding: "14px 18px",
               borderRadius: 16,
-              background: quote.pricingEnabled ? "#c59257" : "#d6cdc2",
-              color: quote.pricingEnabled ? "#2d241c" : "#7f7469",
+              background: quote.pricingEnabled ? "#3d6b3f" : "#d6cdc2",
+              color: quote.pricingEnabled ? "#f0faf0" : "#7f7469",
               border: "none",
               fontSize: 15,
               fontWeight: 900,
@@ -1883,7 +1896,88 @@ export default function CotizadorMarcos() {
               letterSpacing: "0.02em",
             }}
           >
-            Enviar a generar pedido
+            + Agregar a lista de pedido
+          </button>
+
+          {listaMarcos.length > 0 && (
+            <div style={{ background: "#f4ece1", border: "1px solid #e2d4c0", borderRadius: 18, padding: "16px 18px", display: "grid", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#5d4f3a", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  Lista de marcos ({listaMarcos.length})
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#2d241c" }}>
+                  Total: {formatCurrency(listaMarcos.reduce((acc, m) => acc + Number(m.precio || 0) * Number(m.cantidad || 1), 0))}
+                </span>
+              </div>
+              {listaMarcos.map((marco, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 10,
+                    background: "#fffdf9",
+                    border: "1px solid #e0d4c2",
+                    borderRadius: 12,
+                    padding: "10px 14px",
+                  }}
+                >
+                  <div style={{ display: "grid", gap: 2, flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#2d241c", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {marco.data?.perfil || "Marco"}
+                    </span>
+                    <span style={{ fontSize: 12, color: "#7a6e62" }}>
+                      {marco.data?.medidaCargada} · x{marco.cantidad} · {formatCurrency(Number(marco.precio || 0) * Number(marco.cantidad || 1))}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleQuitarDeLista(idx)}
+                    style={{
+                      flexShrink: 0,
+                      width: 28,
+                      height: 28,
+                      borderRadius: 8,
+                      border: "1px solid #d6c8b8",
+                      background: "#f9f0e6",
+                      color: "#9a4a2a",
+                      fontSize: 14,
+                      fontWeight: 900,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      lineHeight: 1,
+                    }}
+                    title="Quitar de la lista"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleEnviarAGenerarPedido}
+            disabled={listaMarcos.length === 0}
+            style={{
+              padding: "14px 18px",
+              borderRadius: 16,
+              background: listaMarcos.length > 0 ? "#c59257" : "#d6cdc2",
+              color: listaMarcos.length > 0 ? "#2d241c" : "#7f7469",
+              border: "none",
+              fontSize: 15,
+              fontWeight: 900,
+              cursor: listaMarcos.length > 0 ? "pointer" : "not-allowed",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {listaMarcos.length > 0
+              ? `Enviar ${listaMarcos.length === 1 ? "1 marco" : `${listaMarcos.length} marcos`} al generador de pedido`
+              : "Enviar a generar pedido"}
           </button>
         </div>
       </section>
