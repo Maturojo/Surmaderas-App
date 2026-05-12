@@ -992,6 +992,8 @@ export default function CotizadorMarcos() {
   const [imagenUrl, setImagenUrl] = useState(null);
   const [glRef, setGlRef] = useState(null);
   const [listaMarcos, setListaMarcos] = useState([]);
+  const [anchoDisplay, setAnchoDisplay] = useState("70");
+  const [altoDisplay, setAltoDisplay] = useState("100");
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0];
@@ -1114,6 +1116,99 @@ export default function CotizadorMarcos() {
       ...lines.map(([label, value]) => `*${label}:* ${value}`),
     ].join("\n");
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  function handleWhatsAppLista() {
+    if (listaMarcos.length === 0) return;
+    const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+    const totalLista = listaMarcos.reduce((acc, m) => acc + Number(m.precio || 0) * Number(m.cantidad || 1), 0);
+    const lineas = listaMarcos.map((marco, idx) => {
+      const lines = [
+        `*Marco ${idx + 1}*`,
+        ...(marco.data?.resumenLineas || []).map(({ label, value }) => `  ${label}: ${value}`),
+        `  *Precio unitario: ${formatCurrency(Number(marco.precio || 0))}*`,
+      ];
+      return lines.join("\n");
+    });
+    const text = [
+      `*Lista de Marcos - Sur Maderas*`,
+      `_${fecha}_`,
+      "",
+      ...lineas.flatMap((l) => [l, ""]),
+      `*Total: ${formatCurrency(totalLista)}*`,
+    ].join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  function handlePrintLista() {
+    if (listaMarcos.length === 0) return;
+    const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
+    const totalLista = listaMarcos.reduce((acc, m) => acc + Number(m.precio || 0) * Number(m.cantidad || 1), 0);
+    const marcosHtml = listaMarcos.map((marco, idx) => {
+      const rows = (marco.data?.resumenLineas || [])
+        .map(({ label, value }) => `<tr><td>${label}</td><td>${value}</td></tr>`)
+        .join("");
+      const totalItem = Number(marco.precio || 0) * Number(marco.cantidad || 1);
+      return `
+        <div class="marco-card">
+          <div class="marco-num">Marco ${idx + 1}</div>
+          <table>
+            ${rows}
+            <tr class="total"><td>Precio unitario</td><td>${formatCurrency(Number(marco.precio || 0))}</td></tr>
+            <tr class="total-item"><td>Subtotal (x${marco.cantidad})</td><td>${formatCurrency(totalItem)}</td></tr>
+          </table>
+        </div>`;
+    }).join("");
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Marcos</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    @page{size:A4 portrait;margin:10mm}
+    body{font-family:system-ui,sans-serif;color:#2a211a;background:#fff7ef}
+    .header{display:flex;justify-content:space-between;gap:12px;padding:8mm 10mm 6mm;background:linear-gradient(135deg,#2f241b 0%,#594332 100%);color:#fff8f0;margin-bottom:6mm}
+    .brand .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
+    .brand h1{font-size:20px;font-weight:900;line-height:1.1}
+    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;border-radius:14px;background:rgba(255,248,240,.12);border:1px solid rgba(255,248,240,.18)}
+    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+    .meta-value{font-size:12px;font-weight:800}
+    .marco-card{background:linear-gradient(180deg,#fffdf9 0%,#fff7ee 100%);border:1px solid #e2d7c9;border-radius:14px;overflow:hidden;margin-bottom:5mm;break-inside:avoid}
+    .marco-num{background:#2f241b;color:#fff8f0;font-size:11px;font-weight:800;letter-spacing:.08em;padding:6px 12px}
+    table{width:100%;border-collapse:separate;border-spacing:0 4px;padding:6px 10px 8px}
+    tr{background:#f7f1e8}
+    td{padding:5px 8px;font-size:11px;vertical-align:top}
+    td:first-child{color:#6b5d4f;font-weight:700;width:54%;border-radius:8px 0 0 8px}
+    td:last-child{font-weight:800;text-align:right;color:#2d241c;border-radius:0 8px 8px 0}
+    tr.total td{background:#594332;color:#fff8f0;font-size:11px}
+    tr.total-item td{background:#2f241b;color:#fff8f0;font-size:12px;font-weight:900}
+    .grand-total{margin-top:4mm;background:#2f241b;color:#fff8f0;border-radius:14px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:16px}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <div class="eyebrow">Sur Maderas</div>
+      <h1>Lista de Marcos</h1>
+    </div>
+    <div class="meta">
+      <div><div class="meta-label">Fecha</div><div class="meta-value">${fecha}</div></div>
+      <div><div class="meta-label">Cantidad</div><div class="meta-value">${listaMarcos.length} marco${listaMarcos.length !== 1 ? "s" : ""}</div></div>
+    </div>
+  </div>
+  ${marcosHtml}
+  <div class="grand-total">
+    <span>Total estimado</span>
+    <span>${formatCurrency(totalLista)}</span>
+  </div>
+</body>
+</html>`;
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 450);
   }
 
   function buildMarcoPayload() {
@@ -1337,8 +1432,22 @@ export default function CotizadorMarcos() {
     }
   }
 
+  function syncDisplayFromMm(anchoMm, altoMm, unidad) {
+    if (unidad === "cm") {
+      setAnchoDisplay(String(anchoMm / 10));
+      setAltoDisplay(String(altoMm / 10));
+    } else {
+      setAnchoDisplay(String(anchoMm));
+      setAltoDisplay(String(altoMm));
+    }
+  }
+
   function handleOrientationChange(nextOrientation) {
-    setForm((prev) => reorderFormDimensions(prev, nextOrientation));
+    setForm((prev) => {
+      const next = reorderFormDimensions(prev, nextOrientation);
+      syncDisplayFromMm(next.anchoMm, next.altoMm, unidadMedida);
+      return next;
+    });
   }
 
   function handlePresetSizeChange(nextPresetId) {
@@ -1355,6 +1464,7 @@ export default function CotizadorMarcos() {
       anchoMm: normalized.ancho,
       altoMm: normalized.alto,
     }));
+    syncDisplayFromMm(normalized.ancho, normalized.alto, unidadMedida);
   }
 
   const pageStyle = {
@@ -1472,7 +1582,10 @@ export default function CotizadorMarcos() {
                         <button
                           key={u}
                           type="button"
-                          onClick={() => setUnidadMedida(u)}
+                          onClick={() => {
+                            setUnidadMedida(u);
+                            syncDisplayFromMm(form.anchoMm, form.altoMm, u);
+                          }}
                           style={{
                             padding: "2px 10px",
                             fontSize: 11,
@@ -1506,10 +1619,14 @@ export default function CotizadorMarcos() {
                       type="number"
                       min={unidadMedida === "cm" ? "5" : "50"}
                       step={unidadMedida === "cm" ? "0.1" : "1"}
-                      value={unidadMedida === "cm" ? form.anchoMm / 10 : form.anchoMm}
+                      value={anchoDisplay}
                       onChange={(e) => {
                         setPresetSizeId("personalizada");
-                        setField("anchoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                        setAnchoDisplay(e.target.value);
+                        const parsed = parseFloat(e.target.value);
+                        if (Number.isFinite(parsed) && parsed > 0) {
+                          setField("anchoMm", unidadMedida === "cm" ? parsed * 10 : parsed);
+                        }
                       }}
                       placeholder="Medida 1"
                       style={rawMeasureInputStyle}
@@ -1518,10 +1635,14 @@ export default function CotizadorMarcos() {
                       type="number"
                       min={unidadMedida === "cm" ? "5" : "50"}
                       step={unidadMedida === "cm" ? "0.1" : "1"}
-                      value={unidadMedida === "cm" ? form.altoMm / 10 : form.altoMm}
+                      value={altoDisplay}
                       onChange={(e) => {
                         setPresetSizeId("personalizada");
-                        setField("altoMm", unidadMedida === "cm" ? parseFloat(e.target.value || 0) * 10 : e.target.value);
+                        setAltoDisplay(e.target.value);
+                        const parsed = parseFloat(e.target.value);
+                        if (Number.isFinite(parsed) && parsed > 0) {
+                          setField("altoMm", unidadMedida === "cm" ? parsed * 10 : parsed);
+                        }
                       }}
                       placeholder="Medida 2"
                       style={rawMeasureInputStyle}
@@ -1956,6 +2077,22 @@ export default function CotizadorMarcos() {
                   </button>
                 </div>
               ))}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 2 }}>
+                <button
+                  type="button"
+                  onClick={handlePrintLista}
+                  style={{ padding: "10px 0", borderRadius: 12, background: "#2d241c", color: "#fffaf3", border: "none", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
+                >
+                  Imprimir lista
+                </button>
+                <button
+                  type="button"
+                  onClick={handleWhatsAppLista}
+                  style={{ padding: "10px 0", borderRadius: 12, background: "#25d366", color: "#fff", border: "none", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
+                >
+                  Lista por WhatsApp
+                </button>
+              </div>
             </div>
           )}
 
