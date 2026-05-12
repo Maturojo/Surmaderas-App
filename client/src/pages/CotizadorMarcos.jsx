@@ -175,6 +175,7 @@ const INITIAL_PROFILES = [
 
 const FONDO_OPTIONS = [
   { id: "sin-fondo", nombre: "Sin fondo", precioM2: 0, color: "#000000" },
+  { id: "vidrio", nombre: "Vidrio", precioM2: GLASS_PRICE_M2, color: "#b8d4e8" },
   { id: "fibrofacil", nombre: "Fibro facil", precioM2: 9800, color: "#b69777" },
   { id: "fibroplus-blanco", nombre: "Fibro plus blanco", precioM2: 13200, color: "#e9e5dc" },
   { id: "fibroplus-negro", nombre: "Fibro plus negro", precioM2: 13800, color: "#2a2d33" },
