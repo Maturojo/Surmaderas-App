@@ -3,7 +3,7 @@ import { API_URL } from "../services/http";
 import { getEncuestas, lookupCoupon, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
-const PUBLIC_FORM_PATH = "/formulario-clientes";
+const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/";
 
 const LABELS = {
   consumidor_final: "Consumidor Final",
@@ -61,7 +61,7 @@ export default function EncuestasCupones() {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
 
-  const publicUrl = useMemo(() => `${window.location.origin}${PUBLIC_FORM_PATH}`, []);
+  const publicUrl = PUBLIC_FORM_URL;
 
   useEffect(() => {
     loadData();
@@ -277,7 +277,7 @@ export default function EncuestasCupones() {
             <button className="config-usersSecondaryButton" type="button" onClick={() => navigator.clipboard?.writeText(publicUrl)}>
               Copiar link
             </button>
-            <a className="config-usersSecondaryButton" href={PUBLIC_FORM_PATH} target="_blank" rel="noreferrer">
+            <a className="config-usersSecondaryButton" href={PUBLIC_FORM_URL} target="_blank" rel="noreferrer">
               Abrir formulario
             </a>
             <button className="config-usersSecondaryButton" type="button" onClick={downloadCsv}>
