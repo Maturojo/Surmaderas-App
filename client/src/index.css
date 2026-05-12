@@ -1098,45 +1098,94 @@ textarea {
 .config-usersModules {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: var(--sm-surface-alt, #f5f5f5);
-  border-radius: 8px;
-  border: 1px solid var(--sm-border, #e0e0e0);
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px;
+  background: #faf8f5;
+  border-radius: 16px;
+  border: 1px solid var(--sm-line);
 }
 
 .config-usersModulesTitle {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--sm-text);
+  font-weight: 700;
+  color: #584f46;
 }
 
 .config-usersModulesHint {
-  font-weight: 400;
+  font-weight: 500;
   color: var(--sm-muted);
 }
 
 .config-usersModulesList {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .config-usersModuleItem {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
+  position: relative;
   cursor: pointer;
-  color: var(--sm-text);
 }
 
 .config-usersModuleItem input[type="checkbox"] {
-  accent-color: var(--sm-accent, #2563eb);
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.config-usersModuleItem span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1.5px solid var(--sm-line-strong);
+  background: #fff;
+  color: #584f46;
+  transition: background 0.13s, border-color 0.13s, color 0.13s;
+  user-select: none;
+}
+
+.config-usersModuleItem span::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sm-line-strong);
+  transition: background 0.13s;
   flex-shrink: 0;
+}
+
+.config-usersModuleItem input[type="checkbox"]:checked + span {
+  background: var(--sm-accent-soft);
+  border-color: var(--sm-accent);
+  color: var(--sm-accent-dark);
+}
+
+.config-usersModuleItem input[type="checkbox"]:checked + span::before {
+  background: var(--sm-accent);
+}
+
+.config-usersModuleItem:hover span {
+  border-color: var(--sm-accent);
+  background: var(--sm-accent-soft);
+}
+
+.config-usersModules .config-usersSecondaryButton {
+  align-self: flex-start;
+  min-height: 30px;
+  font-size: 12px;
+  padding: 0 10px;
+  border-radius: 99px;
+  color: var(--sm-muted);
+  font-weight: 600;
+  border-color: var(--sm-line);
 }
 
 .config-turneroPreview {
