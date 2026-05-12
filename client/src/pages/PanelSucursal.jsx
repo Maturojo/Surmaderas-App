@@ -93,6 +93,33 @@ export default function PanelSucursal({ branch }) {
     }
   }
 
+  function exportToCSV() {
+    const headers = ["Cliente", "Código", "Estado", "Vence", "Fecha registro", "Canjeado en"];
+    const rows = items.map((item) => {
+      const estado = item.couponUsed ? "Usado" : item.expired ? "Vencido" : "Activo";
+      return [
+        item.fullName || "",
+        item.couponCode || "",
+        estado,
+        formatDate(item.couponExpiresAt),
+        formatDate(item.createdAt),
+        item.couponUsed ? formatDate(item.couponUsedAt) : "",
+      ];
+    });
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
+      .join("\n");
+
+    const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cupones-independencia-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   const filtered = items.filter((item) => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
@@ -195,6 +222,9 @@ export default function PanelSucursal({ branch }) {
         />
         <button className="panel-refresh" onClick={loadData} title="Actualizar">
           ↻ Actualizar
+        </button>
+        <button className="panel-export" onClick={exportToCSV} title="Exportar a Excel" disabled={items.length === 0}>
+          ↓ Exportar Excel
         </button>
       </div>
 
