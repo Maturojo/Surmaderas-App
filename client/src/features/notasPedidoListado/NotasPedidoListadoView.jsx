@@ -1,6 +1,7 @@
 ﻿import "../../css/NotasPedidoListado.css";
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { eliminarNotaPedido, guardarCajaNota } from "../../services/notasPedido";
 import {
@@ -43,6 +44,7 @@ import NotasTable from "./components/NotasTable";
 import NotaDetalleModal from "./components/NotaDetalleModal";
 
 export default function NotasPedidoListadoView() {
+  const navigate = useNavigate();
   const [flash, setFlash] = useState(null);
   const {
     q,
@@ -119,6 +121,11 @@ export default function NotasPedidoListadoView() {
     });
   }
 
+  function handleEditarNota(nota) {
+    if (!nota?._id) return;
+    navigate(`/notas-pedido/editar/${nota._id}`);
+  }
+
   return (
     <div className="npl-page">
       <div className="npl-head">
@@ -153,6 +160,7 @@ export default function NotasPedidoListadoView() {
         items={data.items}
         loading={loading}
         onVerDetalle={abrirDetalle}
+        onEditar={handleEditarNota}
         onEliminar={handleEliminarNota}
         onEnviarCliente={handleEnviarCliente}
       />

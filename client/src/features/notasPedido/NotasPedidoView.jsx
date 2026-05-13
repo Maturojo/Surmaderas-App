@@ -1,8 +1,8 @@
 ﻿import { useMemo, useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { crearNotaPedido, listarNotasPedido } from "../../services/notasPedido";
+import { actualizarNotaPedido, crearNotaPedido, listarNotasPedido, obtenerNotaPedido } from "../../services/notasPedido";
 import { useProductos } from "./hooks/useProductos";
 import { addBusinessDays, formatDateYYYYMMDD } from "./utils/dates";
 import { toARS } from "./utils/money";
@@ -96,9 +96,34 @@ function getEstadoComercial(nota) {
   return "Pendiente";
 }
 
+function mapNotaItemsToFormItems(notaItems = []) {
+  const mapped = Array.isArray(notaItems)
+    ? notaItems.map((item = {}) => {
+        const tipo = item.tipo || DEFAULT_TIPO;
+        const descripcion = item.descripcion || item.detalle || item.nombre || item.producto || "";
+
+        return {
+          ...emptyItem,
+          tipo,
+          data: item.data && typeof item.data === "object" ? item.data : {},
+          busqueda: tipo === "producto" ? descripcion : "",
+          productoId: tipo === "producto" ? item.productoId || "" : "",
+          descripcion,
+          cantidad: Number(item.cantidad || 1),
+          precio: String(item.precioUnit ?? item.precio ?? ""),
+          especial: Boolean(item.especial),
+          imagen: item.imagen || item?.data?.imagen || null,
+        };
+      })
+    : [];
+
+  return mapped.length ? mapped : [{ ...emptyItem }];
+}
+
 export default function NotasPedidoView() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { id: editId } = useParams();
   const { productos } = useProductos();
   const acItemsRef = useRef({});
   const rootRef = useRef(null);
@@ -107,6 +132,8 @@ export default function NotasPedidoView() {
   const [fecha, setFecha] = useState(() => formatDateYYYYMMDD(new Date()));
   const [diasHabiles, setDiasHabiles] = useState(15);
   const [guardando, setGuardando] = useState(false);
+  const [editNumero, setEditNumero] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
 
   const entregaDate = useMemo(() => {
     const d = addBusinessDays(fecha, Number(diasHabiles || 0));
@@ -122,6 +149,7 @@ export default function NotasPedidoView() {
 
   const [items, setItems] = useState([{ ...emptyItem }]);
   const telefonoValido = isTelefonoValido(telefono);
+  const isEditing = Boolean(editId);
 
   async function loadSeguimiento() {
     setSeguimientoLoading(true);
@@ -177,6 +205,47 @@ export default function NotasPedidoView() {
   useEffect(() => {
     loadSeguimiento();
   }, []);
+
+  useEffect(() => {
+    if (!editId) {
+      setEditNumero("");
+      return;
+    }
+
+    let active = true;
+
+    async function loadEditNota() {
+      try {
+        setEditLoading(true);
+        const nota = await obtenerNotaPedido(editId);
+        if (!active) return;
+
+        setEditNumero(nota?.numero || "");
+        setFecha(nota?.fecha || formatDateYYYYMMDD(new Date()));
+        setDiasHabiles(Number(nota?.diasHabiles ?? 15));
+        setCliente(nota?.cliente?.nombre || nota?.cliente || "");
+        setTelefono(formatTelefono(nota?.cliente?.telefono || ""));
+        setVendedor(nota?.vendedor || "");
+        setItems(mapNotaItemsToFormItems(nota?.items));
+      } catch (e) {
+        if (!active) return;
+        await Swal.fire({
+          icon: "error",
+          title: "No se pudo cargar la nota",
+          text: e?.message || "Volvé a intentar desde el listado.",
+        });
+        navigate("/notas-pedido/listado", { replace: true });
+      } finally {
+        if (active) setEditLoading(false);
+      }
+    }
+
+    loadEditNota();
+
+    return () => {
+      active = false;
+    };
+  }, [editId, navigate]);
 
   useEffect(() => {
     const prefillMarcos = location.state?.prefillMarcos;
@@ -329,6 +398,7 @@ export default function NotasPedidoView() {
       if (!String(vendedor || "").trim()) throw new Error("Tenes que seleccionar un vendedor");
 
       const numero = `NP-${Date.now()}`;
+      const notaNumero = isEditing ? editNumero || numero : numero;
 
       const itemsMapped = items
         .map((it) => {
@@ -357,7 +427,7 @@ export default function NotasPedidoView() {
       if (itemsMapped.length === 0) throw new Error("Tenes que cargar al menos un item valido");
 
       const payload = {
-        numero,
+        numero: notaNumero,
         fecha,
         entrega: entregaDate,
         diasHabiles: Number(diasHabiles || 0),
@@ -375,18 +445,26 @@ export default function NotasPedidoView() {
         pdfBase64: "",
       };
 
-      await crearNotaPedido(payload);
+      if (isEditing) {
+        await actualizarNotaPedido(editId, payload);
+      } else {
+        await crearNotaPedido(payload);
+      }
 
-      resetGenerador();
+      if (!isEditing) resetGenerador();
       await loadSeguimiento();
 
       await Swal.fire({
         icon: "success",
-        title: "Nota guardada",
-        text: `La nota ${numero} ya puede ir a abonar su nota por caja`,
+        title: isEditing ? "Nota actualizada" : "Nota guardada",
+        text: isEditing
+          ? `La nota ${notaNumero} se actualizo correctamente.`
+          : `La nota ${notaNumero} ya puede ir a abonar su nota por caja`,
         timer: 2600,
         showConfirmButton: false,
       });
+
+      if (isEditing) navigate("/notas-pedido/listado");
     } catch (e) {
       await Swal.fire({
         icon: "error",
@@ -419,12 +497,15 @@ export default function NotasPedidoView() {
   return (
     <div className="np-page" ref={rootRef}>
       <div className="np-card">
+        {editLoading ? <div className="np-loadingBanner">Cargando nota para editar...</div> : null}
         <div className="np-hero">
           <div>
             <div className="np-kicker">Sur Maderas</div>
-            <h1 className="np-title">Generador de pedidos</h1>
+            <h1 className="np-title">{isEditing ? `Editar pedido ${editNumero || ""}` : "Generador de pedidos"}</h1>
             <p className="np-copy">
-              Armá la nota en el momento, con cliente, entrega y detalle del trabajo listos para pasar a caja.
+              {isEditing
+                ? "Modifica cliente, entrega y detalle del trabajo sin duplicar la nota."
+                : "Armá la nota en el momento, con cliente, entrega y detalle del trabajo listos para pasar a caja."}
             </p>
           </div>
 
@@ -660,8 +741,13 @@ export default function NotasPedidoView() {
         </div>
 
         <div className="np-actions">
-          <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando}>
-            {guardando ? "Guardando..." : "Guardar Nota"}
+          {isEditing ? (
+            <button className="np-btn np-btn-secondary" type="button" onClick={() => navigate(-1)} disabled={guardando}>
+              Cancelar
+            </button>
+          ) : null}
+          <button className="np-btn np-btn-green" type="button" onClick={onGuardarNota} disabled={guardando || editLoading}>
+            {guardando ? "Guardando..." : isEditing ? "Guardar cambios" : "Guardar Nota"}
           </button>
         </div>
 

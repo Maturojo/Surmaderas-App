@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import {
   actualizarOperacionNota,
   eliminarNotaPedido,
@@ -210,6 +211,7 @@ const VIEW_CONFIG = {
 };
 
 export default function NotasPedidoGuardadas({ view = "all" }) {
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -692,6 +694,13 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     setPreviewLightbox(null);
   }
 
+  function editarNota(nota) {
+    const id = nota?._id || nota?.id;
+    if (!id) return;
+    cerrarAccionesNota();
+    navigate(`/notas-pedido/editar/${id}`);
+  }
+
   function cerrarPromptProveedor() {
     setProveedorPromptOpen(false);
   }
@@ -972,6 +981,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                       Ver
                       </button>
+                      <button className="ng-tableBtn" onClick={() => editarNota(n)}>
+                      Editar
+                      </button>
                       <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                       Gestionar
                       </button>
@@ -1072,6 +1084,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       <div className="ng-actions">
                         <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                           Ver
+                        </button>
+                        <button className="ng-tableBtn" onClick={() => editarNota(n)}>
+                          Editar
                         </button>
                         <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                           Gestionar
@@ -1603,6 +1618,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
             </div>
 
             <div className="ng-actionsModalList">
+              <button type="button" onClick={() => editarNota(actionsNota)}>
+                <span>Editar pedido</span>
+                <small>Modificar cliente, entrega, vendedor e items.</small>
+              </button>
               <button type="button" onClick={() => abrirEditarPago(actionsNota)}>
                 <span>Modificar estado de pago</span>
                 <small>Editar seña, pago o comprobante de caja.</small>

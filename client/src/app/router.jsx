@@ -65,6 +65,7 @@ export const router = createBrowserRouter([
       { path: "calendario", element: <CalendarOperativo /> },
 
       { path: "notas-pedido", element: <NotasPedido /> },
+      { path: "notas-pedido/editar/:id", element: <NotasPedido /> },
       {
         path: "notas-pedido/listado",
         element: (

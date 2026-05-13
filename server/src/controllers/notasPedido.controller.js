@@ -213,6 +213,49 @@ export async function crearNotaPedido(req, res) {
   }
 }
 
+export async function actualizarNotaPedido(req, res) {
+  try {
+    const { id } = req.params;
+    const payload = normalizeNotaPayload(req.body);
+
+    if (!String(payload?.cliente?.nombre || "").trim()) {
+      return res.status(400).json({ message: "Falta el nombre del cliente" });
+    }
+    if (!String(payload?.cliente?.telefono || "").trim()) {
+      return res.status(400).json({ message: "Falta el telefono del cliente" });
+    }
+    if (!telefonoValido(payload?.cliente?.telefono)) {
+      return res.status(400).json({ message: "El telefono debe tener formato valido, por ejemplo 223-595-4165" });
+    }
+    if (!String(payload?.vendedor || "").trim()) {
+      return res.status(400).json({ message: "Falta el vendedor de la nota" });
+    }
+
+    payload.cliente.telefono = formatearTelefono(payload.cliente.telefono);
+
+    const update = {
+      numero: payload.numero,
+      fecha: payload.fecha,
+      entrega: payload.entrega,
+      diasHabiles: payload.diasHabiles,
+      cliente: payload.cliente,
+      vendedor: payload.vendedor,
+      medioPago: payload.medioPago,
+      items: payload.items,
+      total: payload.total,
+      totales: payload.totales,
+      pdfBase64: payload.pdfBase64,
+    };
+
+    const updated = await NotaPedido.findByIdAndUpdate(id, { $set: update }, { new: true, runValidators: true });
+    if (!updated) return res.status(404).json({ message: "Nota no encontrada" });
+
+    res.json(enrichNota(updated));
+  } catch (e) {
+    res.status(400).json({ message: e?.message || "Error actualizando nota" });
+  }
+}
+
 export async function obtenerNotaPedido(req, res) {
   try {
     const { id } = req.params;

@@ -35,6 +35,22 @@ export async function crearNotaPedido(payload) {
   return data;
 }
 
+export async function actualizarNotaPedido(id, payload) {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error actualizando nota");
+  return data;
+}
+
 export async function obtenerNotaPedido(id) {
   const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}`, {
     headers: { ...authHeaders() },

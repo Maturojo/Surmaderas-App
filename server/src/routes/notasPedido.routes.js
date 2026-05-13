@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   listarNotasPedido,
   crearNotaPedido,
+  actualizarNotaPedido,
   obtenerNotaPedido,
   eliminarNotaPedido,
   guardarCajaNota,
@@ -15,6 +16,7 @@ router.get("/", requireAuth, listarNotasPedido);
 router.post("/", requireAuth, crearNotaPedido);
 
 router.get("/:id", requireAuth, obtenerNotaPedido);
+router.patch("/:id", requireAuth, actualizarNotaPedido);
 router.delete("/:id", requireAuth, eliminarNotaPedido);
 
 router.patch("/:id/guardar-caja", requireAuth, guardarCajaNota);
