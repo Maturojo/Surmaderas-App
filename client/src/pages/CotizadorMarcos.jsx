@@ -1230,8 +1230,8 @@ export default function CotizadorMarcos() {
       `Marco ${effectiveProfile.codigo} - ${effectiveProfile.nombre}`,
       medidasCompactas,
       tipoMedidaCompacto,
-      `fondo: ${fondoLabel}`,
-      `frente: ${frenteLabel}`,
+      `Fondo: ${fondoLabel}`,
+      `Frente: ${frenteLabel}`,
       ...(paspartuVal > 0 ? [`paspartu: ${paspartuLabel}`] : []),
     ].join(" - ");
     const resumenLineas = [
