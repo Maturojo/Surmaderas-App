@@ -70,14 +70,19 @@ const NAV_ITEMS = [
     label: "Negocio Online",
     icon: "online",
     children: [
-      { label: "Control manual", to: "/whatsapp/control" },
-      { label: "Conversaciones", to: "/whatsapp" },
-      { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
-      { label: "Broadcast", to: "/whatsapp/broadcast" },
-      { label: "FAQs del bot", to: "/whatsapp/faqs" },
-      { label: "Respuestas rápidas", to: "/whatsapp/quick-replies" },
-      { label: "Estadísticas", to: "/whatsapp/stats" },
-      { label: "Configuración", to: "/whatsapp/settings" },
+      {
+        label: "WhatsApp",
+        children: [
+          { label: "Control manual", to: "/whatsapp/control" },
+          { label: "Conversaciones", to: "/whatsapp" },
+          { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
+          { label: "Broadcast", to: "/whatsapp/broadcast" },
+          { label: "FAQs del bot", to: "/whatsapp/faqs" },
+          { label: "Respuestas rápidas", to: "/whatsapp/quick-replies" },
+          { label: "Estadísticas", to: "/whatsapp/stats" },
+          { label: "Configuración", to: "/whatsapp/settings" },
+        ],
+      },
       { label: "Mercado Libre", to: "/mercado-libre" },
     ],
   },
@@ -277,7 +282,15 @@ export default function AppLayout() {
       if (userRole !== "ventas") return item;
 
       if (item.children) {
-        const children = item.children.filter((child) => VENTAS_ALLOWED_PATHS.has(child.to));
+        const children = item.children
+          .map((child) => {
+            if (child.children) {
+              const nestedChildren = child.children.filter((nested) => VENTAS_ALLOWED_PATHS.has(nested.to));
+              return nestedChildren.length > 0 ? { ...child, children: nestedChildren } : null;
+            }
+            return VENTAS_ALLOWED_PATHS.has(child.to) ? child : null;
+          })
+          .filter(Boolean);
         return children.length > 0 ? { ...item, children } : null;
       }
 
@@ -318,6 +331,7 @@ export default function AppLayout() {
   }, [moduleOrder, unorderedNavItems]);
 
   function isChildActive(child) {
+    if (child.children) return child.children.some(isChildActive);
     return location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
   }
 
@@ -571,17 +585,45 @@ export default function AppLayout() {
                   </div>
 
                   <div className="app-subnav" hidden={!isOpen}>
-                    {item.children.map((child) => (
-                      <NavLink
-                        key={child.to}
-                        to={child.to}
-                        end={child.to === "/notas-pedido"}
-                        className={({ isActive }) => `app-sublink${isActive ? " active" : ""}`}
-                      >
-                        <span className="app-sublinkDot" />
-                        <span>{child.label}</span>
-                      </NavLink>
-                    ))}
+                    {item.children.map((child) => {
+                      if (child.children) {
+                        const nestedActive = isChildActive(child);
+
+                        return (
+                          <div key={child.label} className={`app-subgroup${nestedActive ? " active" : ""}`}>
+                            <div className="app-subgroupLabel">
+                              <span className="app-sublinkDot" />
+                              <span>{child.label}</span>
+                            </div>
+                            <div className="app-subnav app-subnav--nested">
+                              {child.children.map((nested) => (
+                                <NavLink
+                                  key={nested.to}
+                                  to={nested.to}
+                                  end={nested.to === "/notas-pedido" || nested.to === "/whatsapp"}
+                                  className={({ isActive }) => `app-sublink${isActive ? " active" : ""}`}
+                                >
+                                  <span className="app-sublinkDot" />
+                                  <span>{nested.label}</span>
+                                </NavLink>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <NavLink
+                          key={child.to}
+                          to={child.to}
+                          end={child.to === "/notas-pedido"}
+                          className={({ isActive }) => `app-sublink${isActive ? " active" : ""}`}
+                        >
+                          <span className="app-sublinkDot" />
+                          <span>{child.label}</span>
+                        </NavLink>
+                      );
+                    })}
                   </div>
                 </div>
               );
