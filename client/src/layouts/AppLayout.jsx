@@ -242,6 +242,7 @@ export default function AppLayout() {
   const userRole = auth?.user?.role;
   const [openGroups, setOpenGroups] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [modulesHidden, setModulesHidden] = useState(() => localStorage.getItem("surmaderas-modules-hidden") === "true");
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
@@ -290,6 +291,14 @@ export default function AppLayout() {
 
   function toggleGroup(label) {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  }
+
+  function toggleModulesHidden() {
+    setModulesHidden((current) => {
+      const next = !current;
+      localStorage.setItem("surmaderas-modules-hidden", String(next));
+      return next;
+    });
   }
 
   useEffect(() => {
@@ -421,9 +430,24 @@ export default function AppLayout() {
           </div>
         </div>
 
-        <nav className="app-nav">
-          <div className="app-navLabel">Modulos</div>
-          {navItems.map((item) => {
+        <nav className={`app-nav${modulesHidden ? " is-hidden" : ""}`}>
+          <div className="app-navHead">
+            <div className="app-navLabel">Modulos</div>
+            <button
+              type="button"
+              className="app-navToggle"
+              onClick={toggleModulesHidden}
+              aria-expanded={!modulesHidden}
+            >
+              {modulesHidden ? "Mostrar" : "Ocultar"}
+            </button>
+          </div>
+
+          {modulesHidden ? (
+            <button type="button" className="app-navHiddenBox" onClick={toggleModulesHidden}>
+              Mostrar modulos
+            </button>
+          ) : navItems.map((item) => {
             if (item.children) {
               const isActive = isGroupActive(item);
               const isOpen = isActive || Boolean(openGroups[item.label]);
