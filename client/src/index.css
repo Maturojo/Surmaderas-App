@@ -254,6 +254,61 @@ textarea {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
+.app-linkRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.app-orderHelp {
+  display: grid;
+  gap: 8px;
+  margin: 4px 10px 8px;
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-orderHelp span {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.app-orderHelp button,
+.app-orderControls button {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.app-orderHelp button {
+  min-height: 28px;
+  border-radius: 999px;
+}
+
+.app-orderControls {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.app-orderControls button {
+  width: 28px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.app-orderHelp button:hover,
+.app-orderControls button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
 .app-link:hover {
   background: rgba(255, 255, 255, 0.07);
   color: #ffffff;
@@ -2700,6 +2755,19 @@ textarea {
 .calendar-shell {
   display: grid;
   gap: 18px;
+}
+
+.ml-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.ml-hero {
+  padding: 26px 28px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fff8ee 0%, #f4efe7 100%);
+  border: 1px solid var(--sm-line);
+  box-shadow: var(--sm-shadow);
 }
 
 .calendar-hero {

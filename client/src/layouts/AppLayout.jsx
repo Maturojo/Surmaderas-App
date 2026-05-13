@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
 import ChatInternoWidget from "../features/chat/components/ChatInternoWidget";
@@ -66,9 +66,9 @@ const NAV_ITEMS = [
   },
   { key: "generador-3d", label: "Generador 3D", to: "/generador-3d", icon: "cube" },
   {
-    key: "whatsapp",
-    label: "WhatsApp",
-    icon: "whatsapp",
+    key: "negocio-online",
+    label: "Negocio Online",
+    icon: "online",
     children: [
       { label: "Control manual", to: "/whatsapp/control" },
       { label: "Conversaciones", to: "/whatsapp" },
@@ -78,6 +78,7 @@ const NAV_ITEMS = [
       { label: "Respuestas rápidas", to: "/whatsapp/quick-replies" },
       { label: "Estadísticas", to: "/whatsapp/stats" },
       { label: "Configuración", to: "/whatsapp/settings" },
+      { label: "Mercado Libre", to: "/mercado-libre" },
     ],
   },
 ];
@@ -100,7 +101,10 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/cotizador-cortes",
   "/whatsapp",
   "/whatsapp/control",
+  "/mercado-libre",
 ]);
+
+const MODULE_ORDER_STORAGE_KEY = "surmaderas-module-order";
 
 function SidebarIcon({ name }) {
   const common = {
@@ -217,6 +221,7 @@ function SidebarIcon({ name }) {
         </svg>
       );
     case "whatsapp":
+    case "online":
       return (
         <svg {...common}>
           <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.07-1.35A9.93 9.93 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" />
@@ -244,6 +249,15 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modulesHidden, setModulesHidden] = useState(() => localStorage.getItem("surmaderas-modules-hidden") === "true");
   const [sidebarHidden, setSidebarHidden] = useState(() => localStorage.getItem("surmaderas-sidebar-hidden") === "true");
+  const [editingModuleOrder, setEditingModuleOrder] = useState(false);
+  const [moduleOrder, setModuleOrder] = useState(() => {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(MODULE_ORDER_STORAGE_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
@@ -251,26 +265,37 @@ export default function AppLayout() {
   const customModules = auth?.user?.allowedModules;
   const hasCustomModules = Array.isArray(customModules) && customModules.length > 0;
 
-  const baseNavItems = hasCustomModules
-    ? NAV_ITEMS.filter((item) => customModules.includes(item.key))
-    : userRole === "ventas"
-      ? NAV_ITEMS
-          .map((item) => {
-            if (item.children) {
-              const children = item.children.filter((child) => VENTAS_ALLOWED_PATHS.has(child.to));
-              return children.length > 0 ? { ...item, children } : null;
-            }
+  const baseNavItems = useMemo(() => {
+    const visibleByCustomModules = (item) => {
+      if (!hasCustomModules) return true;
+      if (customModules.includes(item.key)) return true;
+      if (item.key === "negocio-online" && customModules.includes("whatsapp")) return true;
+      return false;
+    };
 
-            return VENTAS_ALLOWED_PATHS.has(item.to) ? item : null;
-          })
-          .filter(Boolean)
-      : NAV_ITEMS;
+    const visibleByRole = (item) => {
+      if (userRole !== "ventas") return item;
 
-  const navItems = [
+      if (item.children) {
+        const children = item.children.filter((child) => VENTAS_ALLOWED_PATHS.has(child.to));
+        return children.length > 0 ? { ...item, children } : null;
+      }
+
+      return VENTAS_ALLOWED_PATHS.has(item.to) ? item : null;
+    };
+
+    return NAV_ITEMS
+      .filter(visibleByCustomModules)
+      .map(visibleByRole)
+      .filter(Boolean);
+  }, [customModules, hasCustomModules, userRole]);
+
+  const unorderedNavItems = [
     ...baseNavItems,
     ...(userRole === "admin"
       ? [
           {
+            key: "configuracion",
             label: "Configuracion",
             icon: "settings",
             children: [
@@ -281,6 +306,16 @@ export default function AppLayout() {
         ]
       : []),
   ];
+
+  const navItems = useMemo(() => {
+    const orderIndex = new Map(moduleOrder.map((key, index) => [key, index]));
+    return [...unorderedNavItems].sort((a, b) => {
+      const aIndex = orderIndex.has(a.key) ? orderIndex.get(a.key) : Number.MAX_SAFE_INTEGER;
+      const bIndex = orderIndex.has(b.key) ? orderIndex.get(b.key) : Number.MAX_SAFE_INTEGER;
+      if (aIndex !== bIndex) return aIndex - bIndex;
+      return unorderedNavItems.indexOf(a) - unorderedNavItems.indexOf(b);
+    });
+  }, [moduleOrder, unorderedNavItems]);
 
   function isChildActive(child) {
     return location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
@@ -309,6 +344,24 @@ export default function AppLayout() {
       if (next) setSidebarOpen(false);
       return next;
     });
+  }
+
+  function moveModule(key, direction) {
+    const currentKeys = navItems.map((item) => item.key);
+    const index = currentKeys.indexOf(key);
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= currentKeys.length) return;
+
+    const nextOrder = [...currentKeys];
+    const [moved] = nextOrder.splice(index, 1);
+    nextOrder.splice(nextIndex, 0, moved);
+    setModuleOrder(nextOrder);
+    localStorage.setItem(MODULE_ORDER_STORAGE_KEY, JSON.stringify(nextOrder));
+  }
+
+  function resetModuleOrder() {
+    setModuleOrder([]);
+    localStorage.removeItem(MODULE_ORDER_STORAGE_KEY);
   }
 
   useEffect(() => {
@@ -468,7 +521,23 @@ export default function AppLayout() {
             >
               {modulesHidden ? "Mostrar" : "Ocultar"}
             </button>
+            {!modulesHidden ? (
+              <button
+                type="button"
+                className="app-navToggle"
+                onClick={() => setEditingModuleOrder((current) => !current)}
+              >
+                {editingModuleOrder ? "Listo" : "Orden"}
+              </button>
+            ) : null}
           </div>
+
+          {editingModuleOrder && !modulesHidden ? (
+            <div className="app-orderHelp">
+              <span>Ordena los modulos con las flechas.</span>
+              <button type="button" onClick={resetModuleOrder}>Resetear</button>
+            </div>
+          ) : null}
 
           {modulesHidden ? (
             <button type="button" className="app-navHiddenBox" onClick={toggleModulesHidden}>
@@ -481,17 +550,25 @@ export default function AppLayout() {
 
               return (
                 <div key={item.label} className={`app-group${isOpen ? " open" : ""}`}>
-                  <button
-                    type="button"
-                    className={`app-link app-link--group${isActive ? " active" : ""}`}
-                    onClick={() => toggleGroup(item.label)}
-                  >
-                    <span className="app-linkIcon">
-                      <SidebarIcon name={item.icon} />
-                    </span>
-                    <span className="app-linkText">{item.label}</span>
-                    <span className="app-linkCaret" aria-hidden="true" />
-                  </button>
+                  <div className="app-linkRow">
+                    <button
+                      type="button"
+                      className={`app-link app-link--group${isActive ? " active" : ""}`}
+                      onClick={() => toggleGroup(item.label)}
+                    >
+                      <span className="app-linkIcon">
+                        <SidebarIcon name={item.icon} />
+                      </span>
+                      <span className="app-linkText">{item.label}</span>
+                      <span className="app-linkCaret" aria-hidden="true" />
+                    </button>
+                    {editingModuleOrder ? (
+                      <div className="app-orderControls">
+                        <button type="button" onClick={() => moveModule(item.key, -1)} aria-label={`Subir ${item.label}`}>↑</button>
+                        <button type="button" onClick={() => moveModule(item.key, 1)} aria-label={`Bajar ${item.label}`}>↓</button>
+                      </div>
+                    ) : null}
+                  </div>
 
                   <div className="app-subnav" hidden={!isOpen}>
                     {item.children.map((child) => (
@@ -511,19 +588,26 @@ export default function AppLayout() {
             }
 
             return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/dashboard"}
-                className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
-              >
-                <span className="app-linkIcon">
-                  <SidebarIcon name={item.icon} />
-                </span>
-                <span className="app-linkText">
-                  {item.label}
-                </span>
-              </NavLink>
+              <div key={item.key} className="app-linkRow">
+                <NavLink
+                  to={item.to}
+                  end={item.to === "/dashboard"}
+                  className={({ isActive }) => `app-link${isActive ? " active" : ""}`}
+                >
+                  <span className="app-linkIcon">
+                    <SidebarIcon name={item.icon} />
+                  </span>
+                  <span className="app-linkText">
+                    {item.label}
+                  </span>
+                </NavLink>
+                {editingModuleOrder ? (
+                  <div className="app-orderControls">
+                    <button type="button" onClick={() => moveModule(item.key, -1)} aria-label={`Subir ${item.label}`}>↑</button>
+                    <button type="button" onClick={() => moveModule(item.key, 1)} aria-label={`Bajar ${item.label}`}>↓</button>
+                  </div>
+                ) : null}
+              </div>
             );
           })}
         </nav>

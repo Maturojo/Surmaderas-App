@@ -15,7 +15,7 @@ const ALL_MODULES = [
   { key: "ventas", label: "Ventas" },
   { key: "proveedores", label: "Proveedores" },
   { key: "generador-3d", label: "Generador 3D" },
-  { key: "whatsapp", label: "WhatsApp" },
+  { key: "negocio-online", label: "Negocio Online" },
 ];
 
 const INITIAL_CREATE_FORM = {

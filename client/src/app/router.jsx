@@ -29,6 +29,7 @@ import ChatInterno from "../pages/ChatInterno.jsx";
 import FormularioClientes from "../pages/FormularioClientes.jsx";
 import EncuestasCupones from "../pages/EncuestasCupones.jsx";
 import VentasMensuales from "../pages/VentasMensuales.jsx";
+import MercadoLibre from "../pages/MercadoLibre.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
@@ -277,6 +278,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "ventas"]}>
             <WaBudgetRequests />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre />
           </ProtectedRoute>
         ),
       },
