@@ -1,5 +1,7 @@
 ﻿import { getNotaClienteNombre, getNotaTotal } from "../../../utils/notaPedido";
 
+import { useState } from "react";
+
 function toARS(n) {
   const x = Number(n || 0);
   return x.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -17,6 +19,12 @@ function getEntregaLabel(value) {
 }
 
 export default function NotasTable({ items, loading, onVerDetalle, onEditar, onEliminar, onEnviarCliente }) {
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  function toggleMenu(id) {
+    setOpenMenuId((current) => (current === id ? null : id));
+  }
+
   return (
     <div className="npl-tableWrap">
       <table className="npl-table">
@@ -77,12 +85,27 @@ export default function NotasTable({ items, loading, onVerDetalle, onEditar, onE
                   <button className="npl-btnGhost" onClick={() => onVerDetalle?.(n._id)}>
                     Ver
                   </button>
-                  <button className="npl-btnGhost" onClick={() => onEditar?.(n)}>
-                    Editar
-                  </button>
                   <button className="npl-btnGhost npl-btnGhost--whatsapp" onClick={() => onEnviarCliente?.(n)}>
                     Enviar al cliente
                   </button>
+                  <div className="npl-actionsMenu">
+                    <button className="npl-btnGhost npl-btnGhost--icon" type="button" onClick={() => toggleMenu(n._id)}>
+                      ...
+                    </button>
+                    {openMenuId === n._id ? (
+                      <div className="npl-actionsDropdown">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOpenMenuId(null);
+                            onEditar?.(n);
+                          }}
+                        >
+                          Editar pedido
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
                   <button className="npl-btnGhost" onClick={() => onEliminar?.(n)}>
                     Borrar
                   </button>

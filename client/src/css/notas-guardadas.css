@@ -2238,3 +2238,182 @@
 .ng-tableBtn {
   width: auto !important;
 }
+
+/* Alinear los listados operativos con la tabla de Pedidos en caja. */
+.ng-tableCard {
+  padding: 0;
+}
+
+.ng-tableHead {
+  padding: 18px 20px 10px;
+  margin-bottom: 0;
+}
+
+.ng-tableWrap {
+  border-radius: 4px;
+  border-color: var(--sm-line);
+  background: #fff;
+}
+
+.ng-table {
+  min-width: 1180px;
+  table-layout: auto;
+  background: transparent;
+}
+
+.ng-table--deposito {
+  min-width: 1260px;
+}
+
+.ng-table th,
+.ng-table td {
+  padding: 14px 12px !important;
+  vertical-align: middle;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-size: 13px;
+  color: #1f1c19;
+}
+
+.ng-table th {
+  background: rgba(244, 239, 232, 0.85) !important;
+  color: #6c6155;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.ng-table th:last-child,
+.ng-table td:last-child {
+  position: static;
+  right: auto;
+  z-index: auto;
+  box-shadow: none;
+}
+
+.ng-table tbody tr:hover td {
+  background: #fbf8f2;
+}
+
+.ng-table th:nth-child(1),
+.ng-table td:nth-child(1) {
+  width: 170px !important;
+}
+
+.ng-table th:nth-child(2),
+.ng-table td:nth-child(2) {
+  width: 126px !important;
+}
+
+.ng-table th:nth-child(3),
+.ng-table td:nth-child(3) {
+  width: 130px !important;
+}
+
+.ng-table th:nth-child(4),
+.ng-table td:nth-child(4) {
+  width: 180px !important;
+}
+
+.ng-table th:nth-child(5),
+.ng-table td:nth-child(5) {
+  width: 126px !important;
+}
+
+.ng-table th:nth-child(6),
+.ng-table td:nth-child(6),
+.ng-table th:nth-child(7),
+.ng-table td:nth-child(7) {
+  width: 130px !important;
+}
+
+.ng-table th:nth-child(8),
+.ng-table td:nth-child(8) {
+  width: 120px !important;
+}
+
+.ng-table th:nth-child(9),
+.ng-table td:nth-child(9),
+.ng-table--deposito th:nth-child(10),
+.ng-table--deposito td:nth-child(10) {
+  width: 140px !important;
+}
+
+.ng-table th:last-child,
+.ng-table td:last-child {
+  width: 230px !important;
+}
+
+.ng-cellTitle {
+  color: #201c19;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ng-cellSub {
+  margin-top: 3px;
+  color: #7b7167;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ng-cellMoney {
+  color: #2d241c;
+  font-size: 15px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ng-deliveryChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #efe6d9;
+  color: #5f4d3a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ng-clientCell strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.ng-clientCell span {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.ng-statusPill,
+.ng-destinoTag,
+.ng-inlineBadge,
+.ng-avisoBtn {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.ng-actions {
+  min-width: 0;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.ng-tableBtn {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.ng-tableBtn--icon {
+  width: 38px !important;
+  min-width: 38px;
+  padding: 0;
+}

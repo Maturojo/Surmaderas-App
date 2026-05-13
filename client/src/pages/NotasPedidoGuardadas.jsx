@@ -920,16 +920,27 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 const notaId = n?._id || n?.id || n?.numero;
                 return (
                 <tr key={notaId} className={mostrarAvisoCliente ? "ng-rowDeposito" : getEntregaUrgencyClass(n?.entrega)}>
-                  <td className="ng-cellStrong" data-label="Numero">{n?.numero ?? "-"}</td>
-                  <td data-label="Fecha">{fmtDate(n?.fecha)}</td>
-                  <td data-label="Entrega">{n?.entrega ?? "-"}</td>
+                  <td data-label="Numero">
+                    <div className="ng-cellTitle">#{n?.numero ?? "-"}</div>
+                    <div className="ng-cellSub">Nota activa</div>
+                  </td>
+                  <td data-label="Fecha">
+                    <div className="ng-cellTitle">{fmtDate(n?.fecha)}</div>
+                    <div className="ng-cellSub">Fecha de carga</div>
+                  </td>
+                  <td data-label="Entrega">
+                    <span className="ng-deliveryChip">{n?.entrega ?? "-"}</span>
+                  </td>
                   <td data-label="Cliente">
                     <div className="ng-clientCell">
                       <strong>{getNotaClienteNombre(n)}</strong>
                       <span>{n?.cliente?.telefono || "Sin telefono"}</span>
                     </div>
                   </td>
-                  <td data-label="Vendedor">{n?.vendedor ?? "-"}</td>
+                  <td data-label="Vendedor">
+                    <div className="ng-cellTitle">{n?.vendedor ?? "-"}</div>
+                    <div className="ng-cellSub">Responsable</div>
+                  </td>
                   <td data-label="Estado">
                     <EstadoComercialCell nota={n} />
                   </td>
@@ -975,14 +986,13 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       </button>
                     </td>
                   ) : null}
-                  <td className="ng-cellStrong" data-label="Total">${toARS(getNotaTotal(n))}</td>
+                  <td data-label="Total">
+                    <div className="ng-cellMoney">${toARS(getNotaTotal(n))}</div>
+                  </td>
                   <td data-label="Acciones">
                     <div className="ng-actions">
                       <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                       Ver
-                      </button>
-                      <button className="ng-tableBtn" onClick={() => editarNota(n)}>
-                      Editar
                       </button>
                       <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                       Gestionar
@@ -1046,7 +1056,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                   const notaId = n?._id || n?.id || n?.numero;
                   return (
                   <tr key={`prov-${notaId}`} className={getEntregaUrgencyClass(n?.entrega)}>
-                    <td className="ng-cellStrong">{n?.numero ?? "-"}</td>
+                    <td>
+                      <div className="ng-cellTitle">#{n?.numero ?? "-"}</div>
+                      <div className="ng-cellSub">Nota activa</div>
+                    </td>
                     <td>
                       <div className="ng-clientCell">
                         <strong>{getNotaClienteNombre(n)}</strong>
@@ -1079,14 +1092,13 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                         {getEstadoOperativoLabel(n?.estadoOperativo || "Enviado a proveedor")}
                       </span>
                     </td>
-                    <td className="ng-cellStrong">${toARS(getNotaTotal(n))}</td>
+                    <td>
+                      <div className="ng-cellMoney">${toARS(getNotaTotal(n))}</div>
+                    </td>
                     <td>
                       <div className="ng-actions">
                         <button className="ng-tableBtn" onClick={() => abrirDetalle(n._id)}>
                           Ver
-                        </button>
-                        <button className="ng-tableBtn" onClick={() => editarNota(n)}>
-                          Editar
                         </button>
                         <button className="ng-tableBtn ng-tableBtn--dark" onClick={() => abrirGestion(n)}>
                           Gestionar

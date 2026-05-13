@@ -338,6 +338,11 @@
   white-space: nowrap;
 }
 
+.npl-actionsMenu {
+  position: relative;
+  display: inline-flex;
+}
+
 /* Pager */
 .npl-pager {
   display: flex;
@@ -410,6 +415,14 @@
   border-color: rgba(69, 55, 39, 0.2);
 }
 
+.npl-btnGhost--icon {
+  width: 38px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
 .npl-actions .npl-btnGhost:last-child {
   background: #fff4f4;
   border-color: rgba(181, 84, 84, 0.18);
@@ -433,6 +446,37 @@
   color: #0a58ca;
   font-weight: 800;
   cursor: pointer;
+}
+
+.npl-actionsDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(69, 55, 39, 0.12);
+  background: #fffdf9;
+  box-shadow: 0 18px 34px rgba(56, 44, 29, 0.16);
+}
+
+.npl-actionsDropdown button {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #342b23;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.npl-actionsDropdown button:hover {
+  background: #f7f1e7;
 }
 
 /* Modal Backdrop */
