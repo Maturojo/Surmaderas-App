@@ -83,7 +83,18 @@ const NAV_ITEMS = [
           { label: "Configuración", to: "/whatsapp/settings" },
         ],
       },
-      { label: "Mercado Libre", to: "/mercado-libre" },
+      {
+        label: "Mercado Libre",
+        children: [
+          { label: "Dashboard", to: "/mercado-libre" },
+          { label: "Productos", to: "/mercado-libre/productos" },
+          { label: "Publicaciones", to: "/mercado-libre/publicaciones" },
+          { label: "Pedidos", to: "/mercado-libre/pedidos" },
+          { label: "Preguntas", to: "/mercado-libre/preguntas" },
+          { label: "Pendientes", to: "/mercado-libre/pendientes" },
+          { label: "Precios", to: "/mercado-libre/precios" },
+        ],
+      },
     ],
   },
 ];
@@ -107,6 +118,12 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/whatsapp",
   "/whatsapp/control",
   "/mercado-libre",
+  "/mercado-libre/productos",
+  "/mercado-libre/publicaciones",
+  "/mercado-libre/pedidos",
+  "/mercado-libre/preguntas",
+  "/mercado-libre/pendientes",
+  "/mercado-libre/precios",
 ]);
 
 const MODULE_ORDER_STORAGE_KEY = "surmaderas-module-order";

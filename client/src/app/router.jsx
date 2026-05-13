@@ -290,6 +290,54 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "mercado-libre/productos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="productos" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre/publicaciones",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="publicaciones" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre/pedidos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="pedidos" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre/preguntas",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="preguntas" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre/pendientes",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="pendientes" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mercado-libre/precios",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <MercadoLibre section="precios" />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "configuracion/usuarios",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
