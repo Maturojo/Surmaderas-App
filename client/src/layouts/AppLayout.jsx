@@ -343,6 +343,10 @@ export default function AppLayout() {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   }
 
+  function toggleNestedGroup(label) {
+    setOpenGroups((prev) => ({ ...prev, [`nested:${label}`]: !prev[`nested:${label}`] }));
+  }
+
   function toggleModulesHidden() {
     setModulesHidden((current) => {
       const next = !current;
@@ -588,14 +592,21 @@ export default function AppLayout() {
                     {item.children.map((child) => {
                       if (child.children) {
                         const nestedActive = isChildActive(child);
+                        const nestedOpen = nestedActive || Boolean(openGroups[`nested:${child.label}`]);
 
                         return (
-                          <div key={child.label} className={`app-subgroup${nestedActive ? " active" : ""}`}>
-                            <div className="app-subgroupLabel">
+                          <div key={child.label} className={`app-subgroup${nestedOpen ? " open" : ""}${nestedActive ? " active" : ""}`}>
+                            <button
+                              type="button"
+                              className="app-subgroupLabel"
+                              onClick={() => toggleNestedGroup(child.label)}
+                              aria-expanded={nestedOpen}
+                            >
                               <span className="app-sublinkDot" />
                               <span>{child.label}</span>
-                            </div>
-                            <div className="app-subnav app-subnav--nested">
+                              <span className="app-linkCaret" aria-hidden="true" />
+                            </button>
+                            <div className="app-subnav app-subnav--nested" hidden={!nestedOpen}>
                               {child.children.map((nested) => (
                                 <NavLink
                                   key={nested.to}
