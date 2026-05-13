@@ -1215,11 +1215,22 @@ export default function CotizadorMarcos() {
   function buildMarcoPayload() {
     const cantidad = Math.max(clampPositiveNumber(form.cantidad, 1), 1);
     const frenteLabel = form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "No";
+    const vidrioLabel = form.frente === "vidrio" ? "Si" : form.frente === "espejo" ? "No (espejo)" : "No";
     const fondoLabel = selectedFondo.precioM2 > 0 && !espejoSinFondo ? selectedFondo.nombre : "No";
     const paspartuVal = clampPositiveNumber(form.paspartuMm, 0);
     const paspartuLabel = paspartuVal > 0 ? `${formatDimensionCm(paspartuVal)} - ${selectedPaspartuColor.nombre}` : "No";
     const itemPrecioUnitario = cantidad > 0 ? quote.total / cantidad : quote.total;
     const observaciones = String(form.observaciones || "").trim();
+    const resumenLineas = [
+      { label: "Varilla", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
+      { label: "Medidas", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
+      { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
+      { label: "Fondo", value: fondoLabel },
+      ...(form.frente === "espejo"
+        ? [{ label: "Frente", value: frenteLabel }]
+        : [{ label: "Vidrio", value: vidrioLabel }]),
+      ...(paspartuVal > 0 ? [{ label: "Paspartu", value: paspartuLabel }] : []),
+    ];
 
     return {
       descripcion: "",
@@ -1239,19 +1250,7 @@ export default function CotizadorMarcos() {
         paspartu: paspartuLabel,
         pintado: selectedPintado.nombre,
         obs: observaciones,
-        resumenLineas: [
-          { label: "Varilla seleccionada", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
-          { label: "Ancho de varilla", value: formatDimensionCm(effectiveMeasures.frenteMm) },
-          ...(selectedProfile?.liston ? [{ label: "Colocacion", value: form.listonUso === "canto" ? "De canto" : "De plano" }] : []),
-          { label: "Orientacion visual", value: form.orientacion === "horizontal" ? "Horizontal" : "Vertical" },
-          { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
-          { label: "Medida cargada", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
-          { label: "Cantidad", value: String(cantidad) },
-          { label: "Fondo", value: fondoLabel },
-          { label: "Frente", value: frenteLabel },
-          { label: "Paspartu", value: paspartuLabel },
-          { label: "Pintado", value: selectedPintado.nombre },
-        ],
+        resumenLineas,
       },
     };
   }
