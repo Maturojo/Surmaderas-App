@@ -25,6 +25,9 @@ const defaultProducts = [
     cost: "46900",
     price: "72400",
     stock: "8",
+    mercadoEnvios: true,
+    shippingCost: "4200",
+    commissionPercent: "13",
     status: "Para publicar",
     notes: "Producto con buena rotacion y margen estable.",
   },
@@ -35,6 +38,9 @@ const defaultProducts = [
     cost: "12500",
     price: "18950",
     stock: "2",
+    mercadoEnvios: true,
+    shippingCost: "2600",
+    commissionPercent: "15",
     status: "Revisar stock",
     notes: "Conviene ofrecer pack x par.",
   },
@@ -144,13 +150,16 @@ const initialForm = {
   cost: "",
   price: "",
   stock: "",
+  mercadoEnvios: true,
+  shippingCost: "",
+  commissionPercent: "13",
   status: "Idea",
   notes: "",
 };
 
 function money(value) {
   const numeric = Number(String(value || "").replace(/[^\d.-]/g, ""));
-  if (!Number.isFinite(numeric) || numeric <= 0) return "-";
+  if (!Number.isFinite(numeric)) return "-";
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
@@ -159,10 +168,22 @@ function money(value) {
 }
 
 function getMargin(product) {
-  const cost = Number(product.cost);
-  const price = Number(product.price);
-  if (!cost || !price || price <= cost) return "-";
-  return `${Math.round(((price - cost) / price) * 100)}%`;
+  const result = getProductResult(product);
+  if (!Number.isFinite(result.margin)) return "-";
+  return `${Math.round(result.margin)}%`;
+}
+
+function getProductResult(product) {
+  const cost = Number(product.cost) || 0;
+  const price = Number(product.price) || 0;
+  const commissionPercent = Number(product.commissionPercent) || 0;
+  const commission = price > 0 ? price * (commissionPercent / 100) : 0;
+  const shippingCost = product.mercadoEnvios ? Number(product.shippingCost) || 0 : 0;
+  const totalCost = cost + commission + shippingCost;
+  const profit = price - totalCost;
+  const margin = price > 0 ? (profit / price) * 100 : Number.NaN;
+
+  return { commission, shippingCost, totalCost, profit, margin };
 }
 
 function StatusBadge({ children }) {
@@ -312,6 +333,8 @@ function ProductsView() {
     );
   }, [products]);
 
+  const preview = useMemo(() => getProductResult(form), [form]);
+
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
   }
@@ -324,6 +347,8 @@ function ProductsView() {
       name: form.name.trim(),
       category: form.category.trim() || "Sin categoria",
       stock: form.stock || "0",
+      shippingCost: form.mercadoEnvios ? form.shippingCost || "0" : "0",
+      commissionPercent: form.commissionPercent || "0",
     };
 
     if (!nextProduct.name) return;
@@ -356,7 +381,7 @@ function ProductsView() {
         </article>
       </div>
 
-      <div className="ml-mainGrid">
+      <div className="ml-productLayout">
         <form className="ml-panel ml-productForm" onSubmit={addProduct}>
           <div className="ml-panelHead">
             <div>
@@ -401,6 +426,50 @@ function ProductsView() {
             </label>
           </div>
 
+          <div className="ml-formGrid">
+            <label>
+              <span>Comision Mercado Libre (%)</span>
+              <input value={form.commissionPercent} onChange={(event) => updateField("commissionPercent", event.target.value)} inputMode="decimal" placeholder="13" />
+            </label>
+            <label>
+              <span>Costo Mercado Envios</span>
+              <input
+                value={form.shippingCost}
+                onChange={(event) => updateField("shippingCost", event.target.value)}
+                inputMode="numeric"
+                placeholder="4200"
+                disabled={!form.mercadoEnvios}
+              />
+            </label>
+            <label className="ml-checkField">
+              <input
+                type="checkbox"
+                checked={form.mercadoEnvios}
+                onChange={(event) => updateField("mercadoEnvios", event.target.checked)}
+              />
+              <span>Va por Mercado Envios</span>
+            </label>
+          </div>
+
+          <div className="ml-productPreview">
+            <div>
+              <span>Comision</span>
+              <strong>{money(preview.commission)}</strong>
+            </div>
+            <div>
+              <span>Envio</span>
+              <strong>{money(preview.shippingCost)}</strong>
+            </div>
+            <div>
+              <span>Costo total</span>
+              <strong>{money(preview.totalCost)}</strong>
+            </div>
+            <div>
+              <span>Ganancia</span>
+              <strong>{money(preview.profit)}</strong>
+            </div>
+          </div>
+
           <label>
             <span>Notas</span>
             <textarea value={form.notes} onChange={(event) => updateField("notes", event.target.value)} placeholder="Por que puede vender bien, medidas, variantes, proveedor..." rows={4} />
@@ -413,29 +482,53 @@ function ProductsView() {
           <div className="ml-panelHead">
             <div>
               <h2>Lista de productos</h2>
-              <p>Ideas cargadas manualmente para revisar y publicar.</p>
+              <p>Registro de productos agregados, con comision, envio y margen estimado.</p>
             </div>
           </div>
-          <div className="ml-cardList">
-            {products.map((product) => (
-              <article className="ml-productCard" key={product.id}>
-                <div>
-                  <strong>{product.name}</strong>
-                  <StatusBadge>{product.status}</StatusBadge>
-                </div>
-                <span>{product.category}</span>
-                <div className="ml-productNumbers">
-                  <small>Costo: {money(product.cost)}</small>
-                  <small>Precio: {money(product.price)}</small>
-                  <small>Margen: {getMargin(product)}</small>
-                  <small>Stock: {product.stock || 0}</small>
-                </div>
-                {product.notes ? <p>{product.notes}</p> : null}
-                <button type="button" className="ml-secondaryBtn" onClick={() => removeProduct(product.id)}>
-                  Quitar
-                </button>
-              </article>
-            ))}
+          <div className="ml-tableWrap">
+            <table className="ml-table ml-productsTable">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Costo</th>
+                  <th>Precio</th>
+                  <th>Comision</th>
+                  <th>Envio</th>
+                  <th>Ganancia</th>
+                  <th>Margen</th>
+                  <th>Stock</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => {
+                  const result = getProductResult(product);
+                  return (
+                    <tr key={product.id}>
+                      <td>
+                        <strong>{product.name}</strong>
+                        <span>{product.category}</span>
+                        {product.notes ? <span>{product.notes}</span> : null}
+                      </td>
+                      <td>{money(product.cost)}</td>
+                      <td>{money(product.price)}</td>
+                      <td>{money(result.commission)}</td>
+                      <td>{product.mercadoEnvios ? money(result.shippingCost) : "Sin Mercado Envios"}</td>
+                      <td>{money(result.profit)}</td>
+                      <td>{getMargin(product)}</td>
+                      <td>{product.stock || 0}</td>
+                      <td><StatusBadge>{product.status}</StatusBadge></td>
+                      <td>
+                        <button type="button" className="ml-secondaryBtn" onClick={() => removeProduct(product.id)}>
+                          Quitar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </section>
       </div>

@@ -3166,6 +3166,11 @@ textarea {
   resize: vertical;
 }
 
+.ml-productLayout {
+  display: grid;
+  gap: 16px;
+}
+
 .ml-formGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3174,6 +3179,65 @@ textarea {
 
 .ml-formGrid:has(label:nth-child(2):last-child) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ml-checkField {
+  min-height: 44px;
+  align-self: end;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  border: 1px solid rgba(73, 58, 38, 0.14);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0 12px;
+}
+
+.ml-checkField input {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+}
+
+.ml-checkField span {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ml-productPreview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ml-productPreview div {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f5f0;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+}
+
+.ml-productPreview span,
+.ml-productPreview strong {
+  display: block;
+}
+
+.ml-productPreview span {
+  color: var(--sm-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ml-productPreview strong {
+  margin-top: 5px;
+  color: #171421;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.ml-productsTable {
+  min-width: 1180px;
 }
 
 .ml-productCard {
@@ -4050,6 +4114,7 @@ textarea {
   .ml-alertGrid,
   .ml-profitGrid,
   .ml-formGrid,
+  .ml-productPreview,
   .ml-productNumbers {
     grid-template-columns: 1fr;
   }
