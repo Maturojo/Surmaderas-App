@@ -243,6 +243,7 @@ export default function AppLayout() {
   const [openGroups, setOpenGroups] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modulesHidden, setModulesHidden] = useState(() => localStorage.getItem("surmaderas-modules-hidden") === "true");
+  const [sidebarHidden, setSidebarHidden] = useState(() => localStorage.getItem("surmaderas-sidebar-hidden") === "true");
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const [hasUnlockedSound, setHasUnlockedSound] = useState(false);
   const previousUnreadRef = useRef(null);
@@ -297,6 +298,15 @@ export default function AppLayout() {
     setModulesHidden((current) => {
       const next = !current;
       localStorage.setItem("surmaderas-modules-hidden", String(next));
+      return next;
+    });
+  }
+
+  function toggleSidebarHidden() {
+    setSidebarHidden((current) => {
+      const next = !current;
+      localStorage.setItem("surmaderas-sidebar-hidden", String(next));
+      if (next) setSidebarOpen(false);
       return next;
     });
   }
@@ -404,11 +414,21 @@ export default function AppLayout() {
       <span className="app-mobileTitle">Sur Maderas</span>
     </header>
 
-    <div className="app-shell">
+    <div className={`app-shell${sidebarHidden ? " app-shell--sidebarHidden" : ""}`}>
       {sidebarOpen && (
         <div className="app-sidebarOverlay" onClick={() => setSidebarOpen(false)} />
       )}
-      <aside className={`app-sidebar${sidebarOpen ? " is-open" : ""}`}>
+      {sidebarHidden ? (
+        <button
+          type="button"
+          className="app-sidebarRestore"
+          onClick={toggleSidebarHidden}
+          aria-label="Mostrar barra lateral"
+        >
+          Mostrar barra
+        </button>
+      ) : null}
+      <aside className={`app-sidebar${sidebarOpen ? " is-open" : ""}${sidebarHidden ? " is-hidden" : ""}`}>
         <div className="app-brand">
           <div className="app-brandRow">
             <img className="app-brandLogo" src="/logo-sur-maderas.png" alt="Sur Maderas" />
@@ -417,6 +437,13 @@ export default function AppLayout() {
               <div className="app-brandSub">Sistema comercial y operativo</div>
             </div>
           </div>
+          <button
+            type="button"
+            className="app-sidebarHide"
+            onClick={toggleSidebarHidden}
+          >
+            Ocultar barra
+          </button>
         </div>
 
         <div className="app-meta">
