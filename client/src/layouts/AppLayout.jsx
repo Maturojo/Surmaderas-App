@@ -225,8 +225,16 @@ function SidebarIcon({ name }) {
           <rect x="17" y="4" width="3" height="12" rx="1" />
         </svg>
       );
-    case "whatsapp":
     case "online":
+      return (
+        <svg {...common}>
+          <path d="M4 10h16l-1.2-5.5H5.2L4 10Z" />
+          <path d="M5 10v9a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-9" />
+          <path d="M8 20.5v-6h8v6" />
+          <path d="M4 10c0 1.2.9 2.1 2 2.1s2-.9 2-2.1c0 1.2.9 2.1 2 2.1s2-.9 2-2.1c0 1.2.9 2.1 2 2.1s2-.9 2-2.1c0 1.2.9 2.1 2 2.1s2-.9 2-2.1" />
+        </svg>
+      );
+    case "whatsapp":
       return (
         <svg {...common}>
           <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.07-1.35A9.93 9.93 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" />
