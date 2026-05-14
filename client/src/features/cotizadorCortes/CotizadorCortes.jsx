@@ -251,6 +251,11 @@ export default function CotizadorCortes() {
       return;
     }
 
+    if (!cliente.trim()) {
+      alert("Cargá el nombre del cliente para generar el comprobante de retiro.");
+      return;
+    }
+
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
@@ -302,7 +307,7 @@ export default function CotizadorCortes() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(...brand.text);
-    doc.text(`Cliente: ${cliente.trim() || "Sin completar"}`, 14, y);
+    doc.text(`Cliente: ${cliente.trim()}`, 14, y);
     doc.text(`Telefono: ${telefono.trim() || "Sin completar"}`, 110, y);
     y += 7;
     doc.text(`Fecha de retiro: ${fechaRetiro || "A coordinar"}`, 14, y);
@@ -572,8 +577,8 @@ export default function CotizadorCortes() {
           <p className="cc-nota">Estos datos salen en el comprobante de retiro.</p>
           <div className="cc-grid">
             <div className="cc-field">
-              <label className="cc-fieldLabel">Cliente</label>
-              <input type="text" className="cc-input" placeholder="Nombre y apellido" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+              <label className="cc-fieldLabel">Cliente *</label>
+              <input type="text" className="cc-input" placeholder="Nombre y apellido" value={cliente} onChange={(e) => setCliente(e.target.value)} required />
             </div>
             <div className="cc-field">
               <label className="cc-fieldLabel">Telefono</label>
