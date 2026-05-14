@@ -335,6 +335,75 @@
   line-height: 1.45;
 }
 
+.cc-textarea--bulk {
+  min-height: 150px;
+  font-family: inherit;
+}
+
+.cc-bulkActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.cc-btnCalc--inline {
+  width: auto;
+  min-height: 44px;
+  margin-top: 0;
+  padding: 0 18px;
+}
+
+.cc-fileBtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 2px solid var(--sm-accent);
+  border-radius: 4px;
+  color: var(--sm-accent);
+  background: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.cc-fileBtn:hover {
+  background: var(--sm-accent);
+  color: #fff;
+}
+
+.cc-fileBtn.is-loading {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.cc-fileBtn input {
+  display: none;
+}
+
+.cc-importStatus {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.cc-importStatus span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f5efe7;
+  color: #5f4b37;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .cc-btnReceiptWide {
   width: 100%;
   padding: 15px;
@@ -409,4 +478,6 @@
   .cc-totalStrip { flex-direction: column; gap: 4px; text-align: center; }
   .cc-resultAmount,
   .cc-totalAmount { font-size: 22px; }
+  .cc-btnCalc--inline,
+  .cc-fileBtn { width: 100%; }
 }

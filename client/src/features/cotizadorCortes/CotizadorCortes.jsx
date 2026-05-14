@@ -60,6 +60,90 @@ function formatARS(n) {
   }).format(n);
 }
 
+const ALL_MATERIALES = MATERIALES.flatMap((grupo) => grupo.items);
+
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function parseNumero(value) {
+  const parsed = parseFloat(String(value || "").replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function calcularCorte(material, largoCm, anchoCm, cantidadValue) {
+  const precioM2 = material.precioM2;
+  const minCosto = (10 * 10 * precioM2) / 10000;
+  const area = (largoCm / 100) * (anchoCm / 100);
+  const costoUnd = Math.max(area * precioM2, minCosto);
+  const subtotal = costoUnd * cantidadValue;
+  return { costoUnd, subtotal };
+}
+
+function buscarMaterialEnTexto(linea, materialFallback) {
+  const normalizedLine = normalizeText(linea);
+  const scored = ALL_MATERIALES.map((material) => {
+    const tokens = normalizeText(material.nombre).split(" ").filter((token) => token.length > 1);
+    const score = tokens.reduce((acc, token) => acc + (normalizedLine.includes(token) ? 1 : 0), 0);
+    return { material, score };
+  })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || b.material.nombre.length - a.material.nombre.length);
+
+  if (scored[0]?.score >= 2) return scored[0].material;
+  return materialFallback || null;
+}
+
+function extraerCantidad(linea, dimensionMatch) {
+  const before = linea.slice(0, dimensionMatch.index).trim();
+  const after = linea.slice(dimensionMatch.index + dimensionMatch[0].length).trim();
+  const explicitAfter = after.match(/(?:cant(?:idad)?|cantidad|unidades|unidad|uds?|u)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/i);
+  const explicitBefore = before.match(/(?:cant(?:idad)?|cantidad|unidades|unidad|uds?|u)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/i);
+  const compactAfter = after.match(/^\s*(?:x|\*)\s*(\d+(?:[.,]\d+)?)(?:\s*(?:u|ud|uds|unidades?))?\b/i);
+  const leading = before.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)?\b/i);
+  const trailing = after.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)\b/i);
+  const value = explicitAfter?.[1] || explicitBefore?.[1] || compactAfter?.[1] || leading?.[1] || trailing?.[1];
+  return Math.max(1, parseNumero(value) || 1);
+}
+
+function parsearLineaCorte(linea, materialFallback) {
+  const dimensionMatch = linea.match(/(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|×|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
+  if (!dimensionMatch) return { error: "No se encontro una medida tipo 120x60." };
+
+  let largoCm = parseNumero(dimensionMatch[1]);
+  let anchoCm = parseNumero(dimensionMatch[2]);
+  const unidad = String(dimensionMatch[3] || "").toLowerCase();
+  if (unidad === "mm" || /\bmm\b/i.test(dimensionMatch[0])) {
+    largoCm /= 10;
+    anchoCm /= 10;
+  }
+
+  const cantidadValue = extraerCantidad(linea, dimensionMatch);
+  const material = buscarMaterialEnTexto(linea, materialFallback);
+
+  if (!material) return { error: "No se encontro material y no hay material seleccionado." };
+  if (largoCm <= 0 || anchoCm <= 0 || cantidadValue <= 0) return { error: "Medidas o cantidad invalidas." };
+
+  const { costoUnd, subtotal } = calcularCorte(material, largoCm, anchoCm, cantidadValue);
+  return {
+    corte: {
+      id: nextId++,
+      cantidad: cantidadValue,
+      material: material.nombre,
+      largo: largoCm,
+      ancho: anchoCm,
+      costoUnd,
+      subtotal,
+      origen: "texto",
+    },
+  };
+}
+
 let nextId = 1;
 
 export default function CotizadorCortes() {
@@ -74,6 +158,10 @@ export default function CotizadorCortes() {
   const [cortes, setCortes] = useState([]);
   const [seleccionados, setSeleccionados] = useState(new Set());
   const [costoActual, setCostoActual] = useState(null);
+  const [textoMasivo, setTextoMasivo] = useState("");
+  const [resultadoMasivo, setResultadoMasivo] = useState("");
+  const [ocrStatus, setOcrStatus] = useState("");
+  const [leyendoImagen, setLeyendoImagen] = useState(false);
   const tableRef = useRef(null);
 
   const materialSeleccionado = useMemo(() => {
@@ -105,12 +193,7 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const precioM2 = materialSeleccionado.precioM2;
-    const minCosto = (10 * 10 * precioM2) / 10000;
-    const area = (l / 100) * (a / 100);
-    let costoUnd = area * precioM2;
-    if (costoUnd < minCosto) costoUnd = minCosto;
-    const subtotal = costoUnd * q;
+    const { costoUnd, subtotal } = calcularCorte(materialSeleccionado, l, a, q);
 
     setCostoActual(subtotal);
     setCortes((prev) => [
@@ -120,6 +203,71 @@ export default function CotizadorCortes() {
     setLargo("");
     setAncho("");
     setCantidad("");
+  }
+
+  function cargarTextoMasivo() {
+    const lineas = textoMasivo
+      .split(/\r?\n/)
+      .map((linea) => linea.trim())
+      .filter(Boolean);
+
+    if (lineas.length === 0) {
+      alert("Pegá una lista de cortes para cargar.");
+      return;
+    }
+
+    const nuevos = [];
+    const errores = [];
+    lineas.forEach((linea, index) => {
+      const parsed = parsearLineaCorte(linea, materialSeleccionado);
+      if (parsed.corte) nuevos.push(parsed.corte);
+      else errores.push(`Linea ${index + 1}: ${parsed.error}`);
+    });
+
+    if (nuevos.length > 0) {
+      setCortes((prev) => [...prev, ...nuevos]);
+      setCostoActual(nuevos.reduce((acc, corte) => acc + corte.subtotal, 0));
+    }
+
+    setResultadoMasivo(
+      `${nuevos.length} cortes cargados${errores.length ? ` / ${errores.length} sin cargar` : ""}.`
+    );
+
+    if (errores.length > 0) {
+      alert(`Se cargaron ${nuevos.length} cortes.\n\nRevisar:\n${errores.slice(0, 6).join("\n")}`);
+    }
+  }
+
+  async function leerImagenCortes(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setLeyendoImagen(true);
+    setOcrStatus("Leyendo imagen...");
+
+    try {
+      const Tesseract = await import("tesseract.js");
+      const result = await Tesseract.recognize(file, "spa+eng", {
+        logger: (info) => {
+          if (info.status === "recognizing text" && info.progress) {
+            setOcrStatus(`Leyendo imagen ${Math.round(info.progress * 100)}%`);
+          }
+        },
+      });
+      const text = result?.data?.text?.trim() || "";
+      if (!text) {
+        setOcrStatus("No se detecto texto en la imagen.");
+        return;
+      }
+      setTextoMasivo((prev) => [prev.trim(), text].filter(Boolean).join("\n"));
+      setOcrStatus("Texto detectado. Revisalo y toca Cargar lista.");
+    } catch (error) {
+      console.error(error);
+      setOcrStatus("No se pudo leer la imagen. Probá con una foto mas nitida.");
+    } finally {
+      setLeyendoImagen(false);
+      event.target.value = "";
+    }
   }
 
   function toggleSeleccion(id) {
@@ -490,6 +638,42 @@ export default function CotizadorCortes() {
         </section>
 
         {/* RESULTADO ÚLTIMO CORTE */}
+        <section className="cc-card">
+          <div className="cc-stepHeader">
+            <span className="cc-stepNum">02B</span>
+            <span className="cc-stepLabel">Carga rapida por texto o imagen</span>
+          </div>
+          <p className="cc-nota">
+            Un corte por linea. Ej: 2 melamina blanca 18 120x60, fibro 3mm 30 x 40 x 5, 80x30 cant 4.
+            Si la linea no dice material, usa el material seleccionado arriba.
+          </p>
+          <div className="cc-field">
+            <label className="cc-fieldLabel">Lista de cortes</label>
+            <textarea
+              className="cc-input cc-textarea cc-textarea--bulk"
+              placeholder={"2 Melamina Blanca 18 mm 120x60\nFibro Facil 3 mm 30 x 40 x 5\n80x30 cant 4"}
+              rows={6}
+              value={textoMasivo}
+              onChange={(e) => setTextoMasivo(e.target.value)}
+            />
+          </div>
+          <div className="cc-bulkActions">
+            <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={cargarTextoMasivo}>
+              Cargar lista
+            </button>
+            <label className={`cc-fileBtn${leyendoImagen ? " is-loading" : ""}`}>
+              <input type="file" accept="image/*" onChange={leerImagenCortes} disabled={leyendoImagen} />
+              Leer imagen
+            </label>
+          </div>
+          {(resultadoMasivo || ocrStatus) && (
+            <div className="cc-importStatus">
+              {resultadoMasivo && <span>{resultadoMasivo}</span>}
+              {ocrStatus && <span>{ocrStatus}</span>}
+            </div>
+          )}
+        </section>
+
         {costoActual !== null && (
           <div className="cc-result">
             <span className="cc-resultLabel">Último corte agregado</span>
