@@ -319,8 +319,44 @@
 .cc-btnPdf { background: #555; border-color: #555; color: #fff; }
 .cc-btnPdf:hover { background: #fff; color: #555; }
 
+.cc-btnReceipt { background: #896846; border-color: #896846; color: #fff; }
+.cc-btnReceipt:hover { background: #fff; color: #896846; }
+
 .cc-btnWa { background: #25d366; border-color: #25d366; color: #fff; }
 .cc-btnWa:hover { background: #fff; color: #25d366; }
+
+.cc-field--full {
+  margin-top: 14px;
+}
+
+.cc-textarea {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.cc-btnReceiptWide {
+  width: 100%;
+  padding: 15px;
+  margin-top: 16px;
+  background: #896846;
+  color: #fff;
+  border: 2px solid #896846;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.cc-btnReceiptWide:hover {
+  background: #fff;
+  color: #896846;
+}
+
+.cc-btnReceiptWide:active {
+  transform: scale(0.98);
+}
 
 .cc-totalStrip {
   background: var(--sm-navy);

@@ -67,6 +67,10 @@ export default function CotizadorCortes() {
   const [largo, setLargo] = useState("");
   const [ancho, setAncho] = useState("");
   const [cantidad, setCantidad] = useState("");
+  const [cliente, setCliente] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [fechaRetiro, setFechaRetiro] = useState("");
+  const [observacionesRetiro, setObservacionesRetiro] = useState("");
   const [cortes, setCortes] = useState([]);
   const [seleccionados, setSeleccionados] = useState(new Set());
   const [costoActual, setCostoActual] = useState(null);
@@ -83,6 +87,11 @@ export default function CotizadorCortes() {
 
   const total = useMemo(
     () => cortes.reduce((acc, c) => acc + c.subtotal, 0),
+    [cortes]
+  );
+
+  const totalPiezas = useMemo(
+    () => cortes.reduce((acc, c) => acc + Number(c.cantidad || 0), 0),
     [cortes]
   );
 
@@ -220,6 +229,143 @@ export default function CotizadorCortes() {
     doc.text(`$ ${formatARS(total)}`, totalX + colWidths[4] / 2, y + 6.2, { align: "center" });
 
     doc.save("cotizacion-cortes-surmaderas.pdf");
+  }
+
+  function generarNumeroComprobante() {
+    const stamp = new Date();
+    const datePart = [
+      stamp.getFullYear(),
+      String(stamp.getMonth() + 1).padStart(2, "0"),
+      String(stamp.getDate()).padStart(2, "0"),
+    ].join("");
+    const timePart = [
+      String(stamp.getHours()).padStart(2, "0"),
+      String(stamp.getMinutes()).padStart(2, "0"),
+    ].join("");
+    return `CC-${datePart}-${timePart}`;
+  }
+
+  function exportarComprobanteRetiro() {
+    if (cortes.length === 0) {
+      alert("No hay cortes cargados para generar el comprobante.");
+      return;
+    }
+
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const comprobanteNro = generarNumeroComprobante();
+    const fechaEmision = new Intl.DateTimeFormat("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+
+    let y = 16;
+    doc.setFillColor(45, 33, 23);
+    doc.rect(0, 0, pageW, 34, "F");
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(17);
+    doc.text("Comprobante para retiro de cortes", 14, y);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text("Sur Maderas - Av. Luro 5020 / Av. Independencia 4490 - Mar del Plata", 14, y + 8);
+    doc.setFont("helvetica", "bold");
+    doc.text(comprobanteNro, pageW - 14, y, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.text(fechaEmision, pageW - 14, y + 8, { align: "right" });
+
+    y = 46;
+    doc.setTextColor(45, 33, 23);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Datos del retiro", 14, y);
+    y += 7;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Cliente: ${cliente.trim() || "Sin completar"}`, 14, y);
+    doc.text(`Telefono: ${telefono.trim() || "Sin completar"}`, 110, y);
+    y += 7;
+    doc.text(`Fecha de retiro: ${fechaRetiro || "A coordinar"}`, 14, y);
+    doc.text(`Total de piezas: ${formatARS(totalPiezas).replace(",00", "")}`, 110, y);
+    y += 9;
+
+    const headers = ["Cant.", "Material", "Medida", "Control"];
+    const colWidths = [18, 82, 42, 30];
+    const rowH = 10;
+    let x = 14;
+
+    doc.setFillColor(10, 10, 10);
+    doc.rect(14, y, pageW - 28, rowH, "F");
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    headers.forEach((h, i) => {
+      doc.text(h, x + colWidths[i] / 2, y + 6.5, { align: "center" });
+      x += colWidths[i];
+    });
+    y += rowH;
+
+    doc.setTextColor(0);
+    doc.setFont("helvetica", "normal");
+    cortes.forEach((c, idx) => {
+      if (y > pageH - 58) {
+        doc.addPage();
+        y = 18;
+      }
+      if (idx % 2 === 0) {
+        doc.setFillColor(248, 247, 245);
+        doc.rect(14, y, pageW - 28, rowH, "F");
+      }
+      const cells = [
+        String(c.cantidad),
+        c.material,
+        `${c.largo} x ${c.ancho} cm`,
+        "[  ]",
+      ];
+      x = 14;
+      cells.forEach((cell, i) => {
+        doc.text(cell, x + colWidths[i] / 2, y + 6.5, { align: "center", maxWidth: colWidths[i] - 3 });
+        x += colWidths[i];
+      });
+      y += rowH;
+    });
+
+    y += 6;
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(45, 33, 23);
+    doc.text("Observaciones", 14, y);
+    y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(70);
+    const obsLines = doc.splitTextToSize(observacionesRetiro.trim() || "Sin observaciones.", pageW - 28);
+    doc.text(obsLines, 14, y);
+    y += Math.max(14, obsLines.length * 5 + 8);
+
+    if (y > pageH - 42) {
+      doc.addPage();
+      y = 24;
+    }
+
+    doc.setDrawColor(120);
+    doc.line(14, y + 10, 78, y + 10);
+    doc.line(82, y + 10, 146, y + 10);
+    doc.line(150, y + 10, pageW - 14, y + 10);
+    doc.setFontSize(8);
+    doc.setTextColor(90);
+    doc.text("Entrega deposito", 46, y + 15, { align: "center" });
+    doc.text("Firma quien retira", 114, y + 15, { align: "center" });
+    doc.text("DNI / aclaracion", 178, y + 15, { align: "center" });
+
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text("Presentar este comprobante al retirar. Verificar cantidad, material y medidas antes de entregar.", 14, pageH - 12);
+
+    doc.save(`comprobante-retiro-cortes-${comprobanteNro}.pdf`);
   }
 
   function enviarWhatsApp() {
@@ -393,10 +539,58 @@ export default function CotizadorCortes() {
             <button className="cc-actionBtn cc-btnPdf" title="Guardar PDF" onClick={exportarPDF}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><line x1="9" y1="15" x2="15" y2="15" /></svg>
             </button>
+            <button className="cc-actionBtn cc-btnReceipt" title="Comprobante de retiro" onClick={exportarComprobanteRetiro}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2Z" /><path d="M9 8h6" /><path d="M9 12h6" /><path d="M9 16h4" /></svg>
+            </button>
             <button className="cc-actionBtn cc-btnWa" title="Enviar por WhatsApp" onClick={enviarWhatsApp}>
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" /></svg>
             </button>
           </div>
+        </section>
+
+        <section className="cc-card">
+          <div className="cc-stepHeader">
+            <span className="cc-stepNum">04</span>
+            <span className="cc-stepLabel">Datos para retirar</span>
+          </div>
+          <p className="cc-nota">Estos datos salen en el comprobante de retiro.</p>
+          <div className="cc-grid">
+            <div className="cc-field">
+              <label className="cc-fieldLabel">Cliente</label>
+              <input type="text" className="cc-input" placeholder="Nombre y apellido" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+            </div>
+            <div className="cc-field">
+              <label className="cc-fieldLabel">Telefono</label>
+              <input type="tel" className="cc-input" placeholder="223..." value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+            </div>
+            <div className="cc-field">
+              <label className="cc-fieldLabel">Fecha de retiro</label>
+              <input type="date" className="cc-input" value={fechaRetiro} onChange={(e) => setFechaRetiro(e.target.value)} />
+            </div>
+            <div className="cc-field">
+              <label className="cc-fieldLabel">Piezas cargadas</label>
+              <input
+                type="text"
+                className="cc-input cc-input--readonly"
+                readOnly
+                value={totalPiezas ? `${formatARS(totalPiezas).replace(",00", "")} piezas` : ""}
+                placeholder="Se calcula con la lista"
+              />
+            </div>
+          </div>
+          <div className="cc-field cc-field--full">
+            <label className="cc-fieldLabel">Observaciones</label>
+            <textarea
+              className="cc-input cc-textarea"
+              placeholder="Ej: retirar por Luro, cortar con veta horizontal, entrega parcial..."
+              rows={3}
+              value={observacionesRetiro}
+              onChange={(e) => setObservacionesRetiro(e.target.value)}
+            />
+          </div>
+          <button className="cc-btnReceiptWide" onClick={exportarComprobanteRetiro}>
+            Generar comprobante para retirar
+          </button>
         </section>
 
         {/* TOTAL */}

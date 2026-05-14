@@ -1,137 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const PRODUCT_STORAGE_KEY = "surmaderas-mercado-libre-productos";
+const LEGACY_PRODUCT_STORAGE_KEY = "surmaderas-mercado-libre-productos";
+const PRODUCT_STORAGE_KEY = "surmaderas-mercado-libre-productos-reales";
 
 const stats = [
-  { label: "Ventas hoy", value: "12", detail: "$1.842.500" },
-  { label: "Pedidos pendientes", value: "7", detail: "4 para preparar" },
-  { label: "Preguntas", value: "9", detail: "6 sin responder" },
-  { label: "Publicaciones activas", value: "38", detail: "5 con bajo stock" },
+  { label: "Ventas hoy", value: "0", detail: "$0" },
+  { label: "Pedidos pendientes", value: "0", detail: "0 para preparar" },
+  { label: "Preguntas", value: "0", detail: "0 sin responder" },
+  { label: "Publicaciones activas", value: "0", detail: "0 con bajo stock" },
 ];
 
 const alerts = [
-  { title: "Preguntas sin responder", value: "6", tone: "warning" },
-  { title: "Pedidos por preparar", value: "4", tone: "strong" },
-  { title: "Publicaciones pausadas", value: "3", tone: "muted" },
-  { title: "Reclamos abiertos", value: "1", tone: "danger" },
+  { title: "Preguntas sin responder", value: "0", tone: "warning" },
+  { title: "Pedidos por preparar", value: "0", tone: "strong" },
+  { title: "Publicaciones pausadas", value: "0", tone: "muted" },
+  { title: "Reclamos abiertos", value: "0", tone: "danger" },
 ];
 
-const defaultProducts = [
-  {
-    id: "ml-product-1",
-    name: "Tablero melamina blanca 18 mm",
-    category: "Tableros",
-    cost: "46900",
-    price: "72400",
-    stock: "8",
-    mercadoEnvios: true,
-    shippingCost: "4200",
-    commissionPercent: "13",
-    status: "Para publicar",
-    notes: "Producto con buena rotacion y margen estable.",
-  },
-  {
-    id: "ml-product-2",
-    name: "Kit corredera telescopica 45 cm",
-    category: "Herrajes",
-    cost: "12500",
-    price: "18950",
-    stock: "2",
-    mercadoEnvios: true,
-    shippingCost: "2600",
-    commissionPercent: "15",
-    status: "Revisar stock",
-    notes: "Conviene ofrecer pack x par.",
-  },
-];
+const defaultProducts = [];
 
-const publications = [
-  {
-    title: "Tablero melamina blanca 18 mm",
-    sku: "ML-SM-001",
-    price: "$72.400",
-    stock: 8,
-    status: "Activa",
-    visits: 184,
-    sales: 12,
-    margin: "28%",
-  },
-  {
-    title: "Kit corredera telescopica 45 cm",
-    sku: "ML-SM-014",
-    price: "$18.950",
-    stock: 2,
-    status: "Bajo stock",
-    visits: 91,
-    sales: 7,
-    margin: "34%",
-  },
-  {
-    title: "Placa MDF 3 mm 1.22 x 2.60",
-    sku: "ML-SM-023",
-    price: "$21.300",
-    stock: 0,
-    status: "Sin stock",
-    visits: 65,
-    sales: 4,
-    margin: "22%",
-  },
-];
+const publications = [];
 
-const orders = [
-  {
-    id: "ML-889201",
-    client: "Marcelo Rivas",
-    product: "Melamina blanca 18 mm",
-    status: "Para preparar",
-    shipping: "Flex",
-    total: "$144.800",
-  },
-  {
-    id: "ML-889188",
-    client: "Carla Perez",
-    product: "Corredera telescopica 45 cm",
-    status: "Facturar",
-    shipping: "Mercado Envios",
-    total: "$37.900",
-  },
-  {
-    id: "ML-889170",
-    client: "Obra Las Lomas",
-    product: "MDF 3 mm",
-    status: "Listo",
-    shipping: "Retiro",
-    total: "$85.200",
-  },
-];
+const orders = [];
 
-const questions = [
-  {
-    product: "Tablero melamina blanca 18 mm",
-    client: "usuario_5821",
-    question: "Hacen cortes a medida antes de entregar?",
-    age: "Hace 12 min",
-  },
-  {
-    product: "Kit corredera telescopica 45 cm",
-    client: "carpinteria_sur",
-    question: "Tenes 20 pares disponibles para retirar hoy?",
-    age: "Hace 34 min",
-  },
-  {
-    product: "Placa MDF 3 mm",
-    client: "decoraciones_ma",
-    question: "Sirve para fondo de cajon?",
-    age: "Hace 1 h",
-  },
-];
+const questions = [];
 
 const profitability = [
-  { label: "Precio publicado", value: "$72.400" },
-  { label: "Costo estimado", value: "$46.900" },
-  { label: "Comision ML", value: "$8.688" },
-  { label: "Ganancia", value: "$16.812" },
+  { label: "Precio publicado", value: "$0" },
+  { label: "Costo estimado", value: "$0" },
+  { label: "Comision ML", value: "$0" },
+  { label: "Ganancia", value: "$0" },
 ];
 
 const sections = [
@@ -306,6 +205,8 @@ function ProductsView() {
   const [form, setForm] = useState(initialForm);
 
   useEffect(() => {
+    window.localStorage.removeItem(LEGACY_PRODUCT_STORAGE_KEY);
+
     const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY);
     if (!stored) return;
 
@@ -313,7 +214,7 @@ function ProductsView() {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed)) setProducts(parsed);
     } catch {
-      setProducts(defaultProducts);
+      setProducts([]);
     }
   }, []);
 
