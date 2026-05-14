@@ -319,8 +319,8 @@
 .cc-btnPdf { background: #555; border-color: #555; color: #fff; }
 .cc-btnPdf:hover { background: #fff; color: #555; }
 
-.cc-btnReceipt { background: #896846; border-color: #896846; color: #fff; }
-.cc-btnReceipt:hover { background: #fff; color: #896846; }
+.cc-btnReceipt { background: var(--sm-accent); border-color: var(--sm-accent); color: #fff; }
+.cc-btnReceipt:hover { background: #fff; color: var(--sm-accent); }
 
 .cc-btnWa { background: #25d366; border-color: #25d366; color: #fff; }
 .cc-btnWa:hover { background: #fff; color: #25d366; }
@@ -339,9 +339,9 @@
   width: 100%;
   padding: 15px;
   margin-top: 16px;
-  background: #896846;
+  background: var(--sm-accent);
   color: #fff;
-  border: 2px solid #896846;
+  border: 2px solid var(--sm-accent);
   border-radius: 4px;
   font-size: 15px;
   font-weight: 800;
@@ -351,7 +351,7 @@
 
 .cc-btnReceiptWide:hover {
   background: #fff;
-  color: #896846;
+  color: var(--sm-accent);
 }
 
 .cc-btnReceiptWide:active {

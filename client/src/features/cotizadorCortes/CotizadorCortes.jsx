@@ -255,6 +255,15 @@ export default function CotizadorCortes() {
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const comprobanteNro = generarNumeroComprobante();
+    const brand = {
+      accent: [200, 96, 58],
+      accentDark: [168, 78, 44],
+      navy: [7, 6, 20],
+      bg: [248, 247, 245],
+      line: [232, 229, 224],
+      text: [44, 44, 44],
+      muted: [136, 133, 128],
+    };
     const fechaEmision = new Intl.DateTimeFormat("es-AR", {
       day: "2-digit",
       month: "2-digit",
@@ -264,8 +273,10 @@ export default function CotizadorCortes() {
     }).format(new Date());
 
     let y = 16;
-    doc.setFillColor(45, 33, 23);
+    doc.setFillColor(...brand.navy);
     doc.rect(0, 0, pageW, 34, "F");
+    doc.setFillColor(...brand.accent);
+    doc.rect(0, 30, pageW, 4, "F");
     doc.setTextColor(255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(17);
@@ -279,7 +290,10 @@ export default function CotizadorCortes() {
     doc.text(fechaEmision, pageW - 14, y + 8, { align: "right" });
 
     y = 46;
-    doc.setTextColor(45, 33, 23);
+    doc.setFillColor(...brand.bg);
+    doc.setDrawColor(...brand.line);
+    doc.roundedRect(14, y - 7, pageW - 28, 25, 2, 2, "FD");
+    doc.setTextColor(...brand.accentDark);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.text("Datos del retiro", 14, y);
@@ -287,6 +301,7 @@ export default function CotizadorCortes() {
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
+    doc.setTextColor(...brand.text);
     doc.text(`Cliente: ${cliente.trim() || "Sin completar"}`, 14, y);
     doc.text(`Telefono: ${telefono.trim() || "Sin completar"}`, 110, y);
     y += 7;
@@ -299,7 +314,7 @@ export default function CotizadorCortes() {
     const rowH = 10;
     let x = 14;
 
-    doc.setFillColor(10, 10, 10);
+    doc.setFillColor(...brand.accent);
     doc.rect(14, y, pageW - 28, rowH, "F");
     doc.setTextColor(255);
     doc.setFont("helvetica", "bold");
@@ -310,7 +325,7 @@ export default function CotizadorCortes() {
     });
     y += rowH;
 
-    doc.setTextColor(0);
+    doc.setTextColor(...brand.text);
     doc.setFont("helvetica", "normal");
     cortes.forEach((c, idx) => {
       if (y > pageH - 58) {
@@ -318,7 +333,7 @@ export default function CotizadorCortes() {
         y = 18;
       }
       if (idx % 2 === 0) {
-        doc.setFillColor(248, 247, 245);
+        doc.setFillColor(...brand.bg);
         doc.rect(14, y, pageW - 28, rowH, "F");
       }
       const cells = [
@@ -337,32 +352,33 @@ export default function CotizadorCortes() {
 
     y += 6;
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(45, 33, 23);
+    doc.setTextColor(...brand.accentDark);
     doc.text("Observaciones", 14, y);
     y += 6;
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(70);
+    doc.setTextColor(...brand.text);
     const obsLines = doc.splitTextToSize(observacionesRetiro.trim() || "Sin observaciones.", pageW - 28);
     doc.text(obsLines, 14, y);
     y += Math.max(14, obsLines.length * 5 + 8);
 
-    if (y > pageH - 42) {
+    if (y > pageH - 32) {
       doc.addPage();
       y = 24;
     }
 
-    doc.setDrawColor(120);
-    doc.line(14, y + 10, 78, y + 10);
-    doc.line(82, y + 10, 146, y + 10);
-    doc.line(150, y + 10, pageW - 14, y + 10);
+    doc.setFillColor(...brand.bg);
+    doc.setDrawColor(...brand.line);
+    doc.roundedRect(14, y, pageW - 28, 18, 2, 2, "FD");
     doc.setFontSize(8);
-    doc.setTextColor(90);
-    doc.text("Entrega deposito", 46, y + 15, { align: "center" });
-    doc.text("Firma quien retira", 114, y + 15, { align: "center" });
-    doc.text("DNI / aclaracion", 178, y + 15, { align: "center" });
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brand.accentDark);
+    doc.text("Control interno", 18, y + 7);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...brand.text);
+    doc.text("Marcar cada corte en la columna Control al preparar y entregar el pedido.", 18, y + 14);
 
     doc.setFontSize(8);
-    doc.setTextColor(120);
+    doc.setTextColor(...brand.muted);
     doc.text("Presentar este comprobante al retirar. Verificar cantidad, material y medidas antes de entregar.", 14, pageH - 12);
 
     doc.save(`comprobante-retiro-cortes-${comprobanteNro}.pdf`);
