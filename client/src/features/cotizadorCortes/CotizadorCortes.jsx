@@ -61,6 +61,20 @@ function formatARS(n) {
 }
 
 const ALL_MATERIALES = MATERIALES.flatMap((grupo) => grupo.items);
+const MATERIAL_FAMILIAS = [
+  { key: "fibro-facil", aliases: ["fibro facil", "fibrofacil", "fibrofácil", "fibro fácil", "mdf"], matchName: ["fibro", "facil"] },
+  { key: "pino", aliases: ["tablero pino", "pino"], matchName: ["pino"] },
+  { key: "fenolico", aliases: ["fenolico", "fenólico"], matchName: ["fenolico"] },
+  { key: "pizarron", aliases: ["pizarron", "pizarrón"], matchName: ["pizarron"] },
+  { key: "fibro-plus", aliases: ["fibro plus", "fibroplus"], matchName: ["fibro", "plus"] },
+  { key: "osb", aliases: ["osb"], matchName: ["osb"] },
+  { key: "terciado", aliases: ["terciado"], matchName: ["terciado"] },
+  { key: "melamina-blanca", aliases: ["melamina blanca", "melamina blanco"], matchName: ["melamina", "blanca"] },
+  { key: "melamina-negra", aliases: ["melamina negra", "melamina negro"], matchName: ["melamina", "negra"] },
+  { key: "chapadur", aliases: ["chapadur", "chapadur perforado"], matchName: ["chapadur"] },
+  { key: "vidrio", aliases: ["vidrio"], matchName: ["vidrio"] },
+  { key: "espejo", aliases: ["espejo"], matchName: ["espejo"] },
+];
 
 function normalizeText(value) {
   return String(value || "")
@@ -73,6 +87,13 @@ function normalizeText(value) {
 
 function compactText(value) {
   return normalizeText(value).replace(/\s+/g, "");
+}
+
+function nombreMaterialNormalizado(material) {
+  return normalizeText(material.nombre)
+    .replace(/\bfa cil\b/g, "facil")
+    .replace(/\bfen lico\b/g, "fenolico")
+    .replace(/\bpizarr n\b/g, "pizarron");
 }
 
 function parseNumero(value) {
@@ -98,16 +119,62 @@ function extraerEspesorMm(linea) {
 
 function materialTieneEspesor(material, espesorMm) {
   if (!espesorMm) return false;
-  return normalizeText(material.nombre).includes(`${espesorMm} mm`);
+  return nombreMaterialNormalizado(material).includes(`${espesorMm} mm`);
+}
+
+function detectarFamiliaEnTexto(linea) {
+  const normalizedLine = normalizeText(linea);
+  const compactLine = compactText(linea);
+  return MATERIAL_FAMILIAS.find((familia) => (
+    familia.aliases.some((alias) => {
+      const normalizedAlias = normalizeText(alias);
+      return normalizedLine.includes(normalizedAlias) || compactLine.includes(compactText(alias));
+    })
+  )) || null;
+}
+
+function detectarFamiliaDeMaterial(material) {
+  const normalizedName = nombreMaterialNormalizado(material);
+  return MATERIAL_FAMILIAS.find((familia) => (
+    familia.matchName.every((token) => normalizedName.includes(token))
+  )) || null;
+}
+
+function materialesDeFamilia(familia) {
+  if (!familia) return [];
+  return ALL_MATERIALES.filter((material) => {
+    const normalizedName = nombreMaterialNormalizado(material);
+    return familia.matchName.every((token) => normalizedName.includes(token));
+  });
+}
+
+function elegirMaterialPorFamilia(familia, espesorMm, materialFallback) {
+  const candidatos = materialesDeFamilia(familia);
+  if (candidatos.length === 0) return null;
+  if (espesorMm) {
+    const exacto = candidatos.find((material) => materialTieneEspesor(material, espesorMm));
+    if (exacto) return exacto;
+  }
+  if (materialFallback) {
+    const fallbackEnFamilia = candidatos.find((material) => material.nombre === materialFallback.nombre);
+    if (fallbackEnFamilia) return fallbackEnFamilia;
+  }
+  return candidatos[0];
 }
 
 function buscarMaterialEnTexto(linea, materialFallback, espesorFallback = 0) {
   const normalizedLine = normalizeText(linea);
   const compactLine = compactText(linea);
   const espesorLinea = extraerEspesorMm(linea) || espesorFallback;
+  const familiaTexto = detectarFamiliaEnTexto(linea);
+  const familiaFallback = materialFallback ? detectarFamiliaDeMaterial(materialFallback) : null;
+  const materialPorFamilia = elegirMaterialPorFamilia(familiaTexto || familiaFallback, espesorLinea, materialFallback);
+
+  if (familiaTexto && materialPorFamilia) return materialPorFamilia;
+
   const scored = ALL_MATERIALES.map((material) => {
-    const normalizedName = normalizeText(material.nombre);
-    const compactName = compactText(material.nombre).replace(/\d+mm$/, "");
+    const normalizedName = nombreMaterialNormalizado(material);
+    const compactName = nombreMaterialNormalizado(material).replace(/\s+/g, "").replace(/\d+mm$/, "");
     const tokens = normalizedName.split(" ").filter((token) => token.length > 1 && token !== "mm");
     let score = tokens.reduce((acc, token) => acc + (normalizedLine.includes(token) ? 1 : 0), 0);
     if (compactName && compactLine.includes(compactName)) score += 2;
@@ -119,17 +186,7 @@ function buscarMaterialEnTexto(linea, materialFallback, espesorFallback = 0) {
     .sort((a, b) => b.score - a.score || b.material.nombre.length - a.material.nombre.length);
 
   if (scored[0]?.score >= 2) return scored[0].material;
-  if (materialFallback && espesorLinea) {
-    const familyTokens = normalizeText(materialFallback.nombre)
-      .split(" ")
-      .filter((token) => token.length > 1 && token !== "mm" && !/^\d+$/.test(token));
-    const sameFamily = ALL_MATERIALES.find((material) => {
-      const normalizedName = normalizeText(material.nombre);
-      return materialTieneEspesor(material, espesorLinea)
-        && familyTokens.some((token) => normalizedName.includes(token));
-    });
-    if (sameFamily) return sameFamily;
-  }
+  if (materialPorFamilia) return materialPorFamilia;
   return materialFallback || null;
 }
 
