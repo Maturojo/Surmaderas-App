@@ -298,6 +298,7 @@ export default function CotizadorCortes() {
   const [resultadoMasivo, setResultadoMasivo] = useState("");
   const [ocrStatus, setOcrStatus] = useState("");
   const [leyendoImagen, setLeyendoImagen] = useState(false);
+  const [cortesDetectados, setCortesDetectados] = useState([]);
   const tableRef = useRef(null);
 
   const materialSeleccionado = useMemo(() => {
@@ -318,6 +319,10 @@ export default function CotizadorCortes() {
     () => cortes.reduce((acc, c) => acc + Number(c.cantidad || 0), 0),
     [cortes]
   );
+
+  function getMaterialByName(nombre) {
+    return ALL_MATERIALES.find((material) => material.nombre === nombre) || null;
+  }
 
   function calcular() {
     const l = parseFloat(largo);
@@ -341,7 +346,7 @@ export default function CotizadorCortes() {
     setCantidad("");
   }
 
-  function cargarTextoMasivo() {
+  function revisarTextoMasivo() {
     const lineas = textoMasivo
       .split(/\r?\n/)
       .map((linea) => linea.trim())
@@ -354,18 +359,62 @@ export default function CotizadorCortes() {
 
     const { nuevos, errores } = parsearTextoCortes(textoMasivo, materialSeleccionado);
 
-    if (nuevos.length > 0) {
-      setCortes((prev) => [...prev, ...nuevos]);
-      setCostoActual(nuevos.reduce((acc, corte) => acc + corte.subtotal, 0));
-    }
+    setCortesDetectados(nuevos.map((corte) => ({ ...corte, tempId: corte.id })));
 
     setResultadoMasivo(
-      `${nuevos.length} cortes cargados${errores.length ? ` / ${errores.length} sin cargar` : ""}.`
+      `${nuevos.length} cortes detectados${errores.length ? ` / ${errores.length} sin interpretar` : ""}.`
     );
 
     if (errores.length > 0) {
-      alert(`Se cargaron ${nuevos.length} cortes.\n\nRevisar:\n${errores.slice(0, 6).join("\n")}`);
+      alert(`Se detectaron ${nuevos.length} cortes.\n\nRevisar:\n${errores.slice(0, 6).join("\n")}`);
     }
+  }
+
+  function actualizarCorteDetectado(tempId, patch) {
+    setCortesDetectados((prev) => prev.map((corte) => (
+      corte.tempId === tempId ? { ...corte, ...patch } : corte
+    )));
+  }
+
+  function eliminarCorteDetectado(tempId) {
+    setCortesDetectados((prev) => prev.filter((corte) => corte.tempId !== tempId));
+  }
+
+  function confirmarCortesDetectados() {
+    if (cortesDetectados.length === 0) {
+      alert("Primero interpretá una lista de cortes.");
+      return;
+    }
+
+    const nuevos = [];
+    for (const corte of cortesDetectados) {
+      const material = getMaterialByName(corte.material);
+      const l = parseNumero(corte.largo);
+      const a = parseNumero(corte.ancho);
+      const q = parseNumero(corte.cantidad);
+
+      if (!material || l <= 0 || a <= 0 || q <= 0) {
+        alert("Revisá material, medidas y cantidad antes de agregar los cortes.");
+        return;
+      }
+
+      const { costoUnd, subtotal } = calcularCorte(material, l, a, q);
+      nuevos.push({
+        id: nextId++,
+        cantidad: q,
+        material: material.nombre,
+        largo: l,
+        ancho: a,
+        costoUnd,
+        subtotal,
+        origen: "revisado",
+      });
+    }
+
+    setCortes((prev) => [...prev, ...nuevos]);
+    setCostoActual(nuevos.reduce((acc, corte) => acc + corte.subtotal, 0));
+    setCortesDetectados([]);
+    setResultadoMasivo(`${nuevos.length} cortes agregados a la cotizacion.`);
   }
 
   async function leerImagenCortes(event) {
@@ -907,8 +956,8 @@ export default function CotizadorCortes() {
             />
           </div>
           <div className="cc-bulkActions">
-            <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={cargarTextoMasivo}>
-              Cargar lista
+            <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={revisarTextoMasivo}>
+              Interpretar lista
             </button>
             <button type="button" className="cc-fileBtn" onClick={pegarDesdePortapapeles} disabled={leyendoImagen}>
               Pegar imagen/texto
@@ -922,6 +971,91 @@ export default function CotizadorCortes() {
             <div className="cc-importStatus">
               {resultadoMasivo && <span>{resultadoMasivo}</span>}
               {ocrStatus && <span>{ocrStatus}</span>}
+            </div>
+          )}
+          {cortesDetectados.length > 0 && (
+            <div className="cc-review">
+              <div className="cc-reviewHead">
+                <div>
+                  <h3 className="cc-reviewTitle">Revisá antes de agregar</h3>
+                  <p className="cc-reviewCopy">Corregí material, medidas o cantidad si algo salió mal.</p>
+                </div>
+                <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={confirmarCortesDetectados}>
+                  Agregar cortes revisados
+                </button>
+              </div>
+              <div className="cc-reviewList">
+                {cortesDetectados.map((corte, index) => {
+                  const material = getMaterialByName(corte.material);
+                  const l = parseNumero(corte.largo);
+                  const a = parseNumero(corte.ancho);
+                  const q = parseNumero(corte.cantidad);
+                  const subtotalPreview = material && l > 0 && a > 0 && q > 0
+                    ? calcularCorte(material, l, a, q).subtotal
+                    : 0;
+
+                  return (
+                    <div className="cc-reviewRow" key={corte.tempId}>
+                      <span className="cc-reviewIndex">{index + 1}</span>
+                      <label className="cc-reviewField cc-reviewField--material">
+                        <span>Material</span>
+                        <select
+                          className="cc-select"
+                          value={corte.material}
+                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { material: e.target.value })}
+                        >
+                          {MATERIALES.map((grupo) => (
+                            <optgroup key={grupo.grupo} label={grupo.grupo}>
+                              {grupo.items.map((m) => (
+                                <option key={m.nombre} value={m.nombre}>{m.nombre}</option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="cc-reviewField">
+                        <span>Largo cm</span>
+                        <input
+                          type="number"
+                          className="cc-input"
+                          value={corte.largo}
+                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { largo: e.target.value })}
+                        />
+                      </label>
+                      <label className="cc-reviewField">
+                        <span>Ancho cm</span>
+                        <input
+                          type="number"
+                          className="cc-input"
+                          value={corte.ancho}
+                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { ancho: e.target.value })}
+                        />
+                      </label>
+                      <label className="cc-reviewField">
+                        <span>Cant.</span>
+                        <input
+                          type="number"
+                          className="cc-input"
+                          value={corte.cantidad}
+                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { cantidad: e.target.value })}
+                        />
+                      </label>
+                      <div className="cc-reviewSubtotal">
+                        <span>Subtotal</span>
+                        <strong>$ {formatARS(subtotalPreview)}</strong>
+                      </div>
+                      <button
+                        type="button"
+                        className="cc-reviewRemove"
+                        onClick={() => eliminarCorteDetectado(corte.tempId)}
+                        title="Quitar corte detectado"
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </section>

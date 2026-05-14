@@ -404,6 +404,106 @@
   font-weight: 700;
 }
 
+.cc-review {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--sm-line);
+}
+
+.cc-reviewHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cc-reviewTitle {
+  margin: 0 0 4px;
+  color: #2d2117;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.cc-reviewCopy {
+  margin: 0;
+  color: #7b6d60;
+  font-size: 13px;
+}
+
+.cc-reviewList {
+  display: grid;
+  gap: 10px;
+}
+
+.cc-reviewRow {
+  display: grid;
+  grid-template-columns: 34px minmax(220px, 1.4fr) 110px 110px 90px 130px 82px;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--sm-line);
+  border-radius: 8px;
+  background: #faf8f5;
+}
+
+.cc-reviewIndex {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border-radius: 8px;
+  background: #2d2117;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cc-reviewField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.cc-reviewField span,
+.cc-reviewSubtotal span {
+  color: #896846;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cc-reviewSubtotal {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  align-content: center;
+}
+
+.cc-reviewSubtotal strong {
+  color: #2d2117;
+  font-size: 14px;
+}
+
+.cc-reviewRemove {
+  min-height: 44px;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background: #fff;
+  color: #dc3545;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cc-reviewRemove:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
 .cc-btnReceiptWide {
   width: 100%;
   padding: 15px;
@@ -480,4 +580,14 @@
   .cc-totalAmount { font-size: 22px; }
   .cc-btnCalc--inline,
   .cc-fileBtn { width: 100%; }
+  .cc-reviewHead,
+  .cc-reviewRow {
+    grid-template-columns: 1fr;
+  }
+  .cc-reviewHead {
+    display: grid;
+  }
+  .cc-reviewIndex {
+    align-self: start;
+  }
 }
