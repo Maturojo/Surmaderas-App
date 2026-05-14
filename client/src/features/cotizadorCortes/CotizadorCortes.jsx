@@ -270,6 +270,16 @@ function parsearTextoCortes(texto, materialFallback) {
   return { nuevos, errores, totalLineas: lineas.length };
 }
 
+function esArchivoTexto(file) {
+  const name = String(file?.name || "").toLowerCase();
+  const type = String(file?.type || "").toLowerCase();
+  return type.startsWith("text/")
+    || type.includes("csv")
+    || name.endsWith(".txt")
+    || name.endsWith(".csv")
+    || name.endsWith(".tsv");
+}
+
 let nextId = 1;
 
 export default function CotizadorCortes() {
@@ -387,6 +397,124 @@ export default function CotizadorCortes() {
     } finally {
       setLeyendoImagen(false);
       event.target.value = "";
+    }
+  }
+
+  function agregarTextoDetectado(text, mensaje = "Texto detectado. Revisalo y toca Cargar lista.") {
+    const cleanText = String(text || "").trim();
+    if (!cleanText) {
+      setOcrStatus("No se detecto texto util.");
+      return;
+    }
+
+    setTextoMasivo((prev) => [prev.trim(), cleanText].filter(Boolean).join("\n"));
+    setOcrStatus(mensaje);
+  }
+
+  async function leerImagenArchivo(file) {
+    if (!file) return;
+
+    setLeyendoImagen(true);
+    setOcrStatus("Leyendo imagen...");
+
+    try {
+      const Tesseract = await import("tesseract.js");
+      const result = await Tesseract.recognize(file, "spa+eng", {
+        logger: (info) => {
+          if (info.status === "recognizing text" && info.progress) {
+            setOcrStatus(`Leyendo imagen ${Math.round(info.progress * 100)}%`);
+          }
+        },
+      });
+      const text = result?.data?.text?.trim() || "";
+      if (!text) {
+        setOcrStatus("No se detecto texto en la imagen.");
+        return;
+      }
+      agregarTextoDetectado(text);
+    } catch (error) {
+      console.error(error);
+      setOcrStatus("No se pudo leer la imagen. Proba con una foto mas nitida.");
+    } finally {
+      setLeyendoImagen(false);
+    }
+  }
+
+  async function procesarArchivoEntrada(file) {
+    if (!file) return;
+
+    if (String(file.type || "").startsWith("image/")) {
+      await leerImagenArchivo(file);
+      return;
+    }
+
+    if (esArchivoTexto(file)) {
+      try {
+        setLeyendoImagen(true);
+        setOcrStatus("Leyendo documento...");
+        const text = await file.text();
+        agregarTextoDetectado(text, "Documento leido. Revisalo y toca Cargar lista.");
+      } catch (error) {
+        console.error(error);
+        setOcrStatus("No se pudo leer el documento.");
+      } finally {
+        setLeyendoImagen(false);
+      }
+      return;
+    }
+
+    setOcrStatus("Formato no compatible. Subi imagen, TXT, CSV o TSV; para PDF/Word copia el texto o pega una captura.");
+  }
+
+  async function leerArchivoCortes(event) {
+    const file = event.target.files?.[0];
+    await procesarArchivoEntrada(file);
+    event.target.value = "";
+  }
+
+  async function pegarDesdePortapapeles() {
+    try {
+      if (!navigator.clipboard?.read) {
+        setOcrStatus("Tu navegador no permite leer el portapapeles con este boton. Proba Ctrl+V sobre el cuadro.");
+        return;
+      }
+
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find((candidate) => candidate.startsWith("image/"));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          await leerImagenArchivo(new File([blob], "cortes-pegados.png", { type: imageType }));
+          return;
+        }
+
+        const textType = item.types.find((candidate) => candidate === "text/plain" || candidate.startsWith("text/"));
+        if (textType) {
+          const blob = await item.getType(textType);
+          agregarTextoDetectado(await blob.text(), "Texto pegado desde el portapapeles.");
+          return;
+        }
+      }
+
+      setOcrStatus("No encontramos texto ni imagen en el portapapeles.");
+    } catch (error) {
+      console.error(error);
+      setOcrStatus("No se pudo pegar desde el portapapeles. Proba Ctrl+V sobre el cuadro.");
+    }
+  }
+
+  async function handleTextoMasivoPaste(event) {
+    const files = Array.from(event.clipboardData?.files || []);
+    const imageOrTextFile = files.find((file) => String(file.type || "").startsWith("image/") || esArchivoTexto(file));
+    if (imageOrTextFile) {
+      event.preventDefault();
+      await procesarArchivoEntrada(imageOrTextFile);
+      return;
+    }
+
+    const pastedText = event.clipboardData?.getData("text/plain");
+    if (pastedText?.trim()) {
+      setOcrStatus("Texto pegado. Revisalo y toca Cargar lista.");
     }
   }
 
@@ -764,8 +892,8 @@ export default function CotizadorCortes() {
             <span className="cc-stepLabel">Carga rapida por texto o imagen</span>
           </div>
           <p className="cc-nota">
-            Puede leer un corte por linea o un bloque con material y espesor. Ej: De madera Fibrofacil,
-            medidas debajo y al final "Todas de 5mm". Si falta material, usa el seleccionado arriba.
+            Puede leer texto, imagenes pegadas o subidas, y documentos TXT/CSV/TSV. Para PDF o Word,
+            copiá el texto al cuadro o pegá una captura.
           </p>
           <div className="cc-field">
             <label className="cc-fieldLabel">Lista de cortes</label>
@@ -775,15 +903,19 @@ export default function CotizadorCortes() {
               rows={6}
               value={textoMasivo}
               onChange={(e) => setTextoMasivo(e.target.value)}
+              onPaste={handleTextoMasivoPaste}
             />
           </div>
           <div className="cc-bulkActions">
             <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={cargarTextoMasivo}>
               Cargar lista
             </button>
+            <button type="button" className="cc-fileBtn" onClick={pegarDesdePortapapeles} disabled={leyendoImagen}>
+              Pegar imagen/texto
+            </button>
             <label className={`cc-fileBtn${leyendoImagen ? " is-loading" : ""}`}>
-              <input type="file" accept="image/*" onChange={leerImagenCortes} disabled={leyendoImagen} />
-              Leer imagen
+              <input type="file" accept="image/*,.txt,.csv,.tsv,text/plain,text/csv,text/tab-separated-values" onChange={leerArchivoCortes} disabled={leyendoImagen} />
+              Subir imagen/doc
             </label>
           </div>
           {(resultadoMasivo || ocrStatus) && (
