@@ -71,6 +71,10 @@ function normalizeText(value) {
     .trim();
 }
 
+function compactText(value) {
+  return normalizeText(value).replace(/\s+/g, "");
+}
+
 function parseNumero(value) {
   const parsed = parseFloat(String(value || "").replace(",", "."));
   return Number.isFinite(parsed) ? parsed : 0;
@@ -85,17 +89,47 @@ function calcularCorte(material, largoCm, anchoCm, cantidadValue) {
   return { costoUnd, subtotal };
 }
 
-function buscarMaterialEnTexto(linea, materialFallback) {
+function extraerEspesorMm(linea) {
   const normalizedLine = normalizeText(linea);
+  const match = normalizedLine.match(/(?:espesor|espero|esp|e)\s*(?:de)?\s*(\d+(?:[.,]\d+)?)\s*mm\b/)
+    || normalizedLine.match(/\b(\d+(?:[.,]\d+)?)\s*mm\b/);
+  return match ? parseNumero(match[1]) : 0;
+}
+
+function materialTieneEspesor(material, espesorMm) {
+  if (!espesorMm) return false;
+  return normalizeText(material.nombre).includes(`${espesorMm} mm`);
+}
+
+function buscarMaterialEnTexto(linea, materialFallback, espesorFallback = 0) {
+  const normalizedLine = normalizeText(linea);
+  const compactLine = compactText(linea);
+  const espesorLinea = extraerEspesorMm(linea) || espesorFallback;
   const scored = ALL_MATERIALES.map((material) => {
-    const tokens = normalizeText(material.nombre).split(" ").filter((token) => token.length > 1);
-    const score = tokens.reduce((acc, token) => acc + (normalizedLine.includes(token) ? 1 : 0), 0);
+    const normalizedName = normalizeText(material.nombre);
+    const compactName = compactText(material.nombre).replace(/\d+mm$/, "");
+    const tokens = normalizedName.split(" ").filter((token) => token.length > 1 && token !== "mm");
+    let score = tokens.reduce((acc, token) => acc + (normalizedLine.includes(token) ? 1 : 0), 0);
+    if (compactName && compactLine.includes(compactName)) score += 2;
+    if (espesorLinea && materialTieneEspesor(material, espesorLinea)) score += 3;
+    if (espesorLinea && !materialTieneEspesor(material, espesorLinea)) score -= 2;
     return { material, score };
   })
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || b.material.nombre.length - a.material.nombre.length);
 
   if (scored[0]?.score >= 2) return scored[0].material;
+  if (materialFallback && espesorLinea) {
+    const familyTokens = normalizeText(materialFallback.nombre)
+      .split(" ")
+      .filter((token) => token.length > 1 && token !== "mm" && !/^\d+$/.test(token));
+    const sameFamily = ALL_MATERIALES.find((material) => {
+      const normalizedName = normalizeText(material.nombre);
+      return materialTieneEspesor(material, espesorLinea)
+        && familyTokens.some((token) => normalizedName.includes(token));
+    });
+    if (sameFamily) return sameFamily;
+  }
   return materialFallback || null;
 }
 
@@ -111,7 +145,7 @@ function extraerCantidad(linea, dimensionMatch) {
   return Math.max(1, parseNumero(value) || 1);
 }
 
-function parsearLineaCorte(linea, materialFallback) {
+function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
   const dimensionMatch = linea.match(/(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|×|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   if (!dimensionMatch) return { error: "No se encontro una medida tipo 120x60." };
 
@@ -124,7 +158,7 @@ function parsearLineaCorte(linea, materialFallback) {
   }
 
   const cantidadValue = extraerCantidad(linea, dimensionMatch);
-  const material = buscarMaterialEnTexto(linea, materialFallback);
+  const material = buscarMaterialEnTexto(linea, materialFallback, espesorFallback);
 
   if (!material) return { error: "No se encontro material y no hay material seleccionado." };
   if (largoCm <= 0 || anchoCm <= 0 || cantidadValue <= 0) return { error: "Medidas o cantidad invalidas." };
@@ -142,6 +176,41 @@ function parsearLineaCorte(linea, materialFallback) {
       origen: "texto",
     },
   };
+}
+
+function lineaTieneMedida(linea) {
+  return /(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)/.test(linea);
+}
+
+function parsearTextoCortes(texto, materialFallback) {
+  const lineas = texto
+    .split(/\r?\n/)
+    .map((linea) => linea.trim())
+    .filter(Boolean);
+  const espesorGlobal = lineas.reduce((acc, linea) => acc || extraerEspesorMm(linea), 0);
+  let materialContexto = materialFallback || null;
+
+  lineas.forEach((linea) => {
+    if (lineaTieneMedida(linea)) return;
+    const materialDetectado = buscarMaterialEnTexto(linea, materialContexto, espesorGlobal);
+    if (materialDetectado) materialContexto = materialDetectado;
+  });
+
+  const nuevos = [];
+  const errores = [];
+  lineas.forEach((linea, index) => {
+    if (!lineaTieneMedida(linea)) return;
+    const materialLinea = buscarMaterialEnTexto(linea, materialContexto, espesorGlobal);
+    const parsed = parsearLineaCorte(linea, materialLinea, espesorGlobal);
+    if (parsed.corte) nuevos.push(parsed.corte);
+    else errores.push(`Linea ${index + 1}: ${parsed.error}`);
+  });
+
+  if (nuevos.length === 0 && errores.length === 0) {
+    errores.push("No se encontro ninguna medida tipo 120x60.");
+  }
+
+  return { nuevos, errores, totalLineas: lineas.length };
 }
 
 let nextId = 1;
@@ -216,13 +285,7 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const nuevos = [];
-    const errores = [];
-    lineas.forEach((linea, index) => {
-      const parsed = parsearLineaCorte(linea, materialSeleccionado);
-      if (parsed.corte) nuevos.push(parsed.corte);
-      else errores.push(`Linea ${index + 1}: ${parsed.error}`);
-    });
+    const { nuevos, errores } = parsearTextoCortes(textoMasivo, materialSeleccionado);
 
     if (nuevos.length > 0) {
       setCortes((prev) => [...prev, ...nuevos]);
@@ -644,14 +707,14 @@ export default function CotizadorCortes() {
             <span className="cc-stepLabel">Carga rapida por texto o imagen</span>
           </div>
           <p className="cc-nota">
-            Un corte por linea. Ej: 2 melamina blanca 18 120x60, fibro 3mm 30 x 40 x 5, 80x30 cant 4.
-            Si la linea no dice material, usa el material seleccionado arriba.
+            Puede leer un corte por linea o un bloque con material y espesor. Ej: De madera Fibrofacil,
+            medidas debajo y al final "Todas de 5mm". Si falta material, usa el seleccionado arriba.
           </p>
           <div className="cc-field">
             <label className="cc-fieldLabel">Lista de cortes</label>
             <textarea
               className="cc-input cc-textarea cc-textarea--bulk"
-              placeholder={"2 Melamina Blanca 18 mm 120x60\nFibro Facil 3 mm 30 x 40 x 5\n80x30 cant 4"}
+              placeholder={"De madera Fibrofacil\n40 cm x 80 cm\n20 cm x 20 cm\n25 cm x 45 cm\nTodas del espesor de 5mm"}
               rows={6}
               value={textoMasivo}
               onChange={(e) => setTextoMasivo(e.target.value)}
