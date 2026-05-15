@@ -130,6 +130,14 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/mercado-libre/precios",
 ]);
 
+const CAJA_ALLOWED_PATHS = new Set([
+  "/notas-pedido",
+  "/notas-pedido/listado",
+  "/notas-pedido/guardadas",
+  "/notas-pedido/pendientes",
+  "/notas-pedido/deposito",
+]);
+
 const MODULE_ORDER_STORAGE_KEY = "surmaderas-module-order";
 
 function SidebarIcon({ name }) {
@@ -302,6 +310,7 @@ export default function AppLayout() {
 
   const baseNavItems = useMemo(() => {
     const visibleByCustomModules = (item) => {
+      if (userRole === "caja") return item.key === "pedidos";
       if (!hasCustomModules) return true;
       if (customModules.includes(item.key)) return true;
       if (item.key === "estadisticas" && customModules.includes("ventas")) return true;
@@ -310,6 +319,23 @@ export default function AppLayout() {
     };
 
     const visibleByRole = (item) => {
+      if (userRole === "caja") {
+        if (item.children) {
+          const children = item.children
+            .map((child) => {
+              if (child.children) {
+                const nestedChildren = child.children.filter((nested) => CAJA_ALLOWED_PATHS.has(nested.to));
+                return nestedChildren.length > 0 ? { ...child, children: nestedChildren } : null;
+              }
+              return CAJA_ALLOWED_PATHS.has(child.to) ? child : null;
+            })
+            .filter(Boolean);
+          return children.length > 0 ? { ...item, children } : null;
+        }
+
+        return CAJA_ALLOWED_PATHS.has(item.to) ? item : null;
+      }
+
       if (userRole !== "ventas") return item;
 
       if (item.children) {

@@ -79,7 +79,7 @@ export const router = createBrowserRouter([
       {
         path: "notas-pedido/listado",
         element: (
-          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+          <ProtectedRoute allowedRoles={["admin", "taller", "caja"]}>
             <NotasPedidoListado />
           </ProtectedRoute>
         ),
@@ -89,7 +89,7 @@ export const router = createBrowserRouter([
       {
         path: "notas-pedido/guardadas",
         element: (
-          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+          <ProtectedRoute allowedRoles={["admin", "taller", "caja"]}>
             <NotasPedidoGuardadas />
           </ProtectedRoute>
         ),
@@ -97,7 +97,7 @@ export const router = createBrowserRouter([
       {
         path: "notas-pedido/pendientes",
         element: (
-          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+          <ProtectedRoute allowedRoles={["admin", "taller", "caja"]}>
             <NotasPedidoPendientes />
           </ProtectedRoute>
         ),
@@ -105,7 +105,7 @@ export const router = createBrowserRouter([
       {
         path: "notas-pedido/deposito",
         element: (
-          <ProtectedRoute allowedRoles={["admin", "taller"]}>
+          <ProtectedRoute allowedRoles={["admin", "taller", "caja"]}>
             <NotasPedidoDeposito />
           </ProtectedRoute>
         ),

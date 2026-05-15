@@ -40,6 +40,7 @@ const INITIAL_EDIT_FORM = {
 
 const ROLES = [
   { value: "ventas", label: "Ventas" },
+  { value: "caja", label: "Caja" },
   { value: "taller", label: "Taller" },
   { value: "admin", label: "Admin" },
 ];

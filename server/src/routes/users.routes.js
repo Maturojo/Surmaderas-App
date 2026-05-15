@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(requireAuth, requireRole("admin"));
 
-const VALID_ROLES = ["admin", "ventas", "taller"];
+const VALID_ROLES = ["admin", "ventas", "taller", "caja"];
 
 function sanitizeUser(user) {
   return {

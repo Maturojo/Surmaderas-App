@@ -28,6 +28,7 @@ export function getUserRole() {
 }
 
 export function getDefaultHomeByRole(role = getUserRole()) {
+  if (role === "caja") return "/notas-pedido/listado";
   return role === "ventas" ? "/dashboard" : "/dashboard";
 }
 
