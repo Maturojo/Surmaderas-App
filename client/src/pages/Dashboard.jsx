@@ -512,7 +512,7 @@ export default function Dashboard() {
             <div className="dashboard-kicker">Panel diario operativo</div>
             <h2>Hoy hay que mirar esto</h2>
           </div>
-          <Link className="dashboard-alertCalendarLink" to="/ventas/estadisticas">
+          <Link className="dashboard-alertCalendarLink" to="/estadisticas">
             Ver estadisticas
           </Link>
         </div>

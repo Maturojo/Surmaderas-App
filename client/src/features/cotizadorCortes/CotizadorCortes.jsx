@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { jsPDF } from "jspdf";
 import "../../css/cotizador-cortes.css";
+import { trackModuleUsage } from "../../services/estadisticas";
 
 const MATERIALES = [
   {
@@ -283,6 +284,10 @@ function esArchivoTexto(file) {
 let nextId = 1;
 
 export default function CotizadorCortes() {
+  useEffect(() => {
+    trackModuleUsage("Cotizador de cortes", "cotizadores");
+  }, []);
+
   const [materialKey, setMaterialKey] = useState("");
   const [largo, setLargo] = useState("");
   const [ancho, setAncho] = useState("");

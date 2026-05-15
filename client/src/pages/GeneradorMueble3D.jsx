@@ -10,8 +10,13 @@ import {
   defaultSideBottom,
   defaultSideTop,
 } from "../features/muebles3d/constants/defaults";
+import { trackModuleUsage } from "../services/estadisticas";
 
 export default function GeneradorMueble3D() {
+  useEffect(() => {
+    trackModuleUsage("Generador 3D", "herramientas");
+  }, []);
+
   // Presets de medidas reales por tipo (mm)
   const DIM_PRESETS = useMemo(
     () => ({

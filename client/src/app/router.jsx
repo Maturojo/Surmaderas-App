@@ -30,6 +30,7 @@ import FormularioClientes from "../pages/FormularioClientes.jsx";
 import EncuestasCupones from "../pages/EncuestasCupones.jsx";
 import VentasMensuales from "../pages/VentasMensuales.jsx";
 import MercadoLibre from "../pages/MercadoLibre.jsx";
+import Estadisticas from "../pages/Estadisticas.jsx";
 
 import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
 import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
@@ -64,6 +65,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "calendario", element: <CalendarOperativo /> },
+      {
+        path: "estadisticas",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
+            <Estadisticas />
+          </ProtectedRoute>
+        ),
+      },
 
       { path: "notas-pedido", element: <NotasPedido /> },
       { path: "notas-pedido/editar/:id", element: <NotasPedido /> },

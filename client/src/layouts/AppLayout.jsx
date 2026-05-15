@@ -16,6 +16,7 @@ function HamburgerIcon({ open }) {
 const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", to: "/dashboard", icon: "dashboard" },
   { key: "calendario", label: "Calendario", to: "/calendario", icon: "calendar" },
+  { key: "estadisticas", label: "Estadisticas", to: "/estadisticas", icon: "stats" },
   {
     key: "pedidos",
     label: "Pedidos",
@@ -103,6 +104,7 @@ const NAV_ITEMS = [
 const VENTAS_ALLOWED_PATHS = new Set([
   "/dashboard",
   "/calendario",
+  "/estadisticas",
   "/notas-pedido",
   "/presupuestos/cargar",
   "/presupuestos/proveedores",
@@ -235,6 +237,7 @@ function SidebarIcon({ name }) {
         </svg>
       );
     case "sales":
+    case "stats":
       return (
         <svg {...common}>
           <path d="M4 19V5" />
@@ -301,6 +304,7 @@ export default function AppLayout() {
     const visibleByCustomModules = (item) => {
       if (!hasCustomModules) return true;
       if (customModules.includes(item.key)) return true;
+      if (item.key === "estadisticas" && customModules.includes("ventas")) return true;
       if (item.key === "negocio-online" && customModules.includes("whatsapp")) return true;
       return false;
     };

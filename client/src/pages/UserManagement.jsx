@@ -5,6 +5,7 @@ import { createUser, getUsers, updateUser } from "../services/users";
 const ALL_MODULES = [
   { key: "dashboard", label: "Dashboard" },
   { key: "calendario", label: "Calendario" },
+  { key: "estadisticas", label: "Estadisticas" },
   { key: "pedidos", label: "Pedidos" },
   { key: "presupuestos", label: "Presupuestos" },
   { key: "marcos", label: "Cotizador de marcos" },

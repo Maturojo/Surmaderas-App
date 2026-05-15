@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { trackModuleUsage } from "../services/estadisticas";
 
 const BAR_LENGTH_METERS = 3.05;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
@@ -984,6 +985,10 @@ function useIsMobile(maxWidth = 820) {
 }
 
 export default function CotizadorMarcos() {
+  useEffect(() => {
+    trackModuleUsage("Cotizador de marcos", "cotizadores");
+  }, []);
+
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);

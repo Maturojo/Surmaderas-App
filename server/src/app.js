@@ -14,6 +14,7 @@ import calendarRoutes from "./routes/calendar.routes.js";
 import clientsRoutes from "./routes/clients.routes.js";
 import encuestasRoutes from "./routes/encuestas.routes.js";
 import ventasMensualesRoutes from "./routes/ventasMensuales.routes.js";
+import estadisticasRoutes from "./routes/estadisticas.routes.js";
 
 function getAllowedOrigins() {
   const extraOrigins = String(process.env.CORS_ORIGINS || "")
@@ -80,6 +81,7 @@ export function createApp() {
   app.use("/api/clients", clientsRoutes);
   app.use("/api/encuestas", encuestasRoutes);
   app.use("/api/ventas-mensuales", ventasMensualesRoutes);
+  app.use("/api/estadisticas", estadisticasRoutes);
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
