@@ -30,7 +30,7 @@ function formatMoney(value) {
 
 function shortLabel(value) {
   const text = String(value || "Sin dato");
-  return text.length > 22 ? `${text.slice(0, 19)}...` : text;
+  return text.length > 28 ? `${text.slice(0, 25)}...` : text;
 }
 
 function goalPercent(value, goal) {
@@ -100,7 +100,7 @@ export default function Estadisticas() {
   const summary = data?.summary || {};
   const rankings = data?.rankings || {};
   const sellersChart = useMemo(() => chartData(rankings.sellers), [rankings.sellers]);
-  const itemsChart = useMemo(() => chartData(rankings.soldItems), [rankings.soldItems]);
+  const itemsChart = useMemo(() => chartData(rankings.soldItems, 7), [rankings.soldItems]);
   const modulesChart = useMemo(() => chartData(rankings.moduleUsage), [rankings.moduleUsage]);
   const categoriesChart = useMemo(() => chartData(rankings.categories), [rankings.categories]);
   const salesProgress = goalPercent(summary.salesTotal, summary.salesGoal);
@@ -173,15 +173,18 @@ export default function Estadisticas() {
 
             <article className="stats-panel">
               <div className="stats-panelTitle">Lo que mas se vendio</div>
-              <div className="stats-chart">
+              <div className="stats-chart stats-chart--horizontal">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={itemsChart}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
-                    <YAxis />
-                    <Tooltip formatter={(value, name) => (name === "Cantidad" ? value : formatMoney(value))} />
+                  <BarChart data={itemsChart} layout="vertical" margin={{ top: 8, right: 18, bottom: 8, left: 18 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" allowDecimals={false} />
+                    <YAxis type="category" dataKey="name" width={170} tick={{ fontSize: 12 }} />
+                    <Tooltip
+                      formatter={(value) => [`${value} unidades`, "Cantidad"]}
+                      labelFormatter={(_, payload) => payload?.[0]?.payload?.label || "Producto"}
+                    />
                     <Legend />
-                    <Bar dataKey="count" name="Cantidad" fill="#2f5f74" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="count" name="Cantidad" fill="#2f5f74" radius={[0, 8, 8, 0]} barSize={18} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

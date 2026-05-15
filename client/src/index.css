@@ -2539,6 +2539,10 @@ textarea {
   margin-top: 14px;
 }
 
+.stats-chart--horizontal {
+  height: 340px;
+}
+
 .stats-ranking {
   display: grid;
   gap: 10px;
