@@ -6,17 +6,73 @@ const ALL_MODULES = [
   { key: "dashboard", label: "Dashboard" },
   { key: "calendario", label: "Calendario" },
   { key: "estadisticas", label: "Estadisticas" },
-  { key: "pedidos", label: "Pedidos" },
-  { key: "presupuestos", label: "Presupuestos" },
+  {
+    key: "pedidos",
+    label: "Pedidos",
+    children: [
+      { label: "Generador de pedidos", path: "/notas-pedido" },
+      { label: "Pedidos en caja", path: "/notas-pedido/listado" },
+      { label: "Pedidos para pasar", path: "/notas-pedido/guardadas" },
+      { label: "Pedidos en taller", path: "/notas-pedido/pendientes" },
+      { label: "Pedidos en depositos", path: "/notas-pedido/deposito" },
+    ],
+  },
+  {
+    key: "presupuestos",
+    label: "Presupuestos",
+    children: [
+      { label: "Generar presupuesto", path: "/presupuestos/generar" },
+      { label: "Cargar", path: "/presupuestos/cargar" },
+      { label: "Guardadas", path: "/presupuestos/guardadas" },
+      { label: "Proveedores especiales", path: "/presupuestos/proveedores" },
+    ],
+  },
   { key: "marcos", label: "Cotizador de marcos" },
   { key: "cotizador-cortes", label: "Cotizador de cortes" },
   { key: "productos", label: "Productos" },
   { key: "placas", label: "Placas" },
   { key: "encuestas", label: "Encuestas" },
-  { key: "ventas", label: "Ventas" },
-  { key: "proveedores", label: "Proveedores" },
+  {
+    key: "ventas",
+    label: "Ventas",
+    children: [
+      { label: "Ventas del mes", path: "/ventas/lista" },
+      { label: "Nueva venta", path: "/ventas/nueva" },
+      { label: "Estadisticas", path: "/ventas/estadisticas" },
+      { label: "Objetivos y configuracion", path: "/ventas/objetivos" },
+      { label: "Transferencias", path: "/ventas/transferencias" },
+    ],
+  },
+  {
+    key: "proveedores",
+    label: "Proveedores",
+    children: [
+      { label: "Panel de proveedores", path: "/proveedores" },
+      { label: "Pedidos", path: "/pedidos-proveedor" },
+    ],
+  },
   { key: "generador-3d", label: "Generador 3D" },
-  { key: "negocio-online", label: "Negocio Online" },
+  {
+    key: "negocio-online",
+    label: "Negocio Online",
+    children: [
+      { label: "WhatsApp - Control manual", path: "/whatsapp/control" },
+      { label: "WhatsApp - Conversaciones", path: "/whatsapp" },
+      { label: "WhatsApp - Presupuestos", path: "/whatsapp/presupuestos" },
+      { label: "WhatsApp - Broadcast", path: "/whatsapp/broadcast" },
+      { label: "WhatsApp - FAQs", path: "/whatsapp/faqs" },
+      { label: "WhatsApp - Respuestas rapidas", path: "/whatsapp/quick-replies" },
+      { label: "WhatsApp - Estadisticas", path: "/whatsapp/stats" },
+      { label: "WhatsApp - Configuracion", path: "/whatsapp/settings" },
+      { label: "Mercado Libre - Dashboard", path: "/mercado-libre" },
+      { label: "Mercado Libre - Productos", path: "/mercado-libre/productos" },
+      { label: "Mercado Libre - Publicaciones", path: "/mercado-libre/publicaciones" },
+      { label: "Mercado Libre - Pedidos", path: "/mercado-libre/pedidos" },
+      { label: "Mercado Libre - Preguntas", path: "/mercado-libre/preguntas" },
+      { label: "Mercado Libre - Pendientes", path: "/mercado-libre/pendientes" },
+      { label: "Mercado Libre - Precios", path: "/mercado-libre/precios" },
+    ],
+  },
 ];
 
 const INITIAL_CREATE_FORM = {
@@ -26,6 +82,7 @@ const INITIAL_CREATE_FORM = {
   role: "ventas",
   isActive: true,
   allowedModules: [],
+  allowedSubmodules: [],
 };
 
 const INITIAL_EDIT_FORM = {
@@ -36,6 +93,7 @@ const INITIAL_EDIT_FORM = {
   role: "ventas",
   isActive: true,
   allowedModules: [],
+  allowedSubmodules: [],
 };
 
 const ROLES = [
@@ -51,6 +109,18 @@ function normalizeUserId(user) {
 
 function getRoleLabel(role) {
   return ROLES.find((item) => item.value === role)?.label || role || "-";
+}
+
+function getModuleChildren(key) {
+  return ALL_MODULES.find((item) => item.key === key)?.children || [];
+}
+
+function cleanSubmodulesForModules(submodules, modules) {
+  const allowedPaths = ALL_MODULES
+    .filter((mod) => modules.includes(mod.key))
+    .flatMap((mod) => mod.children || [])
+    .map((child) => child.path);
+  return submodules.filter((path) => allowedPaths.includes(path));
 }
 
 function formatDate(value) {
@@ -154,11 +224,13 @@ export default function UserManagement() {
   function toggleCreateModule(key) {
     setCreateForm((current) => {
       const has = current.allowedModules.includes(key);
+      const nextModules = has
+        ? current.allowedModules.filter((k) => k !== key)
+        : [...current.allowedModules, key];
       return {
         ...current,
-        allowedModules: has
-          ? current.allowedModules.filter((k) => k !== key)
-          : [...current.allowedModules, key],
+        allowedModules: nextModules,
+        allowedSubmodules: cleanSubmodulesForModules(current.allowedSubmodules, nextModules),
       };
     });
   }
@@ -166,11 +238,45 @@ export default function UserManagement() {
   function toggleEditModule(key) {
     setEditForm((current) => {
       const has = current.allowedModules.includes(key);
+      const nextModules = has
+        ? current.allowedModules.filter((k) => k !== key)
+        : [...current.allowedModules, key];
       return {
         ...current,
-        allowedModules: has
-          ? current.allowedModules.filter((k) => k !== key)
-          : [...current.allowedModules, key],
+        allowedModules: nextModules,
+        allowedSubmodules: cleanSubmodulesForModules(current.allowedSubmodules, nextModules),
+      };
+    });
+  }
+
+  function toggleCreateSubmodule(moduleKey, path) {
+    setCreateForm((current) => {
+      const allowedModules = current.allowedModules.includes(moduleKey)
+        ? current.allowedModules
+        : [...current.allowedModules, moduleKey];
+      const has = current.allowedSubmodules.includes(path);
+      return {
+        ...current,
+        allowedModules,
+        allowedSubmodules: has
+          ? current.allowedSubmodules.filter((item) => item !== path)
+          : [...current.allowedSubmodules, path],
+      };
+    });
+  }
+
+  function toggleEditSubmodule(moduleKey, path) {
+    setEditForm((current) => {
+      const allowedModules = current.allowedModules.includes(moduleKey)
+        ? current.allowedModules
+        : [...current.allowedModules, moduleKey];
+      const has = current.allowedSubmodules.includes(path);
+      return {
+        ...current,
+        allowedModules,
+        allowedSubmodules: has
+          ? current.allowedSubmodules.filter((item) => item !== path)
+          : [...current.allowedSubmodules, path],
       };
     });
   }
@@ -184,6 +290,7 @@ export default function UserManagement() {
       role: user.role || "ventas",
       isActive: user.isActive !== false,
       allowedModules: user.allowedModules || [],
+      allowedSubmodules: user.allowedSubmodules || [],
     });
     setError("");
     setSuccess("");
@@ -207,6 +314,7 @@ export default function UserManagement() {
       const response = await createUser({
         ...createForm,
         allowedModules: createForm.role === "admin" ? [] : createForm.allowedModules,
+        allowedSubmodules: createForm.role === "admin" ? [] : createForm.allowedSubmodules,
       });
       setUsers((current) => [response.user, ...current]);
       setCreateForm(INITIAL_CREATE_FORM);
@@ -238,6 +346,7 @@ export default function UserManagement() {
         role: editForm.role,
         isActive: editForm.isActive,
         allowedModules: editForm.role === "admin" ? [] : editForm.allowedModules,
+        allowedSubmodules: editForm.role === "admin" ? [] : editForm.allowedSubmodules,
       });
 
       setUsers((current) =>
@@ -267,6 +376,7 @@ export default function UserManagement() {
         role: user.role,
         isActive: nextIsActive,
         allowedModules: user.allowedModules || [],
+        allowedSubmodules: user.allowedSubmodules || [],
       });
 
       setUsers((current) =>
@@ -283,6 +393,61 @@ export default function UserManagement() {
     } finally {
       setIsUpdating(false);
     }
+  }
+
+  function renderModulePermissions(form, { onToggleModule, onToggleSubmodule, onReset }) {
+    return (
+      <div className="config-usersModules">
+        <div className="config-usersModulesTitle">
+          Modulos visibles
+          {form.allowedModules.length === 0 ? (
+            <span className="config-usersModulesHint"> (predeterminados del rol)</span>
+          ) : null}
+        </div>
+        <div className="config-usersModulesGrid">
+          {ALL_MODULES.map((mod) => {
+            const isModuleChecked = form.allowedModules.includes(mod.key);
+            const children = getModuleChildren(mod.key);
+
+            return (
+              <div key={mod.key} className="config-usersModuleBlock">
+                <label className="config-usersModuleItem">
+                  <input
+                    type="checkbox"
+                    checked={isModuleChecked}
+                    onChange={() => onToggleModule(mod.key)}
+                  />
+                  <span>{mod.label}</span>
+                </label>
+
+                {isModuleChecked && children.length > 0 ? (
+                  <div className="config-usersSubmodules">
+                    <div className="config-usersSubmodulesHint">
+                      Si no elegis ninguno, ve todo el modulo.
+                    </div>
+                    {children.map((child) => (
+                      <label key={child.path} className="config-usersSubmoduleItem">
+                        <input
+                          type="checkbox"
+                          checked={form.allowedSubmodules.includes(child.path)}
+                          onChange={() => onToggleSubmodule(mod.key, child.path)}
+                        />
+                        <span>{child.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+        {form.allowedModules.length > 0 || form.allowedSubmodules.length > 0 ? (
+          <button type="button" className="config-usersSecondaryButton" onClick={onReset}>
+            Resetear a predeterminados del rol
+          </button>
+        ) : null}
+      </div>
+    );
   }
 
   if (currentRole !== "admin") {
@@ -376,26 +541,11 @@ export default function UserManagement() {
           </label>
 
           {createForm.role !== "admin" ? (
-            <div className="config-usersModules">
-              <div className="config-usersModulesTitle">
-                Modulos visibles
-                {createForm.allowedModules.length === 0 ? (
-                  <span className="config-usersModulesHint"> (predeterminados del rol)</span>
-                ) : null}
-              </div>
-              <div className="config-usersModulesList">
-                {ALL_MODULES.map((mod) => (
-                  <label key={mod.key} className="config-usersModuleItem">
-                    <input
-                      type="checkbox"
-                      checked={createForm.allowedModules.includes(mod.key)}
-                      onChange={() => toggleCreateModule(mod.key)}
-                    />
-                    <span>{mod.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            renderModulePermissions(createForm, {
+              onToggleModule: toggleCreateModule,
+              onToggleSubmodule: toggleCreateSubmodule,
+              onReset: () => setCreateForm((f) => ({ ...f, allowedModules: [], allowedSubmodules: [] })),
+            })
           ) : null}
 
           <label className="config-usersCheckbox">
@@ -534,35 +684,11 @@ export default function UserManagement() {
               </label>
 
               {editForm.role !== "admin" ? (
-                <div className="config-usersModules">
-                  <div className="config-usersModulesTitle">
-                    Modulos visibles
-                    {editForm.allowedModules.length === 0 ? (
-                      <span className="config-usersModulesHint"> (predeterminados del rol)</span>
-                    ) : null}
-                  </div>
-                  <div className="config-usersModulesList">
-                    {ALL_MODULES.map((mod) => (
-                      <label key={mod.key} className="config-usersModuleItem">
-                        <input
-                          type="checkbox"
-                          checked={editForm.allowedModules.includes(mod.key)}
-                          onChange={() => toggleEditModule(mod.key)}
-                        />
-                        <span>{mod.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {editForm.allowedModules.length > 0 ? (
-                    <button
-                      type="button"
-                      className="config-usersSecondaryButton"
-                      onClick={() => setEditForm((f) => ({ ...f, allowedModules: [] }))}
-                    >
-                      Resetear a predeterminados del rol
-                    </button>
-                  ) : null}
-                </div>
+                renderModulePermissions(editForm, {
+                  onToggleModule: toggleEditModule,
+                  onToggleSubmodule: toggleEditSubmodule,
+                  onReset: () => setEditForm((f) => ({ ...f, allowedModules: [], allowedSubmodules: [] })),
+                })
               ) : null}
 
               <label className="config-usersCheckbox">

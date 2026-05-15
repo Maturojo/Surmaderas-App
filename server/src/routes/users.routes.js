@@ -17,9 +17,15 @@ function sanitizeUser(user) {
     role: user.role,
     isActive: user.isActive,
     allowedModules: user.allowedModules || [],
+    allowedSubmodules: user.allowedSubmodules || [],
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
+}
+
+function normalizeStringList(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map((item) => String(item || "").trim()).filter(Boolean))];
 }
 
 async function wouldLeaveNoActiveAdmins(user, nextRole, nextIsActive) {
@@ -47,7 +53,7 @@ router.get("/", async (_req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, username, password, role, isActive, allowedModules } = req.body || {};
+    const { name, username, password, role, isActive, allowedModules, allowedSubmodules } = req.body || {};
 
     if (!name || !username || !password) {
       return res.status(400).json({ message: "Nombre, usuario y clave son obligatorios" });
@@ -76,7 +82,8 @@ router.post("/", async (req, res) => {
       passwordHash,
       role,
       isActive: isActive !== false,
-      allowedModules: role === "admin" ? [] : (Array.isArray(allowedModules) ? allowedModules : []),
+      allowedModules: role === "admin" ? [] : normalizeStringList(allowedModules),
+      allowedSubmodules: role === "admin" ? [] : normalizeStringList(allowedSubmodules),
     });
 
     return res.status(201).json({
@@ -92,7 +99,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, username, password, role, isActive, allowedModules } = req.body || {};
+    const { name, username, password, role, isActive, allowedModules, allowedSubmodules } = req.body || {};
 
     if (!name || !username) {
       return res.status(400).json({ message: "Nombre y usuario son obligatorios" });
@@ -123,7 +130,8 @@ router.put("/:id", async (req, res) => {
     user.username = normalizedUsername;
     user.role = role;
     user.isActive = nextIsActive;
-    user.allowedModules = role === "admin" ? [] : (Array.isArray(allowedModules) ? allowedModules : []);
+    user.allowedModules = role === "admin" ? [] : normalizeStringList(allowedModules);
+    user.allowedSubmodules = role === "admin" ? [] : normalizeStringList(allowedSubmodules);
 
     if (password) {
       if (String(password).length < 6) {

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["admin", "ventas", "taller", "caja"], default: "ventas" },
     isActive: { type: Boolean, default: true },
     allowedModules: { type: [String], default: [] },
+    allowedSubmodules: { type: [String], default: [] },
   },
   { timestamps: true }
 );

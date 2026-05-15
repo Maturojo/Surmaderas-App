@@ -306,7 +306,9 @@ export default function AppLayout() {
   const previousUnreadRef = useRef(null);
 
   const customModules = auth?.user?.allowedModules;
+  const customSubmodules = auth?.user?.allowedSubmodules;
   const hasCustomModules = Array.isArray(customModules) && customModules.length > 0;
+  const hasCustomSubmodules = Array.isArray(customSubmodules) && customSubmodules.length > 0;
 
   const baseNavItems = useMemo(() => {
     const visibleByCustomModules = (item) => {
@@ -316,6 +318,28 @@ export default function AppLayout() {
       if (item.key === "estadisticas" && customModules.includes("ventas")) return true;
       if (item.key === "negocio-online" && customModules.includes("whatsapp")) return true;
       return false;
+    };
+
+    const filterByCustomSubmodules = (item) => {
+      if (!hasCustomSubmodules || !item.children) return item;
+
+      const itemChildPaths = item.children.flatMap((child) =>
+        child.children ? child.children.map((nested) => nested.to) : [child.to]
+      );
+      const hasRestrictionForThisModule = itemChildPaths.some((path) => customSubmodules.includes(path));
+      if (!hasRestrictionForThisModule) return item;
+
+      const children = item.children
+        .map((child) => {
+          if (child.children) {
+            const nestedChildren = child.children.filter((nested) => customSubmodules.includes(nested.to));
+            return nestedChildren.length > 0 ? { ...child, children: nestedChildren } : null;
+          }
+          return customSubmodules.includes(child.to) ? child : null;
+        })
+        .filter(Boolean);
+
+      return children.length > 0 ? { ...item, children } : null;
     };
 
     const visibleByRole = (item) => {
@@ -357,8 +381,9 @@ export default function AppLayout() {
     return NAV_ITEMS
       .filter(visibleByCustomModules)
       .map(visibleByRole)
+      .map(filterByCustomSubmodules)
       .filter(Boolean);
-  }, [customModules, hasCustomModules, userRole]);
+  }, [customModules, customSubmodules, hasCustomModules, hasCustomSubmodules, userRole]);
 
   const unorderedNavItems = [
     ...baseNavItems,

@@ -32,6 +32,68 @@ export function getDefaultHomeByRole(role = getUserRole()) {
   return role === "ventas" ? "/dashboard" : "/dashboard";
 }
 
+const SUBMODULE_GROUPS = {
+  pedidos: [
+    "/notas-pedido",
+    "/notas-pedido/listado",
+    "/notas-pedido/guardadas",
+    "/notas-pedido/pendientes",
+    "/notas-pedido/deposito",
+  ],
+  presupuestos: [
+    "/presupuestos/generar",
+    "/presupuestos/cargar",
+    "/presupuestos/guardadas",
+    "/presupuestos/proveedores",
+  ],
+  ventas: ["/ventas/lista", "/ventas/nueva", "/ventas/estadisticas", "/ventas/objetivos", "/ventas/transferencias"],
+  proveedores: ["/proveedores", "/pedidos-proveedor"],
+  "negocio-online": [
+    "/whatsapp/control",
+    "/whatsapp",
+    "/whatsapp/presupuestos",
+    "/whatsapp/broadcast",
+    "/whatsapp/faqs",
+    "/whatsapp/quick-replies",
+    "/whatsapp/stats",
+    "/whatsapp/settings",
+    "/mercado-libre",
+    "/mercado-libre/productos",
+    "/mercado-libre/publicaciones",
+    "/mercado-libre/pedidos",
+    "/mercado-libre/preguntas",
+    "/mercado-libre/pendientes",
+    "/mercado-libre/precios",
+  ],
+};
+
+function getPathGroup(pathname) {
+  if (pathname.startsWith("/notas-pedido/editar/")) return "pedidos";
+  return Object.entries(SUBMODULE_GROUPS).find(([, paths]) =>
+    paths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+  )?.[0] || "";
+}
+
+export function canAccessCurrentPath(pathname) {
+  const auth = getAuth();
+  const role = auth?.user?.role || "";
+  if (role === "admin") return true;
+
+  const allowedSubmodules = auth?.user?.allowedSubmodules;
+  if (!Array.isArray(allowedSubmodules) || allowedSubmodules.length === 0) return true;
+
+  const pathGroup = getPathGroup(pathname);
+  const groupPaths = SUBMODULE_GROUPS[pathGroup] || [];
+  const hasRestrictionForGroup = groupPaths.some((path) => allowedSubmodules.includes(path));
+  if (!hasRestrictionForGroup) return true;
+
+  if (pathname.startsWith("/notas-pedido/editar/")) {
+    return allowedSubmodules.includes("/notas-pedido") || allowedSubmodules.includes("/notas-pedido/listado");
+  }
+
+  return allowedSubmodules.includes(pathname);
+}
+
 export async function loginRequest({ username, password }) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",

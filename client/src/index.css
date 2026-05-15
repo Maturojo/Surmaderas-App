@@ -1320,6 +1320,20 @@ textarea {
   gap: 7px;
 }
 
+.config-usersModulesGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.config-usersModuleBlock {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: rgba(255, 255, 255, 0.68);
+}
+
 .config-usersModuleItem {
   position: relative;
   cursor: pointer;
@@ -1372,6 +1386,51 @@ textarea {
 .config-usersModuleItem:hover span {
   border-color: var(--sm-accent);
   background: var(--sm-accent-soft);
+}
+
+.config-usersSubmodules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-left: 8px;
+}
+
+.config-usersSubmodulesHint {
+  width: 100%;
+  color: var(--sm-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.config-usersSubmoduleItem {
+  position: relative;
+  cursor: pointer;
+}
+
+.config-usersSubmoduleItem input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.config-usersSubmoduleItem span {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--sm-line-strong);
+  background: #fffaf4;
+  color: #5c5147;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.config-usersSubmoduleItem input[type="checkbox"]:checked + span {
+  border-color: rgba(95, 125, 108, 0.55);
+  background: #edf8ef;
+  color: #37513f;
 }
 
 .config-usersModules .config-usersSecondaryButton {

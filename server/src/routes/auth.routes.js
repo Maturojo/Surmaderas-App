@@ -43,6 +43,7 @@ router.post("/login", async (req, res) => {
         username: user.username,
         role: user.role,
         allowedModules: user.allowedModules || [],
+        allowedSubmodules: user.allowedSubmodules || [],
       },
     });
   } catch (err) {
