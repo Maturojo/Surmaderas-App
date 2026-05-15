@@ -15,6 +15,13 @@ function normalizeMonth(value) {
   return new Date().toISOString().slice(0, 7);
 }
 
+function normalizeSellerLabel(value) {
+  const text = String(value || "").trim();
+  if (!text) return "Sin vendedor asignado";
+  if (text.toLowerCase().startsWith("importacion")) return "Sin vendedor asignado";
+  return text;
+}
+
 function addMetric(map, label, amount = 0, count = 1, extra = {}) {
   const key = String(label || "").trim() || "Sin dato";
   const current = map.get(key) || { label: key, total: 0, count: 0, ...extra };
@@ -107,8 +114,9 @@ router.get("/", async (req, res) => {
     const bySaleType = new Map();
 
     sales.forEach((sale) => {
-      addMetric(bySeller, sale.createdBy || "Sin vendedor", sale.total, 1, {
-        commission: (bySeller.get(sale.createdBy || "Sin vendedor")?.commission || 0) + Number(sale.commission || 0),
+      const sellerLabel = normalizeSellerLabel(sale.createdBy);
+      addMetric(bySeller, sellerLabel, sale.total, 1, {
+        commission: (bySeller.get(sellerLabel)?.commission || 0) + Number(sale.commission || 0),
       });
       addMetric(byCategory, sale.category || "Sin categoria", sale.total);
       addMetric(bySubcategory, sale.subcategory || "Sin subcategoria", sale.total);
