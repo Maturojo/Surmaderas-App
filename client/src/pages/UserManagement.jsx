@@ -493,7 +493,10 @@ export default function UserManagement() {
 
       <div className="config-usersGrid config-usersGrid--triple">
         <form className="config-usersCard" onSubmit={handleCreateSubmit}>
-          <div className="config-usersCardTitle">Nuevo usuario</div>
+          <div className="config-usersCardHead">
+            <div className="config-usersCardTitle">Nuevo usuario</div>
+            <p>Alta rapida con rol y permisos iniciales.</p>
+          </div>
 
           <label className="config-usersField">
             <span>Nombre</span>
@@ -567,7 +570,10 @@ export default function UserManagement() {
         </form>
 
         <div className="config-usersCard">
-          <div className="config-usersCardTitle">Usuarios existentes</div>
+          <div className="config-usersCardHead">
+            <div className="config-usersCardTitle">Usuarios existentes</div>
+            <p>Busca, filtra y selecciona un usuario para editarlo.</p>
+          </div>
 
           <div className="config-usersToolbar">
             <label className="config-usersSearch">
@@ -645,7 +651,10 @@ export default function UserManagement() {
         </div>
 
         <form className="config-usersCard" onSubmit={handleEditSubmit}>
-          <div className="config-usersCardTitle">Editar usuario</div>
+          <div className="config-usersCardHead">
+            <div className="config-usersCardTitle">Editar usuario</div>
+            <p>{selectedUser ? `Editando a ${selectedUser.name}` : "Selecciona un usuario de la lista."}</p>
+          </div>
 
           {!selectedUser ? (
             <div className="config-usersEmpty">Elegi un usuario de la lista para modificarlo.</div>

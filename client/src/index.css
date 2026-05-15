@@ -1048,7 +1048,7 @@ textarea {
 }
 
 .config-usersGrid--triple {
-  grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr) minmax(280px, 360px);
+  grid-template-columns: minmax(300px, 0.92fr) minmax(380px, 1.16fr) minmax(300px, 0.92fr);
 }
 
 .config-usersStats {
@@ -1088,11 +1088,17 @@ textarea {
 }
 
 .config-usersCard {
-  padding: 22px;
+  padding: 20px;
   border-radius: 22px;
   border: 1px solid var(--sm-line);
   background: rgba(255,255,255,0.88);
   box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+}
+
+.config-usersCardHead {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
 }
 
 .config-usersCardTitle {
@@ -1101,10 +1107,17 @@ textarea {
   color: #2b2723;
 }
 
+.config-usersCardHead p {
+  margin: 0;
+  color: var(--sm-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .config-usersToolbar {
   display: grid;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .config-usersSearch {
@@ -1137,7 +1150,7 @@ textarea {
 .config-usersField {
   display: grid;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .config-usersField span {
@@ -1161,6 +1174,12 @@ textarea {
   min-height: 112px;
   padding: 12px 14px;
   resize: vertical;
+}
+
+.config-usersField input,
+.config-usersField select {
+  min-height: 44px;
+  border-radius: 13px;
 }
 
 .config-usersCheckbox {
@@ -1210,19 +1229,20 @@ textarea {
 
 .config-usersList {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   margin-top: 18px;
 }
 
 .config-usersItem {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 14px;
-  border-radius: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
   border: 1px solid rgba(73, 58, 38, 0.1);
-  background: #f8f5f0;
+  background: linear-gradient(180deg, #fffdfa 0%, #f7f3ed 100%);
 }
 
 .config-usersItem.selected {
@@ -1231,15 +1251,16 @@ textarea {
 }
 
 .config-usersName {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
   color: #2b2723;
 }
 
 .config-usersMeta {
-  margin-top: 4px;
+  margin-top: 6px;
   color: var(--sm-muted);
   font-size: 13px;
+  line-height: 1.35;
 }
 
 .config-usersBadge {
@@ -1266,7 +1287,10 @@ textarea {
 .config-usersActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  min-width: 244px;
+  flex-wrap: wrap;
 }
 
 .config-usersEditButton,
@@ -1295,12 +1319,14 @@ textarea {
 .config-usersModules {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 18px;
-  padding: 16px;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 14px;
   background: #faf8f5;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid var(--sm-line);
+  max-height: 430px;
+  overflow: auto;
 }
 
 .config-usersModulesTitle {
@@ -1322,14 +1348,14 @@ textarea {
 
 .config-usersModulesGrid {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .config-usersModuleBlock {
   display: grid;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 14px;
+  gap: 7px;
+  padding: 9px;
+  border-radius: 13px;
   border: 1px solid rgba(73, 58, 38, 0.08);
   background: rgba(255, 255, 255, 0.68);
 }
@@ -1351,10 +1377,10 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 12px;
+  padding: 5px 11px;
   border-radius: 99px;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 800;
   border: 1.5px solid var(--sm-line-strong);
   background: #fff;
   color: #584f46;
@@ -1389,10 +1415,10 @@ textarea {
 }
 
 .config-usersSubmodules {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  padding-left: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 6px;
+  padding-left: 4px;
 }
 
 .config-usersSubmodulesHint {
@@ -1416,15 +1442,17 @@ textarea {
 }
 
 .config-usersSubmoduleItem span {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  padding: 5px 10px;
+  min-height: 32px;
+  padding: 5px 9px;
   border-radius: 10px;
   border: 1px solid var(--sm-line-strong);
   background: #fffaf4;
   color: #5c5147;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 750;
+  line-height: 1.2;
 }
 
 .config-usersSubmoduleItem input[type="checkbox"]:checked + span {
