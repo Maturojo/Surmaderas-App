@@ -18,7 +18,7 @@ function normalizeMonth(value) {
 function normalizeSellerLabel(value) {
   const text = String(value || "").trim();
   if (!text) return "Sin vendedor asignado";
-  if (text.toLowerCase().startsWith("importacion")) return "Sin vendedor asignado";
+  if (text.toLowerCase().startsWith("importacion")) return "Admin Sur Maderas";
   return text;
 }
 
