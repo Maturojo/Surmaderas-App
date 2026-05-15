@@ -4,6 +4,9 @@ import { obtenerCalendario } from "../services/calendar";
 import { getUserRole } from "../services/auth";
 import { getTurnero, takeTurno } from "../services/turnero";
 import { getStats } from "../services/whatsappApi";
+import { listarNotasPedido } from "../services/notasPedido";
+import { listPresupuestoDrafts } from "../services/presupuestos";
+import { getVentasMensuales, getVentasTransferencias } from "../services/ventasMensuales";
 
 const CARDS = [
   {
@@ -138,6 +141,18 @@ function formatEntrega(value) {
   return `${day}/${month}/${year}`;
 }
 
+function currentMonth() {
+  return new Date().toISOString().slice(0, 7);
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
+}
+
 function buildDeliveryAlerts(events = [], todayKey, tomorrowKey) {
   const notes = events
     .filter((item) => item?.type === "nota-pedido" && !item.completado)
@@ -198,6 +213,23 @@ function DeliveryAlertColumn({ title, tone, items, emptyText, canOpenNote }) {
   );
 }
 
+function OperationMetric({ title, value, detail, to, tone = "tomorrow" }) {
+  return (
+    <article className={`dashboard-alertColumn dashboard-alertColumn--${tone}`}>
+      <div className="dashboard-alertColumnHead">
+        <span>{title}</span>
+        <strong>{value}</strong>
+      </div>
+      <p className="dashboard-alertEmpty" style={{ minHeight: 58, marginTop: 0 }}>{detail}</p>
+      {to ? (
+        <div className="dashboard-alertActions" style={{ marginTop: 10 }}>
+          <Link className="dashboard-alertLink" to={to}>Abrir</Link>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
 export default function Dashboard() {
   const userRole = getUserRole();
   const [turnero, setTurnero] = useState(null);
@@ -208,6 +240,8 @@ export default function Dashboard() {
   const [deliveryAlerts, setDeliveryAlerts] = useState({ overdue: [], today: [], tomorrow: [] });
   const [deliveryAlertsError, setDeliveryAlertsError] = useState("");
   const [waStats, setWaStats] = useState(null);
+  const [dailyOps, setDailyOps] = useState(null);
+  const [dailyOpsError, setDailyOpsError] = useState("");
 
   const today = new Date();
   const todayKey = ymd(today);
@@ -286,6 +320,59 @@ export default function Dashboard() {
   useEffect(() => {
     getStats().then(({ data }) => setWaStats(data)).catch(() => setWaStats(null));
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadDailyOperations() {
+      try {
+        const month = currentMonth();
+        const [notasCaja, notasGuardadas, ventasData, transferData] = await Promise.all([
+          listarNotasPedido({ guardada: false, page: 1, limit: 500 }),
+          listarNotasPedido({ guardada: true, page: 1, limit: 500 }),
+          getVentasMensuales(month),
+          getVentasTransferencias(month),
+        ]);
+
+        const cajaItems = notasCaja.items || [];
+        const guardadasItems = notasGuardadas.items || [];
+        const drafts = listPresupuestoDrafts();
+        const salesToday = (ventasData.items || []).filter((item) => ymd(new Date(item.date)) === todayKey);
+        const salesTodayTotal = salesToday.reduce((sum, item) => sum + Number(item.total || 0), 0);
+        const pendingTransfers = (transferData.items || []).filter((item) => item.status === "pendiente");
+        const providerJobs = guardadasItems.filter(
+          (item) => item.estadoOperativo === "Enviado a proveedor" || (item.proveedores || []).length > 0
+        );
+        const workshopJobs = guardadasItems.filter((item) => item.estadoOperativo === "En taller");
+        const cashAmount = cajaItems.reduce((sum, item) => sum + Number(item.total || item.totales?.total || 0), 0);
+
+        if (!cancelled) {
+          setDailyOps({
+            cashCount: cajaItems.length,
+            cashAmount,
+            budgetDrafts: drafts.length,
+            pendingTransfers: pendingTransfers.length,
+            pendingTransferTotal: pendingTransfers.reduce((sum, item) => sum + Number(item.amount || 0), 0),
+            providerJobs: providerJobs.length,
+            workshopJobs: workshopJobs.length,
+            salesToday: salesToday.length,
+            salesTodayTotal,
+          });
+          setDailyOpsError("");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setDailyOps(null);
+          setDailyOpsError(error.message || "No se pudo cargar el panel operativo");
+        }
+      }
+    }
+
+    loadDailyOperations();
+    return () => {
+      cancelled = true;
+    };
+  }, [todayKey]);
 
   async function handleTakeTurno() {
     try {
@@ -418,6 +505,65 @@ export default function Dashboard() {
           </div>
         </section>
       )}
+
+      <section className="dashboard-alertsPanel">
+        <div className="dashboard-alertsHeader">
+          <div>
+            <div className="dashboard-kicker">Panel diario operativo</div>
+            <h2>Hoy hay que mirar esto</h2>
+          </div>
+          <Link className="dashboard-alertCalendarLink" to="/ventas/estadisticas">
+            Ver estadisticas
+          </Link>
+        </div>
+
+        {dailyOpsError ? <div className="dashboard-alertError">{dailyOpsError}</div> : null}
+
+        <div className="dashboard-alertsGrid dashboard-alertsGrid--wide">
+          <OperationMetric
+            title="Caja sin cerrar"
+            value={dailyOps?.cashCount ?? "..."}
+            detail={`${formatMoney(dailyOps?.cashAmount)} esperando pago o sena`}
+            to="/notas-pedido/listado"
+            tone={dailyOps?.cashCount > 0 ? "danger" : "today"}
+          />
+          <OperationMetric
+            title="Entregas hoy"
+            value={deliveryAlerts.today.length}
+            detail={`${deliveryAlerts.overdue.length} atrasadas y ${deliveryAlerts.tomorrow.length} para manana`}
+            to="/calendario"
+            tone={deliveryAlerts.overdue.length > 0 ? "danger" : "today"}
+          />
+          <OperationMetric
+            title="Presupuestos"
+            value={dailyOps?.budgetDrafts ?? "..."}
+            detail="Cargas pendientes para retomar o convertir en pedido"
+            to="/presupuestos/guardadas"
+            tone="tomorrow"
+          />
+          <OperationMetric
+            title="Transferencias"
+            value={dailyOps?.pendingTransfers ?? "..."}
+            detail={`${formatMoney(dailyOps?.pendingTransferTotal)} sin conciliar`}
+            to="/ventas/transferencias"
+            tone={dailyOps?.pendingTransfers > 0 ? "danger" : "today"}
+          />
+          <OperationMetric
+            title="Proveedor"
+            value={dailyOps?.providerJobs ?? "..."}
+            detail={`${dailyOps?.workshopJobs ?? 0} trabajos figuran en taller`}
+            to="/proveedores"
+            tone="tomorrow"
+          />
+          <OperationMetric
+            title="Ventas hoy"
+            value={dailyOps?.salesToday ?? "..."}
+            detail={`${formatMoney(dailyOps?.salesTodayTotal)} cargado hoy`}
+            to="/ventas/lista"
+            tone="today"
+          />
+        </div>
+      </section>
 
       <section className="dashboard-alertsPanel">
         <div className="dashboard-alertsHeader">

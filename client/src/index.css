@@ -708,6 +708,10 @@ textarea {
   gap: 12px;
 }
 
+.dashboard-alertsGrid--wide {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
 .dashboard-alertColumn {
   min-width: 0;
   padding: 14px;
@@ -2299,6 +2303,129 @@ textarea {
   color: #3d3127;
   font-weight: 800;
   cursor: pointer;
+}
+
+.monthly-salesAnalytics {
+  display: grid;
+  gap: 16px;
+}
+
+.monthly-salesGoalGrid,
+.monthly-salesCharts,
+.monthly-salesRankGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.monthly-salesGoalGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.monthly-salesGoalCard {
+  display: grid;
+  gap: 10px;
+}
+
+.monthly-salesGoalCard span {
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.monthly-salesGoalCard strong {
+  color: #2b2723;
+  font-size: 32px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.monthly-salesGoalCard p {
+  margin: 0;
+  color: #6b5b4a;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.monthly-salesProgress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee5d8;
+}
+
+.monthly-salesProgress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5f7d6c 0%, #bb9658 100%);
+}
+
+.monthly-salesCharts {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.monthly-salesChartCard--narrow {
+  grid-column: span 2;
+}
+
+.monthly-salesChart {
+  width: 100%;
+  height: 300px;
+  margin-top: 14px;
+}
+
+.monthly-salesRankGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.monthly-salesRankCard {
+  display: grid;
+  gap: 10px;
+}
+
+.monthly-salesRankItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: #fbf8f3;
+}
+
+.monthly-salesRankMain {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.monthly-salesRankMain strong,
+.monthly-salesRankMain span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monthly-salesRankMain strong {
+  color: #2b2723;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.monthly-salesRankMain span {
+  color: var(--sm-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.monthly-salesRankItem b {
+  color: #2b2723;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 @media print {
@@ -3943,6 +4070,8 @@ textarea {
   .survey-adminGrid,
   .monthly-salesGrid,
   .monthly-salesTwoCol,
+  .monthly-salesCharts,
+  .monthly-salesRankGrid,
   .chat-layout,
   .ml-mainGrid {
     grid-template-columns: 1fr;
@@ -3954,9 +4083,14 @@ textarea {
 
   .survey-adminStats,
   .monthly-salesStats,
+  .monthly-salesGoalGrid,
   .ml-statsGrid,
   .ml-statsGrid--three {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monthly-salesChartCard--narrow {
+    grid-column: auto;
   }
 
   .dashboard-heroLayout {
@@ -4109,6 +4243,7 @@ textarea {
 
   .survey-adminStats,
   .monthly-salesStats,
+  .monthly-salesGoalGrid,
   .ml-statsGrid,
   .ml-statsGrid--three,
   .ml-alertGrid,

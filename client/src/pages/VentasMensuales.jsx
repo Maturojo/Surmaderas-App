@@ -1,6 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   createVentaMensual,
   createVentasTransferencia,
   deleteVentaMensual,
@@ -67,9 +80,12 @@ const INITIAL_TRANSFER_FORM = {
 const TABS = [
   { to: "/ventas/lista", label: "Ventas del mes", section: "lista" },
   { to: "/ventas/nueva", label: "Nueva venta", section: "nueva" },
+  { to: "/ventas/estadisticas", label: "Estadisticas", section: "estadisticas" },
   { to: "/ventas/objetivos", label: "Objetivos y configuracion", section: "objetivos" },
   { to: "/ventas/transferencias", label: "Transferencias", section: "transferencias" },
 ];
+
+const CHART_COLORS = ["#5f7d6c", "#bb9658", "#8b6f47", "#2f5f74", "#9d5c45", "#6e7f55", "#7d6c90"];
 
 function currentMonth() {
   return new Date().toISOString().slice(0, 7);
@@ -177,6 +193,33 @@ function getWeeklyTotals(items, month) {
   return [...map.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
+function shortLabel(value, fallback = "Sin dato") {
+  const text = String(value || "").trim() || fallback;
+  return text.length > 24 ? `${text.slice(0, 21)}...` : text;
+}
+
+function buildRanking(items, key, fallback = "Sin dato") {
+  const map = new Map();
+
+  items.forEach((item) => {
+    const rawLabel = typeof key === "function" ? key(item) : item?.[key];
+    const label = String(rawLabel || "").trim() || fallback;
+    const current = map.get(label) || { label, total: 0, commission: 0, count: 0 };
+    current.total += Number(item.total || 0);
+    current.commission += Number(item.commission || 0);
+    current.count += 1;
+    map.set(label, current);
+  });
+
+  return [...map.values()].sort((a, b) => b.total - a.total);
+}
+
+function getGoalPercent(value, goalValue) {
+  const goalNumber = Number(goalValue || 0);
+  if (!goalNumber) return 0;
+  return Math.min(100, Math.round((Number(value || 0) / goalNumber) * 100));
+}
+
 export default function VentasMensuales({ section = "lista" }) {
   const navigate = useNavigate();
   const [month, setMonth] = useState(currentMonth());
@@ -217,6 +260,25 @@ export default function VentasMensuales({ section = "lista" }) {
     [dailyTransfers]
   );
   const dailyGoal = (summary?.salesRemaining || 0) / getBusinessDaysLeft(month);
+  const salesProgress = getGoalPercent(summary?.salesTotal, summary?.salesGoal);
+  const commissionProgress = getGoalPercent(summary?.commissionTotal, summary?.commissionGoal);
+  const categoryRanking = useMemo(() => buildRanking(items, "category", "Sin categoria"), [items]);
+  const subcategoryRanking = useMemo(() => buildRanking(items, "subcategory", "Sin subcategoria"), [items]);
+  const clientRanking = useMemo(() => buildRanking(items, "client", "Sin cliente"), [items]);
+  const sellerRanking = useMemo(() => buildRanking(items, (item) => item.createdBy || "Sin vendedor"), [items]);
+  const paymentRanking = useMemo(() => buildRanking(items, "paymentStatus", "Sin estado"), [items]);
+  const topCategoryChart = useMemo(
+    () => categoryRanking.slice(0, 7).map((item) => ({ ...item, name: shortLabel(item.label) })),
+    [categoryRanking]
+  );
+  const topSellerChart = useMemo(
+    () => sellerRanking.slice(0, 7).map((item) => ({ ...item, name: shortLabel(item.label) })),
+    [sellerRanking]
+  );
+  const paymentChart = useMemo(
+    () => paymentRanking.map((item) => ({ ...item, name: PAYMENT_OPTIONS.find((option) => option.value === item.label)?.label || item.label })),
+    [paymentRanking]
+  );
 
   const loadMonth = useCallback(async () => {
     try {
@@ -617,6 +679,108 @@ export default function VentasMensuales({ section = "lista" }) {
     );
   }
 
+  function renderRankingList(title, itemsList, valueLabel = "ventas") {
+    return (
+      <div className="config-usersCard monthly-salesRankCard">
+        <div className="config-usersCardTitle">{title}</div>
+        {itemsList.length === 0 ? <div className="config-usersEmpty">Sin datos para este mes.</div> : null}
+        {itemsList.slice(0, 8).map((item, index) => (
+          <article key={item.label} className="monthly-salesRankItem">
+            <div className="monthly-salesRankMain">
+              <strong>{index + 1}. {item.label}</strong>
+              <span>{item.count} {valueLabel} - comision {formatMoney(item.commission)}</span>
+            </div>
+            <b>{formatMoney(item.total)}</b>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  function renderStatistics() {
+    return (
+      <div className="monthly-salesAnalytics">
+        <div className="monthly-salesGoalGrid">
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Objetivo mensual</span>
+            <strong>{salesProgress}%</strong>
+            <div className="monthly-salesProgress"><i style={{ width: `${salesProgress}%` }} /></div>
+            <p>{formatMoney(summary?.salesTotal)} vendido de {formatMoney(summary?.salesGoal)}</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Objetivo comision</span>
+            <strong>{commissionProgress}%</strong>
+            <div className="monthly-salesProgress"><i style={{ width: `${commissionProgress}%` }} /></div>
+            <p>{formatMoney(summary?.commissionTotal)} de {formatMoney(summary?.commissionGoal)}</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Pendiente de cobro</span>
+            <strong>{formatMoney(summary?.pendingTotal)}</strong>
+            <p>{items.filter((item) => item.paymentStatus === "pendiente").length} ventas pendientes</p>
+          </article>
+        </div>
+
+        <div className="monthly-salesCharts">
+          <div className="config-usersCard monthly-salesChartCard">
+            <div className="config-usersCardTitle">Ventas por categoria</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topCategoryChart}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
+                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Bar dataKey="total" name="Ventas" radius={[8, 8, 0, 0]} fill="#5f7d6c" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="config-usersCard monthly-salesChartCard">
+            <div className="config-usersCardTitle">Ventas por vendedor</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topSellerChart}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
+                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Legend />
+                  <Bar dataKey="total" name="Ventas" radius={[8, 8, 0, 0]} fill="#bb9658" />
+                  <Bar dataKey="commission" name="Comision" radius={[8, 8, 0, 0]} fill="#5f7d6c" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="config-usersCard monthly-salesChartCard monthly-salesChartCard--narrow">
+            <div className="config-usersCardTitle">Estado de pago</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={paymentChart} dataKey="total" nameKey="name" outerRadius={92} label>
+                    {paymentChart.map((entry, index) => (
+                      <Cell key={entry.label} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="monthly-salesRankGrid">
+          {renderRankingList("Ranking por vendedor", sellerRanking)}
+          {renderRankingList("Ranking por categoria", categoryRanking)}
+          {renderRankingList("Ranking por subcategoria", subcategoryRanking)}
+          {renderRankingList("Mejores clientes", clientRanking)}
+        </div>
+      </div>
+    );
+  }
+
   function renderObjectives() {
     return (
       <div className="monthly-salesTwoCol">
@@ -808,6 +972,12 @@ export default function VentasMensuales({ section = "lista" }) {
         <>
           {renderStats()}
           {renderObjectives()}
+        </>
+      ) : null}
+      {section === "estadisticas" ? (
+        <>
+          {renderStats()}
+          {renderStatistics()}
         </>
       ) : null}
       {section === "transferencias" ? renderTransfers() : null}
