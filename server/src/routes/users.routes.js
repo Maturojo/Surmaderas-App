@@ -41,6 +41,17 @@ async function wouldLeaveNoActiveAdmins(user, nextRole, nextIsActive) {
   return otherActiveAdmins === 0;
 }
 
+async function isOnlyActiveAdmin(user) {
+  if (user.role !== "admin" || user.isActive === false) return false;
+
+  const otherActiveAdmins = await User.countDocuments({
+    _id: { $ne: user._id },
+    role: "admin",
+    isActive: true,
+  });
+  return otherActiveAdmins === 0;
+}
+
 router.get("/", async (_req, res) => {
   try {
     const users = await User.find({}, { passwordHash: 0 }).sort({ createdAt: -1 });
@@ -149,6 +160,32 @@ router.put("/:id", async (req, res) => {
   } catch (error) {
     console.error("Error actualizando usuario:", error?.message || error);
     return res.status(500).json({ message: "No se pudo actualizar el usuario" });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (String(req.user?.id || "") === String(id)) {
+      return res.status(400).json({ message: "No podes borrar tu propio usuario" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    if (await isOnlyActiveAdmin(user)) {
+      return res.status(400).json({ message: "Tiene que quedar al menos un administrador activo" });
+    }
+
+    await User.deleteOne({ _id: id });
+
+    return res.json({ message: "Usuario eliminado correctamente", id });
+  } catch (error) {
+    console.error("Error eliminando usuario:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo eliminar el usuario" });
   }
 });
 

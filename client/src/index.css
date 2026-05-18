@@ -1294,7 +1294,8 @@ textarea {
 }
 
 .config-usersEditButton,
-.config-usersSecondaryButton {
+.config-usersSecondaryButton,
+.config-usersDangerButton {
   min-height: 36px;
   padding: 0 12px;
   border-radius: 12px;
@@ -1431,6 +1432,12 @@ textarea {
 .config-usersSubmoduleItem {
   position: relative;
   cursor: pointer;
+}
+
+.config-usersDangerButton {
+  border-color: rgba(157, 47, 47, 0.32);
+  background: #fff1ee;
+  color: #9d2f2f;
 }
 
 .config-usersSubmoduleItem input[type="checkbox"] {
@@ -1672,7 +1679,8 @@ textarea {
   cursor: pointer;
 }
 
-.config-usersEditButton:disabled {
+.config-usersEditButton:disabled,
+.config-usersDangerButton:disabled {
   opacity: 0.7;
   cursor: wait;
 }

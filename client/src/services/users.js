@@ -50,3 +50,18 @@ export async function updateUser(userId, payload) {
 
   return data;
 }
+
+export async function deleteUser(userId) {
+  const response = await apiFetch(`${API_URL}/api/users/${userId}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "No se pudo eliminar el usuario");
+  }
+
+  return data;
+}

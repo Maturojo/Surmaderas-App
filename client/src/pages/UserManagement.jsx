@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { getAuth } from "../services/auth";
-import { createUser, getUsers, updateUser } from "../services/users";
+import { createUser, deleteUser, getUsers, updateUser } from "../services/users";
 
 const ALL_MODULES = [
   { key: "dashboard", label: "Dashboard" },
@@ -150,6 +150,7 @@ export default function UserManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [query, setQuery] = useState("");
@@ -392,6 +393,37 @@ export default function UserManagement() {
       setSuccess("");
     } finally {
       setIsUpdating(false);
+    }
+  }
+
+  async function handleDeleteUser(user) {
+    const userId = normalizeUserId(user);
+    if (!userId) return;
+
+    const currentUserId = auth?.user?.id || auth?.user?._id;
+    if (String(currentUserId || "") === String(userId)) {
+      setError("No podes borrar tu propio usuario");
+      setSuccess("");
+      return;
+    }
+
+    const confirmed = window.confirm(`Eliminar definitivamente a ${user.name || user.username}?`);
+    if (!confirmed) return;
+
+    try {
+      setDeletingUserId(userId);
+      await deleteUser(userId);
+      setUsers((current) => current.filter((item) => normalizeUserId(item) !== userId));
+      if (editForm.id === userId) {
+        setEditForm(INITIAL_EDIT_FORM);
+      }
+      setSuccess("Usuario eliminado correctamente");
+      setError("");
+    } catch (deleteError) {
+      setError(deleteError.message || "No se pudo eliminar el usuario");
+      setSuccess("");
+    } finally {
+      setDeletingUserId("");
     }
   }
 
@@ -638,9 +670,17 @@ export default function UserManagement() {
                         type="button"
                         className="config-usersEditButton"
                         onClick={() => toggleUserActive(user)}
-                        disabled={isUpdating}
+                        disabled={isUpdating || deletingUserId === userId}
                       >
                         {user.isActive === false ? "Activar" : "Pausar"}
+                      </button>
+                      <button
+                        type="button"
+                        className="config-usersDangerButton"
+                        onClick={() => handleDeleteUser(user)}
+                        disabled={deletingUserId === userId}
+                      >
+                        {deletingUserId === userId ? "Borrando..." : "Borrar"}
                       </button>
                     </div>
                   </article>
