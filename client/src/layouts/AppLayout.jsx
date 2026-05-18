@@ -381,6 +381,7 @@ export default function AppLayout() {
     return NAV_ITEMS
       .filter(visibleByCustomModules)
       .map(visibleByRole)
+      .filter(Boolean)
       .map(filterByCustomSubmodules)
       .filter(Boolean);
   }, [customModules, customSubmodules, hasCustomModules, hasCustomSubmodules, userRole]);
