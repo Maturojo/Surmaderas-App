@@ -314,8 +314,6 @@ export async function guardarCajaNota(req, res) {
     const montoNumero = esPago ? totalCaja : Number(monto || 0);
     const guardarImportesNota = esSena || esPago;
     const metodoTexto = String(metodo || "");
-    const esEfectivo = metodoTexto.toLowerCase() === "efectivo";
-    const guardaComprobante = esPago || (esSena && !esEfectivo);
     const comprobantesPayload = (esSena || esPago)
       ? normalizeComprobantesPayload({ comprobantes, comprobante })
       : [];
@@ -325,11 +323,7 @@ export async function guardarCajaNota(req, res) {
       return res.status(400).json({ message: "Si la nota queda señada, el monto debe ser mayor a 0" });
     }
 
-    if (guardaComprobante) {
-      if (!comprobantesPayload.length) {
-        return res.status(400).json({ message: "Tenes que adjuntar al menos un comprobante para este medio de pago" });
-      }
-
+    if (comprobantesPayload.length) {
       if (comprobantesPayload.some((item) => !(Number(item?.monto || 0) > 0))) {
         return res.status(400).json({ message: "Tenes que cargar el monto de cada comprobante" });
       }

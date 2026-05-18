@@ -460,7 +460,6 @@ export default function NotaDetalleModal({
   const resta = tipo === "pago" ? 0 : Math.max(0, roundMoney(total - adelanto));
   const comprobantesGuardados = normalizeComprobantesCaja(detalle?.caja);
   const puedeComprobante = tipo === "pago" || tipo === "seña" || comprobantesGuardados.length > 0;
-  const requiereComprobante = tipo === "pago" || (tipo === "seña" && metodo !== "Efectivo");
   const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
   const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
   const comprobanteVideoId = `comprobante-video-${detalle?._id || "nota"}`;
@@ -702,23 +701,14 @@ export default function NotaDetalleModal({
   }
 
   async function validarComprobanteAntesDeGuardar(payloadTipo, montoCaja) {
-    const necesitaValidacion = payloadTipo === "pago" || (payloadTipo === "seña" && metodo !== "Efectivo");
-    if (!necesitaValidacion) return true;
+    const operacionConPago = payloadTipo === "pago" || payloadTipo === "seña";
+    if (!operacionConPago || !comprobantes.length) return true;
 
     if (leyendoComprobante) {
       await Swal.fire({
         title: "Comprobante en lectura",
         text: "Esperá a que termine de leer el monto del comprobante antes de guardar.",
         icon: "info",
-      });
-      return false;
-    }
-
-    if (!comprobantes.length) {
-      await Swal.fire({
-        title: "Falta comprobante",
-        text: "Para este medio de pago tenés que adjuntar, pegar o sacar foto de al menos un comprobante.",
-        icon: "warning",
       });
       return false;
     }
@@ -904,9 +894,7 @@ export default function NotaDetalleModal({
                       <div className="npl-proofHint">
                         {!puedeComprobante
                           ? "Se habilita cuando el tipo es Seña o Pago."
-                          : requiereComprobante
-                            ? "Obligatorio para guardar. Podés adjuntar uno o más comprobantes hasta completar el monto."
-                            : "Opcional. Podés adjuntar una o más imágenes, pegarlas con Ctrl+V o sacar fotos."}
+                          : "Opcional. Podés adjuntar una o más imágenes, pegarlas con Ctrl+V o sacar fotos."}
                       </div>
                     </div>
                     {puedeComprobante && comprobantes.length > 0 ? (
@@ -992,7 +980,9 @@ export default function NotaDetalleModal({
                         <span>
                           {leyendoComprobante
                             ? "Leyendo la imagen para completar el monto..."
-                            : `Total comprobantes: $${toARS(sumComprobantesMonto(comprobantes))}. La suma debe coincidir con la seña o pago.`}
+                            : comprobantes.length > 0
+                              ? `Total comprobantes: $${toARS(sumComprobantesMonto(comprobantes))}. Si cargás comprobantes, la suma debe coincidir con la seña o pago.`
+                              : "Sin comprobantes adjuntos."}
                         </span>
                         {ocrTexto ? <span>Texto detectado: {ocrTexto.slice(0, 140)}</span> : null}
                       </div>
