@@ -233,6 +233,7 @@ function getProfileDisplayMeasures(profile, listonUso = "plano") {
 const INITIAL_FORM = {
   profileId: "",
   listonUso: "plano",
+  listonRebaje: "si",
   anchoMm: 700,
   altoMm: 1000,
   cantidad: 1,
@@ -1021,8 +1022,13 @@ export default function CotizadorMarcos() {
       ["Medida cargada", `${formatDimensionCm(quote.inputAnchoMm)} x ${formatDimensionCm(quote.inputAltoMm)}`],
       ...(selectedProfile?.liston ? [["Colocacion", form.listonUso === "canto" ? "De canto" : "De plano"]] : []),
       ["Cantidad", String(cantidadVal)],
-      ...(selectedProfile?.liston && quote.pricingEnabled
-        ? [["Rebaje liston", `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}`]]
+      ...(selectedProfile?.liston
+        ? [[
+            "Rebaje liston",
+            form.listonRebaje === "si" && quote.pricingEnabled
+              ? `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}`
+              : "No",
+          ]]
         : []),
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
@@ -1246,8 +1252,13 @@ export default function CotizadorMarcos() {
       { label: "Varilla", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
       { label: "Medidas", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
       { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
-      ...(selectedProfile?.liston && quote.pricingEnabled
-        ? [{ label: "Rebaje liston", value: `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}` }]
+      ...(selectedProfile?.liston
+        ? [{
+            label: "Rebaje liston",
+            value: form.listonRebaje === "si" && quote.pricingEnabled
+              ? `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}`
+              : "No",
+          }]
         : []),
       { label: "Fondo", value: fondoLabel },
       { label: "Frente", value: frenteLabel },
@@ -1370,7 +1381,7 @@ export default function CotizadorMarcos() {
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
     const subtotalVarilla = pricingEnabled ? chargedBars.chargedMeters * clampPositiveNumber(effectiveProfile.precioMetro, 0) : 0;
-    const metrosRebaje = effectiveProfile.liston ? chargedBars.chargedMeters : 0;
+    const metrosRebaje = effectiveProfile.liston && form.listonRebaje === "si" ? chargedBars.chargedMeters : 0;
     const subtotalRebaje = pricingEnabled ? metrosRebaje * LISTON_REBAJE_PRICE_PER_METER : 0;
 
     const frentePrecioM2 = form.frente === "espejo" ? MIRROR_PRICE_M2 : form.frente === "vidrio" ? GLASS_PRICE_M2 : 0;
@@ -1428,6 +1439,7 @@ export default function CotizadorMarcos() {
   function handleProfileChange(profileId) {
     setField("profileId", profileId);
     setField("listonUso", "plano");
+    setField("listonRebaje", "si");
     const profile = INITIAL_PROFILES.find((item) => item.id === profileId);
     if (profile) {
       setVarillaSearch(`${profile.codigo} - ${profile.nombre}`);
@@ -1441,6 +1453,7 @@ export default function CotizadorMarcos() {
     if (!normalizedValue) {
       setField("profileId", "");
       setField("listonUso", "plano");
+      setField("listonRebaje", "si");
       return;
     }
 
@@ -1455,6 +1468,7 @@ export default function CotizadorMarcos() {
       setField("profileId", matchedProfile.id);
       if (!matchedProfile.liston) {
         setField("listonUso", "plano");
+        setField("listonRebaje", "si");
       }
     }
   }
@@ -1772,7 +1786,24 @@ export default function CotizadorMarcos() {
                         : `Se toma ${formatDimensionCm(effectiveMeasures.frenteMm)} de frente y ${formatDimensionCm(effectiveMeasures.profundidadMm)} de profundidad.`}
                     </span>
                   </label>
-                  <div />
+                  <label style={selectWrapperStyle}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "#5d544b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                      Rebaje liston
+                    </span>
+                    <select
+                      value={form.listonRebaje}
+                      onChange={(e) => setField("listonRebaje", e.target.value)}
+                      style={selectFieldStyle}
+                    >
+                      <option value="si">Si</option>
+                      <option value="no">No</option>
+                    </select>
+                    <span style={helperTextStyle}>
+                      {form.listonRebaje === "si"
+                        ? `Suma ${formatCurrency(LISTON_REBAJE_PRICE_PER_METER)} por metro facturado.`
+                        : "No se cobra rebaje para este marco."}
+                    </span>
+                  </label>
                 </div>
               ) : null}
 
@@ -1959,6 +1990,9 @@ export default function CotizadorMarcos() {
               {selectedProfile?.liston ? (
                 <SummaryRow label="Colocacion" value={form.listonUso === "canto" ? "De canto" : "De plano"} />
               ) : null}
+              {selectedProfile?.liston ? (
+                <SummaryRow label="Rebaje liston" value={form.listonRebaje === "si" ? "Si" : "No"} />
+              ) : null}
               <SummaryRow label="Orientacion visual" value={form.orientacion === "horizontal" ? "Horizontal" : "Vertical"} />
               <SummaryRow label="Tipo de medida" value={form.tipoMedida === "interior" ? "Interior" : "Exterior"} />
               <SummaryRow
@@ -1985,7 +2019,7 @@ export default function CotizadorMarcos() {
               {selectedProfile?.liston ? (
                 <SummaryRow
                   label={`Rebaje liston (${formatCurrency(LISTON_REBAJE_PRICE_PER_METER)} / m)`}
-                  value={quote.pricingEnabled ? `${formatNumber(quote.metrosRebaje)} m / ${formatCurrency(quote.subtotalRebaje)}` : "-"}
+                  value={quote.pricingEnabled && form.listonRebaje === "si" ? `${formatNumber(quote.metrosRebaje)} m / ${formatCurrency(quote.subtotalRebaje)}` : "-"}
                 />
               ) : null}
               <SummaryRow label="Frente m2" value={`${formatNumber(quote.frenteAreaM2)} m2`} />
