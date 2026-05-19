@@ -1054,29 +1054,34 @@ export default function CotizadorMarcos() {
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     @page{size:A4 portrait;margin:10mm}
-    body{font-family:system-ui,sans-serif;padding:0;color:#2a211a;background:#fff7ef}
-    .sheet{width:190mm;min-height:125mm;margin:0 auto;padding:0 0 5mm;border-bottom:1.2px dashed #cfc6ba}
-    .card{background:linear-gradient(180deg,#fffdf9 0%,#fff7ee 100%);border:1px solid #e2d7c9;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(92,74,50,.08)}
-    .header{display:flex;justify-content:space-between;gap:12px;padding:10mm 10mm 7mm;background:linear-gradient(135deg,#2f241b 0%,#594332 100%);color:#fff8f0}
+    :root{--sm-bg:#f8f7f5;--sm-panel:#fff;--sm-line:#e8e5e0;--sm-text:#2c2c2c;--sm-muted:#888580;--sm-accent:#C8603A;--sm-accent-dark:#A84E2C;--sm-navy:#070614}
+    body{font-family:Montserrat,Segoe UI,system-ui,sans-serif;padding:0;color:var(--sm-text);background:var(--sm-bg)}
+    .sheet{width:190mm;min-height:125mm;margin:0 auto;padding:0 0 5mm;border-bottom:1.2px dashed var(--sm-line)}
+    .card{background:var(--sm-panel);border:1px solid var(--sm-line);border-radius:6px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+    .header{display:flex;justify-content:space-between;gap:12px;padding:9mm 10mm 7mm;background:var(--sm-navy);color:#fff;position:relative}
+    .header:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--sm-accent)}
+    .headerMain{display:flex;align-items:center;gap:12px}
+    .logoMark{width:35mm;height:17mm;border:1px solid rgba(255,255,255,.16);background:#fff;display:flex;align-items:center;justify-content:center;padding:3mm}
+    .logoMark img{max-width:100%;max-height:100%;object-fit:contain}
     .brand{display:grid;gap:3px}
-    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
+    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--sm-accent)}
     h1{font-size:20px;font-weight:900;line-height:1}
-    .sub{font-size:10px;opacity:.8}
-    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;border-radius:14px;background:rgba(255,248,240,.12);border:1px solid rgba(255,248,240,.18)}
-    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+    .sub{font-size:10px;color:#d7d5d0}
+    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sm-accent)}
     .meta-value{font-size:12px;font-weight:800}
     .body{display:grid;grid-template-columns:${imageDataUrl ? "70mm 1fr" : "1fr"};gap:10px;padding:9mm 10mm 8mm}
     .preview{display:${imageDataUrl ? "grid" : "none"};gap:6px;align-content:start}
-    .preview-card{background:#f4ece2;border:1px solid #e3d8ca;border-radius:14px;padding:8px}
-    .preview-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8a7457;margin-bottom:6px}
-    .render{display:block;width:100%;height:42mm;object-fit:contain;border-radius:10px;background:#fffdf9;box-shadow:inset 0 0 0 1px rgba(122,96,68,.08)}
+    .preview-card{background:var(--sm-bg);border:1px solid var(--sm-line);border-radius:4px;padding:8px}
+    .preview-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sm-accent-dark);margin-bottom:6px}
+    .render{display:block;width:100%;height:42mm;object-fit:contain;border-radius:4px;background:#fff;box-shadow:inset 0 0 0 1px var(--sm-line)}
     table{width:100%;border-collapse:separate;border-spacing:0 5px}
-    tr{background:#f7f1e8}
+    tr{background:var(--sm-bg)}
     td{padding:6px 9px;font-size:11px;vertical-align:top}
-    td:first-child{color:#6b5d4f;font-weight:700;width:54%;border-radius:10px 0 0 10px}
-    td:last-child{font-weight:800;text-align:right;color:#2d241c;border-radius:0 10px 10px 0}
-    .total{background:#2f241b}
-    .total td{font-size:14px;font-weight:900;color:#fff8f0;padding-top:9px;padding-bottom:9px}
+    td:first-child{color:var(--sm-muted);font-weight:700;width:54%;border-radius:4px 0 0 4px;border-left:3px solid var(--sm-line)}
+    td:last-child{font-weight:800;text-align:right;color:var(--sm-text);border-radius:0 4px 4px 0}
+    .total{background:var(--sm-navy)}
+    .total td{font-size:14px;font-weight:900;color:#fff;padding-top:9px;padding-bottom:9px;border-left-color:var(--sm-accent)}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{break-inside:avoid}}
   </style>
 </head>
@@ -1084,10 +1089,13 @@ export default function CotizadorMarcos() {
   <div class="sheet">
     <div class="card">
       <div class="header">
-        <div class="brand">
-          <div class="eyebrow">Sur Maderas</div>
-          <h1>Presupuesto de Marco</h1>
-          <p class="sub">Cotizacion rapida para cliente</p>
+        <div class="headerMain">
+          <div class="logoMark"><img src="/logo-linea-gris.png" alt="Sur Maderas" /></div>
+          <div class="brand">
+            <div class="eyebrow">Sur Maderas</div>
+            <h1>Presupuesto de Marco</h1>
+            <p class="sub">Cotizacion rapida para cliente</p>
+          </div>
         </div>
         <div class="meta">
           <div>
@@ -1182,31 +1190,39 @@ export default function CotizadorMarcos() {
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     @page{size:A4 portrait;margin:10mm}
-    body{font-family:system-ui,sans-serif;color:#2a211a;background:#fff7ef}
-    .header{display:flex;justify-content:space-between;gap:12px;padding:8mm 10mm 6mm;background:linear-gradient(135deg,#2f241b 0%,#594332 100%);color:#fff8f0;margin-bottom:6mm}
-    .brand .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
+    :root{--sm-bg:#f8f7f5;--sm-panel:#fff;--sm-line:#e8e5e0;--sm-text:#2c2c2c;--sm-muted:#888580;--sm-accent:#C8603A;--sm-accent-dark:#A84E2C;--sm-navy:#070614}
+    body{font-family:Montserrat,Segoe UI,system-ui,sans-serif;color:var(--sm-text);background:var(--sm-bg)}
+    .header{display:flex;justify-content:space-between;gap:12px;padding:8mm 10mm 6mm;background:var(--sm-navy);color:#fff;margin-bottom:6mm;position:relative}
+    .header:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--sm-accent)}
+    .headerMain{display:flex;align-items:center;gap:12px}
+    .logoMark{width:35mm;height:17mm;border:1px solid rgba(255,255,255,.16);background:#fff;display:flex;align-items:center;justify-content:center;padding:3mm}
+    .logoMark img{max-width:100%;max-height:100%;object-fit:contain}
+    .brand .eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--sm-accent)}
     .brand h1{font-size:20px;font-weight:900;line-height:1.1}
-    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;border-radius:14px;background:rgba(255,248,240,.12);border:1px solid rgba(255,248,240,.18)}
-    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+    .meta{min-width:42mm;display:grid;gap:6px;align-content:start;padding:8px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+    .meta-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sm-accent)}
     .meta-value{font-size:12px;font-weight:800}
-    .marco-card{background:linear-gradient(180deg,#fffdf9 0%,#fff7ee 100%);border:1px solid #e2d7c9;border-radius:14px;overflow:hidden;margin-bottom:5mm;break-inside:avoid}
-    .marco-num{background:#2f241b;color:#fff8f0;font-size:11px;font-weight:800;letter-spacing:.08em;padding:6px 12px}
+    .marco-card{background:#fff;border:1px solid var(--sm-line);border-radius:6px;overflow:hidden;margin-bottom:5mm;break-inside:avoid;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+    .marco-num{background:var(--sm-navy);color:#fff;font-size:11px;font-weight:800;letter-spacing:.08em;padding:6px 12px;border-left:4px solid var(--sm-accent)}
     table{width:100%;border-collapse:separate;border-spacing:0 4px;padding:6px 10px 8px}
-    tr{background:#f7f1e8}
+    tr{background:var(--sm-bg)}
     td{padding:5px 8px;font-size:11px;vertical-align:top}
-    td:first-child{color:#6b5d4f;font-weight:700;width:54%;border-radius:8px 0 0 8px}
-    td:last-child{font-weight:800;text-align:right;color:#2d241c;border-radius:0 8px 8px 0}
-    tr.total td{background:#594332;color:#fff8f0;font-size:11px}
-    tr.total-item td{background:#2f241b;color:#fff8f0;font-size:12px;font-weight:900}
-    .grand-total{margin-top:4mm;background:#2f241b;color:#fff8f0;border-radius:14px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:16px}
+    td:first-child{color:var(--sm-muted);font-weight:700;width:54%;border-radius:4px 0 0 4px;border-left:3px solid var(--sm-line)}
+    td:last-child{font-weight:800;text-align:right;color:var(--sm-text);border-radius:0 4px 4px 0}
+    tr.total td{background:var(--sm-accent-dark);color:#fff;font-size:11px}
+    tr.total-item td{background:var(--sm-navy);color:#fff;font-size:12px;font-weight:900}
+    .grand-total{margin-top:4mm;background:var(--sm-navy);color:#fff;border-radius:6px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:16px;border-left:5px solid var(--sm-accent)}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="brand">
-      <div class="eyebrow">Sur Maderas</div>
-      <h1>Lista de Marcos</h1>
+    <div class="headerMain">
+      <div class="logoMark"><img src="/logo-linea-gris.png" alt="Sur Maderas" /></div>
+      <div class="brand">
+        <div class="eyebrow">Sur Maderas</div>
+        <h1>Lista de Marcos</h1>
+      </div>
     </div>
     <div class="meta">
       <div><div class="meta-label">Fecha</div><div class="meta-value">${fecha}</div></div>
