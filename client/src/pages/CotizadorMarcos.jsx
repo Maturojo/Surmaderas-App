@@ -10,14 +10,14 @@ const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
 const GLASS_PRICE_M2 = 33582;
+const LISTON_REBAJE_PRICE_PER_METER = 1147;
 const PRESET_SIZE_OPTIONS = [
   { id: "personalizada", nombre: "Personalizada", anchoMm: null, altoMm: null },
-  { id: "a5", nombre: "A5", anchoMm: 148, altoMm: 210 },
-  { id: "a4", nombre: "A4", anchoMm: 210, altoMm: 297 },
   { id: "a3", nombre: "A3", anchoMm: 297, altoMm: 420 },
-  { id: "a2", nombre: "A2", anchoMm: 420, altoMm: 594 },
-  { id: "a1", nombre: "A1", anchoMm: 594, altoMm: 841 },
-  { id: "a0", nombre: "A0", anchoMm: 841, altoMm: 1189 },
+  { id: "a4", nombre: "A4", anchoMm: 210, altoMm: 297 },
+  { id: "20x30", nombre: "20 x 30", anchoMm: 200, altoMm: 300 },
+  { id: "30x40", nombre: "30 x 40", anchoMm: 300, altoMm: 400 },
+  { id: "50x70", nombre: "50 x 70", anchoMm: 500, altoMm: 700 },
 ];
 const MIRROR_PRICE_M2 = 59166;
 
@@ -237,7 +237,7 @@ const INITIAL_FORM = {
   altoMm: 1000,
   cantidad: 1,
   orientacion: "vertical",
-  tipoMedida: "exterior",
+  tipoMedida: "interior",
   frente: "no",
   fondoId: "sin-fondo",
   paspartuMm: 0,
@@ -1021,6 +1021,9 @@ export default function CotizadorMarcos() {
       ["Medida cargada", `${formatDimensionCm(quote.inputAnchoMm)} x ${formatDimensionCm(quote.inputAltoMm)}`],
       ...(selectedProfile?.liston ? [["Colocacion", form.listonUso === "canto" ? "De canto" : "De plano"]] : []),
       ["Cantidad", String(cantidadVal)],
+      ...(selectedProfile?.liston && quote.pricingEnabled
+        ? [["Rebaje liston", `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}`]]
+        : []),
       ["Fondo", fondoLabel],
       ["Frente", frenteLabel],
       ["Paspartu", paspartuVal > 0 ? `${formatDimensionCm(paspartuVal)} · ${selectedPaspartuColor.nombre}` : "No"],
@@ -1243,6 +1246,9 @@ export default function CotizadorMarcos() {
       { label: "Varilla", value: `${effectiveProfile.codigo} - ${effectiveProfile.nombre}` },
       { label: "Medidas", value: formatDimensionCmPair(quote.inputAnchoMm, quote.inputAltoMm) },
       { label: "Tipo de medida", value: form.tipoMedida === "interior" ? "Interior" : "Exterior" },
+      ...(selectedProfile?.liston && quote.pricingEnabled
+        ? [{ label: "Rebaje liston", value: `${formatNumber(quote.metrosRebaje)} m - ${formatCurrency(quote.subtotalRebaje)}` }]
+        : []),
       { label: "Fondo", value: fondoLabel },
       { label: "Frente", value: frenteLabel },
       ...(paspartuVal > 0 ? [{ label: "Paspartu", value: paspartuLabel }] : []),
@@ -1364,6 +1370,8 @@ export default function CotizadorMarcos() {
     const metrosMarcoTotales = metrosMarcoUnitarios * cantidad;
     const chargedBars = calculateChargedBars(metrosMarcoTotales);
     const subtotalVarilla = pricingEnabled ? chargedBars.chargedMeters * clampPositiveNumber(effectiveProfile.precioMetro, 0) : 0;
+    const metrosRebaje = effectiveProfile.liston ? chargedBars.chargedMeters : 0;
+    const subtotalRebaje = pricingEnabled ? metrosRebaje * LISTON_REBAJE_PRICE_PER_METER : 0;
 
     const frentePrecioM2 = form.frente === "espejo" ? MIRROR_PRICE_M2 : form.frente === "vidrio" ? GLASS_PRICE_M2 : 0;
     const subtotalVidrio = pricingEnabled ? frenteAreaM2 * cantidad * frentePrecioM2 : 0;
@@ -1376,6 +1384,7 @@ export default function CotizadorMarcos() {
 
     const total =
       subtotalVarilla +
+      subtotalRebaje +
       subtotalVidrio +
       subtotalFondo +
       subtotalPaspartu +
@@ -1392,7 +1401,9 @@ export default function CotizadorMarcos() {
       mediasVarillasCobradas: chargedBars.chargedHalfBars,
       varillasCobradas: chargedBars.chargedBars,
       metrosFacturados: chargedBars.chargedMeters,
+      metrosRebaje,
       subtotalVarilla,
+      subtotalRebaje,
       subtotalVidrio,
       subtotalFondo,
       subtotalPaspartu,
@@ -1971,6 +1982,12 @@ export default function CotizadorMarcos() {
               <SummaryRow label="Varillas cobradas" value={`${formatNumber(quote.varillasCobradas, 1)}`} />
               <SummaryRow label="Metros facturados" value={`${formatNumber(quote.metrosFacturados)} m`} />
               <SummaryRow label="Subtotal varilla" value={quote.pricingEnabled ? formatCurrency(quote.subtotalVarilla) : "-"} />
+              {selectedProfile?.liston ? (
+                <SummaryRow
+                  label={`Rebaje liston (${formatCurrency(LISTON_REBAJE_PRICE_PER_METER)} / m)`}
+                  value={quote.pricingEnabled ? `${formatNumber(quote.metrosRebaje)} m / ${formatCurrency(quote.subtotalRebaje)}` : "-"}
+                />
+              ) : null}
               <SummaryRow label="Frente m2" value={`${formatNumber(quote.frenteAreaM2)} m2`} />
               <SummaryRow label={`Subtotal frente (${form.frente === "espejo" ? "Espejo" : form.frente === "vidrio" ? "Vidrio" : "Sin frente"})`} value={quote.pricingEnabled ? formatCurrency(quote.subtotalVidrio) : "-"} />
               <SummaryRow label={`${selectedFondo.nombre} m2`} value={`${formatNumber(quote.fondoAreaM2)} m2`} />
