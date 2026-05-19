@@ -281,6 +281,93 @@ function esArchivoTexto(file) {
     || name.endsWith(".tsv");
 }
 
+function sanitizeFileName(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80);
+}
+
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function wrapCanvasText(ctx, text, maxWidth, maxLines = Infinity) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = "";
+
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (ctx.measureText(candidate).width <= maxWidth) {
+      current = candidate;
+      continue;
+    }
+    if (current) lines.push(current);
+    current = word;
+    if (lines.length === maxLines) break;
+  }
+
+  if (current && lines.length < maxLines) lines.push(current);
+  if (lines.length === 0) lines.push("");
+  if (words.length > 0 && lines.length === maxLines) {
+    let trimmed = lines[maxLines - 1];
+    while (trimmed.length > 1 && ctx.measureText(`${trimmed}...`).width > maxWidth) {
+      trimmed = trimmed.slice(0, -1);
+    }
+    lines[maxLines - 1] = `${trimmed}...`;
+  }
+  return lines;
+}
+
+function canvasToPngFile(canvas, fileName) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("No se pudo generar la imagen PNG."));
+        return;
+      }
+      resolve(new File([blob], fileName, { type: "image/png" }));
+    }, "image/png");
+  });
+}
+
+function downloadFile(file) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function copyPngToClipboard(file) {
+  if (!(navigator.clipboard && window.ClipboardItem)) return false;
+  try {
+    await navigator.clipboard.write([
+      new window.ClipboardItem({ [file.type]: file }),
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 let nextId = 1;
 
 export default function CotizadorCortes() {
@@ -695,7 +782,7 @@ export default function CotizadorCortes() {
     return `CC-${datePart}-${timePart}`;
   }
 
-  function exportarComprobanteRetiro() {
+  async function exportarComprobanteRetiro() {
     if (cortes.length === 0) {
       alert("No hay cortes cargados para generar el comprobante.");
       return;
@@ -706,18 +793,16 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
     const comprobanteNro = generarNumeroComprobante();
     const brand = {
-      accent: [200, 96, 58],
-      accentDark: [168, 78, 44],
-      navy: [7, 6, 20],
-      bg: [248, 247, 245],
-      line: [232, 229, 224],
-      text: [44, 44, 44],
-      muted: [136, 133, 128],
+      accent: "#c8603a",
+      accentDark: "#a84e2c",
+      navy: "#070614",
+      bg: "#f8f7f5",
+      line: "#e8e5e0",
+      text: "#2c2c2c",
+      muted: "#888580",
+      white: "#ffffff",
     };
     const fechaEmision = new Intl.DateTimeFormat("es-AR", {
       day: "2-digit",
@@ -727,116 +812,151 @@ export default function CotizadorCortes() {
       minute: "2-digit",
     }).format(new Date());
 
-    let y = 16;
-    doc.setFillColor(...brand.navy);
-    doc.rect(0, 0, pageW, 34, "F");
-    doc.setFillColor(...brand.accent);
-    doc.rect(0, 30, pageW, 4, "F");
-    doc.setTextColor(255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(17);
-    doc.text("Comprobante para retiro de cortes", 14, y);
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.text("Sur Maderas - Av. Luro 5020 / Av. Independencia 4490 - Mar del Plata", 14, y + 8);
-    doc.setFont("helvetica", "bold");
-    doc.text(comprobanteNro, pageW - 14, y, { align: "right" });
-    doc.setFont("helvetica", "normal");
-    doc.text(fechaEmision, pageW - 14, y + 8, { align: "right" });
+    const width = 1200;
+    const padding = 64;
+    const rowH = 58;
+    const tableHeaderH = 46;
+    const obsText = observacionesRetiro.trim() || "Sin observaciones.";
+    const measureCanvas = document.createElement("canvas");
+    const measureCtx = measureCanvas.getContext("2d");
+    measureCtx.font = "26px Arial";
+    const obsLines = wrapCanvasText(measureCtx, obsText, width - padding * 2, 6);
+    const contentHeight = 650 + cortes.length * rowH + obsLines.length * 40;
+    const height = Math.max(820, contentHeight);
+    const scale = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    const canvas = document.createElement("canvas");
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
 
-    y = 46;
-    doc.setFillColor(...brand.bg);
-    doc.setDrawColor(...brand.line);
-    doc.roundedRect(14, y - 7, pageW - 28, 25, 2, 2, "FD");
-    doc.setTextColor(...brand.accentDark);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Datos del retiro", 14, y);
-    y += 7;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.fillStyle = brand.white;
+    ctx.fillRect(0, 0, width, height);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(...brand.text);
-    doc.text(`Cliente: ${cliente.trim()}`, 14, y);
-    doc.text(`Telefono: ${telefono.trim() || "Sin completar"}`, 110, y);
-    y += 7;
-    doc.text(`Fecha de retiro: ${fechaRetiro || "A coordinar"}`, 14, y);
-    doc.text(`Total de piezas: ${formatARS(totalPiezas).replace(",00", "")}`, 110, y);
-    y += 9;
+    ctx.fillStyle = brand.navy;
+    ctx.fillRect(0, 0, width, 118);
+    ctx.fillStyle = brand.accent;
+    ctx.fillRect(0, 108, width, 10);
 
-    const headers = ["Cant.", "Material", "Medida", "Control"];
-    const colWidths = [18, 82, 42, 30];
-    const rowH = 10;
-    let x = 14;
+    ctx.fillStyle = brand.white;
+    ctx.font = "700 36px Arial";
+    ctx.fillText("Comprobante para retiro de cortes", padding, 52);
+    ctx.font = "400 20px Arial";
+    ctx.fillText("Sur Maderas - Av. Luro 5020 / Av. Independencia 4490 - Mar del Plata", padding, 86);
+    ctx.textAlign = "right";
+    ctx.font = "700 22px Arial";
+    ctx.fillText(comprobanteNro, width - padding, 52);
+    ctx.font = "400 20px Arial";
+    ctx.fillText(fechaEmision, width - padding, 86);
+    ctx.textAlign = "left";
 
-    doc.setFillColor(...brand.accent);
-    doc.rect(14, y, pageW - 28, rowH, "F");
-    doc.setTextColor(255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    headers.forEach((h, i) => {
-      doc.text(h, x + colWidths[i] / 2, y + 6.5, { align: "center" });
-      x += colWidths[i];
+    let y = 154;
+    drawRoundedRect(ctx, padding, y, width - padding * 2, 104, 14);
+    ctx.fillStyle = brand.bg;
+    ctx.fill();
+    ctx.strokeStyle = brand.line;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = brand.accentDark;
+    ctx.font = "700 22px Arial";
+    ctx.fillText("Datos del retiro", padding + 24, y + 34);
+    ctx.fillStyle = brand.text;
+    ctx.font = "400 22px Arial";
+    ctx.fillText(`Cliente: ${cliente.trim()}`, padding + 24, y + 68);
+    ctx.fillText(`Telefono: ${telefono.trim() || "Sin completar"}`, 660, y + 68);
+    ctx.fillText(`Fecha de retiro: ${fechaRetiro || "A coordinar"}`, padding + 24, y + 94);
+    ctx.fillText(`Total de piezas: ${formatARS(totalPiezas).replace(",00", "")}`, 660, y + 94);
+
+    y += 138;
+    const tableX = padding;
+    const tableW = width - padding * 2;
+    const columns = [
+      { label: "Cant.", x: tableX, w: 110 },
+      { label: "Material", x: tableX + 110, w: 560 },
+      { label: "Medida", x: tableX + 670, w: 220 },
+      { label: "Control", x: tableX + 890, w: tableW - 890 },
+    ];
+
+    ctx.fillStyle = brand.accent;
+    ctx.fillRect(tableX, y, tableW, tableHeaderH);
+    ctx.fillStyle = brand.white;
+    ctx.font = "700 19px Arial";
+    ctx.textAlign = "center";
+    columns.forEach((column) => {
+      ctx.fillText(column.label, column.x + column.w / 2, y + 30);
     });
-    y += rowH;
+    ctx.textAlign = "left";
+    y += tableHeaderH;
 
-    doc.setTextColor(...brand.text);
-    doc.setFont("helvetica", "normal");
     cortes.forEach((c, idx) => {
-      if (y > pageH - 58) {
-        doc.addPage();
-        y = 18;
-      }
-      if (idx % 2 === 0) {
-        doc.setFillColor(...brand.bg);
-        doc.rect(14, y, pageW - 28, rowH, "F");
-      }
-      const cells = [
-        String(c.cantidad),
-        c.material,
-        `${c.largo} x ${c.ancho} cm`,
-        "[  ]",
-      ];
-      x = 14;
-      cells.forEach((cell, i) => {
-        doc.text(cell, x + colWidths[i] / 2, y + 6.5, { align: "center", maxWidth: colWidths[i] - 3 });
-        x += colWidths[i];
+      ctx.fillStyle = idx % 2 === 0 ? brand.bg : brand.white;
+      ctx.fillRect(tableX, y, tableW, rowH);
+      ctx.strokeStyle = brand.line;
+      ctx.beginPath();
+      ctx.moveTo(tableX, y + rowH);
+      ctx.lineTo(tableX + tableW, y + rowH);
+      ctx.stroke();
+
+      ctx.fillStyle = brand.text;
+      ctx.font = "700 22px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(String(c.cantidad), columns[0].x + columns[0].w / 2, y + 36);
+      ctx.fillText(`${c.largo} x ${c.ancho} cm`, columns[2].x + columns[2].w / 2, y + 36);
+      ctx.font = "400 26px Arial";
+      ctx.fillText("[  ]", columns[3].x + columns[3].w / 2, y + 38);
+
+      ctx.textAlign = "left";
+      ctx.font = "400 21px Arial";
+      const materialLines = wrapCanvasText(ctx, c.material, columns[1].w - 32, 2);
+      materialLines.forEach((line, lineIndex) => {
+        ctx.fillText(line, columns[1].x + 16, y + 25 + lineIndex * 23);
       });
       y += rowH;
     });
 
-    y += 6;
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...brand.accentDark);
-    doc.text("Observaciones", 14, y);
-    y += 6;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...brand.text);
-    const obsLines = doc.splitTextToSize(observacionesRetiro.trim() || "Sin observaciones.", pageW - 28);
-    doc.text(obsLines, 14, y);
-    y += Math.max(14, obsLines.length * 5 + 8);
+    y += 42;
+    ctx.fillStyle = brand.accentDark;
+    ctx.font = "700 24px Arial";
+    ctx.fillText("Observaciones", padding, y);
+    y += 34;
+    ctx.fillStyle = brand.text;
+    ctx.font = "400 23px Arial";
+    obsLines.forEach((line) => {
+      ctx.fillText(line, padding, y);
+      y += 32;
+    });
 
-    if (y > pageH - 32) {
-      doc.addPage();
-      y = 24;
+    y += 24;
+    drawRoundedRect(ctx, padding, y, width - padding * 2, 72, 14);
+    ctx.fillStyle = brand.bg;
+    ctx.fill();
+    ctx.strokeStyle = brand.line;
+    ctx.stroke();
+    ctx.fillStyle = brand.accentDark;
+    ctx.font = "700 21px Arial";
+    ctx.fillText("Control interno", padding + 24, y + 28);
+    ctx.fillStyle = brand.text;
+    ctx.font = "400 20px Arial";
+    ctx.fillText("Marcar cada corte en la columna Control al preparar y entregar el pedido.", padding + 24, y + 56);
+
+    ctx.fillStyle = brand.muted;
+    ctx.font = "400 18px Arial";
+    ctx.fillText("Presentar este comprobante al retirar. Verificar cantidad, material y medidas antes de entregar.", padding, height - 32);
+
+    try {
+      const fileName = `comprobante-retiro-cortes-${sanitizeFileName(comprobanteNro)}.png`;
+      const file = await canvasToPngFile(canvas, fileName);
+      const copied = await copyPngToClipboard(file);
+      downloadFile(file);
+      alert(copied
+        ? "Comprobante PNG copiado al portapapeles y descargado."
+        : "Comprobante PNG descargado. Tu navegador no permitio copiar la imagen automaticamente.");
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo generar el comprobante PNG.");
     }
-
-    doc.setFillColor(...brand.bg);
-    doc.setDrawColor(...brand.line);
-    doc.roundedRect(14, y, pageW - 28, 18, 2, 2, "FD");
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...brand.accentDark);
-    doc.text("Control interno", 18, y + 7);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...brand.text);
-    doc.text("Marcar cada corte en la columna Control al preparar y entregar el pedido.", 18, y + 14);
-
-    doc.setFontSize(8);
-    doc.setTextColor(...brand.muted);
-    doc.text("Presentar este comprobante al retirar. Verificar cantidad, material y medidas antes de entregar.", 14, pageH - 12);
-
-    doc.save(`comprobante-retiro-cortes-${comprobanteNro}.pdf`);
   }
 
   function enviarWhatsApp() {
@@ -1135,7 +1255,7 @@ export default function CotizadorCortes() {
             <button className="cc-actionBtn cc-btnPdf" title="Guardar PDF" onClick={exportarPDF}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><line x1="9" y1="15" x2="15" y2="15" /></svg>
             </button>
-            <button className="cc-actionBtn cc-btnReceipt" title="Comprobante de retiro" onClick={exportarComprobanteRetiro}>
+            <button className="cc-actionBtn cc-btnReceipt" title="Copiar y descargar comprobante PNG" onClick={exportarComprobanteRetiro}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2Z" /><path d="M9 8h6" /><path d="M9 12h6" /><path d="M9 16h4" /></svg>
             </button>
             <button className="cc-actionBtn cc-btnWa" title="Enviar por WhatsApp" onClick={enviarWhatsApp}>
@@ -1185,7 +1305,7 @@ export default function CotizadorCortes() {
             />
           </div>
           <button className="cc-btnReceiptWide" onClick={exportarComprobanteRetiro}>
-            Generar comprobante para retirar
+            Copiar y descargar comprobante PNG
           </button>
         </section>
 
