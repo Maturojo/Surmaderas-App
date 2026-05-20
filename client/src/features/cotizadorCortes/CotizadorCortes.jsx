@@ -722,11 +722,15 @@ export default function CotizadorCortes() {
     const lines = [
       "Cotizacion de cortes - Sur Maderas",
       "",
-      "Cant. | Material | Medida | $ / unidad | Subtotal",
-      "----- | -------- | ------ | ---------- | --------",
-      ...cortes.map((c) => (
-        `${c.cantidad} | ${c.material} | ${c.largo} x ${c.ancho} cm | $ ${formatARS(c.costoUnd)} | $ ${formatARS(c.subtotal)}`
-      )),
+      ...cortes.flatMap((c, index) => [
+        `Corte ${index + 1}`,
+        `Material: ${c.material}`,
+        `Medida: ${c.largo} x ${c.ancho} cm`,
+        `Cantidad: ${c.cantidad}`,
+        `$ / unidad: $ ${formatARS(c.costoUnd)}`,
+        `Subtotal: $ ${formatARS(c.subtotal)}`,
+        "",
+      ]),
       "",
       `Total piezas: ${formatARS(totalPiezas).replace(",00", "")}`,
       `Total: $ ${formatARS(total)}`,
