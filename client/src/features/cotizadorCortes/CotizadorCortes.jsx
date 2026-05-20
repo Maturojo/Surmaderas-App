@@ -134,7 +134,9 @@ function calcularCorte(material, largoCm, anchoCm, cantidadValue) {
 function extraerEspesorMm(linea) {
   const normalizedLine = normalizeText(linea);
   const match = normalizedLine.match(/(?:espesor|espero|esp|e)\s*(?:de)?\s*(\d+(?:[.,]\d+)?)\s*mm\b/)
-    || normalizedLine.match(/\b(\d+(?:[.,]\d+)?)\s*mm\b/);
+    || normalizedLine.match(/\b(\d+(?:[.,]\d+)?)\s*mm\b/)
+    || normalizedLine.match(/\b(?:fibro|mdf|tablero|pino|fenolico|pizarron|melamina|chapadur|terciado|osb)\s*(?:de)?\s*(\d+(?:[.,]\d+)?)\b/)
+    || normalizedLine.match(/(?:espesor|espero|esp|e)\s*(?:de)?\s*(\d+(?:[.,]\d+)?)\b/);
   return match ? parseNumero(match[1]) : 0;
 }
 
