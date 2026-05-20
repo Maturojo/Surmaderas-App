@@ -1143,24 +1143,39 @@ export default function CotizadorMarcos() {
 
   function handleWhatsAppLista() {
     if (listaMarcos.length === 0) return;
+    window.open(`https://wa.me/?text=${encodeURIComponent(buildListaMarcosTexto())}`, "_blank");
+  }
+
+  function buildListaMarcosTexto() {
     const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" });
     const totalLista = listaMarcos.reduce((acc, m) => acc + Number(m.precio || 0) * Number(m.cantidad || 1), 0);
     const lineas = listaMarcos.map((marco, idx) => {
       const lines = [
-        `*Marco ${idx + 1}*`,
+        `Marco ${idx + 1}`,
         ...(marco.data?.resumenLineas || []).map(({ label, value }) => `  ${label}: ${value}`),
-        `  *Precio unitario: ${formatCurrency(Number(marco.precio || 0))}*`,
+        `  Precio unitario: ${formatCurrency(Number(marco.precio || 0))}`,
       ];
       return lines.join("\n");
     });
-    const text = [
-      `*Lista de Marcos - Sur Maderas*`,
-      `_${fecha}_`,
+
+    return [
+      "Lista de Marcos - Sur Maderas",
+      fecha,
       "",
       ...lineas.flatMap((l) => [l, ""]),
-      `*Total: ${formatCurrency(totalLista)}*`,
+      `Total: ${formatCurrency(totalLista)}`,
     ].join("\n");
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  async function handleCopiarLista() {
+    if (listaMarcos.length === 0) return;
+
+    try {
+      await navigator.clipboard.writeText(buildListaMarcosTexto());
+      alert("Lista de marcos copiada. Ya podes pegarla en un mensaje.");
+    } catch {
+      alert("No se pudo copiar automaticamente. Probalo de nuevo desde un navegador con permisos de portapapeles.");
+    }
   }
 
   function handlePrintLista() {
@@ -2160,7 +2175,14 @@ export default function CotizadorMarcos() {
                   </button>
                 </div>
               ))}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 2 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 2 }}>
+                <button
+                  type="button"
+                  onClick={handleCopiarLista}
+                  style={{ padding: "10px 0", borderRadius: 12, background: "#8d6a45", color: "#fffaf3", border: "none", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
+                >
+                  Copiar lista
+                </button>
                 <button
                   type="button"
                   onClick={handlePrintLista}
