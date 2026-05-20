@@ -239,7 +239,7 @@
 
 .cc-table {
   width: 100%;
-  min-width: 560px;
+  min-width: 760px;
   border-collapse: collapse;
   font-size: 14px;
 }
@@ -287,6 +287,77 @@
   accent-color: #896846;
 }
 
+.cc-tableInput,
+.cc-tableSelect {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 9px;
+  border: 1.5px solid var(--sm-line);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--sm-text);
+  font-size: 13px;
+}
+
+.cc-tableInput:focus,
+.cc-tableSelect:focus {
+  outline: none;
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 3px rgba(200, 96, 58, 0.12);
+}
+
+.cc-tableInput--short {
+  max-width: 78px;
+  text-align: center;
+}
+
+.cc-measureEdit {
+  display: grid;
+  grid-template-columns: minmax(68px, 1fr) 14px minmax(68px, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.cc-measureEdit span {
+  color: #896846;
+  font-weight: 800;
+}
+
+.cc-rowActions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cc-rowBtn {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
+  background: #fff;
+  color: #2d2117;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cc-rowBtn:hover {
+  border-color: var(--sm-accent);
+  color: var(--sm-accent);
+}
+
+.cc-rowBtn--save {
+  background: var(--sm-accent);
+  border-color: var(--sm-accent);
+  color: #fff;
+}
+
+.cc-rowBtn--save:hover {
+  background: var(--sm-accent-dark);
+  color: #fff;
+}
+
 .cc-actions {
   display: flex;
   gap: 8px;
@@ -312,6 +383,9 @@
 
 .cc-btnDel { background: #dc3545; border-color: #dc3545; color: #fff; }
 .cc-btnDel:hover { background: #fff; color: #dc3545; }
+
+.cc-btnCopy { background: #896846; border-color: #896846; color: #fff; }
+.cc-btnCopy:hover { background: #fff; color: #896846; }
 
 .cc-btnPrint { background: #2d2117; border-color: #2d2117; color: #fff; }
 .cc-btnPrint:hover { background: #fff; color: #2d2117; }

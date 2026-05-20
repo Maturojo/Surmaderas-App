@@ -385,6 +385,8 @@ export default function CotizadorCortes() {
   const [observacionesRetiro, setObservacionesRetiro] = useState("");
   const [cortes, setCortes] = useState([]);
   const [seleccionados, setSeleccionados] = useState(new Set());
+  const [editandoCorteId, setEditandoCorteId] = useState(null);
+  const [corteEditado, setCorteEditado] = useState({ material: "", largo: "", ancho: "", cantidad: "" });
   const [costoActual, setCostoActual] = useState(null);
   const [textoMasivo, setTextoMasivo] = useState("");
   const [resultadoMasivo, setResultadoMasivo] = useState("");
@@ -668,13 +670,83 @@ export default function CotizadorCortes() {
     });
   }
 
+  function iniciarEdicionCorte(corte) {
+    setEditandoCorteId(corte.id);
+    setCorteEditado({
+      material: corte.material,
+      largo: String(corte.largo || ""),
+      ancho: String(corte.ancho || ""),
+      cantidad: String(corte.cantidad || ""),
+    });
+  }
+
+  function cancelarEdicionCorte() {
+    setEditandoCorteId(null);
+    setCorteEditado({ material: "", largo: "", ancho: "", cantidad: "" });
+  }
+
+  function guardarEdicionCorte() {
+    const material = getMaterialByName(corteEditado.material);
+    const l = parseNumero(corteEditado.largo);
+    const a = parseNumero(corteEditado.ancho);
+    const q = parseNumero(corteEditado.cantidad);
+
+    if (!material || l <= 0 || a <= 0 || q <= 0) {
+      alert("Revisa material, largo, ancho y cantidad antes de guardar.");
+      return;
+    }
+
+    const { costoUnd, subtotal } = calcularCorte(material, l, a, q);
+    setCortes((prev) => prev.map((corte) => (
+      corte.id === editandoCorteId
+        ? { ...corte, material: material.nombre, largo: l, ancho: a, cantidad: q, costoUnd, subtotal }
+        : corte
+    )));
+    setCostoActual(subtotal);
+    cancelarEdicionCorte();
+  }
+
   function eliminarSeleccionados() {
     if (seleccionados.size === 0) {
       alert("Seleccioná al menos una fila para eliminar.");
       return;
     }
     setCortes((prev) => prev.filter((c) => !seleccionados.has(c.id)));
+    if (seleccionados.has(editandoCorteId)) {
+      cancelarEdicionCorte();
+    }
     setSeleccionados(new Set());
+  }
+
+  function construirTextoMisCortes() {
+    const lines = [
+      "Cotizacion de cortes - Sur Maderas",
+      "",
+      "Cant. | Material | Medida | $ / unidad | Subtotal",
+      "----- | -------- | ------ | ---------- | --------",
+      ...cortes.map((c) => (
+        `${c.cantidad} | ${c.material} | ${c.largo} x ${c.ancho} cm | $ ${formatARS(c.costoUnd)} | $ ${formatARS(c.subtotal)}`
+      )),
+      "",
+      `Total piezas: ${formatARS(totalPiezas).replace(",00", "")}`,
+      `Total: $ ${formatARS(total)}`,
+    ];
+
+    return lines.join("\n");
+  }
+
+  async function copiarTablaMisCortes() {
+    if (cortes.length === 0) {
+      alert("No hay cortes cargados para copiar.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(construirTextoMisCortes());
+      alert("Tabla de cortes copiada. Ya podes pegarla en un mensaje.");
+    } catch {
+      alert("No se pudo copiar automaticamente. Probalo de nuevo desde un navegador con permisos de portapapeles.");
+    }
   }
 
   function imprimir() {
@@ -1208,36 +1280,108 @@ export default function CotizadorCortes() {
                   <th>Medida</th>
                   <th>$ / unidad</th>
                   <th>Subtotal</th>
+                  <th className="cc-noprint">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {cortes.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="cc-emptyRow">Todavía no agregaste cortes</td>
+                    <td colSpan={7} className="cc-emptyRow">Todavía no agregaste cortes</td>
                   </tr>
                 ) : (
-                  cortes.map((c) => (
-                    <tr key={c.id} className={seleccionados.has(c.id) ? "cc-rowSelected" : ""}>
-                      <td className="cc-noprint">
-                        <input
-                          type="checkbox"
-                          className="cc-checkbox"
-                          checked={seleccionados.has(c.id)}
-                          onChange={() => toggleSeleccion(c.id)}
-                        />
-                      </td>
-                      <td>{c.cantidad}</td>
-                      <td>{c.material}</td>
-                      <td>{c.largo} × {c.ancho} cm</td>
-                      <td>$ {formatARS(c.costoUnd)}</td>
-                      <td>$ {formatARS(c.subtotal)}</td>
-                    </tr>
-                  ))
+                  cortes.map((c) => {
+                    const isEditing = editandoCorteId === c.id;
+                    const materialEditado = getMaterialByName(corteEditado.material);
+                    const largoEditado = parseNumero(corteEditado.largo);
+                    const anchoEditado = parseNumero(corteEditado.ancho);
+                    const cantidadEditada = parseNumero(corteEditado.cantidad);
+                    const preview = isEditing && materialEditado && largoEditado > 0 && anchoEditado > 0 && cantidadEditada > 0
+                      ? calcularCorte(materialEditado, largoEditado, anchoEditado, cantidadEditada)
+                      : null;
+
+                    return (
+                      <tr key={c.id} className={seleccionados.has(c.id) ? "cc-rowSelected" : ""}>
+                        <td className="cc-noprint">
+                          <input
+                            type="checkbox"
+                            className="cc-checkbox"
+                            checked={seleccionados.has(c.id)}
+                            onChange={() => toggleSeleccion(c.id)}
+                          />
+                        </td>
+                        {isEditing ? (
+                          <>
+                            <td>
+                              <input
+                                type="number"
+                                className="cc-tableInput cc-tableInput--short"
+                                value={corteEditado.cantidad}
+                                onChange={(e) => setCorteEditado((actual) => ({ ...actual, cantidad: e.target.value }))}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                className="cc-tableSelect"
+                                value={corteEditado.material}
+                                onChange={(e) => setCorteEditado((actual) => ({ ...actual, material: e.target.value }))}
+                              >
+                                {MATERIALES.map((grupo) => (
+                                  <optgroup key={grupo.grupo} label={grupo.grupo}>
+                                    {grupo.items.map((m) => (
+                                      <option key={m.nombre} value={m.nombre}>{m.nombre}</option>
+                                    ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <div className="cc-measureEdit">
+                                <input
+                                  type="number"
+                                  className="cc-tableInput"
+                                  value={corteEditado.largo}
+                                  onChange={(e) => setCorteEditado((actual) => ({ ...actual, largo: e.target.value }))}
+                                />
+                                <span>x</span>
+                                <input
+                                  type="number"
+                                  className="cc-tableInput"
+                                  value={corteEditado.ancho}
+                                  onChange={(e) => setCorteEditado((actual) => ({ ...actual, ancho: e.target.value }))}
+                                />
+                              </div>
+                            </td>
+                            <td>$ {formatARS(preview?.costoUnd || 0)}</td>
+                            <td>$ {formatARS(preview?.subtotal || 0)}</td>
+                            <td className="cc-noprint">
+                              <div className="cc-rowActions">
+                                <button type="button" className="cc-rowBtn cc-rowBtn--save" onClick={guardarEdicionCorte}>Guardar</button>
+                                <button type="button" className="cc-rowBtn" onClick={cancelarEdicionCorte}>Cancelar</button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>{c.cantidad}</td>
+                            <td>{c.material}</td>
+                            <td>{c.largo} x {c.ancho} cm</td>
+                            <td>$ {formatARS(c.costoUnd)}</td>
+                            <td>$ {formatARS(c.subtotal)}</td>
+                            <td className="cc-noprint">
+                              <button type="button" className="cc-rowBtn" onClick={() => iniciarEdicionCorte(c)}>
+                                Editar
+                              </button>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
               <tfoot>
                 <tr>
-                  <th colSpan={4} className="cc-noprint" />
+                  <th colSpan={5} className="cc-noprint" />
                   <th>Total</th>
                   <th>$ {formatARS(total)}</th>
                 </tr>
@@ -1248,6 +1392,9 @@ export default function CotizadorCortes() {
           <div className="cc-actions">
             <button className="cc-actionBtn cc-btnDel" title="Eliminar seleccionados" onClick={eliminarSeleccionados}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4h6v2" /></svg>
+            </button>
+            <button className="cc-actionBtn cc-btnCopy" title="Copiar tabla para mensaje" onClick={copiarTablaMisCortes}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
             </button>
             <button className="cc-actionBtn cc-btnPrint" title="Imprimir" onClick={imprimir}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
