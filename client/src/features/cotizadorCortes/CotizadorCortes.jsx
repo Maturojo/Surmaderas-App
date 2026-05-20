@@ -95,6 +95,8 @@ MATERIAL_FAMILIAS.forEach((familia) => {
   familia.aliases.push(...(MATERIAL_ALIAS_EXTRA[familia.key] || []));
 });
 
+const MATERIAL_FAMILIA_BY_KEY = Object.fromEntries(MATERIAL_FAMILIAS.map((familia) => [familia.key, familia]));
+
 function normalizeText(value) {
   return String(value || "")
     .normalize("NFD")
@@ -144,6 +146,18 @@ function materialTieneEspesor(material, espesorMm) {
 function detectarFamiliaEnTexto(linea) {
   const normalizedLine = normalizeText(linea);
   const compactLine = compactText(linea);
+
+  if (/\bosb\b/.test(normalizedLine)) return MATERIAL_FAMILIA_BY_KEY.osb;
+  if (/\b(fibro|mdf)\b/.test(normalizedLine) && /\b(plus|blanco|negro)\b/.test(normalizedLine)) {
+    return MATERIAL_FAMILIA_BY_KEY["fibro-plus"];
+  }
+  if (/\b(fibro|mdf)\b/.test(normalizedLine)) return MATERIAL_FAMILIA_BY_KEY["fibro-facil"];
+  if (/\b(tablero|pino)\b/.test(normalizedLine)) return MATERIAL_FAMILIA_BY_KEY.pino;
+  if (/\bmelamina\b/.test(normalizedLine) && /\b(negra|negro|ng)\b/.test(normalizedLine)) {
+    return MATERIAL_FAMILIA_BY_KEY["melamina-negra"];
+  }
+  if (/\bmelamina\b/.test(normalizedLine)) return MATERIAL_FAMILIA_BY_KEY["melamina-blanca"];
+
   const matches = MATERIAL_FAMILIAS.flatMap((familia) => (
     familia.aliases.map((alias) => {
       const normalizedAlias = normalizeText(alias);
@@ -227,6 +241,35 @@ function extraerCantidad(linea, dimensionMatch) {
 }
 
 function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
+  const tripleCantidadSimple = linea.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)?\s*(?:x|X|\*|por)\s*(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
+  if (tripleCantidadSimple) {
+    const cantidadValue = Math.max(1, parseNumero(tripleCantidadSimple[1]) || 1);
+    let largoCm = parseNumero(tripleCantidadSimple[2]);
+    let anchoCm = parseNumero(tripleCantidadSimple[3]);
+    const unidad = String(tripleCantidadSimple[4] || "").toLowerCase();
+    if (unidad === "mm" || /\bmm\b/i.test(tripleCantidadSimple[0])) {
+      largoCm /= 10;
+      anchoCm /= 10;
+    }
+
+    const material = buscarMaterialEnTexto(linea, materialFallback, espesorFallback);
+    if (!material) return { error: "No se encontro material y no hay material seleccionado." };
+    if (largoCm <= 0 || anchoCm <= 0 || cantidadValue <= 0) return { error: "Medidas o cantidad invalidas." };
+
+    const { costoUnd, subtotal } = calcularCorte(material, largoCm, anchoCm, cantidadValue);
+    return {
+      corte: {
+        id: nextId++,
+        cantidad: cantidadValue,
+        material: material.nombre,
+        largo: largoCm,
+        ancho: anchoCm,
+        costoUnd,
+        subtotal,
+        origen: "texto",
+      },
+    };
+  }
   const tripleMatch = linea.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   const dimensionMatch = linea.match(/(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|×|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   if (!dimensionMatch) return { error: "No se encontro una medida tipo 120x60." };
