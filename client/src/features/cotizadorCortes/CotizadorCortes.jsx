@@ -77,6 +77,24 @@ const MATERIAL_FAMILIAS = [
   { key: "espejo", aliases: ["espejo"], matchName: ["espejo"] },
 ];
 
+const MATERIAL_ALIAS_EXTRA = {
+  "fibro-facil": ["fibro", "fibrof", "m d f"],
+  pino: ["tablero", "tablero de pino", "madera pino", "madera de pino"],
+  fenolico: ["terciado fenolico", "fenol"],
+  pizarron: ["pizarra"],
+  "fibro-plus": ["fibro blanco", "fibro negro", "mdf blanco", "mdf negro"],
+  osb: ["placa osb", "tablero osb"],
+  terciado: ["terciada", "contrachapado", "enchapado"],
+  "melamina-blanca": ["melamina", "melamina bl"],
+  "melamina-negra": ["melamina ng"],
+  chapadur: ["chapa dura", "hardboard"],
+  vidrio: ["cristal"],
+};
+
+MATERIAL_FAMILIAS.forEach((familia) => {
+  familia.aliases.push(...(MATERIAL_ALIAS_EXTRA[familia.key] || []));
+});
+
 function normalizeText(value) {
   return String(value || "")
     .normalize("NFD")
@@ -126,12 +144,16 @@ function materialTieneEspesor(material, espesorMm) {
 function detectarFamiliaEnTexto(linea) {
   const normalizedLine = normalizeText(linea);
   const compactLine = compactText(linea);
-  return MATERIAL_FAMILIAS.find((familia) => (
-    familia.aliases.some((alias) => {
+  const matches = MATERIAL_FAMILIAS.flatMap((familia) => (
+    familia.aliases.map((alias) => {
       const normalizedAlias = normalizeText(alias);
-      return normalizedLine.includes(normalizedAlias) || compactLine.includes(compactText(alias));
-    })
-  )) || null;
+      const compactAlias = compactText(alias);
+      const matchesAlias = normalizedLine.includes(normalizedAlias) || compactLine.includes(compactAlias);
+      return matchesAlias ? { familia, weight: compactAlias.length } : null;
+    }).filter(Boolean)
+  ));
+
+  return matches.sort((a, b) => b.weight - a.weight)[0]?.familia || null;
 }
 
 function detectarFamiliaDeMaterial(material) {
