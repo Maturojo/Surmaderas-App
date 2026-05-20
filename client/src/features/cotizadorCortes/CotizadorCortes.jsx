@@ -194,6 +194,7 @@ function buscarMaterialEnTexto(linea, materialFallback, espesorFallback = 0) {
   const materialPorFamilia = elegirMaterialPorFamilia(familiaTexto || familiaFallback, espesorLinea, materialFallback);
 
   if (familiaTexto && materialPorFamilia) return materialPorFamilia;
+  if (!familiaTexto && materialPorFamilia) return materialPorFamilia;
 
   const scored = ALL_MATERIALES.map((material) => {
     const normalizedName = nombreMaterialNormalizado(material);
@@ -226,18 +227,31 @@ function extraerCantidad(linea, dimensionMatch) {
 }
 
 function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
+  const tripleMatch = linea.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   const dimensionMatch = linea.match(/(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|×|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   if (!dimensionMatch) return { error: "No se encontro una medida tipo 120x60." };
 
-  let largoCm = parseNumero(dimensionMatch[1]);
-  let anchoCm = parseNumero(dimensionMatch[2]);
-  const unidad = String(dimensionMatch[3] || "").toLowerCase();
+  let cantidadValue = 0;
+  let largoCm = 0;
+  let anchoCm = 0;
+  let unidad = "";
+
+  if (tripleMatch) {
+    cantidadValue = Math.max(1, parseNumero(tripleMatch[1]) || 1);
+    largoCm = parseNumero(tripleMatch[2]);
+    anchoCm = parseNumero(tripleMatch[3]);
+    unidad = String(tripleMatch[4] || "").toLowerCase();
+  } else {
+    largoCm = parseNumero(dimensionMatch[1]);
+    anchoCm = parseNumero(dimensionMatch[2]);
+    unidad = String(dimensionMatch[3] || "").toLowerCase();
+    cantidadValue = extraerCantidad(linea, dimensionMatch);
+  }
   if (unidad === "mm" || /\bmm\b/i.test(dimensionMatch[0])) {
     largoCm /= 10;
     anchoCm /= 10;
   }
 
-  const cantidadValue = extraerCantidad(linea, dimensionMatch);
   const material = buscarMaterialEnTexto(linea, materialFallback, espesorFallback);
 
   if (!material) return { error: "No se encontro material y no hay material seleccionado." };
