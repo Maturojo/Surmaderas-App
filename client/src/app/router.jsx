@@ -228,11 +228,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "ventas/estadisticas",
-        element: (
-          <ProtectedRoute allowedRoles={["admin", "ventas"]}>
-            <VentasMensuales section="estadisticas" />
-          </ProtectedRoute>
-        ),
+        element: <Navigate to="/estadisticas" replace />,
       },
       {
         path: "whatsapp",

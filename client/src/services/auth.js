@@ -46,7 +46,7 @@ const SUBMODULE_GROUPS = {
     "/presupuestos/guardadas",
     "/presupuestos/proveedores",
   ],
-  ventas: ["/ventas/lista", "/ventas/nueva", "/ventas/estadisticas", "/ventas/objetivos", "/ventas/transferencias"],
+  ventas: ["/ventas/lista", "/ventas/nueva", "/ventas/objetivos", "/ventas/transferencias"],
   proveedores: ["/proveedores", "/pedidos-proveedor"],
   "negocio-online": [
     "/whatsapp/control",

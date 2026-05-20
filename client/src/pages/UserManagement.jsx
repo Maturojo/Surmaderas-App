@@ -38,7 +38,6 @@ const ALL_MODULES = [
     children: [
       { label: "Ventas del mes", path: "/ventas/lista" },
       { label: "Nueva venta", path: "/ventas/nueva" },
-      { label: "Estadisticas", path: "/ventas/estadisticas" },
       { label: "Objetivos y configuracion", path: "/ventas/objetivos" },
       { label: "Transferencias", path: "/ventas/transferencias" },
     ],

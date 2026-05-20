@@ -52,7 +52,6 @@ const NAV_ITEMS = [
     children: [
       { label: "Ventas del mes", to: "/ventas/lista" },
       { label: "Nueva venta", to: "/ventas/nueva" },
-      { label: "Estadisticas", to: "/ventas/estadisticas" },
       { label: "Objetivos y configuracion", to: "/ventas/objetivos" },
       { label: "Transferencias", to: "/ventas/transferencias" },
     ],
@@ -113,7 +112,6 @@ const VENTAS_ALLOWED_PATHS = new Set([
   "/encuestas",
   "/ventas/lista",
   "/ventas/nueva",
-  "/ventas/estadisticas",
   "/ventas/objetivos",
   "/ventas/transferencias",
   "/generador-3d",
