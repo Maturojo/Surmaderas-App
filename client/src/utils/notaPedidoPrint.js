@@ -186,15 +186,9 @@ function buildReferenceImage(data) {
 
   return `
     <div class="npw-reference">
-      <div class="npw-referenceLabel">Imagen de referencia</div>
       <div class="npw-referenceFrame">
         <img src="${escapeHtml(data.referenciaImagen)}" alt="${escapeHtml(data.referenciaDescripcion || "Imagen de referencia")}" />
       </div>
-      ${
-        data.referenciaDescripcion
-          ? `<div class="npw-referenceCaption">${escapeHtml(data.referenciaDescripcion)}</div>`
-          : ""
-      }
     </div>
   `;
 }
@@ -519,8 +513,8 @@ function buildStyles() {
     }
     .npw-summaryBand {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 101.5mm;
-      gap: 4mm;
+      grid-template-columns: minmax(38mm, 1fr) minmax(101.5mm, 112mm);
+      gap: 3mm;
       align-items: start;
       margin-top: 2mm;
     }
@@ -529,26 +523,17 @@ function buildStyles() {
       margin-top: 0;
     }
     .npw-reference {
-      min-height: 30mm;
-      padding: 2mm;
+      padding: 0;
       border-radius: 3.2mm;
       background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,243,238,0.97) 100%);
       border: 0.3mm solid rgba(28, 25, 22, 0.08);
       box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
-    }
-    .npw-referenceLabel {
-      margin-bottom: 1.4mm;
-      color: #6f614f;
-      font-size: 2.8mm;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      overflow: hidden;
     }
     .npw-referenceFrame {
-      height: 27mm;
-      border-radius: 2.4mm;
+      height: 32mm;
+      border-radius: 3mm;
       overflow: hidden;
-      border: 0.28mm solid rgba(28, 25, 22, 0.12);
       background: #fff;
       display: flex;
       align-items: center;
@@ -559,15 +544,6 @@ function buildStyles() {
       height: 100%;
       object-fit: contain;
       display: block;
-    }
-    .npw-referenceCaption {
-      margin-top: 1.2mm;
-      color: #4a4a4a;
-      font-size: 2.7mm;
-      font-weight: 700;
-      line-height: 1.2;
-      max-height: 6.5mm;
-      overflow: hidden;
     }
     .npw-summaryRow,
     .npw-summaryTotal {
