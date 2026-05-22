@@ -523,7 +523,7 @@ function buildStyles() {
     }
     .npw-summaryBand {
       display: grid;
-      grid-template-columns: minmax(30mm, 1fr) minmax(112mm, 123mm);
+      grid-template-columns: minmax(58mm, 64mm) minmax(0, 1fr);
       gap: 3mm;
       align-items: start;
       margin-top: 2mm;
