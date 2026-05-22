@@ -193,6 +193,16 @@ function buildReferenceImage(data) {
   `;
 }
 
+function buildProviderReferenceImage(data) {
+  if (!data?.referenciaImagen) return "";
+
+  return `
+    <div class="npw-providerReference">
+      <img src="${escapeHtml(data.referenciaImagen)}" alt="${escapeHtml(data.referenciaDescripcion || "Imagen de referencia")}" />
+    </div>
+  `;
+}
+
 function estimateRowUnits(item) {
   const description = String(item?.descripcion || "").trim();
   if (!description) return 1;
@@ -545,6 +555,24 @@ function buildStyles() {
       object-fit: contain;
       display: block;
     }
+    .npw-providerReference {
+      margin-top: 4mm;
+      height: 67mm;
+      border-radius: 3.2mm;
+      overflow: hidden;
+      background: #fff;
+      border: 0.3mm solid rgba(28, 25, 22, 0.08);
+      box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .npw-providerReference img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
     .npw-summaryRow,
     .npw-summaryTotal {
       display: grid;
@@ -643,7 +671,8 @@ function buildStyles() {
       .npw-header,
       .npw-tableCard,
       .npw-summary,
-      .npw-reference {
+      .npw-reference,
+      .npw-providerReference {
         box-shadow: none !important;
       }
     }
@@ -783,6 +812,8 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
           `
           : ""
       }
+
+      ${showSummary && !data.showPrices ? buildProviderReferenceImage(data) : ""}
 
       ${showFooter ? `<div class="npw-footer">surmaderas.com.ar - surmaderasmdp@gmail.com - 223 438 3262</div>` : ""}
       <div class="npw-pageMark">Hoja ${pageNumber} de ${pageCount}</div>
