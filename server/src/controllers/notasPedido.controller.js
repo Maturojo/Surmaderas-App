@@ -1,5 +1,6 @@
 ﻿import NotaPedido from "../models/NotaPedido.js";
 
+import Producto from "../models/Producto.js";
 import { colorProveedorPorNombre } from "../utils/proveedorColor.js";
 
 function getClienteNombre(doc) {
@@ -110,6 +111,78 @@ function enrichNota(doc) {
   item.clienteAvisado = Boolean(item?.clienteAvisado);
   item.proveedores = Array.isArray(item?.proveedores) ? item.proveedores : [];
   return item;
+}
+
+function getItemImage(item = {}) {
+  const image = item?.imagen || item?.data?.imagen || null;
+  if (!image) return "";
+  if (typeof image === "string") return image;
+  return image?.dataUrl || image?.url || image?.src || "";
+}
+
+function extractItemProductCode(item = {}) {
+  const candidates = [
+    item?.productoId,
+    item?.codigo,
+    item?.data?.codigo,
+    item?.data?.productoId,
+    item?.data?._id,
+    item?.data?.nombre,
+    item?.busqueda,
+    item?.descripcion,
+    item?.nombre,
+  ];
+
+  for (const candidate of candidates) {
+    const value = String(candidate || "").trim();
+    if (!value) continue;
+    const code = value.includes(" - ") ? value.split(" - ")[0].trim() : value.match(/^[A-Za-z0-9._-]+/)?.[0] || "";
+    if (code) return code;
+  }
+
+  return "";
+}
+
+async function enrichNotaWithProductImages(doc) {
+  const nota = enrichNota(doc);
+  if (!Array.isArray(nota.items) || nota.items.length === 0) return nota;
+
+  const codes = Array.from(
+    new Set(
+      nota.items
+        .filter((item) => !getItemImage(item))
+        .map(extractItemProductCode)
+        .filter(Boolean)
+    )
+  );
+
+  if (!codes.length) return nota;
+
+  const productos = await Producto.find({ codigo: { $in: codes } }, "codigo imagen").lean();
+  const imagenPorCodigo = new Map(
+    productos
+      .filter((producto) => producto?.codigo && producto?.imagen)
+      .map((producto) => [String(producto.codigo), producto.imagen])
+  );
+
+  if (!imagenPorCodigo.size) return nota;
+
+  nota.items = nota.items.map((item) => {
+    if (getItemImage(item)) return item;
+    const codigo = extractItemProductCode(item);
+    const imagen = imagenPorCodigo.get(codigo);
+    if (!imagen) return item;
+    return {
+      ...item,
+      imagen,
+      data: {
+        ...(item?.data && typeof item.data === "object" ? item.data : {}),
+        imagen,
+      },
+    };
+  });
+
+  return nota;
 }
 
 export async function listarNotasPedido(req, res) {
@@ -261,7 +334,7 @@ export async function obtenerNotaPedido(req, res) {
     const { id } = req.params;
     const doc = await NotaPedido.findById(id);
     if (!doc) return res.status(404).json({ message: "Nota no encontrada" });
-    res.json(enrichNota(doc));
+    res.json(await enrichNotaWithProductImages(doc));
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error obteniendo nota" });
   }

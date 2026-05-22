@@ -47,6 +47,56 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function getItemImage(item) {
+  const seen = new WeakSet();
+
+  function normalizeImageString(value) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) return null;
+    if (/^(data:image\/|blob:|https?:\/\/)/i.test(trimmed)) return trimmed;
+    if (typeof window === "undefined") return trimmed;
+
+    try {
+      return new URL(trimmed, window.location.origin).href;
+    } catch {
+      return trimmed;
+    }
+  }
+
+  function pickImage(value) {
+    if (!value) return null;
+    if (typeof value === "string") {
+      return normalizeImageString(value);
+    }
+    if (typeof value !== "object") return null;
+    if (seen.has(value)) return null;
+    seen.add(value);
+
+    const direct =
+      value.dataUrl ||
+      value.url ||
+      value.src ||
+      value.preview ||
+      value.previewUrl ||
+      value.base64 ||
+      value.image ||
+      value.imagen ||
+      null;
+    const directImage = pickImage(direct);
+    if (directImage) return directImage;
+
+    for (const key of Object.keys(value)) {
+      if (!/imagen|image|foto|photo|referencia|dataUrl|url|src|preview|base64/i.test(key)) continue;
+      const nestedImage = pickImage(value[key]);
+      if (nestedImage) return nestedImage;
+    }
+
+    return null;
+  }
+
+  return pickImage(item?.imagen) || pickImage(item?.data?.imagen) || pickImage(item);
+}
+
 export function buildNotaPedidoPrintData(nota, options = {}) {
   const cliente = nota?.cliente || {};
   const {
@@ -66,9 +116,11 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
           precio,
           cantidad,
           total: cantidad * precio,
+          imagen: getItemImage(item),
         };
       })
     : [];
+  const referencia = items.find((item) => item.imagen);
 
   const subtotal = Number(nota?.caja?.subtotal || nota?.totales?.subtotal || nota?.total || 0);
   const descuentoMonto = Number(nota?.caja?.descuento ?? nota?.totales?.descuento ?? 0);
@@ -98,6 +150,8 @@ export function buildNotaPedidoPrintData(nota, options = {}) {
     estaSenada,
     montoCaja,
     previewItems: items,
+    referenciaImagen: referencia?.imagen || "",
+    referenciaDescripcion: referencia?.descripcion || "",
     audience,
     showPrices,
     showClientDetails,
@@ -125,6 +179,24 @@ function buildRows(previewItems, showPrices = true) {
       `
     )
     .join("");
+}
+
+function buildReferenceImage(data) {
+  if (!data?.referenciaImagen) return "";
+
+  return `
+    <div class="npw-reference">
+      <div class="npw-referenceLabel">Imagen de referencia</div>
+      <div class="npw-referenceFrame">
+        <img src="${escapeHtml(data.referenciaImagen)}" alt="${escapeHtml(data.referenciaDescripcion || "Imagen de referencia")}" />
+      </div>
+      ${
+        data.referenciaDescripcion
+          ? `<div class="npw-referenceCaption">${escapeHtml(data.referenciaDescripcion)}</div>`
+          : ""
+      }
+    </div>
+  `;
 }
 
 function estimateRowUnits(item) {
@@ -445,6 +517,58 @@ function buildStyles() {
       border: 0.3mm solid rgba(28, 25, 22, 0.08);
       box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
     }
+    .npw-summaryBand {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 101.5mm;
+      gap: 4mm;
+      align-items: start;
+      margin-top: 2mm;
+    }
+    .npw-summaryBand .npw-summary {
+      width: auto;
+      margin-top: 0;
+    }
+    .npw-reference {
+      min-height: 30mm;
+      padding: 2mm;
+      border-radius: 3.2mm;
+      background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,243,238,0.97) 100%);
+      border: 0.3mm solid rgba(28, 25, 22, 0.08);
+      box-shadow: 0 2.2mm 5.5mm rgba(41, 31, 23, 0.05);
+    }
+    .npw-referenceLabel {
+      margin-bottom: 1.4mm;
+      color: #6f614f;
+      font-size: 2.8mm;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .npw-referenceFrame {
+      height: 27mm;
+      border-radius: 2.4mm;
+      overflow: hidden;
+      border: 0.28mm solid rgba(28, 25, 22, 0.12);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .npw-referenceFrame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .npw-referenceCaption {
+      margin-top: 1.2mm;
+      color: #4a4a4a;
+      font-size: 2.7mm;
+      font-weight: 700;
+      line-height: 1.2;
+      max-height: 6.5mm;
+      overflow: hidden;
+    }
     .npw-summaryRow,
     .npw-summaryTotal {
       display: grid;
@@ -542,7 +666,8 @@ function buildStyles() {
       }
       .npw-header,
       .npw-tableCard,
-      .npw-summary {
+      .npw-summary,
+      .npw-reference {
         box-shadow: none !important;
       }
     }
@@ -625,7 +750,9 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
       ${
         showSummary && data.showPrices
           ? `
-            <div class="npw-summary">
+            <div class="${data.referenciaImagen ? "npw-summaryBand" : ""}">
+              ${buildReferenceImage(data)}
+              <div class="npw-summary">
               <div class="npw-summaryRow">
                 <span>Subtotal</span>
                 <strong>$${escapeHtml(toARS(data.subtotal))}</strong>
@@ -674,6 +801,7 @@ function buildDocPage(data, items, { showSummary, showFooter, isFirstPage, pageN
               <div class="npw-summaryTotal">
                 <span>${data.estaSenada ? "Saldo" : "Total"}</span>
                 <strong>$${escapeHtml(toARS(data.total))}</strong>
+              </div>
               </div>
             </div>
           `
