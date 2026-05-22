@@ -523,7 +523,7 @@ function buildStyles() {
     }
     .npw-summaryBand {
       display: grid;
-      grid-template-columns: minmax(38mm, 1fr) minmax(101.5mm, 112mm);
+      grid-template-columns: minmax(30mm, 1fr) minmax(112mm, 123mm);
       gap: 3mm;
       align-items: start;
       margin-top: 2mm;
@@ -581,17 +581,17 @@ function buildStyles() {
     .npw-summaryRow {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      padding: 0.9mm 0;
-      font-size: 4mm;
+      padding: 1.4mm 0;
+      font-size: 5mm;
       color: #35302b;
     }
     .npw-summaryRow strong {
-      font-size: 4mm;
+      font-size: 5mm;
       color: #23201c;
     }
     .npw-summaryRow.discount {
       grid-template-columns: 1fr auto;
-      font-size: 3.6mm;
+      font-size: 4.4mm;
       color: #7a6a5a;
     }
     .npw-summaryRow.status {
@@ -611,7 +611,7 @@ function buildStyles() {
       background: transparent;
       border: 0;
       color: #23201c;
-      font-size: 4.4mm;
+      font-size: 5.2mm;
       font-weight: 900;
       letter-spacing: 0;
     }
@@ -622,12 +622,12 @@ function buildStyles() {
     .npw-summaryTotal {
       grid-template-columns: 1fr auto;
       gap: 2.5mm;
-      margin-top: 1.2mm;
-      padding: 2.2mm 2.8mm;
+      margin-top: 1.6mm;
+      padding: 3.2mm 3.5mm;
       border-radius: 2.4mm;
       background: linear-gradient(180deg, #171513 0%, #050505 100%);
       color: #fff;
-      font-size: 4.5mm;
+      font-size: 5.7mm;
       font-weight: 900;
       box-shadow: inset 0 0 0 0.25mm rgba(255,255,255,0.06);
     }
