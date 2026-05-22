@@ -523,8 +523,8 @@ function buildStyles() {
     }
     .npw-summaryBand {
       display: grid;
-      grid-template-columns: minmax(76mm, 84mm) minmax(0, 1fr);
-      gap: 6mm;
+      grid-template-columns: minmax(64mm, 70mm) minmax(0, 1fr);
+      gap: 4mm;
       align-items: start;
       margin-top: 2mm;
     }
@@ -621,7 +621,7 @@ function buildStyles() {
     }
     .npw-summaryTotal {
       grid-template-columns: 1fr auto;
-      gap: 2.5mm;
+      gap: 4mm;
       margin-top: 1.6mm;
       padding: 3.2mm 3.5mm;
       border-radius: 2.4mm;
