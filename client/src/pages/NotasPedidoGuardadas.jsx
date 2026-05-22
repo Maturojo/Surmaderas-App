@@ -559,60 +559,97 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     setActionsNota(null);
   }
 
-  function agregarProveedorAsignado() {
+  async function agregarProveedorAsignado() {
+    if (!gestionNota?._id || savingGestion) return;
     const proveedor = proveedores.find((item) => String(item._id) === String(proveedorIdNuevo));
     if (!proveedor) return;
 
-    setAsignaciones((prev) => {
-      const next = prev.filter((item) => String(item.proveedorId) !== String(proveedor._id));
-      return [
-        ...next,
-        {
-          proveedorId: proveedor._id,
-          nombre: proveedor.nombre,
-          color: proveedor.color || colorProveedorPorNombre(proveedor.nombre),
-          observacion: observacionNueva.trim(),
-          enviadoWhatsapp: enviarWhatsappNuevo,
-        },
-      ];
-    });
-    setEstadoOperativo("Enviado a proveedor");
+    const nextAsignaciones = [
+      ...asignaciones.filter((item) => String(item.proveedorId) !== String(proveedor._id)),
+      {
+        proveedorId: proveedor._id,
+        nombre: proveedor.nombre,
+        color: proveedor.color || colorProveedorPorNombre(proveedor.nombre),
+        observacion: observacionNueva.trim(),
+        enviadoWhatsapp: enviarWhatsappNuevo,
+      },
+    ];
 
-    if (enviarWhatsappNuevo) {
-      const telefonoWhatsapp = normalizarWhatsapp(proveedor?.telefono);
-      if (!telefonoWhatsapp) {
-        Swal.fire({
-          icon: "warning",
-          title: "Proveedor sin teléfono",
-          text: "Este proveedor no tiene teléfono cargado para enviarle la nota por WhatsApp.",
-        });
-      } else if (typeof window !== "undefined") {
-        const mensaje = construirMensajeProveedor(gestionNota, proveedor, observacionNueva);
-        const proveedorPrintData = buildNotaPedidoPrintData(gestionNota, {
-          audience: "provider",
-          providerName: proveedor?.nombre || "",
-        });
-        enviarNotaWhatsappConAdjunto({
-          nota: gestionNota,
-          telefonoWhatsapp,
-          mensaje,
-          etiquetaDestino: proveedor?.nombre || "proveedor",
-          printData: proveedorPrintData,
-        }).catch(async () => {
-          openWhatsappText(telefonoWhatsapp, mensaje);
-          await Swal.fire({
-            icon: "info",
-            title: "WhatsApp abierto",
-            text: "No pudimos preparar la imagen automáticamente, pero dejamos el mensaje listo para enviar.",
+    try {
+      setSavingGestion(true);
+      const updated = await actualizarOperacionNota(gestionNota._id, {
+        estadoOperativo: "Enviado a proveedor",
+        proveedores: nextAsignaciones,
+        clienteAvisado: Boolean(gestionNota?.clienteAvisado),
+      });
+
+      setAsignaciones(
+        Array.isArray(updated?.proveedores)
+          ? updated.proveedores.map((item) => ({
+              proveedorId: item.proveedorId,
+              nombre: item.nombre,
+              color: item.color || colorProveedorPorNombre(item.nombre),
+              observacion: item.observacion || "",
+              enviadoWhatsapp: Boolean(item?.enviadoWhatsapp),
+            }))
+          : nextAsignaciones
+      );
+      setEstadoOperativo(updated?.estadoOperativo || "Enviado a proveedor");
+      setGestionNota((prev) => ({ ...(prev || {}), ...(updated || {}) }));
+      setItems((prev) => prev.map((item) => (item?._id === gestionNota._id ? { ...item, ...(updated || {}) } : item)));
+
+      if (enviarWhatsappNuevo) {
+        const telefonoWhatsapp = normalizarWhatsapp(proveedor?.telefono);
+        if (!telefonoWhatsapp) {
+          Swal.fire({
+            icon: "warning",
+            title: "Proveedor sin teléfono",
+            text: "Este proveedor no tiene teléfono cargado para enviarle la nota por WhatsApp.",
           });
-        });
+        } else if (typeof window !== "undefined") {
+          const mensaje = construirMensajeProveedor(gestionNota, proveedor, observacionNueva);
+          const proveedorPrintData = buildNotaPedidoPrintData(gestionNota, {
+            audience: "provider",
+            providerName: proveedor?.nombre || "",
+          });
+          enviarNotaWhatsappConAdjunto({
+            nota: gestionNota,
+            telefonoWhatsapp,
+            mensaje,
+            etiquetaDestino: proveedor?.nombre || "proveedor",
+            printData: proveedorPrintData,
+          }).catch(async () => {
+            openWhatsappText(telefonoWhatsapp, mensaje);
+            await Swal.fire({
+              icon: "info",
+              title: "WhatsApp abierto",
+              text: "No pudimos preparar la imagen automáticamente, pero dejamos el mensaje listo para enviar.",
+            });
+          });
+        }
       }
-    }
 
-    setProveedorIdNuevo("");
-    setObservacionNueva("");
-    setEnviarWhatsappNuevo(false);
-    setProveedorPromptOpen(false);
+      setProveedorIdNuevo("");
+      setObservacionNueva("");
+      setEnviarWhatsappNuevo(false);
+      setProveedorPromptOpen(false);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Proveedor guardado",
+        text: "La nota ya quedó enviada a proveedor.",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "No se pudo guardar",
+        text: e?.message || "No se pudo agregar el proveedor a la nota.",
+      });
+    } finally {
+      setSavingGestion(false);
+    }
   }
 
   function abrirPromptProveedor() {
@@ -1531,9 +1568,9 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
               <button
                 className="ng-actionBtn ng-actionBtn--primary"
                 onClick={agregarProveedorAsignado}
-                disabled={!proveedorIdNuevo}
+                disabled={!proveedorIdNuevo || savingGestion}
               >
-                Agregar proveedor
+                {savingGestion ? "Guardando..." : "Agregar proveedor"}
               </button>
             </div>
           </div>
