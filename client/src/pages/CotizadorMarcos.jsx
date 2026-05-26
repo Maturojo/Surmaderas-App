@@ -1001,6 +1001,7 @@ export default function CotizadorMarcos() {
   const [listaMarcos, setListaMarcos] = useState([]);
   const [anchoDisplay, setAnchoDisplay] = useState("70");
   const [altoDisplay, setAltoDisplay] = useState("100");
+  const [mostrarDetalleResumen, setMostrarDetalleResumen] = useState(false);
 
   function handleImageUpload(e) {
     const file = e.target.files?.[0];
@@ -2010,12 +2011,16 @@ export default function CotizadorMarcos() {
           <article style={panelStyle}>
             <div style={{ display: "grid", gap: 6 }}>
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Resumen del calculo</div>
-              <div style={{ fontSize: 14, color: "#6f665d" }}>
-                El subtotal de varilla toma barras completas de 3.05 m para que tengas una compra realista.
-              </div>
+              {mostrarDetalleResumen ? (
+                <div style={{ fontSize: 14, color: "#6f665d" }}>
+                  El subtotal de varilla toma barras completas de 3.05 m para que tengas una compra realista.
+                </div>
+              ) : null}
             </div>
 
             <div style={{ marginTop: 12 }}>
+              {mostrarDetalleResumen ? (
+                <>
               <SummaryRow label="Varilla seleccionada" value={selectedProfile ? effectiveProfile.nombre : "Sin seleccionar"} />
               <SummaryRow label="Ancho de varilla" value={selectedProfile ? formatDimensionCm(effectiveMeasures.frenteMm) : "-"} />
               {selectedProfile?.liston ? (
@@ -2066,7 +2071,27 @@ export default function CotizadorMarcos() {
                 label={`Armado (${quote.armadoSugerido.etiqueta})`}
                 value={quote.pricingEnabled ? formatCurrency(quote.subtotalArmado) : "-"}
               />
+                </>
+              ) : null}
               <SummaryRow label="Total estimado" value={quote.pricingEnabled ? formatCurrency(quote.total) : "Pendiente de seleccionar varilla"} strong />
+              <button
+                type="button"
+                onClick={() => setMostrarDetalleResumen((prev) => !prev)}
+                style={{
+                  width: "100%",
+                  marginTop: 12,
+                  padding: "12px 16px",
+                  borderRadius: 14,
+                  border: "1.5px solid rgba(73, 58, 38, 0.18)",
+                  background: "#f8f3ec",
+                  color: "#4d3b2c",
+                  fontSize: 14,
+                  fontWeight: 900,
+                  cursor: "pointer",
+                }}
+              >
+                {mostrarDetalleResumen ? "Ocultar detalles" : "Ver detalles"}
+              </button>
             </div>
           </article>
 
