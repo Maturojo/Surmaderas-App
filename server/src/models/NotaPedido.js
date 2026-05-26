@@ -1,6 +1,6 @@
 ﻿import mongoose from "mongoose";
 
-const VENDEDORES = ["Ariel", "Cecilia", "Gustavo", "Juana", "Matias", "Patricia", "Valentina", "WhatsApp"];
+const VENDEDORES = ["Ariel", "Cecilia", "Gustavo", "Juana", "Martin", "Matias", "Patricia", "Valentina", "WhatsApp"];
 
 const ClienteSchema = new mongoose.Schema(
   {

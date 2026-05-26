@@ -18,7 +18,7 @@ import PrestamoFields from "./components/fields/PrestamoFields";
 
 import "../../css/NotasPedido.css";
 
-const vendedores = ["Ariel", "Cecilia", "Gustavo", "Juana", "Matias", "Patricia", "Valentina", "WhatsApp"];
+const vendedores = ["Ariel", "Cecilia", "Gustavo", "Juana", "Martin", "Matias", "Patricia", "Valentina", "WhatsApp"];
 
 const emptyItem = {
   tipo: DEFAULT_TIPO,
