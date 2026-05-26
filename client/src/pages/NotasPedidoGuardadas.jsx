@@ -633,11 +633,13 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
       setObservacionNueva("");
       setEnviarWhatsappNuevo(false);
       setProveedorPromptOpen(false);
+      await load();
+      cerrarGestion();
 
       await Swal.fire({
         icon: "success",
         title: "Proveedor guardado",
-        text: "La nota ya quedó enviada a proveedor.",
+        text: "La nota ya quedo enviada al taller. No hace falta guardar gestion.",
         timer: 1200,
         showConfirmButton: false,
       });
