@@ -140,7 +140,7 @@ router.get("/", async (req, res) => {
   try {
     const month = normalizeMonth(req.query.month);
     const [items, goal] = await Promise.all([
-      VentaMensual.find({ month }).sort({ date: 1, createdAt: 1 }).lean(),
+      VentaMensual.find({ month }).sort({ date: -1, createdAt: -1 }).lean(),
       VentasObjetivo.findOne({ month }).lean(),
     ]);
 
