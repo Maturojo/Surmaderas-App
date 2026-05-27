@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import CameraImageUploadField from "../features/presupuestos/components/CameraImageUploadField";
@@ -119,16 +119,16 @@ export default function PresupuestosEnviar() {
     gap: 18,
     padding: isMobile ? 18 : "24px 26px",
     borderRadius: isMobile ? 18 : 28,
-    border: "1px solid rgba(70,55,38,0.1)",
+    border: "1px solid var(--sm-dashboard-line)",
     background:
-      "radial-gradient(circle at top right, rgba(183,213,188,0.18), transparent 24%), linear-gradient(135deg,#fff8ef,#edf5ef)",
-    boxShadow: "0 18px 42px rgba(70,55,38,0.08)",
+      "radial-gradient(circle at top right, rgba(200,96,58,0.10), transparent 24%), linear-gradient(135deg,#ffffff,#f2f2f0)",
+    boxShadow: "0 18px 42px var(--sm-dashboard-line)",
   };
   const panelStyle = {
     padding: isMobile ? 16 : 20,
     borderRadius: isMobile ? 18 : 24,
     background: "rgba(255,255,255,0.86)",
-    border: "1px solid rgba(70,55,38,0.09)",
+    border: "1px solid var(--sm-dashboard-line)",
     boxShadow: "0 14px 32px rgba(69,54,38,0.08)",
   };
   const inputStyle = {
@@ -136,8 +136,8 @@ export default function PresupuestosEnviar() {
     minHeight: 46,
     padding: "0 14px",
     borderRadius: 14,
-    border: "1px solid rgba(70,55,38,0.12)",
-    background: "#fbfaf8",
+    border: "1px solid rgba(96,96,96,.18)",
+    background: "var(--sm-dashboard-soft)",
     outline: "none",
   };
   const textAreaStyle = {
@@ -256,8 +256,8 @@ export default function PresupuestosEnviar() {
                 padding: "0 18px",
                 border: 0,
                 borderRadius: 14,
-                background: "linear-gradient(135deg,#372c22,#554231)",
-                color: "#fffdf8",
+                background: "linear-gradient(135deg,var(--sm-navy),var(--sm-accent-dark))",
+                color: "#ffffff",
                 fontWeight: 900,
                 cursor: "pointer",
               }}

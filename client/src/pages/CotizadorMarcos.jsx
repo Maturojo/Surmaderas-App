@@ -359,7 +359,7 @@ function NumberField({ label, value, onChange, min = 0, step = 1, suffix, helper
             minHeight: 48,
             padding: suffix ? "0 64px 0 14px" : "0 14px",
             borderRadius: 14,
-            border: "1px solid rgba(73, 58, 38, 0.14)",
+            border: "1px solid var(--sm-dashboard-line)",
             background: "#fcfbf8",
             outline: "none",
           }}
@@ -394,7 +394,7 @@ function SummaryRow({ label, value, strong = false }) {
         justifyContent: "space-between",
         gap: 12,
         padding: "12px 0",
-        borderTop: "1px solid rgba(73, 58, 38, 0.08)",
+        borderTop: "1px solid var(--sm-dashboard-line)",
       }}
     >
       <span style={{ color: "#685e55", fontSize: 14 }}>{label}</span>
@@ -1550,7 +1550,7 @@ export default function CotizadorMarcos() {
     padding: isMobile ? 16 : 22,
     borderRadius: isMobile ? 18 : 28,
     background: "rgba(255,255,255,0.84)",
-    border: "1px solid rgba(73, 58, 38, 0.1)",
+    border: "1px solid var(--sm-dashboard-line)",
     boxShadow: "0 18px 42px rgba(55, 43, 29, 0.08)",
     backdropFilter: "blur(10px)",
   };
@@ -1565,7 +1565,7 @@ export default function CotizadorMarcos() {
     minHeight: 48,
     padding: "0 14px",
     borderRadius: 14,
-    border: "1px solid rgba(73, 58, 38, 0.14)",
+    border: "1px solid var(--sm-dashboard-line)",
     background: "#fcfbf8",
   };
   const selectWrapperStyle = {
@@ -1583,7 +1583,7 @@ export default function CotizadorMarcos() {
     minHeight: 48,
     padding: "0 14px",
     borderRadius: 14,
-    border: "1px solid rgba(73, 58, 38, 0.14)",
+    border: "1px solid var(--sm-dashboard-line)",
     background: "#fcfbf8",
     outline: "none",
   };
@@ -1594,7 +1594,7 @@ export default function CotizadorMarcos() {
         style={{
           ...panelStyle,
           background:
-            "radial-gradient(circle at top right, rgba(194, 174, 142, 0.2), transparent 24%), linear-gradient(135deg, #fff8ef 0%, #efe7db 100%)",
+            "radial-gradient(circle at top right, rgba(200, 96, 58, 0.12), transparent 24%), linear-gradient(135deg, #ffffff 0%, #f2f2f0 100%)",
         }}
       >
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.2fr) minmax(280px, 0.8fr)" }}>
@@ -1764,7 +1764,7 @@ export default function CotizadorMarcos() {
                       minHeight: 48,
                       padding: "0 14px",
                       borderRadius: 14,
-                      border: "1px solid rgba(73, 58, 38, 0.14)",
+                      border: "1px solid var(--sm-dashboard-line)",
                       background: "#fcfbf8",
                       outline: "none",
                     }}
@@ -1947,7 +1947,7 @@ export default function CotizadorMarcos() {
                     minHeight: 110,
                     padding: "12px 14px",
                     borderRadius: 16,
-                    border: "1px solid rgba(73, 58, 38, 0.14)",
+                    border: "1px solid var(--sm-dashboard-line)",
                     background: "#fcfbf8",
                     resize: "vertical",
                   }}
@@ -2082,7 +2082,7 @@ export default function CotizadorMarcos() {
                   marginTop: 12,
                   padding: "12px 16px",
                   borderRadius: 14,
-                  border: "1.5px solid rgba(73, 58, 38, 0.18)",
+                  border: "1.5px solid rgba(96, 96, 96, 0.24)",
                   background: "#f8f3ec",
                   color: "#4d3b2c",
                   fontSize: 14,
@@ -2144,7 +2144,7 @@ export default function CotizadorMarcos() {
           </button>
 
           {listaMarcos.length > 0 && (
-            <div style={{ background: "#f4ece1", border: "1px solid #e2d4c0", borderRadius: 18, padding: "16px 18px", display: "grid", gap: 10 }}>
+            <div style={{ background: "#f2f2f0", border: "1px solid rgba(96, 96, 96, 0.18)", borderRadius: 18, padding: "16px 18px", display: "grid", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 13, fontWeight: 800, color: "#5d4f3a", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                   Lista de marcos ({listaMarcos.length})

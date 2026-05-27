@@ -192,7 +192,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
 
     ctx.fillStyle = "#f8f1e7";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#2f261d";
+    ctx.fillStyle = "#070614";
     ctx.font = "bold 54px Arial";
     ctx.textAlign = "center";
     ctx.fillText("Sur Maderas", 540, 170);
@@ -209,7 +209,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
     ctx.strokeStyle = "#c8b69e";
     ctx.lineWidth = 8;
     ctx.strokeRect(190, 570, 700, 170);
-    ctx.fillStyle = "#2f261d";
+    ctx.fillStyle = "#070614";
     ctx.font = "bold 62px Arial";
     ctx.fillText(coupon.code, 540, 675);
     ctx.font = "28px Arial";

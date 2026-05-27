@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
 import {
@@ -368,10 +368,10 @@ export default function Proveedores() {
 
   return (
     <div className="grid gap-5">
-      <section className="rounded-[28px] border border-[var(--sm-line)] bg-[linear-gradient(135deg,#fff8ee_0%,#f4efe7_100%)] p-7 shadow-[var(--sm-shadow)]">
+      <section className="rounded-[28px] border border-[var(--sm-line)] bg-[linear-gradient(135deg,#ffffff_0%,#f2f2f0_100%)] p-7 shadow-[var(--sm-shadow)]">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="mb-2 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#8d7557]">Red externa</div>
+            <div className="mb-2 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[var(--sm-accent)]">Red externa</div>
             <h1 className="m-0 text-[34px] font-black leading-none text-[#28231d]">Proveedores</h1>
             <p className="mt-3 max-w-[720px] text-[#665d53]">
               Tené a mano quién recibe cada trabajo y qué pedidos siguen pendientes con cada proveedor.
@@ -379,21 +379,21 @@ export default function Proveedores() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <div className="min-w-[150px] rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
-              <div className="mb-1 text-[12px] font-bold text-[#827669]">Proveedores activos</div>
-              <div className="text-[24px] font-black text-[#231f1a]">{items.length}</div>
+            <div className="min-w-[150px] rounded-[18px] border border-[var(--sm-dashboard-line)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
+              <div className="mb-1 text-[12px] font-bold text-[var(--sm-brand-gray)]">Proveedores activos</div>
+              <div className="text-[24px] font-black text-[var(--sm-navy)]">{items.length}</div>
             </div>
-            <div className="min-w-[150px] rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
-              <div className="mb-1 text-[12px] font-bold text-[#827669]">Notas asignadas</div>
-              <div className="text-[24px] font-black text-[#231f1a]">{totalAsignaciones}</div>
+            <div className="min-w-[150px] rounded-[18px] border border-[var(--sm-dashboard-line)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
+              <div className="mb-1 text-[12px] font-bold text-[var(--sm-brand-gray)]">Notas asignadas</div>
+              <div className="text-[24px] font-black text-[var(--sm-navy)]">{totalAsignaciones}</div>
             </div>
-            <div className="min-w-[150px] rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
-              <div className="mb-1 text-[12px] font-bold text-[#827669]">Pendientes</div>
-              <div className="text-[24px] font-black text-[#231f1a]">{pendientesTotales}</div>
+            <div className="min-w-[150px] rounded-[18px] border border-[var(--sm-dashboard-line)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
+              <div className="mb-1 text-[12px] font-bold text-[var(--sm-brand-gray)]">Pendientes</div>
+              <div className="text-[24px] font-black text-[var(--sm-navy)]">{pendientesTotales}</div>
             </div>
-            <div className="min-w-[150px] rounded-[18px] border border-[rgba(70,55,38,0.08)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
-              <div className="mb-1 text-[12px] font-bold text-[#827669]">Pedidos proveedor</div>
-              <div className="text-[24px] font-black text-[#231f1a]">{totalPedidosProveedor}</div>
+            <div className="min-w-[150px] rounded-[18px] border border-[var(--sm-dashboard-line)] bg-[rgba(255,255,255,0.86)] px-4 py-3">
+              <div className="mb-1 text-[12px] font-bold text-[var(--sm-brand-gray)]">Pedidos proveedor</div>
+              <div className="text-[24px] font-black text-[var(--sm-navy)]">{totalPedidosProveedor}</div>
             </div>
           </div>
         </div>
@@ -402,38 +402,38 @@ export default function Proveedores() {
           <button
             type="button"
             onClick={abrirNuevoProveedor}
-            className="min-h-[48px] rounded-[16px] border-0 bg-[linear-gradient(135deg,#372c22_0%,#554231_100%)] px-5 font-black text-[#fffdf8] shadow-[0_14px_28px_rgba(55,44,34,0.18)]"
+            className="min-h-[48px] rounded-[16px] border-0 bg-[linear-gradient(135deg,var(--sm-navy)_0%,var(--sm-accent-dark)_100%)] px-5 font-black text-[#ffffff] shadow-[0_14px_28px_rgba(55,44,34,0.18)]"
           >
             Nuevo proveedor
           </button>
           <button
             type="button"
             onClick={() => setListOpen(true)}
-            className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-white px-5 font-bold text-[#3b3026]"
+            className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-white px-5 font-bold text-[var(--sm-navy)]"
           >
             Ver listado
           </button>
           <button
             type="button"
             onClick={load}
-            className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-[rgba(255,255,255,0.78)] px-5 font-bold text-[#3b3026]"
+            className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-[rgba(255,255,255,0.78)] px-5 font-bold text-[var(--sm-navy)]"
           >
             {loading ? "Actualizando..." : "Actualizar"}
           </button>
         </div>
       </section>
 
-      <section className="rounded-[24px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.88)] p-5 shadow-[0_14px_32px_rgba(69,54,38,0.06)]">
+      <section className="rounded-[24px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.88)] p-5 shadow-[0_14px_32px_rgba(7,6,20,0.06)]">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-[20px] font-extrabold text-[#2f261d]">Panel de proveedores</h2>
+            <h2 className="text-[20px] font-extrabold text-[var(--sm-navy)]">Panel de proveedores</h2>
             <p className="mt-1 text-sm text-[var(--sm-muted)]">
               Los proveedores operativos muestran notas y pedidos; el resto, por ahora, solo pedidos a proveedor.
             </p>
           </div>
 
           <input
-            className="min-h-[46px] w-full max-w-[360px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+            className="min-h-[46px] w-full max-w-[360px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
             placeholder="Buscar por proveedor, cliente, número de nota o pedido..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -452,11 +452,11 @@ export default function Proveedores() {
 
         <div className="grid gap-3">
           {loading ? (
-            <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[#faf8f4] p-4 text-sm text-[var(--sm-muted)]">
+            <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[var(--sm-dashboard-soft)] p-4 text-sm text-[var(--sm-muted)]">
               Cargando proveedores...
             </div>
           ) : filteredRows.length === 0 ? (
-            <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[#faf8f4] p-4 text-sm text-[var(--sm-muted)]">
+            <div className="rounded-[16px] border border-dashed border-[var(--sm-line)] bg-[var(--sm-dashboard-soft)] p-4 text-sm text-[var(--sm-muted)]">
               No hay proveedores para mostrar.
             </div>
           ) : (
@@ -473,10 +473,10 @@ export default function Proveedores() {
               return (
                 <article
                   key={item._id}
-                  className="overflow-hidden rounded-[20px] border border-[var(--sm-line)] bg-[#fffdfa] shadow-[0_10px_24px_rgba(69,54,38,0.05)]"
+                  className="overflow-hidden rounded-[20px] border border-[var(--sm-line)] bg-[#ffffff] shadow-[0_10px_24px_rgba(7,6,20,0.05)]"
                   style={{
                     borderLeft: `8px solid ${color}`,
-                    background: `linear-gradient(135deg, ${color}22 0%, #fffdfa 20%, #fffdfa 100%)`,
+                    background: `linear-gradient(135deg, ${color}22 0%, #ffffff 20%, #ffffff 100%)`,
                   }}
                 >
                   <div className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(0,1.2fr)_140px_140px_140px_auto] lg:items-center">
@@ -494,27 +494,27 @@ export default function Proveedores() {
                       <div className="mt-1 text-sm text-[var(--sm-muted)]">
                         {item.contacto || "Sin contacto"} {item.telefono ? `· ${item.telefono}` : ""}
                       </div>
-                      <div className="mt-1 text-sm text-[#5b5249]">{item.nota || "Sin notas adicionales."}</div>
+                      <div className="mt-1 text-sm text-[var(--sm-brand-gray)]">{item.nota || "Sin notas adicionales."}</div>
                     </div>
 
-                    <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#faf6ef] px-4 py-3">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">
+                    <div className="rounded-[16px] border border-[var(--sm-dashboard-line)] bg-[var(--sm-dashboard-soft)] px-4 py-3">
+                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--sm-brand-gray)]">
                         {esOperativo ? "Notas" : "Pedidos"}
                       </div>
-                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">{esOperativo ? notas.length : pedidos.length}</div>
+                      <div className="mt-1 text-[24px] font-black text-[var(--sm-navy)]">{esOperativo ? notas.length : pedidos.length}</div>
                     </div>
-                    <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#fff7ea] px-4 py-3">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">
+                    <div className="rounded-[16px] border border-[var(--sm-dashboard-line)] bg-[var(--sm-accent-soft)] px-4 py-3">
+                      <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--sm-brand-gray)]">
                         Pendientes
                       </div>
-                      <div className="mt-1 text-[24px] font-black text-[#231f1a]">
+                      <div className="mt-1 text-[24px] font-black text-[var(--sm-navy)]">
                         {esOperativo ? pendientes.length : pedidos.filter((pedido) => pedido?.estado !== "Recibido" && pedido?.estado !== "Cancelado").length}
                       </div>
                     </div>
                     {esOperativo ? (
-                      <div className="rounded-[16px] border border-[rgba(70,55,38,0.08)] bg-[#f4f7fb] px-4 py-3">
-                        <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#8d7f70]">Pedidos</div>
-                        <div className="mt-1 text-[24px] font-black text-[#231f1a]">{pedidos.length}</div>
+                      <div className="rounded-[16px] border border-[var(--sm-dashboard-line)] bg-[#f7f7fb] px-4 py-3">
+                        <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--sm-brand-gray)]">Pedidos</div>
+                        <div className="mt-1 text-[24px] font-black text-[var(--sm-navy)]">{pedidos.length}</div>
                       </div>
                     ) : (
                       <div aria-hidden="true" className="hidden lg:block" />
@@ -526,7 +526,7 @@ export default function Proveedores() {
                       <button
                         type="button"
                         onClick={() => setOpenProveedorId(isOpen ? "" : String(item._id))}
-                        className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[#3b3026]"
+                        className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[var(--sm-navy)]"
                       >
                         {isOpen ? "Ocultar detalle" : "Ver detalle"}
                       </button>
@@ -535,7 +535,7 @@ export default function Proveedores() {
 
                   {isOpen ? (
                     <section
-                      className="border-t border-[rgba(70,55,38,0.08)] px-5 py-4"
+                      className="border-t border-[var(--sm-dashboard-line)] px-5 py-4"
                       style={{
                         background: `linear-gradient(180deg, ${color}42 0%, ${color}24 100%)`,
                       }}
@@ -544,7 +544,7 @@ export default function Proveedores() {
                         <>
                           <div className="flex items-center justify-between gap-3">
                             <div>
-                              <div className="text-[14px] font-extrabold text-[#2f261d]">Notas de pedido</div>
+                              <div className="text-[14px] font-extrabold text-[var(--sm-navy)]">Notas de pedido</div>
                               <div className="mt-1 text-xs text-[var(--sm-muted)]">
                                 {pendientes.length === 0
                                   ? "No hay notas de pedido para este proveedor."
@@ -555,7 +555,7 @@ export default function Proveedores() {
 
                           <div className="mt-3 grid gap-2">
                             {pendientes.length === 0 ? (
-                              <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
+                              <div className="rounded-[14px] border border-dashed border-[rgba(96,96,96,.18)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
                                 Este proveedor no tiene notas cargadas por ahora.
                               </div>
                             ) : (
@@ -565,14 +565,14 @@ export default function Proveedores() {
                                 return (
                                   <article
                                     key={nota._id}
-                                    className="rounded-[14px] border border-[rgba(70,55,38,0.08)] bg-white/80 p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
+                                    className="rounded-[14px] border border-[var(--sm-dashboard-line)] bg-white/80 p-3 shadow-[0_6px_18px_rgba(7,6,20,0.04)]"
                                     style={{
-                                      background: `linear-gradient(135deg, ${color}16 0%, #fffdfa 34%, #fffdfa 100%)`,
+                                      background: `linear-gradient(135deg, ${color}16 0%, #ffffff 34%, #ffffff 100%)`,
                                     }}
                                   >
                                     <div className="flex flex-wrap items-center justify-between gap-3">
                                       <div>
-                                        <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#8d7557]">
+                                        <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[var(--sm-accent)]">
                                           {nota?.numero || "Sin número"}
                                         </div>
                                         <div className="mt-1 text-[15px] font-black text-[#241f19]">
@@ -593,7 +593,7 @@ export default function Proveedores() {
                                         <button
                                           type="button"
                                           onClick={() => abrirNotaDetalle(nota._id)}
-                                          className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
+                                          className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[var(--sm-navy)]"
                                         >
                                           Ver nota completa
                                         </button>
@@ -607,9 +607,9 @@ export default function Proveedores() {
                                       </div>
                                     </div>
 
-                                    <div className="mt-3 h-px bg-[rgba(70,55,38,0.08)]"></div>
+                                    <div className="mt-3 h-px bg-[var(--sm-dashboard-line)]"></div>
 
-                                    <div className="mt-3 text-sm text-[#5d5247]">
+                                    <div className="mt-3 text-sm text-[var(--sm-brand-gray)]">
                                       {getNotaClienteNombre(nota)} - {fmtDate(nota?.entrega)} -{" "}
                                       {diasHastaEntrega === null
                                         ? "Sin fecha de entrega"
@@ -629,7 +629,7 @@ export default function Proveedores() {
 
                       <div className="mt-5 flex items-center justify-between gap-3">
                         <div>
-                          <div className="text-[14px] font-extrabold text-[#2f261d]">Pedidos a proveedor</div>
+                          <div className="text-[14px] font-extrabold text-[var(--sm-navy)]">Pedidos a proveedor</div>
                           <div className="mt-1 text-xs text-[var(--sm-muted)]">
                             {pedidos.length === 0
                               ? "No hay pedidos cargados para este proveedor."
@@ -640,16 +640,16 @@ export default function Proveedores() {
 
                       <div className="mt-3 grid gap-2">
                         {pedidos.length === 0 ? (
-                          <div className="rounded-[14px] border border-dashed border-[rgba(70,55,38,0.12)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
+                          <div className="rounded-[14px] border border-dashed border-[rgba(96,96,96,.18)] bg-white/70 p-3 text-sm text-[var(--sm-muted)]">
                             Este proveedor no tiene pedidos cargados por ahora.
                           </div>
                         ) : (
                           pedidos.map((pedido) => (
                             <article
                               key={pedido._id}
-                              className="rounded-[14px] border border-[rgba(70,55,38,0.08)] p-3 shadow-[0_6px_18px_rgba(69,54,38,0.04)]"
+                              className="rounded-[14px] border border-[var(--sm-dashboard-line)] p-3 shadow-[0_6px_18px_rgba(7,6,20,0.04)]"
                               style={{
-                                background: `linear-gradient(135deg, ${color}26 0%, #fffdfa 30%, #fffdfa 100%)`,
+                                background: `linear-gradient(135deg, ${color}26 0%, #ffffff 30%, #ffffff 100%)`,
                               }}
                             >
                               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -674,16 +674,16 @@ export default function Proveedores() {
                                   <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#6d90b1]">Estado</span>
                                   <strong className="mt-1 block text-[#2f5d89]">{pedido?.estado || "Pendiente"}</strong>
                                 </div>
-                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Detalle</span>
+                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[var(--sm-brand-gray)]">
+                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--sm-brand-gray)]">Detalle</span>
                                   <strong className="mt-1 block text-[#2a241e]">
                                     {Array.isArray(pedido?.items) && pedido.items.length > 0
                                       ? pedido.items.map((detalle) => detalle?.descripcion).filter(Boolean).slice(0, 3).join(" · ")
                                       : "Sin renglones"}
                                   </strong>
                                 </div>
-                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[#5d5247]">
-                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[#8d7f70]">Observación</span>
+                                <div className="rounded-[12px] bg-[#f8f3ec] px-3 py-2 text-sm text-[var(--sm-brand-gray)]">
+                                  <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--sm-brand-gray)]">Observación</span>
                                   <strong className="mt-1 block text-[#2a241e]">{pedido?.observacion || "Sin observación"}</strong>
                                 </div>
                               </div>
@@ -702,10 +702,10 @@ export default function Proveedores() {
 
       {formOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-          <div className="w-full max-w-[620px] rounded-[28px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.98)] p-6 shadow-[0_24px_56px_rgba(29,22,17,0.24)]">
+          <div className="w-full max-w-[620px] rounded-[28px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.98)] p-6 shadow-[0_24px_56px_rgba(7,6,20,0.24)]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#8d7557]">Gestión</div>
+                <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[var(--sm-accent)]">Gestión</div>
                 <h2 className="mt-2 text-[26px] font-black text-[#28231d]">
                   {formData.id ? "Editar proveedor" : "Nuevo proveedor"}
                 </h2>
@@ -714,7 +714,7 @@ export default function Proveedores() {
               <button
                 type="button"
                 onClick={cerrarFormulario}
-                className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[#3b3026]"
+                className="min-h-[42px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[var(--sm-navy)]"
               >
                 Cerrar
               </button>
@@ -722,9 +722,9 @@ export default function Proveedores() {
 
             <form onSubmit={onSubmit} className="mt-5 grid gap-4">
               <label className="grid gap-2">
-                <span className="text-[13px] font-bold text-[#584f46]">Nombre</span>
+                <span className="text-[13px] font-bold text-[var(--sm-brand-gray)]">Nombre</span>
                 <input
-                  className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+                  className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
                   value={formData.nombre}
                   onChange={(e) => setFormData((prev) => ({ ...prev, nombre: e.target.value }))}
                   placeholder="Ej: Maderas del Sur"
@@ -733,9 +733,9 @@ export default function Proveedores() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2">
-                  <span className="text-[13px] font-bold text-[#584f46]">Teléfono</span>
+                  <span className="text-[13px] font-bold text-[var(--sm-brand-gray)]">Teléfono</span>
                   <input
-                    className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+                    className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
                     value={formData.telefono}
                     onChange={(e) => setFormData((prev) => ({ ...prev, telefono: e.target.value }))}
                     placeholder="Opcional"
@@ -743,9 +743,9 @@ export default function Proveedores() {
                 </label>
 
                 <label className="grid gap-2">
-                  <span className="text-[13px] font-bold text-[#584f46]">Contacto</span>
+                  <span className="text-[13px] font-bold text-[var(--sm-brand-gray)]">Contacto</span>
                   <input
-                    className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+                    className="min-h-[48px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
                     value={formData.contacto}
                     onChange={(e) => setFormData((prev) => ({ ...prev, contacto: e.target.value }))}
                     placeholder="Persona de contacto"
@@ -754,9 +754,9 @@ export default function Proveedores() {
               </div>
 
               <label className="grid gap-2">
-                <span className="text-[13px] font-bold text-[#584f46]">Nota</span>
+                <span className="text-[13px] font-bold text-[var(--sm-brand-gray)]">Nota</span>
                 <textarea
-                  className="min-h-[120px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 py-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+                  className="min-h-[120px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 py-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
                   value={formData.nota}
                   onChange={(e) => setFormData((prev) => ({ ...prev, nota: e.target.value }))}
                   placeholder="Datos útiles, rubro o condiciones"
@@ -767,14 +767,14 @@ export default function Proveedores() {
                 <button
                   type="button"
                   onClick={cerrarFormulario}
-                  className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-white px-5 font-bold text-[#3b3026]"
+                  className="min-h-[48px] rounded-[16px] border border-[var(--sm-line-strong)] bg-white px-5 font-bold text-[var(--sm-navy)]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="min-h-[48px] rounded-[16px] border-0 bg-[linear-gradient(135deg,#372c22_0%,#554231_100%)] px-5 font-black text-[#fffdf8] shadow-[0_14px_28px_rgba(55,44,34,0.18)]"
+                  className="min-h-[48px] rounded-[16px] border-0 bg-[linear-gradient(135deg,var(--sm-navy)_0%,var(--sm-accent-dark)_100%)] px-5 font-black text-[#ffffff] shadow-[0_14px_28px_rgba(55,44,34,0.18)]"
                 >
                   {saving ? "Guardando..." : formData.id ? "Guardar cambios" : "Guardar proveedor"}
                 </button>
@@ -786,16 +786,16 @@ export default function Proveedores() {
 
       {listOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-          <div className="w-full max-w-[920px] rounded-[28px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.98)] p-6 shadow-[0_24px_56px_rgba(29,22,17,0.24)]">
+          <div className="w-full max-w-[920px] rounded-[28px] border border-[var(--sm-line)] bg-[rgba(255,255,255,0.98)] p-6 shadow-[0_24px_56px_rgba(7,6,20,0.24)]">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#8d7557]">Base</div>
+                <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[var(--sm-accent)]">Base</div>
                 <h2 className="mt-2 text-[26px] font-black text-[#28231d]">Listado de proveedores</h2>
                 <p className="mt-2 text-sm text-[var(--sm-muted)]">Edición rápida y consulta general de todos los proveedores cargados.</p>
               </div>
               <div className="flex gap-2">
                 <input
-                  className="min-h-[46px] w-full min-w-[240px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[#fbfaf8] px-3 outline-none focus:border-[#7f6a53] focus:shadow-[0_0_0_4px_rgba(184,161,126,0.15)]"
+                  className="min-h-[46px] w-full min-w-[240px] rounded-[14px] border border-[var(--sm-line-strong)] bg-[var(--sm-dashboard-soft)] px-3 outline-none focus:border-[var(--sm-accent)] focus:shadow-[0_0_0_4px_rgba(200,96,58,0.15)]"
                   placeholder="Buscar proveedor..."
                   value={listQ}
                   onChange={(e) => setListQ(e.target.value)}
@@ -803,7 +803,7 @@ export default function Proveedores() {
                 <button
                   type="button"
                   onClick={() => setListOpen(false)}
-                  className="min-h-[46px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[#3b3026]"
+                  className="min-h-[46px] rounded-[14px] border border-[var(--sm-line-strong)] bg-white px-4 font-bold text-[var(--sm-navy)]"
                 >
                   Cerrar
                 </button>
@@ -840,13 +840,13 @@ export default function Proveedores() {
                             <span>{item.nombre}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[#5b5249]">{item.contacto || "-"}</td>
-                        <td className="px-4 py-3 text-[#5b5249]">{item.telefono || "-"}</td>
-                        <td className="px-4 py-3 text-[#5b5249]">{item.nota || "-"}</td>
+                        <td className="px-4 py-3 text-[var(--sm-brand-gray)]">{item.contacto || "-"}</td>
+                        <td className="px-4 py-3 text-[var(--sm-brand-gray)]">{item.telefono || "-"}</td>
+                        <td className="px-4 py-3 text-[var(--sm-brand-gray)]">{item.nota || "-"}</td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
                             <button
-                              className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[#3b3026]"
+                              className="rounded-[12px] border px-3 py-2 text-sm font-bold text-[var(--sm-navy)]"
                               onClick={() => {
                                 setListOpen(false);
                                 abrirEdicion(item);

@@ -626,7 +626,7 @@ textarea {
 .login-label {
   font-size: 13px;
   font-weight: 700;
-  color: #584f46;
+  color: var(--sm-brand-gray);
 }
 
 .login-input {
@@ -634,13 +634,13 @@ textarea {
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid var(--sm-line-strong);
-  background: #fbfaf8;
+  background: var(--sm-dashboard-soft);
   outline: none;
 }
 
 .login-input:focus {
-  border-color: #7f6a53;
-  box-shadow: 0 0 0 4px rgba(184, 161, 126, 0.15);
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 4px rgba(200, 96, 58, 0.15);
 }
 
 .login-submit {
@@ -648,11 +648,11 @@ textarea {
   min-height: 52px;
   border-radius: 16px;
   border: 0;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
+  color: #ffffff;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.18);
 }
 
 .dashboard-shell {
@@ -889,7 +889,7 @@ textarea {
   font-size: 40px;
   line-height: 1;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .dashboard-copy {
@@ -1042,7 +1042,7 @@ textarea {
 .config-usersHero {
   padding: 26px 28px;
   border-radius: 28px;
-  background: linear-gradient(135deg, #fff8ee 0%, #f4efe7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f2f2f0 100%);
   border: 1px solid var(--sm-line);
   box-shadow: var(--sm-shadow);
 }
@@ -1068,7 +1068,7 @@ textarea {
   border: 1px solid var(--sm-line);
   border-radius: 18px;
   background: rgba(255,255,255,0.9);
-  box-shadow: 0 10px 22px rgba(56, 44, 29, 0.05);
+  box-shadow: 0 10px 22px rgba(7, 6, 20, 0.05);
 }
 
 .config-usersStat span {
@@ -1082,7 +1082,7 @@ textarea {
 .config-usersStat strong {
   display: block;
   margin-top: 6px;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 28px;
   font-weight: 950;
 }
@@ -1098,7 +1098,7 @@ textarea {
   border-radius: 22px;
   border: 1px solid var(--sm-line);
   background: rgba(255,255,255,0.88);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .config-usersCardHead {
@@ -1132,7 +1132,7 @@ textarea {
 }
 
 .config-usersSearch span {
-  color: #584f46;
+  color: var(--sm-brand-gray);
   font-size: 13px;
   font-weight: 700;
 }
@@ -1143,8 +1143,8 @@ textarea {
   padding: 0 12px;
   border: 1px solid var(--sm-line-strong);
   border-radius: 12px;
-  background: #fbfaf8;
-  color: #2b2723;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
 }
 
 .config-usersFilters {
@@ -1162,7 +1162,7 @@ textarea {
 .config-usersField span {
   font-size: 13px;
   font-weight: 700;
-  color: #584f46;
+  color: var(--sm-brand-gray);
 }
 
 .config-usersField input,
@@ -1172,7 +1172,7 @@ textarea {
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid var(--sm-line-strong);
-  background: #fbfaf8;
+  background: var(--sm-dashboard-soft);
   outline: none;
 }
 
@@ -1221,11 +1221,11 @@ textarea {
   margin-top: 18px;
   border: 0;
   border-radius: 16px;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
+  color: #ffffff;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.18);
 }
 
 .config-usersSubmit:disabled {
@@ -1247,8 +1247,8 @@ textarea {
   gap: 14px;
   padding: 14px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: linear-gradient(180deg, #fffdfa 0%, #f7f3ed 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f1 100%);
 }
 
 .config-usersItem.selected {
@@ -1259,7 +1259,7 @@ textarea {
 .config-usersName {
   font-size: 16px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .config-usersMeta {
@@ -1306,8 +1306,8 @@ textarea {
   padding: 0 12px;
   border-radius: 12px;
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #3d3127;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
   font-weight: 800;
   cursor: pointer;
 }
@@ -1339,7 +1339,7 @@ textarea {
 .config-usersModulesTitle {
   font-size: 13px;
   font-weight: 700;
-  color: #584f46;
+  color: var(--sm-brand-gray);
 }
 
 .config-usersModulesHint {
@@ -1363,7 +1363,7 @@ textarea {
   gap: 7px;
   padding: 9px;
   border-radius: 13px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.68);
 }
 
@@ -1390,7 +1390,7 @@ textarea {
   font-weight: 800;
   border: 1.5px solid var(--sm-line-strong);
   background: #fff;
-  color: #584f46;
+  color: var(--sm-brand-gray);
   transition: background 0.13s, border-color 0.13s, color 0.13s;
   user-select: none;
 }
@@ -1461,8 +1461,8 @@ textarea {
   padding: 5px 9px;
   border-radius: 10px;
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #5c5147;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-brand-gray);
   font-size: 11.5px;
   font-weight: 750;
   line-height: 1.2;
@@ -1470,8 +1470,8 @@ textarea {
 
 .config-usersSubmoduleItem input[type="checkbox"]:checked + span {
   border-color: rgba(95, 125, 108, 0.55);
-  background: #edf8ef;
-  color: #37513f;
+  background: #f7f7f5;
+  color: var(--sm-brand-gray);
 }
 
 .config-usersModules .config-usersSecondaryButton {
@@ -1502,7 +1502,7 @@ textarea {
   font-size: 58px;
   line-height: 0.95;
   font-weight: 900;
-  color: #2f241a;
+  color: var(--sm-navy);
 }
 
 .survey-public {
@@ -1682,8 +1682,8 @@ textarea {
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  border: 1px solid rgba(74, 58, 39, 0.18);
-  background: #fffaf4;
+  border: 1px solid rgba(96, 96, 96, 0.24);
+  background: var(--sm-dashboard-soft);
   color: #b38b49;
   font-size: 34px;
   line-height: 1;
@@ -1712,10 +1712,10 @@ textarea {
   align-items: center;
   gap: 10px;
   padding: 12px;
-  border: 1px solid rgba(74, 58, 39, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   border-radius: 14px;
-  background: #fbfaf8;
-  color: #4d4339;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-brand-gray);
   font-weight: 700;
 }
 
@@ -1806,8 +1806,8 @@ textarea {
   margin: 18px 0 22px;
   padding: 18px;
   border-radius: 18px;
-  background: #f8f5f0;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  background: var(--sm-dashboard-soft);
+  border: 1px solid var(--sm-dashboard-line);
   display: grid;
   gap: 8px;
 }
@@ -1851,7 +1851,7 @@ textarea {
   border-radius: 20px;
   background: #ffffff;
   border: 1px solid var(--sm-line);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .survey-adminStats span {
@@ -1863,7 +1863,7 @@ textarea {
 .survey-adminStats strong {
   display: block;
   margin-top: 8px;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 34px;
 }
 
@@ -1877,9 +1877,9 @@ textarea {
   margin-top: 16px;
   padding: 14px;
   border-radius: 14px;
-  background: #f8f5f0;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  color: #3d3127;
+  background: var(--sm-dashboard-soft);
+  border: 1px solid var(--sm-dashboard-line);
+  color: var(--sm-navy);
   overflow-wrap: anywhere;
   font-weight: 800;
 }
@@ -1933,8 +1933,8 @@ textarea {
 .survey-couponDetails div {
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: #f8f5f0;
+  border: 1px solid var(--sm-dashboard-line);
+  background: var(--sm-dashboard-soft);
 }
 
 .survey-couponDetails span,
@@ -1953,7 +1953,7 @@ textarea {
 
 .survey-couponDetails strong {
   margin-top: 4px;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .survey-couponDetails small {
@@ -1975,7 +1975,7 @@ textarea {
 .survey-table th,
 .survey-table td {
   padding: 12px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.1);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   text-align: left;
   vertical-align: top;
   font-size: 13px;
@@ -2056,17 +2056,17 @@ textarea {
   padding: 0 16px;
   border-radius: 12px;
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
+  background: var(--sm-dashboard-soft);
   color: #4d4034;
   font-size: 13px;
   font-weight: 900;
 }
 
 .monthly-salesTab.active {
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
   border-color: transparent;
-  color: #fffdf8;
-  box-shadow: 0 12px 24px rgba(55, 44, 34, 0.15);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(7, 6, 20, 0.15);
 }
 
 .monthly-salesMonth {
@@ -2090,7 +2090,7 @@ textarea {
   border-radius: 14px;
   background: #ffffff;
   border: 1px solid var(--sm-line);
-  box-shadow: 0 10px 22px rgba(56, 44, 29, 0.05);
+  box-shadow: 0 10px 22px rgba(7, 6, 20, 0.05);
 }
 
 .monthly-salesStats article {
@@ -2135,7 +2135,7 @@ textarea {
 .monthly-salesStats strong {
   display: block;
   margin-top: 8px;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 20px;
   line-height: 1.15;
   letter-spacing: 0;
@@ -2174,8 +2174,8 @@ textarea {
 .monthly-salesConfigList article {
   padding: 14px;
   border-radius: 16px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: #f8f5f0;
+  border: 1px solid var(--sm-dashboard-line);
+  background: var(--sm-dashboard-soft);
 }
 
 .monthly-salesConfigList span,
@@ -2191,7 +2191,7 @@ textarea {
 .monthly-salesConfigList strong {
   display: block;
   margin-top: 6px;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   line-height: 1.45;
 }
@@ -2219,7 +2219,7 @@ textarea {
 }
 
 .monthly-salesWeeks strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 20px;
 }
 
@@ -2247,7 +2247,7 @@ textarea {
 
 .monthly-salesTransferTotal {
   margin-top: 10px;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
 }
 
@@ -2406,8 +2406,8 @@ textarea {
   padding: 0 10px;
   border-radius: 10px;
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #3d3127;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
   font-weight: 800;
   cursor: pointer;
 }
@@ -2442,7 +2442,7 @@ textarea {
 }
 
 .monthly-salesGoalCard strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 32px;
   line-height: 1;
   font-weight: 950;
@@ -2499,7 +2499,7 @@ textarea {
   gap: 12px;
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fbf8f3;
 }
 
@@ -2518,7 +2518,7 @@ textarea {
 }
 
 .monthly-salesRankMain strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   font-weight: 900;
 }
@@ -2530,7 +2530,7 @@ textarea {
 }
 
 .monthly-salesRankItem b {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   white-space: nowrap;
 }
@@ -2566,7 +2566,7 @@ textarea {
   border-radius: 18px;
   border: 1px solid var(--sm-line);
   background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 12px 24px rgba(56, 44, 29, 0.05);
+  box-shadow: 0 12px 24px rgba(7, 6, 20, 0.05);
 }
 
 .stats-card {
@@ -2594,7 +2594,7 @@ textarea {
 }
 
 .stats-card strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 26px;
   line-height: 1.05;
   font-weight: 950;
@@ -2614,7 +2614,7 @@ textarea {
 }
 
 .stats-progressCard strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 34px;
   line-height: 1;
   font-weight: 950;
@@ -2635,7 +2635,7 @@ textarea {
 }
 
 .stats-panelTitle {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 18px;
   font-weight: 950;
 }
@@ -2663,7 +2663,7 @@ textarea {
   gap: 12px;
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fbf8f3;
 }
 
@@ -2682,7 +2682,7 @@ textarea {
 }
 
 .stats-rankingItem strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   font-weight: 900;
 }
@@ -2694,7 +2694,7 @@ textarea {
 }
 
 .stats-rankingItem b {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   white-space: nowrap;
 }
@@ -2799,7 +2799,7 @@ textarea {
   border-radius: 24px;
   border: 1px solid var(--sm-line);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .chat-sidebarCard {
@@ -2817,7 +2817,7 @@ textarea {
 
 .chat-panelHeader {
   padding: 22px 24px 18px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   background: linear-gradient(180deg, rgba(245, 240, 232, 0.72), rgba(255, 255, 255, 0.92));
 }
 
@@ -2831,7 +2831,7 @@ textarea {
 .chat-sectionTitle {
   font-size: 18px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .chat-sectionCopy {
@@ -2850,9 +2850,9 @@ textarea {
 .chat-userItem {
   width: 100%;
   padding: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   border-radius: 18px;
-  background: #faf7f2;
+  background: #f7f7f5;
   text-align: left;
   cursor: pointer;
   transition: border-color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
@@ -2861,7 +2861,7 @@ textarea {
 .chat-conversationItem:hover,
 .chat-userItem:hover {
   border-color: rgba(61, 49, 39, 0.2);
-  box-shadow: 0 10px 18px rgba(56, 44, 29, 0.05);
+  box-shadow: 0 10px 18px rgba(7, 6, 20, 0.05);
 }
 
 .chat-conversationItem.active {
@@ -2882,7 +2882,7 @@ textarea {
   gap: 8px;
   font-size: 14px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .chat-conversationTime {
@@ -2902,7 +2902,7 @@ textarea {
   display: grid;
   gap: 10px;
   padding-top: 4px;
-  border-top: 1px solid rgba(73, 58, 38, 0.08);
+  border-top: 1px solid var(--sm-dashboard-line);
 }
 
 .chat-userItem {
@@ -2916,7 +2916,7 @@ textarea {
   display: grid;
   gap: 4px;
   font-weight: 800;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .chat-userItem small {
@@ -2955,8 +2955,8 @@ textarea {
   padding: 12px 14px;
   border-radius: 18px 18px 18px 8px;
   background: #fffaf3;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  box-shadow: 0 10px 18px rgba(56, 44, 29, 0.05);
+  border: 1px solid var(--sm-dashboard-line);
+  box-shadow: 0 10px 18px rgba(7, 6, 20, 0.05);
 }
 
 .chat-bubble.own {
@@ -2987,7 +2987,7 @@ textarea {
 
 .chat-composer {
   padding: 18px 20px 20px;
-  border-top: 1px solid rgba(73, 58, 38, 0.08);
+  border-top: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.95);
   display: grid;
   gap: 12px;
@@ -3000,7 +3000,7 @@ textarea {
   padding: 14px;
   border-radius: 16px;
   border: 1px solid var(--sm-line-strong);
-  background: #fbfaf8;
+  background: var(--sm-dashboard-soft);
   outline: none;
 }
 
@@ -3011,11 +3011,11 @@ textarea {
   padding: 0 18px;
   border-radius: 16px;
   border: 0;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
+  color: #ffffff;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 14px 28px rgba(55, 44, 34, 0.18);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.18);
 }
 
 .chat-composer button:disabled {
@@ -3047,7 +3047,7 @@ textarea {
 
 .chat-widgetHeader {
   padding: 18px 20px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   background: linear-gradient(180deg, rgba(245, 240, 232, 0.72), rgba(255, 255, 255, 0.94));
   display: flex;
   align-items: flex-start;
@@ -3058,7 +3058,7 @@ textarea {
 .chat-widgetTitle {
   font-size: 20px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .chat-widgetCopy {
@@ -3072,8 +3072,8 @@ textarea {
   padding: 0 14px;
   border-radius: 12px;
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #3d3127;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
   font-weight: 800;
   cursor: pointer;
 }
@@ -3087,7 +3087,7 @@ textarea {
 .chat-widgetSidebar {
   min-height: 0;
   padding: 16px;
-  border-right: 1px solid rgba(73, 58, 38, 0.08);
+  border-right: 1px solid var(--sm-dashboard-line);
   background: linear-gradient(180deg, rgba(249, 246, 240, 0.9), rgba(255, 255, 255, 0.96));
   overflow: auto;
   display: grid;
@@ -3103,7 +3103,7 @@ textarea {
 
 .chat-widgetConversationHead {
   padding: 16px 18px 12px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  border-bottom: 1px solid var(--sm-dashboard-line);
 }
 
 .chat-messages--widget {
@@ -3130,15 +3130,15 @@ textarea {
   padding: 0 18px;
   border: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
+  color: #ffffff;
   font-weight: 900;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 18px 34px rgba(55, 44, 34, 0.24);
+  box-shadow: 0 18px 34px rgba(7, 6, 20, 0.24);
 }
 
 .chat-widgetFabIcon {
@@ -3173,7 +3173,7 @@ textarea {
 .chat-empty {
   padding: 18px;
   border-radius: 18px;
-  background: #f8f5f0;
+  background: var(--sm-dashboard-soft);
   color: var(--sm-muted);
   font-size: 14px;
 }
@@ -3209,7 +3209,7 @@ textarea {
 .ml-hero {
   padding: 26px 28px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #fff8ee 0%, #eef4ef 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f2f2f0 100%);
   border: 1px solid var(--sm-line);
   box-shadow: var(--sm-shadow);
   display: flex;
@@ -3275,7 +3275,7 @@ textarea {
   min-height: 40px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
   color: #171421;
   font-size: 13px;
@@ -3299,7 +3299,7 @@ textarea {
 .ml-questionCard {
   border: 1px solid var(--sm-line);
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .ml-statCard {
@@ -3400,11 +3400,11 @@ textarea {
 }
 
 .ml-alertCard--strong {
-  background: #eef4ef;
+  background: #f2f2f0;
 }
 
 .ml-alertCard--muted {
-  background: #f8f5f0;
+  background: var(--sm-dashboard-soft);
 }
 
 .ml-alertCard--danger {
@@ -3414,8 +3414,8 @@ textarea {
 .ml-profitGrid div {
   padding: 16px;
   border-radius: 14px;
-  background: #f8f5f0;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: var(--sm-dashboard-soft);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .ml-profitGrid strong {
@@ -3439,7 +3439,7 @@ textarea {
 .ml-table th,
 .ml-table td {
   padding: 13px 12px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.1);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   text-align: left;
   vertical-align: middle;
   font-size: 14px;
@@ -3470,13 +3470,13 @@ textarea {
   min-height: 32px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   font-size: 13px;
   font-weight: 900;
 }
 
 .ml-status--success {
-  background: #eef4ef;
+  background: #f2f2f0;
   color: #2f6b38;
 }
 
@@ -3550,7 +3550,7 @@ textarea {
 .ml-productForm select,
 .ml-productForm textarea {
   width: 100%;
-  border: 1px solid rgba(73, 58, 38, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   border-radius: 12px;
   background: #fff;
   color: #171421;
@@ -3584,7 +3584,7 @@ textarea {
   align-self: end;
   grid-template-columns: auto 1fr;
   align-items: center;
-  border: 1px solid rgba(73, 58, 38, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   border-radius: 12px;
   background: #fff;
   padding: 0 12px;
@@ -3610,8 +3610,8 @@ textarea {
 .ml-productPreview div {
   padding: 12px;
   border-radius: 12px;
-  background: #f8f5f0;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  background: var(--sm-dashboard-soft);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .ml-productPreview span,
@@ -3639,7 +3639,7 @@ textarea {
 }
 
 .ml-productCard {
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
 }
 
@@ -3657,7 +3657,7 @@ textarea {
 .ml-productNumbers small {
   padding: 9px 10px;
   border-radius: 10px;
-  background: #f8f5f0;
+  background: var(--sm-dashboard-soft);
   color: #171421;
   font-weight: 800;
 }
@@ -3665,7 +3665,7 @@ textarea {
 .calendar-hero {
   padding: 26px 28px;
   border-radius: 28px;
-  background: linear-gradient(135deg, #fff8ee 0%, #eef4ef 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f2f2f0 100%);
   border: 1px solid var(--sm-line);
   box-shadow: var(--sm-shadow);
   display: flex;
@@ -3692,7 +3692,7 @@ textarea {
   padding: 16px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   display: grid;
   gap: 8px;
 }
@@ -3708,7 +3708,7 @@ textarea {
 .calendar-statCard strong {
   font-size: 30px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .calendar-board,
@@ -3716,7 +3716,7 @@ textarea {
   border-radius: 24px;
   border: 1px solid var(--sm-line);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .calendar-board {
@@ -3775,14 +3775,14 @@ textarea {
 .calendar-linkBtn,
 .calendar-checkBtn {
   border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #3d3127;
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
 }
 
 .calendar-primaryBtn {
   border: 0;
-  background: linear-gradient(135deg, #372c22 0%, #554231 100%);
-  color: #fffdf8;
+  background: linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%);
+  color: #ffffff;
 }
 
 .calendar-primaryBtn:disabled {
@@ -3804,15 +3804,15 @@ textarea {
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: #5f5448;
+  color: var(--sm-brand-gray);
   font-weight: 800;
   cursor: pointer;
 }
 
 .calendar-viewBtn.is-active {
   background: #ffffff;
-  color: #2b2723;
-  box-shadow: 0 8px 18px rgba(56, 44, 29, 0.08);
+  color: var(--sm-navy);
+  box-shadow: 0 8px 18px rgba(7, 6, 20, 0.08);
 }
 
 .calendar-createBtn {
@@ -3841,7 +3841,7 @@ textarea {
 }
 
 .calendar-empty {
-  background: #f8f5f0;
+  background: var(--sm-dashboard-soft);
   color: var(--sm-muted);
 }
 
@@ -3883,8 +3883,8 @@ textarea {
   min-height: 116px;
   padding: 10px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
-  background: linear-gradient(180deg, #fffdfa 0%, #f7f2eb 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f1 100%);
   text-align: left;
   cursor: pointer;
 }
@@ -3899,13 +3899,13 @@ textarea {
 }
 
 .calendar-cell.is-today {
-  background: linear-gradient(180deg, #f3fbf4 0%, #f8f3ea 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f2f2f0 100%);
 }
 
 .calendar-cell.is-dropTarget {
   border-color: rgba(95, 125, 108, 0.42);
   box-shadow: inset 0 0 0 2px rgba(95, 125, 108, 0.18);
-  background: linear-gradient(180deg, #edf8ef 0%, #f8f3ea 100%);
+  background: linear-gradient(180deg, #f7f7f5 0%, #f2f2f0 100%);
 }
 
 .calendar-cellTop {
@@ -3944,7 +3944,7 @@ textarea {
   padding: 0 8px;
   border-radius: 999px;
   background: #e6ddd0;
-  color: #554231;
+  color: var(--sm-accent-dark);
   font-size: 12px;
   font-weight: 900;
 }
@@ -3965,7 +3965,7 @@ textarea {
   padding: 6px 8px;
   border-radius: 12px;
   background: rgba(95, 125, 108, 0.11);
-  color: #37513f;
+  color: var(--sm-brand-gray);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
@@ -3998,12 +3998,12 @@ textarea {
 .calendar-eventCard {
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: #faf7f2;
+  border: 1px solid var(--sm-dashboard-line);
+  background: #f7f7f5;
 }
 
 .calendar-eventCard.is-note {
-  background: linear-gradient(135deg, #fcf5e9 0%, #f8f4ee 100%);
+  background: linear-gradient(135deg, #fff4ef 0%, #f7f3f0 100%);
 }
 
 .calendar-eventCard.is-done {
@@ -4063,7 +4063,7 @@ textarea {
   padding: 12px 14px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .calendar-noteItems strong {
@@ -4101,7 +4101,7 @@ textarea {
   max-height: 120px;
   object-fit: cover;
   border-radius: 10px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
 }
 
@@ -4123,7 +4123,7 @@ textarea {
 .calendar-field span {
   font-size: 13px;
   font-weight: 700;
-  color: #584f46;
+  color: var(--sm-brand-gray);
 }
 
 .calendar-field input,
@@ -4133,7 +4133,7 @@ textarea {
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid var(--sm-line-strong);
-  background: #fbfaf8;
+  background: var(--sm-dashboard-soft);
   outline: none;
 }
 
@@ -4160,7 +4160,7 @@ textarea {
   overflow: auto;
   padding: 24px;
   border-radius: 24px;
-  border: 1px solid rgba(73, 58, 38, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 24px 60px rgba(53, 41, 27, 0.2);
 }
@@ -4395,7 +4395,7 @@ textarea {
   .chat-widgetSidebar {
     max-height: 220px;
     border-right: 0;
-    border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+    border-bottom: 1px solid var(--sm-dashboard-line);
   }
 
   .calendar-grid--week .calendar-cell {

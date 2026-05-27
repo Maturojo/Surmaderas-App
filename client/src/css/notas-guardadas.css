@@ -30,7 +30,7 @@
   font-size: 40px;
   line-height: 0.94;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .ng-subtitle {
@@ -50,7 +50,7 @@
 .ng-statCard {
   padding: 16px;
   border-radius: 20px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.76);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
@@ -215,10 +215,10 @@
 .ng-table td {
   min-width: 0;
   padding: 12px 10px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   text-align: left;
   font-size: 13px;
-  color: #2b2723;
+  color: var(--sm-navy);
   vertical-align: top;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -458,8 +458,8 @@
 }
 
 .ng-destinoTag {
-  color: #3b3026;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  color: var(--sm-navy);
+  border: 1px solid var(--sm-dashboard-line);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
@@ -522,9 +522,9 @@
   min-height: 34px;
   padding: 0 9px;
   border-radius: 12px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
@@ -561,9 +561,9 @@
   min-width: 220px;
   padding: 8px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fffdf9;
-  box-shadow: 0 18px 34px rgba(56, 44, 29, 0.16);
+  box-shadow: 0 18px 34px rgba(7, 6, 20, 0.16);
   display: grid;
   gap: 4px;
 }
@@ -608,7 +608,7 @@
   width: min(440px, 100%);
   padding: 18px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fffdf9;
   box-shadow: 0 24px 70px rgba(43, 35, 27, 0.28);
 }
@@ -630,9 +630,9 @@
   width: 100%;
   min-height: 58px;
   padding: 10px 12px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   border-radius: 14px;
-  background: #fffaf4;
+  background: var(--sm-dashboard-soft);
   color: #342b23;
   text-align: left;
   cursor: pointer;
@@ -725,7 +725,7 @@
   min-height: 42px;
   padding: 0 14px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.82);
   font-weight: 800;
   cursor: pointer;
@@ -741,7 +741,7 @@
 .ng-panel {
   padding: 18px;
   border-radius: 22px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.8);
 }
 
@@ -758,8 +758,8 @@
   width: 100%;
   margin-top: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
-  background: #fcfaf7;
+  border: 1px solid var(--sm-dashboard-line);
+  background: #f7f7f5;
   color: #241f19;
   outline: none;
 }
@@ -792,7 +792,7 @@
 
 .ng-quickBtn {
   min-height: 42px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
   color: #33281f;
 }
@@ -806,7 +806,7 @@
 .ng-quickBtn--done {
   border-color: rgba(49, 39, 31, 0.18);
   background: #31271f;
-  color: #fffaf4;
+  color: var(--sm-dashboard-soft);
 }
 
 .ng-summaryCard {
@@ -821,7 +821,7 @@
   margin-top: 18px;
   padding: 18px;
   border-radius: 22px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background:
     radial-gradient(circle at top right, rgba(176, 210, 241, 0.16), transparent 34%),
     #fffdf9;
@@ -832,14 +832,14 @@
   margin-top: 18px;
   padding: 18px;
   border-radius: 22px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: linear-gradient(135deg, #fff8ef 0%, #fcfaf7 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(135deg, #ffffff 0%, #f7f7f5 100%);
 }
 
 .ng-clientActionsTitle {
   font-size: 15px;
   font-weight: 900;
-  color: #2f261d;
+  color: var(--sm-navy);
 }
 
 .ng-clientActionsSub {
@@ -871,7 +871,7 @@
   padding: 10px;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
   min-height: 0;
   aspect-ratio: 200 / 145;
@@ -882,7 +882,7 @@
 
 .ng-clientProofThumb:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: rgba(73, 58, 38, 0.18);
+  border-color: rgba(96, 96, 96, 0.24);
   box-shadow: 0 14px 28px rgba(55, 43, 29, 0.10);
 }
 
@@ -908,7 +908,7 @@
   padding: 4px 6px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.92);
-  color: #2f261d;
+  color: var(--sm-navy);
   font-size: 12px;
   font-weight: 900;
 }
@@ -935,7 +935,7 @@
   color: #7a7065;
   font-size: 13px;
   font-weight: 700;
-  background: linear-gradient(135deg, #fff8ef 0%, #fcfaf7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f7f7f5 100%);
 }
 
 .ng-clientProofActions {
@@ -980,7 +980,7 @@
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.08);
-  color: #fffdf8;
+  color: #ffffff;
   font-weight: 800;
   cursor: pointer;
 }
@@ -1016,7 +1016,7 @@
 .ng-inlinePromptTitle {
   font-size: 15px;
   font-weight: 900;
-  color: #2f261d;
+  color: var(--sm-navy);
 }
 
 .ng-inlinePromptSub {
@@ -1029,9 +1029,9 @@
   min-height: 36px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
-  color: #3b3026;
+  color: var(--sm-navy);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1061,7 +1061,7 @@
   overflow: auto;
   padding: 22px;
   border-radius: 26px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background:
     radial-gradient(circle at top right, rgba(176, 210, 241, 0.16), transparent 34%),
     #fffdf9;
@@ -1075,8 +1075,8 @@
   margin-top: 16px;
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: linear-gradient(135deg, #f7f1e7 0%, #fcfaf7 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(135deg, #f7f1e7 0%, #f7f7f5 100%);
 }
 
 .ng-providerModalNote span,
@@ -1170,7 +1170,7 @@
 .ng-providerCard {
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
 }
 
@@ -1197,7 +1197,7 @@
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
@@ -1215,7 +1215,7 @@
   padding: 12px;
   border-radius: 16px;
   background: #fbf8f3;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .ng-providerMetaTag {
@@ -1242,7 +1242,7 @@
 .ng-miniBtn {
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff4f4;
   color: #943939;
 }
@@ -1282,7 +1282,7 @@
   gap: 4px;
   padding: 16px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #faf8f5;
   text-align: left;
   cursor: pointer;
@@ -1346,7 +1346,7 @@
   min-height: 46px;
   padding: 0 14px;
   border-radius: 12px;
-  border: 1px solid rgba(73, 58, 38, 0.18);
+  border: 1px solid rgba(96, 96, 96, 0.24);
   background: #faf8f5;
   font-size: 14px;
   font-weight: 600;
@@ -1368,7 +1368,7 @@
   max-height: 200px;
   object-fit: contain;
   border-radius: 10px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .ng-terminadoActions {
@@ -1388,7 +1388,7 @@
   margin-top: 14px;
   padding: 16px;
   border-radius: 20px;
-  border: 1px dashed rgba(73, 58, 38, 0.18);
+  border: 1px dashed rgba(96, 96, 96, 0.24);
   background: rgba(252, 250, 247, 0.9);
 }
 
@@ -1402,7 +1402,7 @@
   margin-top: 12px;
   min-height: 42px;
   padding: 0 14px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fff;
   color: #31271f;
 }
@@ -1422,7 +1422,7 @@
 .ng-actionBtn {
   min-height: 46px;
   padding: 0 16px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .ng-actionBtn--ghost {
@@ -1705,7 +1705,7 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 8px 10px;
     padding: 12px;
-    border: 1px solid rgba(73, 58, 38, 0.08);
+    border: 1px solid var(--sm-dashboard-line);
     border-radius: 18px;
     background: #fffdf9;
     box-shadow: 0 12px 26px rgba(55, 43, 29, 0.06);
@@ -1829,7 +1829,7 @@
     padding: 8px 10px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(73, 58, 38, 0.06);
+    border: 1px solid var(--sm-dashboard-line);
   }
 
   .ng-clientCell strong {
@@ -1930,7 +1930,7 @@
   .ng-tableWrap {
     overflow-x: auto;
     overflow-y: hidden;
-    border: 1px solid rgba(73, 58, 38, 0.08);
+    border: 1px solid var(--sm-dashboard-line);
     background: rgba(255, 255, 255, 0.96);
     -webkit-overflow-scrolling: touch;
   }
@@ -1984,7 +1984,7 @@
     display: table-cell;
     width: auto !important;
     padding: 12px 10px;
-    border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+    border-bottom: 1px solid var(--sm-dashboard-line);
     vertical-align: top;
     white-space: nowrap;
   }
@@ -2152,7 +2152,7 @@
   display: table-cell !important;
   width: auto !important;
   padding: 12px 10px;
-  border-bottom: 1px solid rgba(73, 58, 38, 0.08);
+  border-bottom: 1px solid var(--sm-dashboard-line);
   vertical-align: top;
   white-space: nowrap;
 }

@@ -195,7 +195,7 @@
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
+  border: 1px solid var(--sm-dashboard-line);
   color: #41352a;
   font-size: 12px;
   font-weight: 800;
@@ -268,7 +268,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 900;
-  color: #2f261d;
+  color: var(--sm-navy);
 }
 
 .pp-sectionBlockHead p {
@@ -285,8 +285,8 @@
   align-items: end;
   padding: 42px 14px 14px;
   border-radius: 20px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
-  background: #fcfaf7;
+  border: 1px solid var(--sm-dashboard-line);
+  background: #f7f7f5;
 }
 
 .pp-itemIndex {
@@ -302,7 +302,7 @@
   min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  border: 1px dashed rgba(73, 58, 38, 0.14);
+  border: 1px dashed var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.8);
   color: #6c6257;
   font-size: 12px;
@@ -372,7 +372,7 @@
   padding: 12px 14px;
   border-radius: 18px;
   background: #f7f4ee;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
 }
 
 .pp-filterTags {
@@ -393,16 +393,16 @@
   display: inline-flex;
   align-items: center;
   padding: 0 12px;
-  border: 1px solid rgba(73, 58, 38, 0.12);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fffdf9;
   color: #524538;
 }
 
 .pp-clearBtn {
   padding: 0 14px;
-  border: 1px solid rgba(73, 58, 38, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   background: white;
-  color: #3b3026;
+  color: var(--sm-navy);
   cursor: pointer;
 }
 
@@ -456,7 +456,7 @@
   gap: 10px;
   padding: 12px 14px;
   border-radius: 16px;
-  background: #faf7f2;
+  background: #f7f7f5;
   color: #46392d;
 }
 
@@ -501,7 +501,7 @@
   padding: 22px;
   border-radius: 20px;
   border: 1px dashed var(--sm-line);
-  background: #faf8f4;
+  background: var(--sm-dashboard-soft);
   color: var(--sm-muted);
 }
 
@@ -521,7 +521,7 @@
   max-height: calc(100vh - 48px);
   overflow: auto;
   border-radius: 30px;
-  border: 1px solid rgba(73, 58, 38, 0.14);
+  border: 1px solid var(--sm-dashboard-line);
   background: #fffdf9;
   box-shadow: 0 24px 70px rgba(39, 29, 20, 0.22);
 }

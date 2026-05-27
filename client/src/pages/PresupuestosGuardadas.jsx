@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
@@ -62,16 +62,16 @@ export default function PresupuestosGuardadas() {
     gap: 18,
     padding: isMobile ? 18 : "24px 26px",
     borderRadius: isMobile ? 18 : 28,
-    border: "1px solid rgba(70,55,38,0.1)",
+    border: "1px solid var(--sm-dashboard-line)",
     background:
-      "radial-gradient(circle at top right, rgba(196,205,181,0.18), transparent 24%), linear-gradient(135deg,#fff8ef,#f1f4ea)",
-    boxShadow: "0 18px 42px rgba(70,55,38,0.08)",
+      "radial-gradient(circle at top right, rgba(200,96,58,0.10), transparent 24%), linear-gradient(135deg,#ffffff,#f2f2f0)",
+    boxShadow: "0 18px 42px var(--sm-dashboard-line)",
   };
   const cardStyle = {
     padding: isMobile ? 16 : 20,
     borderRadius: isMobile ? 18 : 24,
     background: "rgba(255,255,255,0.86)",
-    border: "1px solid rgba(70,55,38,0.09)",
+    border: "1px solid var(--sm-dashboard-line)",
     boxShadow: "0 14px 32px rgba(69,54,38,0.08)",
   };
 
@@ -118,7 +118,7 @@ export default function PresupuestosGuardadas() {
           >
             Guardadas
           </div>
-          <div style={{ fontSize: 34, fontWeight: 900, color: "#2a241d", lineHeight: 1 }}>
+          <div style={{ fontSize: 34, fontWeight: 900, color: "var(--sm-navy)", lineHeight: 1 }}>
             {pendingCount}
           </div>
           <div style={{ color: "#6b6155", fontSize: 14 }}>
@@ -138,14 +138,14 @@ export default function PresupuestosGuardadas() {
                 padding: 18,
                 borderRadius: 18,
                 background: "#fbf7f1",
-                border: "1px solid rgba(70,55,38,0.08)",
+                border: "1px solid var(--sm-dashboard-line)",
                 display: "grid",
                 gap: 8,
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <div>
-                  <div style={{ fontWeight: 900, color: "#2a241d", fontSize: 18 }}>
+                  <div style={{ fontWeight: 900, color: "var(--sm-navy)", fontSize: 18 }}>
                     {draft.cliente || "Sin nombre"}
                   </div>
                   <div style={{ color: "#6b6155", fontSize: 14 }}>
@@ -170,7 +170,7 @@ export default function PresupuestosGuardadas() {
                 <img
                   src={draft.imagen.dataUrl}
                   alt="Adjunto del pedido"
-                  style={{ width: 180, maxWidth: "100%", borderRadius: 14, border: "1px solid rgba(70,55,38,0.08)" }}
+                  style={{ width: 180, maxWidth: "100%", borderRadius: 14, border: "1px solid var(--sm-dashboard-line)" }}
                 />
               ) : null}
 
@@ -182,7 +182,7 @@ export default function PresupuestosGuardadas() {
                     minHeight: 40,
                     padding: "0 14px",
                     borderRadius: 12,
-                    border: "1px solid rgba(70,55,38,0.12)",
+                    border: "1px solid rgba(96,96,96,.18)",
                     background: "#fff",
                     fontWeight: 800,
                     cursor: "pointer",
@@ -197,7 +197,7 @@ export default function PresupuestosGuardadas() {
                     minHeight: 40,
                     padding: "0 14px",
                     borderRadius: 12,
-                    border: "1px solid rgba(70,55,38,0.12)",
+                    border: "1px solid rgba(96,96,96,.18)",
                     background: "#fffaf2",
                     fontWeight: 800,
                     cursor: "pointer",

@@ -153,16 +153,16 @@ export default function PresupuestosGenerar() {
   const heroStyle = {
     padding: isMobile ? 18 : "24px 26px",
     borderRadius: isMobile ? 18 : 28,
-    border: "1px solid rgba(70,55,38,0.1)",
+    border: "1px solid var(--sm-dashboard-line)",
     background:
-      "radial-gradient(circle at top right, rgba(214,191,160,0.22), transparent 24%), linear-gradient(135deg,#fff8ef,#f4ece1)",
-    boxShadow: "0 18px 42px rgba(70,55,38,0.08)",
+      "radial-gradient(circle at top right, rgba(200,96,58,0.12), transparent 24%), linear-gradient(135deg,#ffffff,#f2f2f0)",
+    boxShadow: "0 18px 42px var(--sm-dashboard-line)",
   };
   const panelStyle = {
     padding: isMobile ? 16 : 20,
     borderRadius: isMobile ? 18 : 24,
     background: "rgba(255,255,255,0.86)",
-    border: "1px solid rgba(70,55,38,0.09)",
+    border: "1px solid var(--sm-dashboard-line)",
     boxShadow: "0 14px 32px rgba(69,54,38,0.08)",
   };
   const grid2 = { display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0,1fr))", gap: 12 };
@@ -171,8 +171,8 @@ export default function PresupuestosGenerar() {
     minHeight: 46,
     padding: "0 14px",
     borderRadius: 14,
-    border: "1px solid rgba(70,55,38,0.12)",
-    background: "#fbfaf8",
+    border: "1px solid rgba(96,96,96,.18)",
+    background: "var(--sm-dashboard-soft)",
     outline: "none",
   };
   const textAreaStyle = {
@@ -228,8 +228,8 @@ export default function PresupuestosGenerar() {
                 padding: "0 18px",
                 border: 0,
                 borderRadius: 14,
-                background: "linear-gradient(135deg,#372c22,#554231)",
-                color: "#fffdf8",
+                background: "linear-gradient(135deg,var(--sm-navy),var(--sm-accent-dark))",
+                color: "#ffffff",
                 fontWeight: 900,
                 cursor: "pointer",
               }}
@@ -285,7 +285,7 @@ export default function PresupuestosGenerar() {
         </div>
 
         <div style={{ ...panelStyle, padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "16px 18px", borderBottom: "1px solid rgba(70,55,38,0.08)", fontWeight: 900 }}>
+          <div style={{ padding: "16px 18px", borderBottom: "1px solid var(--sm-dashboard-line)", fontWeight: 900 }}>
             Conceptos presupuestados
           </div>
           <div style={{ overflowX: "auto" }}>
@@ -303,7 +303,7 @@ export default function PresupuestosGenerar() {
                 {form.items.map((item, index) => {
                   const subtotal = Number(item.cant || 0) * Number(item.precio || 0);
                   return (
-                    <tr key={index} style={{ borderTop: "1px solid rgba(70,55,38,0.08)" }}>
+                    <tr key={index} style={{ borderTop: "1px solid var(--sm-dashboard-line)" }}>
                       <td style={{ padding: 14 }}>
                         <input
                           style={inputStyle}
@@ -363,7 +363,7 @@ export default function PresupuestosGenerar() {
                 minHeight: 44,
                 padding: "0 16px",
                 borderRadius: 12,
-                border: "1px solid rgba(70,55,38,0.12)",
+                border: "1px solid rgba(96,96,96,.18)",
                 background: "#fff",
                 fontWeight: 800,
                 cursor: "pointer",

@@ -377,8 +377,8 @@
 .placas-diagram--vertical .placas-diagramBoard {
   background: linear-gradient(
     90deg,
-    #fffdfa 0%,
-    #fffdfa 49%,
+    #ffffff 0%,
+    #ffffff 49%,
     #141414 49%,
     #141414 100%
   );
@@ -388,8 +388,8 @@
 .placas-diagram--horizontal .placas-diagramBoard {
   background: linear-gradient(
     180deg,
-    #fffdfa 0%,
-    #fffdfa 54%,
+    #ffffff 0%,
+    #ffffff 54%,
     #141414 54%,
     #141414 100%
   );

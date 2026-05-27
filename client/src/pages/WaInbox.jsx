@@ -211,7 +211,7 @@ export default function WaInbox() {
     <div className="waInbox-page">
       <style>{`
         .waInbox-page { display: grid; gap: 16px; color: #261f18; }
-        .waInbox-hero { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; padding: 22px; border-radius: 18px; background: #f8f3ea; border: 1px solid rgba(73,58,38,.1); }
+        .waInbox-hero { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; padding: 22px; border-radius: 18px; background: #f2f2f0; border: 1px solid var(--sm-dashboard-line); }
         .waInbox-hero h1 { margin: 0; font-size: 30px; line-height: 1.05; }
         .waInbox-hero p { margin: 8px 0 0; max-width: 760px; color: #70665c; font-size: 14px; }
         .waInbox-stats { display: grid; grid-template-columns: repeat(5, minmax(100px, 1fr)); gap: 10px; }
@@ -220,10 +220,10 @@ export default function WaInbox() {
         .waInbox-stat strong { display: block; margin-top: 4px; font-size: 24px; }
         .waInbox-stat--alert strong { color: #a05c00; }
         .waInbox-layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start; }
-        .waInbox-panel { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(73,58,38,.1); box-shadow: 0 14px 34px rgba(53,41,27,.06); }
+        .waInbox-panel { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid var(--sm-dashboard-line); box-shadow: 0 14px 34px rgba(53,41,27,.06); }
         .waInbox-panel h2 { margin: 0 0 14px; font-size: 18px; }
         .waInbox-form { display: grid; gap: 10px; }
-        .waInbox-input, .waInbox-select, .waInbox-textarea { width: 100%; border: 1px solid rgba(73,58,38,.14); border-radius: 12px; background: #fcfaf7; color: #261f18; font: inherit; box-sizing: border-box; }
+        .waInbox-input, .waInbox-select, .waInbox-textarea { width: 100%; border: 1px solid var(--sm-dashboard-line); border-radius: 12px; background: #fcfaf7; color: #261f18; font: inherit; box-sizing: border-box; }
         .waInbox-input, .waInbox-select { min-height: 42px; padding: 0 12px; }
         .waInbox-textarea { min-height: 86px; padding: 10px 12px; resize: vertical; }
         .waInbox-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -231,8 +231,8 @@ export default function WaInbox() {
         /* Motivos rápidos */
         .waInbox-quickLabel { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #80766c; margin-bottom: 6px; }
         .waInbox-quickBtns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
-        .waInbox-quickBtn { padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(73,58,38,.2); background: #f8f3ea; color: #4a3920; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; white-space: nowrap; }
-        .waInbox-quickBtn:hover { background: #2f261e; color: #fffaf4; }
+        .waInbox-quickBtn { padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(96,96,96,.24); background: #f2f2f0; color: var(--sm-navy); font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; white-space: nowrap; }
+        .waInbox-quickBtn:hover { background: var(--sm-navy); color: var(--sm-dashboard-soft); }
 
         /* Toolbar */
         .waInbox-toolbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -240,19 +240,19 @@ export default function WaInbox() {
         .waInbox-toolbarRow:first-child { flex-wrap: wrap; }
         .waInbox-toolbarRow .waInbox-input { flex: 1 1 160px; min-width: 0; }
         .waInbox-toolbarRow .waInbox-select { flex: 0 0 150px; min-width: 0; }
-        .waInbox-viewToggle { display: flex; border: 1px solid rgba(73,58,38,.18); border-radius: 12px; overflow: hidden; margin-left: auto; }
+        .waInbox-viewToggle { display: flex; border: 1px solid rgba(96,96,96,.24); border-radius: 12px; overflow: hidden; margin-left: auto; }
         .waInbox-viewBtn { min-height: 36px; padding: 0 14px; border: none; background: transparent; color: #5c5247; font-weight: 800; font-size: 13px; cursor: pointer; transition: background .15s, color .15s; white-space: nowrap; }
-        .waInbox-viewBtn--active { background: #2f261e; color: #fffaf4; }
-        .waInbox-filterInactive { min-height: 36px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(73,58,38,.18); background: #fff; color: #5c5247; font-weight: 800; font-size: 13px; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s; }
+        .waInbox-viewBtn--active { background: var(--sm-navy); color: var(--sm-dashboard-soft); }
+        .waInbox-filterInactive { min-height: 36px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(96,96,96,.24); background: #fff; color: #5c5247; font-weight: 800; font-size: 13px; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s; }
         .waInbox-filterInactive--active { background: #fff7e6; color: #a05c00; border-color: #e8c07a; }
 
         /* Lista */
         .waInbox-actions { display: flex; gap: 8px; }
-        .waInbox-btn { min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(73,58,38,.14); background: #fff; color: #2e261f; font-weight: 800; cursor: pointer; }
-        .waInbox-btn--primary { background: #2f261e; color: #fffaf4; border-color: #2f261e; }
+        .waInbox-btn { min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--sm-dashboard-line); background: #fff; color: #2e261f; font-weight: 800; cursor: pointer; }
+        .waInbox-btn--primary { background: var(--sm-navy); color: var(--sm-dashboard-soft); border-color: var(--sm-navy); }
         .waInbox-btn--danger { background: #fff4f4; color: #953333; border-color: #f1c5c5; }
         .waInbox-list { display: grid; gap: 10px; max-height: calc(100dvh - 300px); overflow: auto; padding-right: 4px; }
-        .waInbox-card { display: grid; gap: 10px; padding: 14px; border-radius: 16px; border: 1px solid rgba(73,58,38,.1); background: #fffdf9; }
+        .waInbox-card { display: grid; gap: 10px; padding: 14px; border-radius: 16px; border: 1px solid var(--sm-dashboard-line); background: #fffdf9; }
         .waInbox-card--inactive { border-color: #e8a800; background: #fffcf0; box-shadow: 0 0 0 1px #e8a800; }
         .waInbox-cardHead { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
         .waInbox-name { font-weight: 900; font-size: 16px; }
@@ -276,20 +276,20 @@ export default function WaInbox() {
 
         /* Kanban */
         .waInbox-kanban { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
-        .waInbox-kCol { flex: 0 0 260px; border-radius: 16px; background: #f5f0e8; border: 1px solid rgba(73,58,38,.1); display: flex; flex-direction: column; gap: 0; overflow: hidden; }
-        .waInbox-kColHead { padding: 12px 14px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(73,58,38,.1); }
-        .waInbox-kColTitle { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; color: #4a3920; }
-        .waInbox-kColCount { font-size: 12px; font-weight: 900; background: rgba(73,58,38,.12); color: #4a3920; padding: 2px 8px; border-radius: 999px; }
+        .waInbox-kCol { flex: 0 0 260px; border-radius: 16px; background: #f5f0e8; border: 1px solid var(--sm-dashboard-line); display: flex; flex-direction: column; gap: 0; overflow: hidden; }
+        .waInbox-kColHead { padding: 12px 14px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--sm-dashboard-line); }
+        .waInbox-kColTitle { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; color: var(--sm-navy); }
+        .waInbox-kColCount { font-size: 12px; font-weight: 900; background: rgba(73,58,38,.12); color: var(--sm-navy); padding: 2px 8px; border-radius: 999px; }
         .waInbox-kCards { display: flex; flex-direction: column; gap: 10px; padding: 12px; min-height: 80px; }
-        .waInbox-kCard { padding: 12px; border-radius: 14px; background: #fff; border: 1px solid rgba(73,58,38,.1); display: grid; gap: 8px; cursor: pointer; transition: box-shadow .15s; }
+        .waInbox-kCard { padding: 12px; border-radius: 14px; background: #fff; border: 1px solid var(--sm-dashboard-line); display: grid; gap: 8px; cursor: pointer; transition: box-shadow .15s; }
         .waInbox-kCard:hover { box-shadow: 0 4px 14px rgba(53,41,27,.1); }
         .waInbox-kCard--inactive { border-color: #e8a800; background: #fffcf0; box-shadow: 0 0 0 1px #e8a800; }
         .waInbox-kName { font-weight: 900; font-size: 14px; }
         .waInbox-kNeed { font-size: 13px; color: #5f554b; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .waInbox-kMeta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .waInbox-kActions { display: flex; gap: 6px; }
-        .waInbox-kBtn { font-size: 12px; min-height: 32px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(73,58,38,.14); background: #fff; color: #2e261f; font-weight: 800; cursor: pointer; }
-        .waInbox-kBtn--wa { background: #2f261e; color: #fffaf4; border-color: #2f261e; }
+        .waInbox-kBtn { font-size: 12px; min-height: 32px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--sm-dashboard-line); background: #fff; color: #2e261f; font-weight: 800; cursor: pointer; }
+        .waInbox-kBtn--wa { background: var(--sm-navy); color: var(--sm-dashboard-soft); border-color: var(--sm-navy); }
 
         @media (max-width: 980px) {
           .waInbox-layout { grid-template-columns: 1fr; }

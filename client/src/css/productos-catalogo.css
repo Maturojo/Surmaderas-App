@@ -19,7 +19,7 @@
 
 .pc-kicker {
   margin-bottom: 10px;
-  color: #8d7557;
+  color: var(--sm-accent);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -57,14 +57,14 @@
 .pc-metaLabel {
   display: block;
   margin-bottom: 6px;
-  color: #827669;
+  color: var(--sm-brand-gray);
   font-size: 12px;
   font-weight: 700;
 }
 
 .pc-metaValue {
   display: block;
-  color: #231f1a;
+  color: var(--sm-navy);
   font-size: 24px;
   font-weight: 900;
   line-height: 1;
@@ -115,7 +115,7 @@
   border-radius: 14px;
   border: 1px solid rgba(70, 55, 38, 0.12);
   background: #fff;
-  color: #231f1a;
+  color: var(--sm-navy);
   font-weight: 700;
 }
 
