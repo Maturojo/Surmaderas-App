@@ -14,6 +14,9 @@
   --sm-accent-dark: #A84E2C;
   --sm-accent-soft: rgba(200, 96, 58, 0.10);
   --sm-navy: #070614;
+  --sm-brand-gray: #606060;
+  --sm-dashboard-soft: #f2f2f0;
+  --sm-dashboard-line: rgba(96, 96, 96, 0.18);
   --sm-danger-soft: #fff1f1;
   --sm-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   --sm-radius-xl: 16px;
@@ -660,9 +663,9 @@ textarea {
 .dashboard-alertsPanel {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid var(--sm-line);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  border: 1px solid var(--sm-dashboard-line);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.07);
 }
 
 .dashboard-alertsHeader {
@@ -675,7 +678,7 @@ textarea {
 
 .dashboard-alertsHeader h2 {
   margin: 4px 0 0;
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 24px;
   line-height: 1.1;
   font-weight: 900;
@@ -690,9 +693,9 @@ textarea {
   min-height: 36px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid var(--sm-line-strong);
-  background: #fffaf4;
-  color: #3d3127;
+  border: 1px solid var(--sm-dashboard-line);
+  background: var(--sm-dashboard-soft);
+  color: var(--sm-navy);
   font-size: 12px;
   font-weight: 900;
 }
@@ -716,20 +719,21 @@ textarea {
   min-width: 0;
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(73, 58, 38, 0.1);
-  background: linear-gradient(180deg, #fffdfa 0%, #f7f2eb 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f1 100%);
 }
 
 .dashboard-alertColumn--danger {
-  background: linear-gradient(180deg, #fff5f2 0%, #f9f1eb 100%);
+  background: linear-gradient(180deg, #fff4ef 0%, #f7f3f0 100%);
+  border-color: rgba(200, 96, 58, 0.24);
 }
 
 .dashboard-alertColumn--today {
-  background: linear-gradient(180deg, #f3fbf4 0%, #f8f3ea 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f1 100%);
 }
 
 .dashboard-alertColumn--tomorrow {
-  background: linear-gradient(180deg, #f4f7fb 0%, #f8f3ea 100%);
+  background: linear-gradient(180deg, #f7f7fb 0%, #f2f2f0 100%);
 }
 
 .dashboard-alertColumnHead {
@@ -741,7 +745,7 @@ textarea {
 }
 
 .dashboard-alertColumnHead span {
-  color: #5f5448;
+  color: var(--sm-brand-gray);
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
@@ -755,8 +759,8 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(73, 58, 38, 0.08);
-  color: #2b2723;
+  background: var(--sm-accent-soft);
+  color: var(--sm-navy);
   font-size: 16px;
   font-weight: 900;
 }
@@ -771,7 +775,7 @@ textarea {
   gap: 10px;
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(73, 58, 38, 0.08);
+  border: 1px solid var(--sm-dashboard-line);
   background: rgba(255, 255, 255, 0.76);
 }
 
@@ -793,13 +797,13 @@ textarea {
 }
 
 .dashboard-alertItemMain strong {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 14px;
   font-weight: 900;
 }
 
 .dashboard-alertItemMain span {
-  color: #5c5147;
+  color: var(--sm-brand-gray);
   font-size: 13px;
   font-weight: 800;
 }
@@ -842,9 +846,11 @@ textarea {
 .dashboard-hero {
   padding: 26px 28px;
   border-radius: 28px;
-  background: linear-gradient(135deg, #fff8ee 0%, #f4efe7 100%);
-  border: 1px solid var(--sm-line);
-  box-shadow: var(--sm-shadow);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(200, 96, 58, 0.12), transparent 28%),
+    linear-gradient(135deg, #ffffff 0%, #f2f2f0 100%);
+  border: 1px solid var(--sm-dashboard-line);
+  box-shadow: 0 18px 42px rgba(7, 6, 20, 0.08);
 }
 
 .dashboard-heroLayout {
@@ -875,7 +881,7 @@ textarea {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #888580;
+  color: var(--sm-brand-gray);
 }
 
 .dashboard-title {
@@ -902,9 +908,9 @@ textarea {
 .dashboard-card {
   padding: 20px;
   border-radius: 22px;
-  border: 1px solid var(--sm-line);
-  background: rgba(255,255,255,0.88);
-  box-shadow: 0 14px 28px rgba(56, 44, 29, 0.06);
+  border: 1px solid var(--sm-dashboard-line);
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 14px 28px rgba(7, 6, 20, 0.06);
 }
 
 .dashboard-cardLabel {
@@ -912,7 +918,7 @@ textarea {
   padding: 6px 10px;
   border-radius: 999px;
   background: var(--sm-accent-soft);
-  color: #624f3c;
+  color: var(--sm-accent-dark);
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -935,7 +941,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   margin-top: 16px;
-  color: #3d3127;
+  color: var(--sm-navy);
   font-weight: 800;
 }
 
@@ -959,8 +965,8 @@ textarea {
   align-content: space-between;
   padding: 18px;
   border-radius: 26px;
-  border: 2px solid rgba(73, 58, 38, 0.18);
-  background: linear-gradient(180deg, #f6f4ed 0%, #f2eee5 100%);
+  border: 2px solid var(--sm-dashboard-line);
+  background: linear-gradient(180deg, #ffffff 0%, #eeeeec 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -971,8 +977,8 @@ textarea {
   width: fit-content;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(73, 58, 38, 0.08);
-  color: #6a5a47;
+  background: var(--sm-accent-soft);
+  color: var(--sm-accent-dark);
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -980,7 +986,7 @@ textarea {
 }
 
 .dashboard-todayNumber {
-  color: #2b2723;
+  color: var(--sm-navy);
   font-size: 42px;
   font-weight: 900;
 }
@@ -995,8 +1001,8 @@ textarea {
   width: 100%;
   padding: 6px 8px;
   border-radius: 12px;
-  background: rgba(95, 125, 108, 0.11);
-  color: #37513f;
+  background: rgba(96, 96, 96, 0.11);
+  color: var(--sm-brand-gray);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
@@ -1005,8 +1011,8 @@ textarea {
 }
 
 .dashboard-todayEvent.is-note {
-  background: rgba(187, 150, 88, 0.14);
-  color: #73531d;
+  background: var(--sm-accent-soft);
+  color: var(--sm-accent-dark);
 }
 
 .dashboard-todayEvent.is-done {
@@ -1024,7 +1030,7 @@ textarea {
 .dashboard-todayLink {
   display: inline-flex;
   align-items: center;
-  color: #3d3127;
+  color: var(--sm-navy);
   font-weight: 800;
 }
 
@@ -1104,7 +1110,7 @@ textarea {
 .config-usersCardTitle {
   font-size: 20px;
   font-weight: 900;
-  color: #2b2723;
+  color: var(--sm-navy);
 }
 
 .config-usersCardHead p {
@@ -1573,9 +1579,15 @@ textarea {
 .survey-field span,
 .survey-label {
   color: #2c2c2c;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+.survey-label {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 800;
 }
 
 .survey-field input,

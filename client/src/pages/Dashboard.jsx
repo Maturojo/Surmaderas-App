@@ -74,9 +74,9 @@ const turneroCardStyle = {
   width: "min(260px, 100%)",
   padding: "16px",
   borderRadius: "24px",
-  border: "1px solid rgba(73, 58, 38, 0.14)",
-  background: "rgba(255,255,255,0.74)",
-  boxShadow: "0 14px 30px rgba(56, 44, 29, 0.08)",
+  border: "1px solid var(--sm-dashboard-line)",
+  background: "rgba(255,255,255,0.88)",
+  boxShadow: "0 14px 30px rgba(7, 6, 20, 0.08)",
   textAlign: "center",
   marginLeft: "auto",
   flex: "1 1 260px",
@@ -87,7 +87,7 @@ const turneroLabelStyle = {
   fontWeight: 800,
   letterSpacing: "0.14em",
   textTransform: "uppercase",
-  color: "#8a765a",
+  color: "var(--sm-accent)",
 };
 
 const turneroNumberStyle = {
@@ -95,7 +95,7 @@ const turneroNumberStyle = {
   fontSize: "48px",
   lineHeight: 0.95,
   fontWeight: 900,
-  color: "#2f241a",
+  color: "var(--sm-navy)",
 };
 
 const turneroStatusStyle = {
@@ -111,8 +111,8 @@ const turneroButtonStyle = {
   marginTop: "12px",
   border: 0,
   borderRadius: "16px",
-  background: "linear-gradient(135deg, #372c22 0%, #5d4734 100%)",
-  color: "#fffdf8",
+  background: "linear-gradient(135deg, var(--sm-navy) 0%, var(--sm-accent-dark) 100%)",
+  color: "#ffffff",
   fontWeight: 900,
   cursor: "pointer",
 };
