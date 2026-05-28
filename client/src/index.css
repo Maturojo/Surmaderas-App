@@ -522,6 +522,17 @@ textarea {
   background: var(--sm-panel);
 }
 
+.route-loading {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  border: 1px solid var(--sm-dashboard-line);
+  background: linear-gradient(135deg, #ffffff 0%, var(--sm-dashboard-soft) 100%);
+  color: var(--sm-brand-gray);
+  font-weight: 900;
+}
+
 .login-shell {
   min-height: 100vh;
   padding: 28px;

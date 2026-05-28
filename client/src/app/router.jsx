@@ -1,52 +1,58 @@
+import { lazy, Suspense } from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import WaConversations from "../pages/WaConversations";
-import WaFAQs from "../pages/WaFAQs";
-import WaStats from "../pages/WaStats";
-import WaSettings from "../pages/WaSettings";
-import WaQuickReplies from "../pages/WaQuickReplies";
-import WaBroadcast from "../pages/WaBroadcast";
-import WaBudgetRequests from "../pages/WaBudgetRequests";
-import WaInbox from "../pages/WaInbox";
-
-import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
 import AppLayout from "../layouts/AppLayout";
-import CalendarOperativo from "../pages/CalendarOperativo";
-import NotasPedido from "../pages/NotasPedido";
-import NotasPedidoListado from "../pages/NotasPedidoListado";
-import Productos from "../pages/Productos";
-import ProductosInterno from "../pages/ProductosInterno";
-import ListaPlacas from "../pages/ListaPlacas";
-import Proveedores from "../pages/Proveedores";
-import PedidosProveedor from "../pages/PedidosProveedor";
-import GeneradorMueble3D from "../pages/GeneradorMueble3D.jsx";
-import CotizadorMarcos from "../pages/CotizadorMarcos.jsx";
-import CotizadorCortes from "../pages/CotizadorCortes.jsx";
-import UserManagement from "../pages/UserManagement.jsx";
-import TurneroSettings from "../pages/TurneroSettings.jsx";
-import ChatInterno from "../pages/ChatInterno.jsx";
-import FormularioClientes from "../pages/FormularioClientes.jsx";
-import EncuestasCupones from "../pages/EncuestasCupones.jsx";
-import VentasMensuales from "../pages/VentasMensuales.jsx";
-import MercadoLibre from "../pages/MercadoLibre.jsx";
-import Estadisticas from "../pages/Estadisticas.jsx";
-
-import NotasPedidoGuardadas from "../pages/NotasPedidoGuardadas";
-import NotasPedidoPendientes from "../pages/NotasPedidoPendientes";
-import NotasPedidoDeposito from "../pages/NotasPedidoDeposito";
-import PresupuestosGenerar from "../pages/PresupuestosGenerar";
-import PresupuestosEnviar from "../pages/PresupuestosEnviar";
-import PresupuestosGuardadas from "../pages/PresupuestosGuardadas";
-import PresupuestosProveedorEspecial from "../pages/PresupuestosProveedorEspecial";
 import ProtectedRoute from "./ProtectedRoute";
 import { getDefaultHomeByRole, getUserRole } from "../services/auth";
 
+const WaConversations = lazy(() => import("../pages/WaConversations"));
+const WaFAQs = lazy(() => import("../pages/WaFAQs"));
+const WaStats = lazy(() => import("../pages/WaStats"));
+const WaSettings = lazy(() => import("../pages/WaSettings"));
+const WaQuickReplies = lazy(() => import("../pages/WaQuickReplies"));
+const WaBroadcast = lazy(() => import("../pages/WaBroadcast"));
+const WaBudgetRequests = lazy(() => import("../pages/WaBudgetRequests"));
+const WaInbox = lazy(() => import("../pages/WaInbox"));
+
+const Login = lazy(() => import("../pages/Login"));
+const Dashboard = lazy(() => import("../pages/Dashboard"));
+const CalendarOperativo = lazy(() => import("../pages/CalendarOperativo"));
+const NotasPedido = lazy(() => import("../pages/NotasPedido"));
+const NotasPedidoListado = lazy(() => import("../pages/NotasPedidoListado"));
+const Productos = lazy(() => import("../pages/Productos"));
+const ProductosInterno = lazy(() => import("../pages/ProductosInterno"));
+const ListaPlacas = lazy(() => import("../pages/ListaPlacas"));
+const Proveedores = lazy(() => import("../pages/Proveedores"));
+const PedidosProveedor = lazy(() => import("../pages/PedidosProveedor"));
+const GeneradorMueble3D = lazy(() => import("../pages/GeneradorMueble3D.jsx"));
+const CotizadorMarcos = lazy(() => import("../pages/CotizadorMarcos.jsx"));
+const CotizadorCortes = lazy(() => import("../pages/CotizadorCortes.jsx"));
+const UserManagement = lazy(() => import("../pages/UserManagement.jsx"));
+const TurneroSettings = lazy(() => import("../pages/TurneroSettings.jsx"));
+const ChatInterno = lazy(() => import("../pages/ChatInterno.jsx"));
+const FormularioClientes = lazy(() => import("../pages/FormularioClientes.jsx"));
+const EncuestasCupones = lazy(() => import("../pages/EncuestasCupones.jsx"));
+const VentasMensuales = lazy(() => import("../pages/VentasMensuales.jsx"));
+const MercadoLibre = lazy(() => import("../pages/MercadoLibre.jsx"));
+const Estadisticas = lazy(() => import("../pages/Estadisticas.jsx"));
+
+const NotasPedidoGuardadas = lazy(() => import("../pages/NotasPedidoGuardadas"));
+const NotasPedidoPendientes = lazy(() => import("../pages/NotasPedidoPendientes"));
+const NotasPedidoDeposito = lazy(() => import("../pages/NotasPedidoDeposito"));
+const PresupuestosGenerar = lazy(() => import("../pages/PresupuestosGenerar"));
+const PresupuestosEnviar = lazy(() => import("../pages/PresupuestosEnviar"));
+const PresupuestosGuardadas = lazy(() => import("../pages/PresupuestosGuardadas"));
+const PresupuestosProveedorEspecial = lazy(() => import("../pages/PresupuestosProveedorEspecial"));
+
+function lazyPage(element) {
+  return <Suspense fallback={<div className="route-loading">Cargando modulo...</div>}>{element}</Suspense>;
+}
+
 export const router = createBrowserRouter([
-  { path: "/login", element: <Login /> },
-  { path: "/formulario-clientes", element: <FormularioClientes /> },
-  { path: "/cupones-independencia", element: <FormularioClientes defaultBranch="independencia" /> },
-  { path: "/cupones-luro", element: <FormularioClientes defaultBranch="luro" /> },
+  { path: "/login", element: lazyPage(<Login />) },
+  { path: "/formulario-clientes", element: lazyPage(<FormularioClientes />) },
+  { path: "/cupones-independencia", element: lazyPage(<FormularioClientes defaultBranch="independencia" />) },
+  { path: "/cupones-luro", element: lazyPage(<FormularioClientes defaultBranch="luro" />) },
   {
     path: "/",
     element: (

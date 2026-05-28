@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { getAuth, logout } from "../services/auth";
 import ChatInternoWidget from "../features/chat/components/ChatInternoWidget";
@@ -761,7 +761,9 @@ export default function AppLayout() {
 
       <main className="app-main">
         <div className="app-mainInner">
-          <Outlet />
+          <Suspense fallback={<div className="route-loading">Cargando modulo...</div>}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
 
