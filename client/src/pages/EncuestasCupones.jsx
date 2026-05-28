@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { API_URL } from "../services/http";
-import { getEncuestas, lookupCoupon, validateCoupon } from "../services/encuestas";
+import { getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
 const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/";
@@ -60,6 +60,7 @@ export default function EncuestasCupones() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const publicUrl = PUBLIC_FORM_URL;
 
@@ -145,6 +146,35 @@ export default function EncuestasCupones() {
     link.download = "encuestas-sur-maderas.csv";
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  async function handleResetEncuestas() {
+    const confirmed = window.confirm(
+      "Esto borra todos los datos cargados y cupones del formulario. ¿Seguro que queres reiniciarlo?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setIsResetting(true);
+      setError("");
+      await resetEncuestas();
+      setItems([]);
+      setSummary({
+        total: 0,
+        activeCoupons: 0,
+        usedCoupons: 0,
+        expiredCoupons: 0,
+        averageRating: null,
+      });
+      setSelectedCoupon(null);
+      setValidation(null);
+      setCouponCode("");
+    } catch (resetError) {
+      setError(resetError.message || "No se pudieron reiniciar los datos");
+    } finally {
+      setIsResetting(false);
+    }
   }
 
   return (
@@ -282,6 +312,14 @@ export default function EncuestasCupones() {
             </a>
             <button className="config-usersSecondaryButton" type="button" onClick={downloadCsv}>
               Descargar Excel
+            </button>
+            <button
+              className="config-usersSecondaryButton"
+              type="button"
+              onClick={handleResetEncuestas}
+              disabled={isResetting || isLoading || items.length === 0}
+            >
+              {isResetting ? "Reiniciando..." : "Reiniciar datos"}
             </button>
           </div>
         </div>

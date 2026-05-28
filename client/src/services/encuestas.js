@@ -30,6 +30,20 @@ export async function getEncuestas() {
   return data;
 }
 
+export async function resetEncuestas() {
+  const response = await apiFetch(`${API_URL}/api/encuestas`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "No se pudieron reiniciar los datos");
+  }
+
+  return data;
+}
+
 export async function validateCoupon(couponCode) {
   const response = await apiFetch(`${API_URL}/api/encuestas/cupones/validar`, {
     method: "POST",

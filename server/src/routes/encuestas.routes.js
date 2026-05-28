@@ -212,6 +212,20 @@ router.get("/", requireAuth, requireRole("admin", "taller", "ventas"), async (_r
   }
 });
 
+router.delete("/", requireAuth, requireRole("admin"), async (_req, res) => {
+  try {
+    const result = await EncuestaCliente.deleteMany({});
+
+    return res.json({
+      message: "Datos del formulario reiniciados correctamente",
+      deletedCount: result.deletedCount || 0,
+    });
+  } catch (error) {
+    console.error("Error reiniciando encuestas:", error?.message || error);
+    return res.status(500).json({ message: "No se pudieron reiniciar los datos" });
+  }
+});
+
 router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), async (_req, res) => {
   try {
     const encuestas = await EncuestaCliente.find({}).sort({ createdAt: -1 }).lean();
