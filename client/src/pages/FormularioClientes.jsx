@@ -182,6 +182,15 @@ export default function FormularioClientes({ defaultBranch = "" }) {
     }
   }
 
+  function resetFormulario() {
+    setStep(1);
+    setForm({ ...INITIAL_FORM, branch: defaultBranch });
+    setCoupon(null);
+    setSubmittedRating(0);
+    setError("");
+    setIsSubmitting(false);
+  }
+
   function downloadCoupon() {
     if (!coupon?.code) return;
 
@@ -258,6 +267,9 @@ export default function FormularioClientes({ defaultBranch = "" }) {
           <div className="survey-actions">
             <button type="button" className="survey-primary" onClick={downloadCoupon}>
               Descargar cupon
+            </button>
+            <button type="button" className="survey-secondary" onClick={resetFormulario}>
+              Cargar otro cliente
             </button>
             {submittedRating >= 4 ? (
               <a className="survey-secondary" href={GOOGLE_REVIEW_URL} target="_blank" rel="noreferrer">
