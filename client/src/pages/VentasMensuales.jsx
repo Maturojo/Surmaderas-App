@@ -177,6 +177,21 @@ function getWeeklyTotals(items, month) {
   return [...map.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
+function getDailyTotals(items) {
+  const map = new Map();
+  items.forEach((item) => {
+    const key = toInputDate(item.date);
+    if (!key) return;
+
+    const current = map.get(key) || { key, total: 0, commission: 0, count: 0 };
+    current.total += item.total || 0;
+    current.commission += item.commission || 0;
+    current.count += 1;
+    map.set(key, current);
+  });
+  return [...map.values()].sort((a, b) => b.key.localeCompare(a.key));
+}
+
 export default function VentasMensuales({ section = "lista" }) {
   const navigate = useNavigate();
   const [month, setMonth] = useState(currentMonth());
@@ -205,6 +220,7 @@ export default function VentasMensuales({ section = "lista" }) {
 
   const todayKey = toLocalDateKey(new Date());
   const weeklyTotals = useMemo(() => getWeeklyTotals(items, month), [items, month]);
+  const dailyTotals = useMemo(() => getDailyTotals(items), [items]);
   const dailySales = useMemo(() => items.filter((item) => isSameInputDate(item.date, todayKey)), [items, todayKey]);
   const dailySalesTotal = useMemo(() => dailySales.reduce((sum, item) => sum + (item.total || 0), 0), [dailySales]);
   const dailySalesCommission = useMemo(() => dailySales.reduce((sum, item) => sum + (item.commission || 0), 0), [dailySales]);
@@ -617,6 +633,28 @@ export default function VentasMensuales({ section = "lista" }) {
     );
   }
 
+  function renderDays() {
+    return (
+      <div className="config-usersCard">
+        <div className="config-usersCardTitle">Ventas por dia</div>
+        <div className="monthly-salesDaily">
+          {dailyTotals.length === 0 ? <div className="config-usersEmpty">Sin ventas cargadas.</div> : null}
+          {dailyTotals.map((day) => (
+            <article key={day.key}>
+              <div>
+                <span>{formatDate(day.key)}</span>
+                <small>
+                  {day.count} venta{day.count !== 1 ? "s" : ""} - comision {formatMoney(day.commission)}
+                </small>
+              </div>
+              <strong>{formatMoney(day.total)}</strong>
+            </article>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   function renderObjectives() {
     return (
       <div className="monthly-salesTwoCol">
@@ -799,7 +837,10 @@ export default function VentasMensuales({ section = "lista" }) {
           {renderDailySales()}
           <div className="monthly-salesGrid monthly-salesGrid--list">
             {renderSalesTable()}
-            {renderWeeks()}
+            <div className="monthly-salesSide">
+              {renderDays()}
+              {renderWeeks()}
+            </div>
           </div>
         </>
       ) : null}

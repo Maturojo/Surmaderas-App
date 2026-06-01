@@ -2096,7 +2096,8 @@ textarea {
 }
 
 .monthly-salesStats article,
-.monthly-salesWeeks article {
+.monthly-salesWeeks article,
+.monthly-salesDaily article {
   padding: 15px 16px;
   border-radius: 14px;
   background: #ffffff;
@@ -2134,7 +2135,8 @@ textarea {
 }
 
 .monthly-salesStats span,
-.monthly-salesWeeks span {
+.monthly-salesWeeks span,
+.monthly-salesDaily span {
   display: block;
   color: var(--sm-muted);
   font-size: 12px;
@@ -2217,25 +2219,43 @@ textarea {
   margin-top: 10px;
 }
 
-.monthly-salesWeeks {
+.monthly-salesWeeks,
+.monthly-salesDaily {
   display: grid;
   gap: 10px;
   margin-top: 16px;
 }
 
 .monthly-salesWeeks strong,
-.monthly-salesWeeks small {
+.monthly-salesWeeks small,
+.monthly-salesDaily strong,
+.monthly-salesDaily small {
   display: block;
   margin-top: 5px;
 }
 
-.monthly-salesWeeks strong {
+.monthly-salesWeeks strong,
+.monthly-salesDaily strong {
   color: var(--sm-navy);
   font-size: 20px;
 }
 
-.monthly-salesWeeks small {
+.monthly-salesWeeks small,
+.monthly-salesDaily small {
   color: var(--sm-muted);
+}
+
+.monthly-salesDaily article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.monthly-salesDaily strong {
+  margin-top: 0;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .monthly-salesTable {
