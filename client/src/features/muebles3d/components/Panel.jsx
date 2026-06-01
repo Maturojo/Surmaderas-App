@@ -1,22 +1,93 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-  TIPOS,
+  CELL_TYPES,
   MATERIALES_POR_PIEZA_DEFAULT,
-  defaultDeskSide,
-  defaultSideBottom,
-  defaultSideTop,
+  TIPOS,
+  createPreset,
+  defaultCell,
+  makeGridKey,
 } from "../constants/defaults";
 import { MATERIALES } from "../constants/materiales";
 import { clampNum } from "../utils/clamp";
 import { downloadDataUrl, exportDespieceCSV, exportDespiecePDFPrint } from "../utils/exportDespiece";
 
+const panel = {
+  width: 420,
+  height: "100vh",
+  overflow: "auto",
+  padding: 14,
+  background: "#f8f7f5",
+  borderRight: "1px solid #e8e5e0",
+};
+
+const section = {
+  padding: 14,
+  border: "1px solid #e8e5e0",
+  borderRadius: 8,
+  background: "#fff",
+  marginBottom: 12,
+};
+
+const label = {
+  display: "block",
+  fontSize: 11,
+  fontWeight: 800,
+  color: "#8b6a4a",
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+  marginBottom: 6,
+};
+
+const input = {
+  width: "100%",
+  minHeight: 40,
+  padding: "8px 10px",
+  borderRadius: 4,
+  border: "1px solid #ded8cf",
+  background: "#fff",
+  color: "#2d241c",
+  outline: "none",
+};
+
+const row2 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 };
+
+function Button({ children, onClick, disabled, tone = "light", title }) {
+  const isDark = tone === "dark";
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        minHeight: 38,
+        padding: "0 12px",
+        borderRadius: 4,
+        border: isDark ? "1px solid #c8603a" : "1px solid #ded8cf",
+        background: isDark ? "#c8603a" : "#fff",
+        color: isDark ? "#fff" : "#2d241c",
+        fontWeight: 800,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function Panel({ m, setM, despiece }) {
-  const materialOptions = useMemo(() => {
-    return Object.entries(MATERIALES).map(([key, cfg]) => ({
-      key,
-      label: cfg?.label || key,
-    }));
-  }, []);
+  const [selectedCell, setSelectedCell] = useState("0-0");
+
+  const materialOptions = useMemo(() => (
+    Object.entries(MATERIALES).map(([key, cfg]) => ({ key, label: cfg?.label || key }))
+  ), []);
+
+  const columnas = m.grid?.columnas?.length ? m.grid.columnas : [{ pct: 100 }];
+  const filas = m.grid?.filas?.length ? m.grid.filas : [{ pct: 100 }];
+  const [selRow, selCol] = selectedCell.split("-").map((n) => Number(n) || 0);
+  const currentCellKey = makeGridKey(Math.min(selRow, filas.length - 1), Math.min(selCol, columnas.length - 1));
+  const currentCell = m.grid?.celdas?.[currentCellKey] || defaultCell();
 
   const setField = (key, value) => setM((prev) => ({ ...prev, [key]: value }));
 
@@ -25,847 +96,401 @@ export function Panel({ m, setM, despiece }) {
     setM((prev) => {
       const next = { ...prev };
       let cur = next;
-      for (let i = 0; i < keys.length - 1; i++) {
-        const k = keys[i];
-        cur[k] = cur[k] ? { ...cur[k] } : {};
-        cur = cur[k];
+      for (let i = 0; i < keys.length - 1; i += 1) {
+        cur[keys[i]] = cur[keys[i]] ? { ...cur[keys[i]] } : {};
+        cur = cur[keys[i]];
       }
       cur[keys[keys.length - 1]] = value;
       return next;
     });
   };
 
-  // ✅ Soporte efectivo (compatibilidad con m.patas.activo)
-  const soporteEffective = m.soporte || (m.patas?.activo ? "patas" : "nada");
+  const setGrid = (grid) => setField("grid", grid);
 
-  const ensureTipoState = (tipo) => {
-    setM((prev) => {
-      const next = { ...prev, tipo };
-
-      next.materialesPorPieza =
-        next.materialesPorPieza || { ...MATERIALES_POR_PIEZA_DEFAULT };
-
-      // soporte global
-      next.soporte = next.soporte || (next.patas?.activo ? "patas" : "nada");
-      next.patas = next.patas || { activo: false, altura: 120 };
-      next.zocalo = next.zocalo || { altura: 80, retiro: 20 };
-
-      if (tipo === "escritorio") {
-        next.escritorio = next.escritorio || {};
-        next.escritorio.traseraModo = next.escritorio.traseraModo || "falda";
-        next.escritorio.fondoAlturaMm = next.escritorio.fondoAlturaMm ?? 0;
-        next.escritorio.cortePorPatas = next.escritorio.cortePorPatas ?? true;
-        next.escritorio.ladoIzq = next.escritorio.ladoIzq || defaultDeskSide();
-        next.escritorio.ladoDer = next.escritorio.ladoDer || defaultDeskSide();
-
-        // ✅ nuevos
-        next.escritorio.tapaVuelo = next.escritorio.tapaVuelo ?? 0;
-        next.escritorio.patasRas = next.escritorio.patasRas ?? false;
-
-        // escritorio suele ir con patas por defecto
-        if (!next.soporte) next.soporte = "patas";
-      }
-
-      if (tipo === "modulo_zonas") {
-        next.zonas = next.zonas || {};
-        next.zonas.altoSuperior = next.zonas.altoSuperior ?? 900;
-        next.zonas.layoutArriba = next.zonas.layoutArriba || "split";
-        next.zonas.layoutAbajo = next.zonas.layoutAbajo || "split";
-
-        next.zonas.arriba = next.zonas.arriba || {};
-        next.zonas.arriba.single = next.zonas.arriba.single || defaultSideTop();
-        next.zonas.arriba.izquierda = next.zonas.arriba.izquierda || defaultSideTop();
-        next.zonas.arriba.derecha = next.zonas.arriba.derecha || defaultSideTop();
-
-        next.zonas.abajo = next.zonas.abajo || {};
-        next.zonas.abajo.single = next.zonas.abajo.single || defaultSideBottom();
-        next.zonas.abajo.izquierda = next.zonas.abajo.izquierda || defaultSideBottom();
-        next.zonas.abajo.derecha = next.zonas.abajo.derecha || defaultSideBottom();
-      }
-
-      return next;
-    });
-  };
-
-  const onExportCSV = () => {
-    exportDespieceCSV({
-      despiece,
-      filenameBase: `despiece_${m.tipo || "mueble"}`,
-    });
-  };
-
-  const onExportPDF = () => {
-    exportDespiecePDFPrint({
-      despiece,
-      titulo: `Despiece - ${m.tipo || "mueble"}`,
-      meta: {
-        Tipo: m.tipo,
-        Material: m.material,
-        Ancho: `${m.ancho} mm`,
-        Alto: `${m.alto} mm`,
-        Profundidad: `${m.profundidad} mm`,
-        Espesor: `${m.espesor} mm`,
+  const setCell = (key, patch) => {
+    setM((prev) => ({
+      ...prev,
+      grid: {
+        ...(prev.grid || {}),
+        celdas: {
+          ...(prev.grid?.celdas || {}),
+          [key]: { ...(prev.grid?.celdas?.[key] || defaultCell()), ...patch },
+        },
       },
-    });
+    }));
   };
 
-  const canShot = !!m.__shotApi;
-
-  const downloadOne = () => {
-    if (!m.__shotApi) return;
-    const dataUrl = m.__shotApi.captureOne?.();
-    if (dataUrl) downloadDataUrl(`mueble_${m.tipo || "vista"}.png`, dataUrl);
-  };
-
-  const downloadViews = () => {
-    if (!m.__shotApi) return;
-    const shots = m.__shotApi.captureViews?.();
-    if (!shots) return;
-    if (shots.front) downloadDataUrl(`mueble_front.png`, shots.front);
-    if (shots.back) downloadDataUrl(`mueble_back.png`, shots.back);
-    if (shots.left) downloadDataUrl(`mueble_left.png`, shots.left);
-    if (shots.right) downloadDataUrl(`mueble_right.png`, shots.right);
-  };
-
-  const sectionStyle = {
-    padding: 12,
-    border: "1px solid #e6e6e6",
-    borderRadius: 12,
-    background: "#fff",
-    marginBottom: 12,
-  };
-
-  const labelStyle = {
-    display: "block",
-    fontSize: 12,
-    color: "#444",
-    marginBottom: 6,
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "10px 10px",
-    borderRadius: 10,
-    border: "1px solid #ddd",
-    outline: "none",
-  };
-
-  const row2 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 };
-
-  const renderSelectMaterial = (value, onChange) => (
-    <select style={inputStyle} value={value} onChange={(e) => onChange(e.target.value)}>
-      {materialOptions.map((o) => (
-        <option key={o.key} value={o.key}>
-          {o.label}
-        </option>
-      ))}
+  const selectMaterial = (value, onChange) => (
+    <select style={input} value={value} onChange={(e) => onChange(e.target.value)}>
+      {materialOptions.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
     </select>
   );
 
-  const mp = m.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT;
-
-  const setMatPieza = (pieza, matKey) => {
+  const setPieceMaterial = (pieza, matKey) => {
     setM((prev) => ({
       ...prev,
       materialesPorPieza: {
-        ...(prev.materialesPorPieza || { ...MATERIALES_POR_PIEZA_DEFAULT }),
+        ...(prev.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT),
         [pieza]: matKey,
       },
     }));
   };
 
-  const renderSideConfig = (sidePath, sideLabel) => {
-    const side = sidePath.split(".").reduce((acc, k) => acc?.[k], m) || defaultDeskSide();
-
-    return (
-      <div style={{ ...sectionStyle, marginBottom: 0 }}>
-        <div style={{ fontWeight: 700, marginBottom: 10 }}>{sideLabel}</div>
-
-        <div style={row2}>
-          <div>
-            <label style={labelStyle}>Activo</label>
-            <select
-              style={inputStyle}
-              value={side.activo ? "si" : "no"}
-              onChange={(e) => setNested(`${sidePath}.activo`, e.target.value === "si")}
-            >
-              <option value="si">Sí</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-
-          <div>
-            <label style={labelStyle}>Ancho (mm)</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={side.ancho ?? 350}
-              onChange={(e) => setNested(`${sidePath}.ancho`, clampNum(e.target.value, 0))}
-            />
-          </div>
-        </div>
-
-        <div style={{ marginTop: 10 }}>
-          <label style={labelStyle}>Tipo</label>
-          <select
-            style={inputStyle}
-            value={side.tipo || "cajonera"}
-            onChange={(e) => setNested(`${sidePath}.tipo`, e.target.value)}
-          >
-            <option value="cajonera">Cajonera</option>
-            <option value="estanteria">Estantería</option>
-            <option value="vacio">Vacío</option>
-          </select>
-        </div>
-
-        {side.tipo === "estanteria" && (
-          <div style={{ marginTop: 10 }}>
-            <label style={labelStyle}>Cantidad de estantes</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={side.estantes ?? 2}
-              onChange={(e) => setNested(`${sidePath}.estantes`, clampNum(e.target.value, 0))}
-            />
-          </div>
-        )}
-
-        {side.tipo === "vacio" && (
-          <div style={{ marginTop: 10 }}>
-            <label style={labelStyle}>Soporte vacío</label>
-            <select
-              style={inputStyle}
-              value={side.soporteVacio || "placa"}
-              onChange={(e) => setNested(`${sidePath}.soporteVacio`, e.target.value)}
-            >
-              <option value="placa">Placa</option>
-              <option value="marco">Marco (2 placas)</option>
-              <option value="patas">Patas</option>
-            </select>
-          </div>
-        )}
-      </div>
-    );
+  const changeTipo = (tipo) => {
+    const preset = createPreset(tipo);
+    setSelectedCell("0-0");
+    setM((prev) => ({
+      ...preset,
+      fondoModo: prev.fondoModo || preset.fondoModo,
+      material: prev.material || preset.material,
+      materialesPorPieza: prev.materialesPorPieza || preset.materialesPorPieza,
+      __shotApi: prev.__shotApi,
+    }));
   };
 
-  const renderCfgBlock = (cfg, onChangeCfg, allowCajonera) => {
-    const tipo = cfg?.tipo || "estanteria";
-    return (
-      <div style={{ ...sectionStyle, marginBottom: 0 }}>
-        <div style={row2}>
-          <div>
-            <label style={labelStyle}>Tipo</label>
-            <select
-              style={inputStyle}
-              value={tipo}
-              onChange={(e) => onChangeCfg({ ...(cfg || {}), tipo: e.target.value })}
-            >
-              <option value="vacio">Vacío</option>
-              <option value="estanteria">Estantería</option>
-              <option value="puertas">Puertas</option>
-              {allowCajonera && <option value="cajonera">Cajonera</option>}
-            </select>
-          </div>
-
-          {tipo === "estanteria" ? (
-            <div>
-              <label style={labelStyle}>Estantes</label>
-              <input
-                style={inputStyle}
-                type="number"
-                value={cfg?.estantes ?? 1}
-                onChange={(e) =>
-                  onChangeCfg({ ...(cfg || {}), estantes: clampNum(e.target.value, 0) })
-                }
-              />
-            </div>
-          ) : (
-            <div />
-          )}
-        </div>
-
-        {tipo === "puertas" && (
-          <div style={{ marginTop: 10, ...row2 }}>
-            <div>
-              <label style={labelStyle}>Activo</label>
-              <select
-                style={inputStyle}
-                value={cfg?.puertas?.activo ? "si" : "no"}
-                onChange={(e) =>
-                  onChangeCfg({
-                    ...(cfg || {}),
-                    puertas: { ...(cfg?.puertas || {}), activo: e.target.value === "si" },
-                  })
-                }
-              >
-                <option value="si">Sí</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Hojas</label>
-              <input
-                style={inputStyle}
-                type="number"
-                value={cfg?.puertas?.hojas ?? 2}
-                onChange={(e) =>
-                  onChangeCfg({
-                    ...(cfg || {}),
-                    puertas: { ...(cfg?.puertas || {}), hojas: clampNum(e.target.value, 1) },
-                  })
-                }
-              />
-            </div>
-          </div>
-        )}
-
-        {allowCajonera && tipo === "cajonera" && (
-          <div style={{ marginTop: 10 }}>
-            <div style={{ fontSize: 12, color: "#555", marginBottom: 8 }}>
-              Cajones (altos mm)
-            </div>
-
-            {Array.isArray(cfg?.cajones) &&
-              cfg.cajones.map((c, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <input
-                    style={inputStyle}
-                    type="number"
-                    value={c.alto ?? 160}
-                    onChange={(e) => {
-                      const cajones = [...cfg.cajones];
-                      cajones[i] = { ...cajones[i], alto: clampNum(e.target.value, 40) };
-                      onChangeCfg({ ...(cfg || {}), cajones });
-                    }}
-                  />
-                  <button
-                    style={{
-                      padding: "10px 10px",
-                      borderRadius: 10,
-                      border: "1px solid #ddd",
-                      background: "#fafafa",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      const cajones = (cfg?.cajones || []).filter((_, idx) => idx !== i);
-                      onChangeCfg({ ...(cfg || {}), cajones });
-                    }}
-                    type="button"
-                  >
-                    Quitar
-                  </button>
-                </div>
-              ))}
-
-            <button
-              style={{
-                width: "100%",
-                padding: "10px 10px",
-                borderRadius: 10,
-                border: "1px solid #ddd",
-                background: "#fafafa",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                const cajones = [...(cfg?.cajones || [{ alto: 160 }, { alto: 160 }, { alto: 220 }])];
-                cajones.push({ alto: 160 });
-                onChangeCfg({ ...(cfg || {}), cajones });
-              }}
-              type="button"
-            >
-              + Agregar cajón
-            </button>
-          </div>
-        )}
-      </div>
-    );
+  const updateAxis = (axis, index, patch) => {
+    const grid = m.grid || createPreset("modulo_libre").grid;
+    const nextAxis = [...(grid[axis] || [])];
+    nextAxis[index] = { ...nextAxis[index], ...patch };
+    setGrid({ ...grid, [axis]: nextAxis });
   };
+
+  const addColumn = () => {
+    const grid = m.grid || createPreset("modulo_libre").grid;
+    const next = [...(grid.columnas || []), { pct: 100 }];
+    setGrid({ ...grid, columnas: next });
+  };
+
+  const addRow = () => {
+    const grid = m.grid || createPreset("modulo_libre").grid;
+    const next = [...(grid.filas || []), { pct: 100 }];
+    setGrid({ ...grid, filas: next });
+  };
+
+  const removeColumn = () => {
+    if (columnas.length <= 1) return;
+    const grid = m.grid || {};
+    setSelectedCell("0-0");
+    setGrid({ ...grid, columnas: columnas.slice(0, -1) });
+  };
+
+  const removeRow = () => {
+    if (filas.length <= 1) return;
+    const grid = m.grid || {};
+    setSelectedCell("0-0");
+    setGrid({ ...grid, filas: filas.slice(0, -1) });
+  };
+
+  const exportCSV = () => exportDespieceCSV({ despiece, filenameBase: `despiece_${m.tipo || "mueble"}` });
+  const exportPDF = () => exportDespiecePDFPrint({
+    despiece,
+    titulo: `Despiece - ${m.tipo || "mueble"}`,
+    meta: {
+      Tipo: m.tipo,
+      Material: m.material,
+      Medidas: `${m.ancho} x ${m.alto} x ${m.profundidad} mm`,
+      Espesor: `${m.espesor} mm`,
+    },
+  });
+  const downloadOne = () => {
+    const dataUrl = m.__shotApi?.captureOne?.();
+    if (dataUrl) downloadDataUrl(`mueble_${m.tipo || "vista"}.png`, dataUrl);
+  };
+
+  const mp = m.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT;
+  const canExport = Array.isArray(despiece) && despiece.length > 0;
 
   return (
-    <div
-      style={{
-        width: 380,
-        height: "100vh",
-        overflow: "auto",
-        padding: 14,
-        background: "#f7f7f7",
-        borderRight: "1px solid #e6e6e6",
-      }}
-    >
-      <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 10 }}>
-        Generador Mueble 3D
+    <div style={panel}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 22, lineHeight: 1, fontWeight: 900, color: "#2d241c" }}>Generador 3D</div>
+        <div style={{ marginTop: 5, fontSize: 12, color: "#766a5c" }}>{despiece.length} piezas calculadas</div>
       </div>
 
-      {/* ===== Tipo + Visual ===== */}
-      <div style={sectionStyle}>
+      <div style={section}>
         <div style={row2}>
           <div>
-            <label style={labelStyle}>Tipo</label>
-            <select
-              style={inputStyle}
-              value={m.tipo || "modulo_zonas"}
-              onChange={(e) => ensureTipoState(e.target.value)}
-            >
-              {TIPOS.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
+            <label style={label}>Tipo de mueble</label>
+            <select style={input} value={m.tipo || "biblioteca"} onChange={(e) => changeTipo(e.target.value)}>
+              {TIPOS.map((tipo) => <option key={tipo.id} value={tipo.id}>{tipo.label}</option>)}
             </select>
           </div>
-
           <div>
-            <label style={labelStyle}>Material (global)</label>
-            {renderSelectMaterial(m.material || "melamina_blanca", (v) => setField("material", v))}
+            <label style={label}>Material global</label>
+            {selectMaterial(m.material || "melamina_blanca", (value) => setField("material", value))}
           </div>
         </div>
-
         <div style={{ marginTop: 10, ...row2 }}>
           <div>
-            <label style={labelStyle}>Fondo</label>
-            <select
-              style={inputStyle}
-              value={m.fondoModo || "habitacion"}
-              onChange={(e) => setField("fondoModo", e.target.value)}
-            >
-              <option value="habitacion">Habitación</option>
+            <label style={label}>Fondo visual</label>
+            <select style={input} value={m.fondoModo || "habitacion"} onChange={(e) => setField("fondoModo", e.target.value)}>
+              <option value="habitacion">Habitacion</option>
               <option value="gris">Gris</option>
               <option value="hdri">HDRI</option>
             </select>
           </div>
-
-          <div />
-        </div>
-      </div>
-
-      {/* ===== Medidas ===== */}
-      <div style={sectionStyle}>
-        <div style={{ fontWeight: 700, marginBottom: 10 }}>Medidas (mm)</div>
-        <div style={row2}>
           <div>
-            <label style={labelStyle}>Ancho</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={m.ancho ?? 800}
-              onChange={(e) => setField("ancho", clampNum(e.target.value, 1))}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Alto</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={m.alto ?? 1800}
-              onChange={(e) => setField("alto", clampNum(e.target.value, 1))}
-            />
-          </div>
-        </div>
-
-        <div style={{ marginTop: 10, ...row2 }}>
-          <div>
-            <label style={labelStyle}>Profundidad</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={m.profundidad ?? 350}
-              onChange={(e) => setField("profundidad", clampNum(e.target.value, 1))}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Espesor</label>
-            <input
-              style={inputStyle}
-              type="number"
-              value={m.espesor ?? 18}
-              onChange={(e) => setField("espesor", clampNum(e.target.value, 1))}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ===== Soporte global ===== */}
-      <div style={sectionStyle}>
-        <div style={{ fontWeight: 700, marginBottom: 10 }}>Soporte</div>
-
-        <div style={row2}>
-          <div>
-            <label style={labelStyle}>Tipo</label>
-            <select
-              style={inputStyle}
-              value={soporteEffective}
-              onChange={(e) => {
-                const v = e.target.value;
-                setField("soporte", v);
-
-                // compatibilidad con patas anteriores
-                if (v === "patas") setNested("patas.activo", true);
-                if (v !== "patas") setNested("patas.activo", false);
-              }}
-            >
-              <option value="patas">Patas</option>
-              <option value="zocalo">Zócalo</option>
-              <option value="nada">Nada</option>
+            <label style={label}>Fondo del mueble</label>
+            <select style={input} value={m.fondoActivo === false ? "no" : "si"} onChange={(e) => setField("fondoActivo", e.target.value === "si")}>
+              <option value="si">Con fondo</option>
+              <option value="no">Sin fondo</option>
             </select>
           </div>
+        </div>
+      </div>
 
+      <div style={section}>
+        <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Medidas generales</div>
+        <div style={row2}>
           <div>
-            <label style={labelStyle}>Altura patas (mm)</label>
+            <label style={label}>Ancho mm</label>
+            <input style={input} type="number" value={m.ancho ?? 1000} onChange={(e) => setField("ancho", clampNum(e.target.value, 1))} />
+          </div>
+          <div>
+            <label style={label}>Alto mm</label>
+            <input style={input} type="number" value={m.alto ?? 1800} onChange={(e) => setField("alto", clampNum(e.target.value, 1))} />
+          </div>
+        </div>
+        <div style={{ marginTop: 10, ...row2 }}>
+          <div>
+            <label style={label}>Profundidad mm</label>
+            <input style={input} type="number" value={m.profundidad ?? 350} onChange={(e) => setField("profundidad", clampNum(e.target.value, 1))} />
+          </div>
+          <div>
+            <label style={label}>Espesor mm</label>
+            <input style={input} type="number" value={m.espesor ?? 18} onChange={(e) => setField("espesor", clampNum(e.target.value, 1))} />
+          </div>
+        </div>
+      </div>
+
+      <div style={section}>
+        <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Materiales por pieza</div>
+        <div style={row2}>
+          <div><label style={label}>Cuerpo</label>{selectMaterial(mp.cuerpo || m.material, (v) => setPieceMaterial("cuerpo", v))}</div>
+          <div><label style={label}>Tapa</label>{selectMaterial(mp.tapa || m.material, (v) => setPieceMaterial("tapa", v))}</div>
+        </div>
+        <div style={{ marginTop: 10, ...row2 }}>
+          <div><label style={label}>Estantes</label>{selectMaterial(mp.estantes || m.material, (v) => setPieceMaterial("estantes", v))}</div>
+          <div><label style={label}>Frentes</label>{selectMaterial(mp.frentes || m.material, (v) => setPieceMaterial("frentes", v))}</div>
+        </div>
+        <div style={{ marginTop: 10, ...row2 }}>
+          <div><label style={label}>Fondo</label>{selectMaterial(mp.fondo || m.material, (v) => setPieceMaterial("fondo", v))}</div>
+          <div><label style={label}>Patas / barral</label>{selectMaterial(mp.patas || "pino", (v) => { setPieceMaterial("patas", v); setPieceMaterial("barral", v); })}</div>
+        </div>
+      </div>
+
+      {m.tipo !== "escritorio" ? (
+        <>
+          <div style={section}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", marginBottom: 10 }}>
+              <div style={{ fontWeight: 900, color: "#2d241c" }}>Estructura editable</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <Button onClick={addColumn}>+ Col</Button>
+                <Button onClick={removeColumn} disabled={columnas.length <= 1}>- Col</Button>
+                <Button onClick={addRow}>+ Fila</Button>
+                <Button onClick={removeRow} disabled={filas.length <= 1}>- Fila</Button>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gap: 8 }}>
+              <div>
+                <label style={label}>Columnas, proporcion visual</label>
+                <div style={{ display: "grid", gap: 6 }}>
+                  {columnas.map((col, index) => (
+                    <div key={`col-${index}`} style={{ display: "grid", gridTemplateColumns: "58px 1fr", gap: 8, alignItems: "center" }}>
+                      <span style={{ fontSize: 12, fontWeight: 800 }}>Col {index + 1}</span>
+                      <input style={input} type="number" value={col.pct ?? 100} onChange={(e) => updateAxis("columnas", index, { pct: clampNum(e.target.value, 1) })} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={label}>Filas, de arriba hacia abajo</label>
+                <div style={{ display: "grid", gap: 6 }}>
+                  {filas.map((fila, index) => (
+                    <div key={`row-${index}`} style={{ display: "grid", gridTemplateColumns: "58px 1fr", gap: 8, alignItems: "center" }}>
+                      <span style={{ fontSize: 12, fontWeight: 800 }}>Fila {index + 1}</span>
+                      <input style={input} type="number" value={fila.pct ?? 100} onChange={(e) => updateAxis("filas", index, { pct: clampNum(e.target.value, 1) })} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12 }}>
+              <label style={label}>Seleccionar celda</label>
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${columnas.length}, minmax(0, 1fr))`, gap: 6 }}>
+                {filas.map((_, row) => columnas.map((__, col) => {
+                  const key = makeGridKey(row, col);
+                  const cfg = m.grid?.celdas?.[key] || defaultCell();
+                  const active = key === currentCellKey;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedCell(key)}
+                      style={{
+                        minHeight: 42,
+                        borderRadius: 4,
+                        border: active ? "2px solid #c8603a" : "1px solid #ded8cf",
+                        background: active ? "#fff4ef" : "#fff",
+                        color: "#2d241c",
+                        fontSize: 11,
+                        fontWeight: 800,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {row + 1}.{col + 1}<br />{CELL_TYPES.find((t) => t.id === cfg.tipo)?.label || cfg.tipo}
+                    </button>
+                  );
+                }))}
+              </div>
+            </div>
+          </div>
+
+          <div style={section}>
+            <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Celda {currentCellKey.replace("-", ".")}</div>
+            <div style={row2}>
+              <div>
+                <label style={label}>Tipo</label>
+                <select style={input} value={currentCell.tipo || "estantes"} onChange={(e) => setCell(currentCellKey, { ...defaultCell(), ...currentCell, tipo: e.target.value })}>
+                  {CELL_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}
+                </select>
+              </div>
+              {currentCell.tipo === "estantes" ? (
+                <div>
+                  <label style={label}>Estantes internos</label>
+                  <input style={input} type="number" value={currentCell.estantes ?? 1} onChange={(e) => setCell(currentCellKey, { estantes: clampNum(e.target.value, 0) })} />
+                </div>
+              ) : currentCell.tipo === "puertas" ? (
+                <div>
+                  <label style={label}>Hojas</label>
+                  <input style={input} type="number" value={currentCell.puertas?.hojas ?? 2} onChange={(e) => setCell(currentCellKey, { puertas: { ...(currentCell.puertas || {}), activo: true, hojas: clampNum(e.target.value, 1) } })} />
+                </div>
+              ) : <div />}
+            </div>
+
+            {currentCell.tipo === "cajones" && (
+              <div style={{ marginTop: 10 }}>
+                <label style={label}>Cajones</label>
+                {(currentCell.cajones || []).map((drawer, index) => (
+                  <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 8, marginBottom: 8 }}>
+                    <input
+                      style={input}
+                      type="number"
+                      value={drawer.alto ?? 160}
+                      onChange={(e) => {
+                        const cajones = [...(currentCell.cajones || [])];
+                        cajones[index] = { ...drawer, alto: clampNum(e.target.value, 40) };
+                        setCell(currentCellKey, { cajones });
+                      }}
+                    />
+                    <Button onClick={() => setCell(currentCellKey, { cajones: (currentCell.cajones || []).filter((_, i) => i !== index) })}>Quitar</Button>
+                  </div>
+                ))}
+                <Button tone="dark" onClick={() => setCell(currentCellKey, { tipo: "cajones", cajones: [...(currentCell.cajones || []), { alto: 160 }] })}>Agregar cajon</Button>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div style={section}>
+          <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Escritorio editable</div>
+          <div style={row2}>
+            <div>
+              <label style={label}>Vuelo tapa mm</label>
+              <input style={input} type="number" value={m.escritorio?.tapaVuelo ?? 0} onChange={(e) => setNested("escritorio.tapaVuelo", clampNum(e.target.value, 0))} />
+            </div>
+            <div>
+              <label style={label}>Falda mm</label>
+              <input style={input} type="number" value={m.escritorio?.falda ?? m.falda ?? 80} onChange={(e) => setNested("escritorio.falda", clampNum(e.target.value, 0))} />
+            </div>
+          </div>
+          {["ladoIzq", "ladoDer"].map((sideKey) => {
+            const side = m.escritorio?.[sideKey] || {};
+            return (
+              <div key={sideKey} style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #eee" }}>
+                <div style={{ fontWeight: 800, marginBottom: 8 }}>{sideKey === "ladoIzq" ? "Modulo izquierdo" : "Modulo derecho"}</div>
+                <div style={row2}>
+                  <div>
+                    <label style={label}>Activo</label>
+                    <select style={input} value={side.activo === false ? "no" : "si"} onChange={(e) => setNested(`escritorio.${sideKey}.activo`, e.target.value === "si")}>
+                      <option value="si">Si</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={label}>Ancho mm</label>
+                    <input style={input} type="number" value={side.ancho ?? 340} onChange={(e) => setNested(`escritorio.${sideKey}.ancho`, clampNum(e.target.value, 0))} />
+                  </div>
+                </div>
+                <div style={{ marginTop: 10, ...row2 }}>
+                  <div>
+                    <label style={label}>Tipo</label>
+                    <select style={input} value={side.tipo || "cajones"} onChange={(e) => setNested(`escritorio.${sideKey}.tipo`, e.target.value)}>
+                      <option value="cajones">Cajones</option>
+                      <option value="estantes">Estantes</option>
+                      <option value="puertas">Puertas</option>
+                      <option value="vacio">Vacio</option>
+                    </select>
+                  </div>
+                  {side.tipo === "estantes" ? (
+                    <div>
+                      <label style={label}>Estantes</label>
+                      <input style={input} type="number" value={side.estantes ?? 2} onChange={(e) => setNested(`escritorio.${sideKey}.estantes`, clampNum(e.target.value, 0))} />
+                    </div>
+                  ) : <div />}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div style={section}>
+        <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Soporte</div>
+        <div style={row2}>
+          <div>
+            <label style={label}>Tipo</label>
+            <select style={input} value={m.soporte || "nada"} onChange={(e) => setField("soporte", e.target.value)}>
+              <option value="nada">Nada</option>
+              <option value="patas">Patas</option>
+              <option value="zocalo">Zocalo</option>
+            </select>
+          </div>
+          <div>
+            <label style={label}>{m.soporte === "zocalo" ? "Altura zocalo" : "Altura patas"} mm</label>
             <input
-              style={inputStyle}
+              style={input}
               type="number"
-              value={m.patas?.altura ?? 120}
-              onChange={(e) => setNested("patas.altura", clampNum(e.target.value, 0))}
-              disabled={soporteEffective !== "patas"}
+              value={m.soporte === "zocalo" ? m.zocalo?.altura ?? 80 : m.patas?.altura ?? 100}
+              onChange={(e) => {
+                if (m.soporte === "zocalo") setNested("zocalo.altura", clampNum(e.target.value, 0));
+                else setNested("patas.altura", clampNum(e.target.value, 0));
+              }}
+              disabled={(m.soporte || "nada") === "nada"}
             />
           </div>
         </div>
-
-        {soporteEffective === "zocalo" && (
-          <div style={{ marginTop: 10, ...row2 }}>
-            <div>
-              <label style={labelStyle}>Altura zócalo (mm)</label>
-              <input
-                style={inputStyle}
-                type="number"
-                value={m.zocalo?.altura ?? 80}
-                onChange={(e) => setNested("zocalo.altura", clampNum(e.target.value, 0))}
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Retiro zócalo (mm)</label>
-              <input
-                style={inputStyle}
-                type="number"
-                value={m.zocalo?.retiro ?? 20}
-                onChange={(e) => setNested("zocalo.retiro", clampNum(e.target.value, 0))}
-              />
-              <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>
-                0 = al ras | mayor a 0 = zócalo metido (vuelo)
-              </div>
-            </div>
+        {m.soporte === "zocalo" && (
+          <div style={{ marginTop: 10 }}>
+            <label style={label}>Retiro zocalo mm</label>
+            <input style={input} type="number" value={m.zocalo?.retiro ?? 20} onChange={(e) => setNested("zocalo.retiro", clampNum(e.target.value, 0))} />
           </div>
         )}
       </div>
 
-      {/* ===== Materiales por pieza ===== */}
-      <div style={sectionStyle}>
-        <div style={{ fontWeight: 700, marginBottom: 10 }}>Materiales por pieza</div>
-
+      <div style={section}>
+        <div style={{ fontWeight: 900, marginBottom: 10, color: "#2d241c" }}>Produccion</div>
         <div style={row2}>
-          <div>
-            <label style={labelStyle}>Cuerpo</label>
-            {renderSelectMaterial(mp.cuerpo || m.material, (v) => setMatPieza("cuerpo", v))}
-          </div>
-          <div>
-            <label style={labelStyle}>Tapa</label>
-            {renderSelectMaterial(mp.tapa || m.material, (v) => setMatPieza("tapa", v))}
-          </div>
+          <Button onClick={exportCSV} disabled={!canExport}>Exportar CSV</Button>
+          <Button onClick={exportPDF} disabled={!canExport}>Exportar PDF</Button>
         </div>
-
         <div style={{ marginTop: 10, ...row2 }}>
-          <div>
-            <label style={labelStyle}>Estantes</label>
-            {renderSelectMaterial(mp.estantes || m.material, (v) => setMatPieza("estantes", v))}
-          </div>
-          <div>
-            <label style={labelStyle}>Frentes</label>
-            {renderSelectMaterial(mp.frentes || m.material, (v) => setMatPieza("frentes", v))}
-          </div>
+          <Button onClick={downloadOne} disabled={!m.__shotApi}>PNG vista</Button>
+          <Button onClick={() => setM(createPreset(m.tipo || "biblioteca"))}>Reset tipo</Button>
         </div>
-
-        <div style={{ marginTop: 10, ...row2 }}>
-          <div>
-            <label style={labelStyle}>Fondo</label>
-            {renderSelectMaterial(mp.fondo || m.material, (v) => setMatPieza("fondo", v))}
-          </div>
-          <div>
-            <label style={labelStyle}>Patas</label>
-            {renderSelectMaterial(mp.patas || "pino", (v) => setMatPieza("patas", v))}
-          </div>
-        </div>
-
-        <div style={{ marginTop: 10 }}>
-          <button
-            type="button"
-            onClick={() => setField("materialesPorPieza", { ...MATERIALES_POR_PIEZA_DEFAULT })}
-            style={{
-              width: "100%",
-              padding: "10px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              cursor: "pointer",
-            }}
-          >
-            Reset materiales por pieza
-          </button>
-        </div>
-      </div>
-
-      {/* ===== Config por tipo ===== */}
-      {m.tipo === "estanteria" && (
-        <div style={sectionStyle}>
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>Estantería</div>
-          <label style={labelStyle}>Cantidad de estantes</label>
-          <input
-            style={inputStyle}
-            type="number"
-            value={m.estantes ?? 4}
-            onChange={(e) => setField("estantes", clampNum(e.target.value, 0))}
-          />
-        </div>
-      )}
-
-      {m.tipo === "escritorio" && (
-        <>
-          <div style={sectionStyle}>
-            <div style={{ fontWeight: 700, marginBottom: 10 }}>Escritorio</div>
-
-            <div style={row2}>
-              <div>
-                <label style={labelStyle}>Trasera</label>
-                <select
-                  style={inputStyle}
-                  value={m.escritorio?.traseraModo || "falda"}
-                  onChange={(e) => setNested("escritorio.traseraModo", e.target.value)}
-                >
-                  <option value="falda">Falda</option>
-                  <option value="fondo">Fondo</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={labelStyle}>Falda (mm)</label>
-                <input
-                  style={inputStyle}
-                  type="number"
-                  value={m.falda ?? 80}
-                  onChange={(e) => setField("falda", clampNum(e.target.value, 0))}
-                  disabled={(m.escritorio?.traseraModo || "falda") !== "falda"}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginTop: 10, ...row2 }}>
-              <div>
-                <label style={labelStyle}>Fondo altura (mm)</label>
-                <input
-                  style={inputStyle}
-                  type="number"
-                  value={m.escritorio?.fondoAlturaMm ?? 0}
-                  onChange={(e) => setNested("escritorio.fondoAlturaMm", clampNum(e.target.value, 0))}
-                  disabled={(m.escritorio?.traseraModo || "falda") !== "fondo"}
-                />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Cortar fondo por patas</label>
-                <select
-                  style={inputStyle}
-                  value={m.escritorio?.cortePorPatas === false ? "no" : "si"}
-                  onChange={(e) => setNested("escritorio.cortePorPatas", e.target.value === "si")}
-                  disabled={(m.escritorio?.traseraModo || "falda") !== "fondo"}
-                >
-                  <option value="si">Sí</option>
-                  <option value="no">No</option>
-                </select>
-              </div>
-            </div>
-
-            {/* ✅ NUEVO: vuelo tapa + patas al ras */}
-            <div style={{ marginTop: 10, ...row2 }}>
-              <div>
-                <label style={labelStyle}>Vuelo tapa (mm)</label>
-                <input
-                  style={inputStyle}
-                  type="number"
-                  value={m.escritorio?.tapaVuelo ?? 0}
-                  onChange={(e) => setNested("escritorio.tapaVuelo", clampNum(e.target.value, 0))}
-                />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Patas al ras</label>
-                <select
-                  style={inputStyle}
-                  value={m.escritorio?.patasRas ? "si" : "no"}
-                  onChange={(e) => setNested("escritorio.patasRas", e.target.value === "si")}
-                >
-                  <option value="no">No (con retiro)</option>
-                  <option value="si">Sí (a ras de tapa)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gap: 12 }}>
-            {renderSideConfig("escritorio.ladoIzq", "Lado izquierdo")}
-            {renderSideConfig("escritorio.ladoDer", "Lado derecho")}
-          </div>
-        </>
-      )}
-
-      {m.tipo === "modulo_zonas" && (
-        <div style={sectionStyle}>
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>Módulo por zonas</div>
-
-          <div style={row2}>
-            <div>
-              <label style={labelStyle}>Alto superior (mm)</label>
-              <input
-                style={inputStyle}
-                type="number"
-                value={m.zonas?.altoSuperior ?? 900}
-                onChange={(e) => setNested("zonas.altoSuperior", clampNum(e.target.value, 0))}
-              />
-            </div>
-            <div />
-          </div>
-
-          <div style={{ marginTop: 10, ...row2 }}>
-            <div>
-              <label style={labelStyle}>Arriba</label>
-              <select
-                style={inputStyle}
-                value={m.zonas?.layoutArriba || "split"}
-                onChange={(e) => setNested("zonas.layoutArriba", e.target.value)}
-              >
-                <option value="split">Izq / Der</option>
-                <option value="single">Un bloque</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Abajo</label>
-              <select
-                style={inputStyle}
-                value={m.zonas?.layoutAbajo || "split"}
-                onChange={(e) => setNested("zonas.layoutAbajo", e.target.value)}
-              >
-                <option value="split">Izq / Der</option>
-                <option value="single">Un bloque</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Arriba */}
-          <div style={{ marginTop: 12, fontWeight: 700, fontSize: 13 }}>Zona superior</div>
-
-          {m.zonas?.layoutArriba === "single" ? (
-            <div style={{ marginTop: 10 }}>
-              {renderCfgBlock(m.zonas?.arriba?.single, (cfg) => setNested("zonas.arriba.single", cfg), false)}
-            </div>
-          ) : (
-            <div style={{ marginTop: 10, display: "grid", gap: 12 }}>
-              {renderCfgBlock(m.zonas?.arriba?.izquierda, (cfg) => setNested("zonas.arriba.izquierda", cfg), false)}
-              {renderCfgBlock(m.zonas?.arriba?.derecha, (cfg) => setNested("zonas.arriba.derecha", cfg), false)}
-            </div>
-          )}
-
-          {/* Abajo */}
-          <div style={{ marginTop: 12, fontWeight: 700, fontSize: 13 }}>Zona inferior</div>
-
-          {m.zonas?.layoutAbajo === "single" ? (
-            <div style={{ marginTop: 10 }}>
-              {renderCfgBlock(m.zonas?.abajo?.single, (cfg) => setNested("zonas.abajo.single", cfg), true)}
-            </div>
-          ) : (
-            <div style={{ marginTop: 10, display: "grid", gap: 12 }}>
-              {renderCfgBlock(m.zonas?.abajo?.izquierda, (cfg) => setNested("zonas.abajo.izquierda", cfg), true)}
-              {renderCfgBlock(m.zonas?.abajo?.derecha, (cfg) => setNested("zonas.abajo.derecha", cfg), true)}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Export / capturas */}
-      <div style={sectionStyle}>
-        <div style={{ fontWeight: 700, marginBottom: 10 }}>Producción</div>
-
-        <div style={row2}>
-          <button
-            type="button"
-            onClick={onExportCSV}
-            disabled={!Array.isArray(despiece) || despiece.length === 0}
-            style={{
-              padding: "10px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              cursor: "pointer",
-              opacity: !Array.isArray(despiece) || despiece.length === 0 ? 0.5 : 1,
-            }}
-          >
-            Exportar CSV
-          </button>
-
-          <button
-            type="button"
-            onClick={onExportPDF}
-            disabled={!Array.isArray(despiece) || despiece.length === 0}
-            style={{
-              padding: "10px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              cursor: "pointer",
-              opacity: !Array.isArray(despiece) || despiece.length === 0 ? 0.5 : 1,
-            }}
-          >
-            Exportar PDF
-          </button>
-        </div>
-
-        <div style={{ marginTop: 10, ...row2 }}>
-          <button
-            type="button"
-            onClick={downloadOne}
-            disabled={!canShot}
-            style={{
-              padding: "10px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              cursor: "pointer",
-              opacity: !canShot ? 0.5 : 1,
-            }}
-          >
-            Descargar PNG
-          </button>
-
-          <button
-            type="button"
-            onClick={downloadViews}
-            disabled={!canShot}
-            style={{
-              padding: "10px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              cursor: "pointer",
-              opacity: !canShot ? 0.5 : 1,
-            }}
-          >
-            PNG 4 vistas
-          </button>
-        </div>
-
-        {!canShot && (
-          <div style={{ marginTop: 10, fontSize: 12, color: "#666" }}>
-            Nota: la captura se habilita cuando el Canvas termina de inicializar.
-          </div>
-        )}
       </div>
     </div>
   );
