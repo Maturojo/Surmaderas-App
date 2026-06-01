@@ -29,6 +29,7 @@ const ALL_MODULES = [
   },
   { key: "marcos", label: "Cotizador de marcos" },
   { key: "cotizador-cortes", label: "Cotizador de cortes" },
+  { key: "cotizador-listones", label: "Cotizador de listones" },
   { key: "productos", label: "Productos" },
   { key: "placas", label: "Placas" },
   { key: "encuestas", label: "Encuestas" },

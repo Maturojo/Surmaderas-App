@@ -27,6 +27,7 @@ const PedidosProveedor = lazy(() => import("../pages/PedidosProveedor"));
 const GeneradorMueble3D = lazy(() => import("../pages/GeneradorMueble3D.jsx"));
 const CotizadorMarcos = lazy(() => import("../pages/CotizadorMarcos.jsx"));
 const CotizadorCortes = lazy(() => import("../pages/CotizadorCortes.jsx"));
+const CotizadorListones = lazy(() => import("../pages/CotizadorListones.jsx"));
 const UserManagement = lazy(() => import("../pages/UserManagement.jsx"));
 const TurneroSettings = lazy(() => import("../pages/TurneroSettings.jsx"));
 const ChatInterno = lazy(() => import("../pages/ChatInterno.jsx"));
@@ -184,6 +185,7 @@ export const router = createBrowserRouter([
       { path: "generador-3d", element: <GeneradorMueble3D /> },
       { path: "marcos", element: <CotizadorMarcos /> },
       { path: "cotizador-cortes", element: <CotizadorCortes /> },
+      { path: "cotizador-listones", element: <CotizadorListones /> },
       {
         path: "encuestas",
         element: (
