@@ -253,7 +253,7 @@ export async function listarNotasPedido(req, res) {
     ].join(" ");
 
     const [items, total] = await Promise.all([
-      NotaPedido.find(filter).select(listSelect).sort({ createdAt: -1 }).skip(skip).limit(l).lean(),
+      NotaPedido.find(filter).select(listSelect).sort({ createdAt: -1 }).allowDiskUse(true).skip(skip).limit(l).lean(),
       NotaPedido.countDocuments(filter),
     ]);
 

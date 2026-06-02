@@ -97,5 +97,8 @@ const NotaPedidoSchema = new mongoose.Schema(
 
 NotaPedidoSchema.index({ "caja.guardada": 1, createdAt: -1 });
 NotaPedidoSchema.index({ "caja.guardada": 1, estadoOperativo: 1, createdAt: -1 });
+NotaPedidoSchema.index({ createdAt: -1 });
+NotaPedidoSchema.index({ estadoOperativo: 1, createdAt: -1 });
+NotaPedidoSchema.index({ "proveedores.proveedorId": 1, createdAt: -1 });
 
 export default mongoose.model("NotaPedido", NotaPedidoSchema);
