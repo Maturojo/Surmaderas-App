@@ -98,7 +98,7 @@ export async function listarCalendario(req, res) {
 
     const [recordatorios, notas] = await Promise.all([
       CalendarReminder.find({ fecha: { $gte: rangeStart, $lte: rangeEnd } }).sort({ fecha: 1, createdAt: 1 }),
-      NotaPedido.find({ entrega: { $gte: rangeStart, $lte: rangeEnd } }).sort({ entrega: 1, createdAt: 1 }).allowDiskUse(true),
+      NotaPedido.find({ entrega: { $gte: rangeStart, $lte: rangeEnd } }),
     ]);
 
     const eventos = [...recordatorios.map(reminderToEvent), ...notas.map(notaToEvent)].sort((a, b) => {
