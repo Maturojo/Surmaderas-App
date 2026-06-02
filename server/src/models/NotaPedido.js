@@ -100,5 +100,6 @@ NotaPedidoSchema.index({ "caja.guardada": 1, estadoOperativo: 1, createdAt: -1 }
 NotaPedidoSchema.index({ createdAt: -1 });
 NotaPedidoSchema.index({ estadoOperativo: 1, createdAt: -1 });
 NotaPedidoSchema.index({ "proveedores.proveedorId": 1, createdAt: -1 });
+NotaPedidoSchema.index({ entrega: 1, createdAt: 1 });
 
 export default mongoose.model("NotaPedido", NotaPedidoSchema);
