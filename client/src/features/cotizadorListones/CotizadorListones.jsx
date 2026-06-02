@@ -56,7 +56,36 @@ function calcularListon(liston, largoCm, cantidad) {
   const metrosCobrados = (varillas * LARGO_VARILLA_CM) / 100;
   const sobranteCm = Math.max(0, varillas * LARGO_VARILLA_CM - largoCm * cantidad);
   const subtotal = metrosCobrados * liston.precioMetro;
-  return { metrosPedidos, varillas, metrosCobrados, sobranteCm, subtotal };
+  return { metrosPedidos, varillas, metrosCobrados, sobranteCm, subtotal, sobranteUsadoCm: 0, sobranteFinalCm: sobranteCm };
+}
+
+function recalcularItemsConSobrantes(items) {
+  const saldosPorListon = new Map();
+
+  return items.map((item) => {
+    const pedidoCm = Math.max(0, parseNumero(item.largo) * parseNumero(item.cantidad));
+    const saldoAnterior = saldosPorListon.get(item.codigo) || 0;
+    const sobranteUsadoCm = Math.min(saldoAnterior, pedidoCm);
+    const pendienteCm = Math.max(0, pedidoCm - sobranteUsadoCm);
+    const varillas = pendienteCm > 0 ? Math.ceil(pendienteCm / LARGO_VARILLA_CM) : 0;
+    const metrosCobrados = (varillas * LARGO_VARILLA_CM) / 100;
+    const sobranteNuevoCm = Math.max(0, varillas * LARGO_VARILLA_CM - pendienteCm);
+    const sobranteFinalCm = Math.max(0, saldoAnterior - sobranteUsadoCm + sobranteNuevoCm);
+    const subtotal = metrosCobrados * Number(item.precioMetro || 0);
+
+    saldosPorListon.set(item.codigo, sobranteFinalCm);
+
+    return {
+      ...item,
+      metrosPedidos: pedidoCm / 100,
+      varillas,
+      metrosCobrados,
+      sobranteUsadoCm,
+      sobranteCm: sobranteFinalCm,
+      sobranteFinalCm,
+      subtotal,
+    };
+  });
 }
 
 let nextId = 1;
@@ -80,9 +109,10 @@ export default function CotizadorListones() {
     [listonCode]
   );
 
-  const total = useMemo(() => items.reduce((acc, item) => acc + item.subtotal, 0), [items]);
-  const totalCortes = useMemo(() => items.reduce((acc, item) => acc + Number(item.cantidad || 0), 0), [items]);
-  const totalVarillas = useMemo(() => items.reduce((acc, item) => acc + Number(item.varillas || 0), 0), [items]);
+  const itemsCalculados = useMemo(() => recalcularItemsConSobrantes(items), [items]);
+  const total = useMemo(() => itemsCalculados.reduce((acc, item) => acc + item.subtotal, 0), [itemsCalculados]);
+  const totalCortes = useMemo(() => itemsCalculados.reduce((acc, item) => acc + Number(item.cantidad || 0), 0), [itemsCalculados]);
+  const totalVarillas = useMemo(() => itemsCalculados.reduce((acc, item) => acc + Number(item.varillas || 0), 0), [itemsCalculados]);
 
   function agregarListon() {
     const largoCm = parseNumero(largo);
@@ -93,7 +123,6 @@ export default function CotizadorListones() {
       return;
     }
 
-    const calculo = calcularListon(listonSeleccionado, largoCm, cantidadValue);
     setItems((prev) => [
       ...prev,
       {
@@ -104,7 +133,6 @@ export default function CotizadorListones() {
         precioMetro: listonSeleccionado.precioMetro,
         largo: largoCm,
         cantidad: cantidadValue,
-        ...calculo,
       },
     ]);
     setLargo("");
@@ -140,7 +168,6 @@ export default function CotizadorListones() {
       return;
     }
 
-    const calculo = calcularListon(liston, largoCm, cantidadValue);
     setItems((prev) => prev.map((item) => (
       item.id === editandoId
         ? {
@@ -151,7 +178,6 @@ export default function CotizadorListones() {
             precioMetro: liston.precioMetro,
             largo: largoCm,
             cantidad: cantidadValue,
-            ...calculo,
           }
         : item
     )));
@@ -172,13 +198,14 @@ export default function CotizadorListones() {
     return [
       "Cotizacion de listones - Sur Maderas",
       "",
-      ...items.flatMap((item, index) => [
+      ...itemsCalculados.flatMap((item, index) => [
         `Item ${index + 1}`,
         `Liston: ${item.codigo} - ${item.nombre}`,
         `Cortes: ${item.cantidad} de ${item.largo} cm`,
         `Pedido real: ${formatARS(item.metrosPedidos)} m`,
+        `Sobrante usado: ${formatARS(item.sobranteUsadoCm).replace(",00", "")} cm`,
         `Se cobra: ${item.varillas} varilla(s) completa(s) / ${formatARS(item.metrosCobrados)} m`,
-        `Sobrante estimado: ${formatARS(item.sobranteCm).replace(",00", "")} cm`,
+        `Sobrante disponible: ${formatARS(item.sobranteFinalCm).replace(",00", "")} cm`,
         `Subtotal: $ ${formatARS(item.subtotal)}`,
         "",
       ]),
@@ -236,10 +263,10 @@ export default function CotizadorListones() {
     doc.text("Cotizacion de listones - Sur Maderas", 14, 18);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Se cobra siempre por varilla completa de 3,05 m.", 14, 26);
+    doc.text("Se cobra por varilla completa de 3,05 m y se aprovecha el sobrante del mismo liston.", 14, 26);
 
-    const headers = ["Cant.", "Liston", "Corte", "Varillas", "Metros cobrados", "Sobrante", "Subtotal"];
-    const colWidths = [18, 74, 28, 24, 34, 28, 34];
+    const headers = ["Cant.", "Liston", "Corte", "Usa sobrante", "Varillas", "Sobrante", "Subtotal"];
+    const colWidths = [18, 74, 28, 30, 24, 28, 34];
     let y = 38;
     let x = 14;
 
@@ -255,7 +282,7 @@ export default function CotizadorListones() {
     doc.setTextColor(0);
     doc.setFont("helvetica", "normal");
 
-    items.forEach((item, index) => {
+    itemsCalculados.forEach((item, index) => {
       if (index % 2 === 0) {
         doc.setFillColor(248, 247, 245);
         doc.rect(14, y, colWidths.reduce((a, b) => a + b, 0), 9, "F");
@@ -265,9 +292,9 @@ export default function CotizadorListones() {
         String(item.cantidad),
         `${item.codigo} - ${item.nombre}`,
         `${item.largo} cm`,
+        `${formatARS(item.sobranteUsadoCm).replace(",00", "")} cm`,
         String(item.varillas),
-        `${formatARS(item.metrosCobrados)} m`,
-        `${formatARS(item.sobranteCm).replace(",00", "")} cm`,
+        `${formatARS(item.sobranteFinalCm).replace(",00", "")} cm`,
         `$ ${formatARS(item.subtotal)}`,
       ].forEach((cell, cellIndex) => {
         doc.text(cell, x + colWidths[cellIndex] / 2, y + 6.2, { align: "center", maxWidth: colWidths[cellIndex] - 2 });
@@ -291,7 +318,18 @@ export default function CotizadorListones() {
   }
 
   const preview = listonSeleccionado && parseNumero(largo) > 0 && parseNumero(cantidad) > 0
-    ? calcularListon(listonSeleccionado, parseNumero(largo), parseNumero(cantidad))
+    ? recalcularItemsConSobrantes([
+        ...items,
+        {
+          id: "preview",
+          codigo: listonSeleccionado.codigo,
+          nombre: listonSeleccionado.nombre,
+          seccion: listonSeleccionado.seccion,
+          precioMetro: listonSeleccionado.precioMetro,
+          largo: parseNumero(largo),
+          cantidad: parseNumero(cantidad),
+        },
+      ]).at(-1)
     : null;
 
   return (
@@ -300,7 +338,7 @@ export default function CotizadorListones() {
         <div className="cc-kicker">Herramienta de precios</div>
         <h1 className="cc-title">Cotizador de listones</h1>
         <p className="cc-copy">
-          Carga cortes de liston por cantidad y largo. El precio se calcula siempre por varilla completa de 3,05 m.
+          Carga cortes de liston por cantidad y largo. El precio se calcula por varilla completa de 3,05 m y aprovecha el sobrante anterior cuando es el mismo liston.
         </p>
       </div>
 
@@ -335,7 +373,7 @@ export default function CotizadorListones() {
             <span className="cc-stepNum">02</span>
             <span className="cc-stepLabel">Ingresa los cortes</span>
           </div>
-          <p className="cc-nota">Ejemplo: 6 cortes de 50 cm se cobran como 1 varilla completa de 305 cm.</p>
+          <p className="cc-nota">Ejemplo: 6 cortes de 50 cm dejan 5 cm. Si el proximo corte es del mismo liston, se usan esos 5 cm antes de cobrar otra varilla.</p>
           <div className="cc-grid">
             <div className="cc-field">
               <label className="cc-fieldLabel">Largo de cada corte (cm)</label>
@@ -354,7 +392,7 @@ export default function CotizadorListones() {
               <input
                 className="cc-input cc-input--readonly"
                 readOnly
-                value={preview ? `${preview.varillas} varilla(s) / $ ${formatARS(preview.subtotal)}` : ""}
+                value={preview ? `${preview.varillas} varilla(s) / usa ${formatARS(preview.sobranteUsadoCm).replace(",00", "")} cm / $ ${formatARS(preview.subtotal)}` : ""}
                 placeholder="Calcula al completar"
               />
             </div>
@@ -376,6 +414,7 @@ export default function CotizadorListones() {
                   <th>Liston</th>
                   <th>Corte</th>
                   <th>Pedido</th>
+                  <th>Usa sobrante</th>
                   <th>Varillas</th>
                   <th>Sobrante</th>
                   <th>Subtotal</th>
@@ -384,13 +423,25 @@ export default function CotizadorListones() {
               </thead>
               <tbody>
                 {items.length === 0 ? (
-                  <tr><td colSpan={9} className="cc-emptyRow">Todavia no agregaste listones</td></tr>
+                  <tr><td colSpan={10} className="cc-emptyRow">Todavia no agregaste listones</td></tr>
                 ) : (
-                  items.map((item) => {
+                  itemsCalculados.map((item) => {
                     const isEditing = editandoId === item.id;
                     const listonEditado = LISTONES.find((liston) => liston.codigo === editado.listonCode);
                     const previewEdit = isEditing && listonEditado && parseNumero(editado.largo) > 0 && parseNumero(editado.cantidad) > 0
-                      ? calcularListon(listonEditado, parseNumero(editado.largo), parseNumero(editado.cantidad))
+                      ? recalcularItemsConSobrantes(items.map((baseItem) => (
+                          baseItem.id === item.id
+                            ? {
+                                ...baseItem,
+                                codigo: listonEditado.codigo,
+                                nombre: listonEditado.nombre,
+                                seccion: listonEditado.seccion,
+                                precioMetro: listonEditado.precioMetro,
+                                largo: parseNumero(editado.largo),
+                                cantidad: parseNumero(editado.cantidad),
+                              }
+                            : baseItem
+                        ))).find((baseItem) => baseItem.id === item.id)
                       : null;
 
                     return (
@@ -410,8 +461,9 @@ export default function CotizadorListones() {
                             </td>
                             <td><input type="number" className="cc-tableInput cc-tableInput--short" value={editado.largo} onChange={(e) => setEditado((actual) => ({ ...actual, largo: e.target.value }))} /></td>
                             <td>{previewEdit ? `${formatARS(previewEdit.metrosPedidos)} m` : "-"}</td>
+                            <td>{previewEdit ? `${formatARS(previewEdit.sobranteUsadoCm).replace(",00", "")} cm` : "-"}</td>
                             <td>{previewEdit ? `${previewEdit.varillas} / ${formatARS(previewEdit.metrosCobrados)} m` : "-"}</td>
-                            <td>{previewEdit ? `${formatARS(previewEdit.sobranteCm).replace(",00", "")} cm` : "-"}</td>
+                            <td>{previewEdit ? `${formatARS(previewEdit.sobranteFinalCm).replace(",00", "")} cm` : "-"}</td>
                             <td>{previewEdit ? `$ ${formatARS(previewEdit.subtotal)}` : "-"}</td>
                             <td className="cc-noprint">
                               <div className="cc-rowActions">
@@ -426,8 +478,9 @@ export default function CotizadorListones() {
                             <td>{item.codigo} - {item.nombre}</td>
                             <td>{item.largo} cm</td>
                             <td>{formatARS(item.metrosPedidos)} m</td>
+                            <td>{formatARS(item.sobranteUsadoCm).replace(",00", "")} cm</td>
                             <td>{item.varillas} / {formatARS(item.metrosCobrados)} m</td>
-                            <td>{formatARS(item.sobranteCm).replace(",00", "")} cm</td>
+                            <td>{formatARS(item.sobranteFinalCm).replace(",00", "")} cm</td>
                             <td>$ {formatARS(item.subtotal)}</td>
                             <td className="cc-noprint">
                               <button type="button" className="cc-rowBtn" onClick={() => iniciarEdicion(item)}>Editar</button>
@@ -445,6 +498,7 @@ export default function CotizadorListones() {
                   <th>{formatARS(totalVarillas).replace(",00", "")} varillas</th>
                   <th>Total</th>
                   <th>$ {formatARS(total)}</th>
+                  <th className="cc-noprint" />
                 </tr>
               </tfoot>
             </table>
