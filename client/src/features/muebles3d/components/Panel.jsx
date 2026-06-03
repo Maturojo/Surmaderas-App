@@ -223,7 +223,8 @@ export function Panel({ m, setM, despiece }) {
         <div style={{ marginTop: 10, ...row2 }}>
           <div>
             <label style={label}>Fondo visual</label>
-            <select style={input} value={m.fondoModo || "habitacion"} onChange={(e) => setField("fondoModo", e.target.value)}>
+            <select style={input} value={m.fondoModo || "estudio"} onChange={(e) => setField("fondoModo", e.target.value)}>
+              <option value="estudio">Estudio</option>
               <option value="habitacion">Habitacion</option>
               <option value="gris">Gris</option>
               <option value="hdri">HDRI</option>

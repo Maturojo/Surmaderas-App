@@ -5,7 +5,7 @@ export function Piece({ size, position, materialProps }) {
     <mesh position={position} castShadow receiveShadow>
       <boxGeometry args={size} />
       <meshPhysicalMaterial {...materialProps} />
-      <Edges color="#111" />
+      <Edges color="#3a332a" threshold={20} />
     </mesh>
   );
 }

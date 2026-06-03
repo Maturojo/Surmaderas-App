@@ -3,7 +3,8 @@ import { jsPDF } from "jspdf";
 import "../../css/cotizador-cortes.css";
 import { trackModuleUsage } from "../../services/estadisticas";
 
-const LARGO_VARILLA_CM = 305;
+const LARGO_VARILLA_CM = 300;
+const MIN_SOBRANTE_CM = 0.001;
 
 const LISTONES = [
   { codigo: "30105", nombre: "LISTON 1/2 X 1/2", precioMetro: 403, seccion: "13 x 13 mm" },
@@ -50,30 +51,72 @@ function parseNumero(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function calcularListon(liston, largoCm, cantidad) {
-  const metrosPedidos = (largoCm * cantidad) / 100;
-  const varillas = Math.max(1, Math.ceil((largoCm * cantidad) / LARGO_VARILLA_CM));
-  const metrosCobrados = (varillas * LARGO_VARILLA_CM) / 100;
-  const sobranteCm = Math.max(0, varillas * LARGO_VARILLA_CM - largoCm * cantidad);
-  const subtotal = metrosCobrados * liston.precioMetro;
-  return { metrosPedidos, varillas, metrosCobrados, sobranteCm, subtotal, sobranteUsadoCm: 0, sobranteFinalCm: sobranteCm };
+function formatCm(value) {
+  return formatARS(value).replace(",00", "");
+}
+
+function getSobranteCm(sobrante) {
+  if (typeof sobrante === "number") return sobrante;
+  return Number(sobrante?.cm || 0);
+}
+
+function normalizarSobrantes(sobrantes) {
+  return sobrantes
+    .map((sobrante, index) => (
+      typeof sobrante === "number"
+        ? { id: index + 1, cm: sobrante }
+        : { id: Number(sobrante?.id || index + 1), cm: getSobranteCm(sobrante) }
+    ))
+    .filter((sobrante) => sobrante.cm > MIN_SOBRANTE_CM)
+    .sort((a, b) => a.cm - b.cm);
+}
+
+function sumarSobrantes(sobrantes) {
+  return sobrantes.reduce((acc, sobrante) => acc + getSobranteCm(sobrante), 0);
+}
+
+function formatearSobrantes(sobrantes) {
+  const activos = normalizarSobrantes(sobrantes || []).sort((a, b) => a.id - b.id);
+  if (activos.length === 0) return "0 cm";
+  return activos.map((sobrante) => `V${sobrante.id}: ${formatCm(sobrante.cm)} cm`).join(" | ");
 }
 
 function recalcularItemsConSobrantes(items) {
-  const saldosPorListon = new Map();
+  const sobrantesPorListon = new Map();
+  const nextVarillaIdPorListon = new Map();
 
   return items.map((item) => {
-    const pedidoCm = Math.max(0, parseNumero(item.largo) * parseNumero(item.cantidad));
-    const saldoAnterior = saldosPorListon.get(item.codigo) || 0;
-    const sobranteUsadoCm = Math.min(saldoAnterior, pedidoCm);
-    const pendienteCm = Math.max(0, pedidoCm - sobranteUsadoCm);
-    const varillas = pendienteCm > 0 ? Math.ceil(pendienteCm / LARGO_VARILLA_CM) : 0;
+    const largoCm = Math.max(0, parseNumero(item.largo));
+    const cantidadCortes = Math.max(0, Math.floor(parseNumero(item.cantidad)));
+    const pedidoCm = largoCm * cantidadCortes;
+    let sobrantes = [...(sobrantesPorListon.get(item.codigo) || [])];
+    let sobranteUsadoCm = 0;
+    let varillas = 0;
+
+    for (let i = 0; i < cantidadCortes; i += 1) {
+      sobrantes = normalizarSobrantes(sobrantes);
+      const sobranteIndex = sobrantes.findIndex((sobrante) => sobrante.cm + MIN_SOBRANTE_CM >= largoCm);
+
+      if (sobranteIndex >= 0) {
+        sobrantes[sobranteIndex] = {
+          ...sobrantes[sobranteIndex],
+          cm: Math.max(0, sobrantes[sobranteIndex].cm - largoCm),
+        };
+        sobranteUsadoCm += largoCm;
+      } else {
+        const nextVarillaId = nextVarillaIdPorListon.get(item.codigo) || 1;
+        varillas += 1;
+        sobrantes.push({ id: nextVarillaId, cm: Math.max(0, LARGO_VARILLA_CM - largoCm) });
+        nextVarillaIdPorListon.set(item.codigo, nextVarillaId + 1);
+      }
+    }
+
+    const sobrantesFinalesCm = normalizarSobrantes(sobrantes);
+    const sobranteFinalCm = sumarSobrantes(sobrantesFinalesCm);
     const metrosCobrados = (varillas * LARGO_VARILLA_CM) / 100;
-    const sobranteNuevoCm = Math.max(0, varillas * LARGO_VARILLA_CM - pendienteCm);
-    const sobranteFinalCm = Math.max(0, saldoAnterior - sobranteUsadoCm + sobranteNuevoCm);
     const subtotal = metrosCobrados * Number(item.precioMetro || 0);
 
-    saldosPorListon.set(item.codigo, sobranteFinalCm);
+    sobrantesPorListon.set(item.codigo, sobrantesFinalesCm);
 
     return {
       ...item,
@@ -83,6 +126,7 @@ function recalcularItemsConSobrantes(items) {
       sobranteUsadoCm,
       sobranteCm: sobranteFinalCm,
       sobranteFinalCm,
+      sobrantesFinalesCm,
       subtotal,
     };
   });
@@ -120,6 +164,16 @@ export default function CotizadorListones() {
 
     if (!listonSeleccionado || largoCm <= 0 || cantidadValue <= 0) {
       alert("Selecciona un liston e ingresa largo de corte y cantidad.");
+      return;
+    }
+
+    if (!Number.isInteger(cantidadValue)) {
+      alert("La cantidad de cortes tiene que ser un numero entero.");
+      return;
+    }
+
+    if (largoCm > LARGO_VARILLA_CM) {
+      alert(`El corte no puede superar el largo de la varilla completa (${LARGO_VARILLA_CM} cm).`);
       return;
     }
 
@@ -168,6 +222,16 @@ export default function CotizadorListones() {
       return;
     }
 
+    if (!Number.isInteger(cantidadValue)) {
+      alert("La cantidad de cortes tiene que ser un numero entero.");
+      return;
+    }
+
+    if (largoCm > LARGO_VARILLA_CM) {
+      alert(`El corte no puede superar el largo de la varilla completa (${LARGO_VARILLA_CM} cm).`);
+      return;
+    }
+
     setItems((prev) => prev.map((item) => (
       item.id === editandoId
         ? {
@@ -203,14 +267,14 @@ export default function CotizadorListones() {
         `Liston: ${item.codigo} - ${item.nombre}`,
         `Cortes: ${item.cantidad} de ${item.largo} cm`,
         `Pedido real: ${formatARS(item.metrosPedidos)} m`,
-        `Sobrante usado: ${formatARS(item.sobranteUsadoCm).replace(",00", "")} cm`,
+        `Sobrante usado: ${formatCm(item.sobranteUsadoCm)} cm`,
         `Se cobra: ${item.varillas} varilla(s) completa(s) / ${formatARS(item.metrosCobrados)} m`,
-        `Sobrante disponible: ${formatARS(item.sobranteFinalCm).replace(",00", "")} cm`,
+        `Sobrantes por varilla: ${formatearSobrantes(item.sobrantesFinalesCm)}`,
         `Subtotal: $ ${formatARS(item.subtotal)}`,
         "",
       ]),
-      `Total cortes: ${formatARS(totalCortes).replace(",00", "")}`,
-      `Total varillas: ${formatARS(totalVarillas).replace(",00", "")}`,
+      `Total cortes: ${formatCm(totalCortes)}`,
+      `Total varillas: ${formatCm(totalVarillas)}`,
       `Total: $ ${formatARS(total)}`,
     ].join("\n");
   }
@@ -241,7 +305,7 @@ export default function CotizadorListones() {
         .cc-noprint{display:none;}
       </style></head><body>
         <h2>Cotizacion de listones - Sur Maderas</h2>
-        <p style="color:#666;font-size:12px;">Se cobra siempre por varilla completa de 3,05 m.</p>
+        <p style="color:#666;font-size:12px;">Se cobra por varilla completa de 3 m. Los sobrantes se consideran piezas separadas y no se unen entre si.</p>
         <br>${contenido}
       </body></html>`
     );
@@ -263,10 +327,10 @@ export default function CotizadorListones() {
     doc.text("Cotizacion de listones - Sur Maderas", 14, 18);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Se cobra por varilla completa de 3,05 m y se aprovecha el sobrante del mismo liston.", 14, 26);
+    doc.text("Se cobra por varilla completa de 3 m. Los sobrantes del mismo liston se usan solo si el corte completo entra.", 14, 26);
 
-    const headers = ["Cant.", "Liston", "Corte", "Usa sobrante", "Varillas", "Sobrante", "Subtotal"];
-    const colWidths = [18, 74, 28, 30, 24, 28, 34];
+    const headers = ["Cant.", "Liston", "Corte", "Usa sobrante", "Varillas", "Sobrantes por varilla", "Subtotal"];
+    const colWidths = [18, 64, 26, 30, 22, 50, 34];
     let y = 38;
     let x = 14;
 
@@ -292,9 +356,9 @@ export default function CotizadorListones() {
         String(item.cantidad),
         `${item.codigo} - ${item.nombre}`,
         `${item.largo} cm`,
-        `${formatARS(item.sobranteUsadoCm).replace(",00", "")} cm`,
+        `${formatCm(item.sobranteUsadoCm)} cm`,
         String(item.varillas),
-        `${formatARS(item.sobranteFinalCm).replace(",00", "")} cm`,
+        formatearSobrantes(item.sobrantesFinalesCm),
         `$ ${formatARS(item.subtotal)}`,
       ].forEach((cell, cellIndex) => {
         doc.text(cell, x + colWidths[cellIndex] / 2, y + 6.2, { align: "center", maxWidth: colWidths[cellIndex] - 2 });
@@ -317,7 +381,7 @@ export default function CotizadorListones() {
     window.open(`https://wa.me/5492234383262?text=${msg}`, "_blank");
   }
 
-  const preview = listonSeleccionado && parseNumero(largo) > 0 && parseNumero(cantidad) > 0
+  const preview = listonSeleccionado && parseNumero(largo) > 0 && parseNumero(largo) <= LARGO_VARILLA_CM && parseNumero(cantidad) > 0 && Number.isInteger(parseNumero(cantidad))
     ? recalcularItemsConSobrantes([
         ...items,
         {
@@ -338,7 +402,7 @@ export default function CotizadorListones() {
         <div className="cc-kicker">Herramienta de precios</div>
         <h1 className="cc-title">Cotizador de listones</h1>
         <p className="cc-copy">
-          Carga cortes de liston por cantidad y largo. El precio se calcula por varilla completa de 3,05 m y aprovecha el sobrante anterior cuando es el mismo liston.
+          Carga cortes de liston por cantidad y largo. El precio se calcula por varilla completa de 3 m y aprovecha sobrantes del mismo liston solo cuando el corte entra completo en esa pieza.
         </p>
       </div>
 
@@ -373,7 +437,7 @@ export default function CotizadorListones() {
             <span className="cc-stepNum">02</span>
             <span className="cc-stepLabel">Ingresa los cortes</span>
           </div>
-          <p className="cc-nota">Ejemplo: 6 cortes de 50 cm dejan 5 cm. Si el proximo corte es del mismo liston, se usan esos 5 cm antes de cobrar otra varilla.</p>
+          <p className="cc-nota">Ejemplo: si quedan 40 cm de una varilla y el proximo corte es de 90 cm, no se pueden unir piezas: se cobra otra varilla y quedan dos sobrantes separados.</p>
           <div className="cc-grid">
             <div className="cc-field">
               <label className="cc-fieldLabel">Largo de cada corte (cm)</label>
@@ -392,7 +456,7 @@ export default function CotizadorListones() {
               <input
                 className="cc-input cc-input--readonly"
                 readOnly
-                value={preview ? `${preview.varillas} varilla(s) / usa ${formatARS(preview.sobranteUsadoCm).replace(",00", "")} cm / $ ${formatARS(preview.subtotal)}` : ""}
+                value={preview ? `${preview.varillas} varilla(s) / usa ${formatCm(preview.sobranteUsadoCm)} cm / $ ${formatARS(preview.subtotal)}` : ""}
                 placeholder="Calcula al completar"
               />
             </div>
@@ -416,7 +480,7 @@ export default function CotizadorListones() {
                   <th>Pedido</th>
                   <th>Usa sobrante</th>
                   <th>Varillas</th>
-                  <th>Sobrante</th>
+                  <th>Sobrantes por varilla</th>
                   <th>Subtotal</th>
                   <th className="cc-noprint">Acciones</th>
                 </tr>
@@ -428,7 +492,7 @@ export default function CotizadorListones() {
                   itemsCalculados.map((item) => {
                     const isEditing = editandoId === item.id;
                     const listonEditado = LISTONES.find((liston) => liston.codigo === editado.listonCode);
-                    const previewEdit = isEditing && listonEditado && parseNumero(editado.largo) > 0 && parseNumero(editado.cantidad) > 0
+                    const previewEdit = isEditing && listonEditado && parseNumero(editado.largo) > 0 && parseNumero(editado.largo) <= LARGO_VARILLA_CM && parseNumero(editado.cantidad) > 0 && Number.isInteger(parseNumero(editado.cantidad))
                       ? recalcularItemsConSobrantes(items.map((baseItem) => (
                           baseItem.id === item.id
                             ? {
@@ -461,9 +525,9 @@ export default function CotizadorListones() {
                             </td>
                             <td><input type="number" className="cc-tableInput cc-tableInput--short" value={editado.largo} onChange={(e) => setEditado((actual) => ({ ...actual, largo: e.target.value }))} /></td>
                             <td>{previewEdit ? `${formatARS(previewEdit.metrosPedidos)} m` : "-"}</td>
-                            <td>{previewEdit ? `${formatARS(previewEdit.sobranteUsadoCm).replace(",00", "")} cm` : "-"}</td>
+                            <td>{previewEdit ? `${formatCm(previewEdit.sobranteUsadoCm)} cm` : "-"}</td>
                             <td>{previewEdit ? `${previewEdit.varillas} / ${formatARS(previewEdit.metrosCobrados)} m` : "-"}</td>
-                            <td>{previewEdit ? `${formatARS(previewEdit.sobranteFinalCm).replace(",00", "")} cm` : "-"}</td>
+                            <td>{previewEdit ? formatearSobrantes(previewEdit.sobrantesFinalesCm) : "-"}</td>
                             <td>{previewEdit ? `$ ${formatARS(previewEdit.subtotal)}` : "-"}</td>
                             <td className="cc-noprint">
                               <div className="cc-rowActions">
@@ -478,9 +542,9 @@ export default function CotizadorListones() {
                             <td>{item.codigo} - {item.nombre}</td>
                             <td>{item.largo} cm</td>
                             <td>{formatARS(item.metrosPedidos)} m</td>
-                            <td>{formatARS(item.sobranteUsadoCm).replace(",00", "")} cm</td>
+                            <td>{formatCm(item.sobranteUsadoCm)} cm</td>
                             <td>{item.varillas} / {formatARS(item.metrosCobrados)} m</td>
-                            <td>{formatARS(item.sobranteFinalCm).replace(",00", "")} cm</td>
+                            <td>{formatearSobrantes(item.sobrantesFinalesCm)}</td>
                             <td>$ {formatARS(item.subtotal)}</td>
                             <td className="cc-noprint">
                               <button type="button" className="cc-rowBtn" onClick={() => iniciarEdicion(item)}>Editar</button>
@@ -495,7 +559,7 @@ export default function CotizadorListones() {
               <tfoot>
                 <tr>
                   <th colSpan={6} className="cc-noprint" />
-                  <th>{formatARS(totalVarillas).replace(",00", "")} varillas</th>
+                  <th>{formatCm(totalVarillas)} varillas</th>
                   <th>Total</th>
                   <th>$ {formatARS(total)}</th>
                   <th className="cc-noprint" />
@@ -524,7 +588,7 @@ export default function CotizadorListones() {
         </section>
 
         <div className="cc-totalStrip">
-          <span className="cc-totalLabel">{formatARS(totalCortes).replace(",00", "")} cortes / {formatARS(totalVarillas).replace(",00", "")} varillas</span>
+          <span className="cc-totalLabel">{formatCm(totalCortes)} cortes / {formatCm(totalVarillas)} varillas</span>
           <span className="cc-totalAmount">$ {formatARS(total)}</span>
         </div>
       </div>

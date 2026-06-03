@@ -14,8 +14,32 @@ import { MATERIALES, WHITE_PIXEL, NORMAL_NEUTRAL } from "../constants/materiales
 
 import { Mueble3D } from "./Mueble3D";
 
+function StudioBackdrop({ zCenter }) {
+  return (
+    <group>
+      <color attach="background" args={["#eef0ee"]} />
+      <fog attach="fog" args={["#eef0ee", 16, 42]} />
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.015, zCenter + 1.5]} receiveShadow>
+        <planeGeometry args={[34, 30]} />
+        <meshStandardMaterial color="#d9d7d1" roughness={0.82} metalness={0} />
+      </mesh>
+
+      <mesh position={[0, 6.5, zCenter - 4.8]} receiveShadow>
+        <planeGeometry args={[34, 13]} />
+        <meshStandardMaterial color="#f4f2ee" roughness={0.9} metalness={0} />
+      </mesh>
+
+      <mesh position={[0, 0.045, zCenter - 4.78]} receiveShadow>
+        <boxGeometry args={[34, 0.09, 0.08]} />
+        <meshStandardMaterial color="#c7c2b8" roughness={0.76} metalness={0} />
+      </mesh>
+    </group>
+  );
+}
+
 export function Scene({ m }) {
-  const fondoModo = m.fondoModo || "habitacion"; // hdri | habitacion | gris
+  const fondoModo = m.fondoModo || "estudio"; // estudio | hdri | habitacion | gris
 
   // --- materiales ---
   const usedMatKeys = useMemo(() => {
@@ -106,21 +130,23 @@ export function Scene({ m }) {
 
   return (
     <>
+      {fondoModo === "estudio" ? <StudioBackdrop zCenter={zCenter} /> : null}
       {fondoModo === "gris" ? <color attach="background" args={["#e9eaec"]} /> : null}
       {fondoModo === "habitacion" ? <primitive attach="background" object={roomBackground} /> : null}
 
       <Environment preset="warehouse" background={fondoModo === "hdri"} />
 
-      <ambientLight intensity={0.18} />
+      <hemisphereLight intensity={0.32} color="#ffffff" groundColor="#d6cec2" />
+      <ambientLight intensity={0.14} />
 
       <directionalLight
-        position={[8, 12, 6]}
-        intensity={1.35}
+        position={[8, 12, 7]}
+        intensity={1.45}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      <directionalLight position={[-6, 6, -8]} intensity={0.35} />
+      <directionalLight position={[-7, 6, -5]} intensity={0.42} />
 
       {/* PISO INVISIBLE SOLO PARA SOMBRA (sensación de apoyo) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>

@@ -32,9 +32,11 @@ export function usePieces(m) {
     const despiece = [];
     const materialesPorPieza = m.materialesPorPieza || MATERIALES_POR_PIEZA_DEFAULT;
 
-    const addBox = (size, pos, pieza = "cuerpo", nombre = "") => {
+    const addBox = (size, pos, pieza = "cuerpo", nombre = "", options = {}) => {
       if (size.some((n) => !Number.isFinite(n) || n <= 0)) return;
       pieces.push({ size, pos, pieza, nombre });
+      if (options.despiece === false) return;
+
       const materialKey = materialesPorPieza[pieza] || m.material;
       const norm = normalizeDimsMm(size[0] / s, size[1] / s, size[2] / s, m.espesor);
       despiece.push({
@@ -95,11 +97,37 @@ export function usePieces(m) {
 
       if (type === "cajones") {
         const cajones = Array.isArray(cfg?.cajones) && cfg.cajones.length ? cfg.cajones : [{ alto: 160 }, { alto: 160 }];
+        const drawerGap = Math.min(4 * s, Math.max(height * 0.035, 2 * s));
+        const frontInset = Math.min(6 * s, Math.max(innerW * 0.025, 2 * s));
+        const handleW = Math.max(Math.min(innerW * 0.42, 180 * s), Math.min(innerW * 0.64, 80 * s));
+        const handleH = Math.max(10 * s, T * 0.45);
+        const handleD = Math.max(10 * s, doorT * 0.7);
         let yStack = yBottom;
         cajones.forEach((drawer, i) => {
           const h = Math.min(clampNum(drawer?.alto, 40) * s, Math.max(yBottom + height - yStack, 0));
           if (h <= T) return;
-          addBox([innerW, h, doorT], [x, yStack + h / 2, zFront], "frentes", `${label} frente cajon ${i + 1}`);
+          const visibleH = Math.max(h - drawerGap, T);
+          const frontW = Math.max(innerW - frontInset * 2, T);
+          const frontY = yStack + drawerGap / 2 + visibleH / 2;
+          addBox([frontW, visibleH, doorT], [x, frontY, zFront], "frentes", `${label} frente cajon ${i + 1}`);
+
+          addBox(
+            [Math.min(handleW, frontW * 0.72), handleH, handleD],
+            [x, frontY + Math.max(visibleH * 0.22, handleH * 1.7), zFront + doorT * 0.68],
+            "tiradores",
+            `${label} tirador cajon ${i + 1}`,
+            { despiece: false }
+          );
+
+          if (i > 0) {
+            addBox(
+              [frontW, Math.max(2 * s, T * 0.12), Math.max(2 * s, doorT * 0.16)],
+              [x, yStack + drawerGap * 0.45, zFront + doorT * 0.58],
+              "tiradores",
+              `${label} sombra entre cajones ${i}`,
+              { despiece: false }
+            );
+          }
           yStack += h;
         });
       }

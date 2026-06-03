@@ -69,7 +69,7 @@ export const MATERIALES = {
   melamina_negra: {
     label: "Melamina negra",
     color: "#ffffff",
-    roughness: 3.25,
+    roughness: 0.46,
     metalness: 0.02,
     mapUrl: "/materiales/melamina_negra.jpg",
     normalUrl: "",

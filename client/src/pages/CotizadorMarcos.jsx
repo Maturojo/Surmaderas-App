@@ -5,7 +5,7 @@ import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { trackModuleUsage } from "../services/estadisticas";
 
-const BAR_LENGTH_METERS = 3.05;
+const BAR_LENGTH_METERS = 3;
 const HALF_BAR_LENGTH_METERS = BAR_LENGTH_METERS / 2;
 const MM_TO_SCENE = 0.0015;
 const PASPARTU_PRICE_M2 = 19640;
@@ -1606,7 +1606,7 @@ export default function CotizadorMarcos() {
               Cotizador de marcos
             </h1>
             <p style={{ margin: 0, maxWidth: 760, color: "#6f655a", fontSize: 15 }}>
-              Calcula varillas de 3.05 m, vidrio, fondo, cables y armado según medida. Esta base ya quedó lista para
+              Calcula varillas de 3 m, vidrio, fondo, cables y armado según medida. Esta base ya quedó lista para
               que después carguemos tus perfiles reales y afinemos el render 3D según cada tipo de varilla.
             </p>
           </div>
@@ -2013,7 +2013,7 @@ export default function CotizadorMarcos() {
               <div style={{ fontSize: 24, fontWeight: 900, color: "#2d241c" }}>Resumen del calculo</div>
               {mostrarDetalleResumen ? (
                 <div style={{ fontSize: 14, color: "#6f665d" }}>
-                  El subtotal de varilla toma barras completas de 3.05 m para que tengas una compra realista.
+                  El subtotal de varilla toma barras completas de 3 m para que tengas una compra realista.
                 </div>
               ) : null}
             </div>

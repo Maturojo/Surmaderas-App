@@ -24,6 +24,7 @@ export const MATERIALES_POR_PIEZA_DEFAULT = {
   fondo: "melamina_blanca",
   patas: "pino",
   barral: "metal_cromado",
+  tiradores: "metal_cromado",
 };
 
 function cell(tipo, extra = {}) {
@@ -48,7 +49,7 @@ export function createPreset(tipo = "biblioteca") {
   const base = {
     tipo,
     material: "melamina_blanca",
-    fondoModo: "habitacion",
+    fondoModo: "estudio",
     ancho: 1000,
     alto: 1800,
     profundidad: 350,
@@ -125,8 +126,8 @@ export function createPreset(tipo = "biblioteca") {
       ancho: 1800,
       alto: 520,
       profundidad: 420,
-      soporte: "patas",
-      patas: { activo: true, altura: 120 },
+      soporte: "zocalo",
+      zocalo: { altura: 55, retiro: 35 },
       grid: grid([{ pct: 30 }, { pct: 40 }, { pct: 30 }], [{ pct: 45 }, { pct: 55 }], {
         [makeGridKey(0, 0)]: cell("vacio"),
         [makeGridKey(0, 1)]: cell("vacio"),
@@ -144,8 +145,8 @@ export function createPreset(tipo = "biblioteca") {
       ancho: 450,
       alto: 600,
       profundidad: 380,
-      soporte: "patas",
-      patas: { activo: true, altura: 90 },
+      soporte: "zocalo",
+      zocalo: { altura: 45, retiro: 28 },
       grid: grid([{ pct: 100 }], [{ pct: 35 }, { pct: 65 }], {
         [makeGridKey(0, 0)]: cell("vacio"),
         [makeGridKey(1, 0)]: cell("cajones", { cajones: [{ alto: 150 }, { alto: 170 }] }),
@@ -159,8 +160,8 @@ export function createPreset(tipo = "biblioteca") {
       ancho: 1300,
       alto: 760,
       profundidad: 600,
-      soporte: "patas",
-      patas: { activo: true, altura: 40 },
+      soporte: "nada",
+      patas: { activo: false, altura: 80 },
       fondoActivo: false,
       grid: grid([{ pct: 100 }], [{ pct: 100 }], { [makeGridKey(0, 0)]: cell("vacio") }),
     };
