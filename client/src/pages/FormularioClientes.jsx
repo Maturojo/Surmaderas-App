@@ -39,7 +39,8 @@ const GOOGLE_REVIEW_URL =
 const GOOGLE_REVIEW_TEXT =
   "\u00a1Gracias por tu tiempo! Como ultimo, tu opinion en Google nos seria de gran ayuda. Es un solo Click\ud83d\udc47\ud83c\udffc";
 
-const FORM_BUILD_VERSION = "donweb-v12";
+const FORM_BUILD_VERSION = "donweb-v13";
+const STAR_SYMBOL = "\u2605";
 
 const LOGO_URL = logoSurMaderas;
 
@@ -263,7 +264,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
               <div className="survey-googleStars" aria-label={`${submittedRating} de 5 estrellas`}>
                 {[1, 2, 3, 4, 5].map((value) => (
                   <span key={value} className={submittedRating >= value ? "active" : ""}>
-                    â˜…
+                    {STAR_SYMBOL}
                   </span>
                 ))}
               </div>
@@ -312,7 +313,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
               <div className="survey-googleStars" aria-label={`${submittedRating} de 5 estrellas`}>
                 {[1, 2, 3, 4, 5].map((value) => (
                   <span key={value} className={submittedRating >= value ? "active" : ""}>
-                    ★
+                    {STAR_SYMBOL}
                   </span>
                 ))}
               </div>
@@ -445,7 +446,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             <h1>Solo 4 preguntas rapidas</h1>
 
             <div className="survey-block">
-              <span className="survey-label">¿Como calificarias tu experiencia de hoy?</span>
+              <span className="survey-label">Como calificarias tu experiencia de hoy?</span>
               <div className="survey-stars">
                 {[1, 2, 3, 4, 5].map((value) => (
                   <button
@@ -455,7 +456,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
                     onClick={() => setForm((current) => ({ ...current, rating: value }))}
                     aria-label={`${value} estrellas`}
                   >
-                    ★
+                    {STAR_SYMBOL}
                   </button>
                 ))}
               </div>

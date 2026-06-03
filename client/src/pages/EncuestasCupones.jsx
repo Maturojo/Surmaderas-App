@@ -3,7 +3,7 @@ import { API_URL } from "../services/http";
 import { getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
-const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=12";
+const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=13";
 
 const LABELS = {
   consumidor_final: "Consumidor Final",
