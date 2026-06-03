@@ -51,6 +51,7 @@ function lazyPage(element) {
 
 export const router = createBrowserRouter([
   { path: "/login", element: lazyPage(<Login />) },
+  { path: "/formulario", element: lazyPage(<FormularioClientes />) },
   { path: "/formulario-clientes", element: lazyPage(<FormularioClientes />) },
   { path: "/cupones-independencia", element: lazyPage(<FormularioClientes defaultBranch="independencia" />) },
   { path: "/cupones-luro", element: lazyPage(<FormularioClientes defaultBranch="luro" />) },

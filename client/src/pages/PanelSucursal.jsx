@@ -147,7 +147,7 @@ export default function PanelSucursal({ branch }) {
             className="panel-redeemBox__input"
             value={lookupCode}
             onChange={(e) => { setLookupCode(e.target.value.toUpperCase()); setLookupResult(null); }}
-            placeholder="Código de cupón — ej: SM15-ABC123"
+            placeholder="Codigo de cupon - ej: AAA111"
             autoComplete="off"
           />
           <button className="panel-redeemBox__btn" type="submit">

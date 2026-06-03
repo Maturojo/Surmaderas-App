@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { submitEncuesta } from "../services/encuestas";
+import logoSurMaderas from "../assets/logo-sur-maderas.png";
 
 const IVA_OPTIONS = [
   { value: "consumidor_final", label: "Consumidor Final", taxIdType: "DNI" },
@@ -9,11 +10,14 @@ const IVA_OPTIONS = [
 ];
 
 const PRODUCT_OPTIONS = [
-  { value: "madera", label: "Madera" },
-  { value: "tableros", label: "Tableros" },
-  { value: "herrajes", label: "Herrajes" },
-  { value: "servicio_corte", label: "Servicio de corte" },
-  { value: "otro", label: "Otro" },
+  { value: "cortes_placas", label: "Cortes a medida/placas" },
+  { value: "listoneria", label: "Listoneria" },
+  { value: "molduras", label: "Molduras" },
+  { value: "marcos_portarretratos", label: "Marcos y/o portarretratos" },
+  { value: "productos_muebles_estandar", label: "Productos/muebles estandar" },
+  { value: "proyecto_producto_medida", label: "Proyecto/producto a medida" },
+  { value: "productos_varios", label: "Productos varios (cajas, bandejas, baules)" },
+  { value: "artistica", label: "Artistica" },
 ];
 
 const REASON_OPTIONS = [
@@ -30,7 +34,14 @@ const BRANCH_OPTIONS = [
 ];
 
 const GOOGLE_REVIEW_URL =
-  "https://www.google.com/search?q=Sur+Maderas+Av.+Pedro+Luro+5020+Mar+del+Plata&ludocid=6929333339189515291#lrd=0x0:0x6029eff574a9941b,3,,,,";
+  "https://g.page/r/CRuUqXT17ylgEAE/review";
+
+const GOOGLE_REVIEW_TEXT =
+  "\u00a1Gracias por tu tiempo! Como ultimo, tu opinion en Google nos seria de gran ayuda. Es un solo Click\ud83d\udc47\ud83c\udffc";
+
+const FORM_BUILD_VERSION = "donweb-v12";
+
+const LOGO_URL = logoSurMaderas;
 
 const INITIAL_FORM = {
   fullName: "",
@@ -175,6 +186,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
       });
       setSubmittedRating(form.rating || 0);
       setCoupon(data.coupon);
+      setStep(3);
     } catch (submitError) {
       setError(submitError.message || "No se pudo enviar el formulario.");
     } finally {
@@ -219,7 +231,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
     ctx.lineWidth = 8;
     ctx.strokeRect(190, 570, 700, 170);
     ctx.fillStyle = "#070614";
-    ctx.font = "bold 62px Arial";
+    ctx.font = "bold 48px Arial";
     ctx.fillText(coupon.code, 540, 675);
     ctx.font = "28px Arial";
     ctx.fillText("Mostra este cupon en caja para validarlo", 540, 820);
@@ -230,19 +242,63 @@ export default function FormularioClientes({ defaultBranch = "" }) {
     link.click();
   }
 
-  if (coupon) {
-    const googleReviewText =
-      submittedRating >= 4
-        ? "Si tambien queres publicar tu experiencia en Google, nos ayuda mucho."
-        : "Tu comentario ya quedo cargado para que podamos mejorar.";
-
+  if (coupon && step === 3) {
     return (
-      <main className="survey-public">
+      <main className="survey-public" data-build-version={FORM_BUILD_VERSION}>
         <section className="survey-card survey-done">
-          <img className="survey-logo" src="/logo-sur-maderas.png" alt="Sur Maderas" />
-          <div className="survey-kicker">Formulario completo</div>
+          <img className="survey-logo" src={LOGO_URL} alt="Sur Maderas" />
+          <div className="survey-progress" aria-label="Paso 3 de 4">
+            <span className="active" />
+            <span className="active" />
+            <span className="active" />
+            <span />
+          </div>
+          <div className="survey-kicker">Paso 3 de 4</div>
+          <h1>Un ultimo paso</h1>
+          <p>{GOOGLE_REVIEW_TEXT}</p>
+
+          {submittedRating ? (
+            <div className="survey-googleReview">
+              <span>Tu experiencia de hoy</span>
+              <div className="survey-googleStars" aria-label={`${submittedRating} de 5 estrellas`}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <span key={value} className={submittedRating >= value ? "active" : ""}>
+                    â˜…
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="survey-actions">
+            <a
+              className="survey-primary"
+              href={GOOGLE_REVIEW_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setStep(4)}
+            >
+              Publicar en Google
+            </a>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (coupon && step === 4) {
+    return (
+      <main className="survey-public" data-build-version={FORM_BUILD_VERSION}>
+        <section className="survey-card survey-done">
+          <img className="survey-logo" src={LOGO_URL} alt="Sur Maderas" />
+          <div className="survey-progress" aria-label="Paso 4 de 4">
+            <span className="active" />
+            <span className="active" />
+            <span className="active" />
+            <span className="active" />
+          </div>
+          <div className="survey-kicker">Paso 4 de 4</div>
           <h1>Listo, tu 15% ya esta activo.</h1>
-          <p>Guardamos tus datos y generamos el cupon para tu proxima compra.</p>
 
           <div className="survey-coupon">
             <span>Numero de cupon</span>
@@ -260,22 +316,16 @@ export default function FormularioClientes({ defaultBranch = "" }) {
                   </span>
                 ))}
               </div>
-              <p>{googleReviewText}</p>
             </div>
           ) : null}
 
           <div className="survey-actions">
-            <button type="button" className="survey-primary" onClick={downloadCoupon}>
+            <button type="button" className="survey-secondary" onClick={downloadCoupon}>
               Descargar cupon
             </button>
             <button type="button" className="survey-secondary" onClick={resetFormulario}>
               Cargar otro cliente
             </button>
-            {submittedRating >= 4 ? (
-              <a className="survey-secondary" href={GOOGLE_REVIEW_URL} target="_blank" rel="noreferrer">
-                Publicar en Google
-              </a>
-            ) : null}
           </div>
         </section>
       </main>
@@ -283,17 +333,19 @@ export default function FormularioClientes({ defaultBranch = "" }) {
   }
 
   return (
-    <main className="survey-public">
+    <main className="survey-public" data-build-version={FORM_BUILD_VERSION}>
       <section className="survey-card">
-        <img className="survey-logo" src="/logo-sur-maderas.png" alt="Sur Maderas" />
-        <div className="survey-progress" aria-label={`Paso ${step} de 2`}>
+        <img className="survey-logo" src={LOGO_URL} alt="Sur Maderas" />
+        <div className="survey-progress" aria-label={`Paso ${step} de 4`}>
           <span className={step >= 1 ? "active" : ""} />
           <span className={step >= 2 ? "active" : ""} />
+          <span className={step >= 3 ? "active" : ""} />
+          <span className={step >= 4 ? "active" : ""} />
         </div>
 
         {step === 1 ? (
           <form onSubmit={goToStepTwo}>
-            <div className="survey-kicker">Paso 1 de 2</div>
+            <div className="survey-kicker">Paso 1 de 4</div>
             <h1>Completa tus datos y activa tu 15% OFF</h1>
 
             <label className="survey-field">
@@ -389,11 +441,11 @@ export default function FormularioClientes({ defaultBranch = "" }) {
           </form>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="survey-kicker">Paso 2 de 2</div>
+            <div className="survey-kicker">Paso 2 de 4</div>
             <h1>Solo 4 preguntas rapidas</h1>
 
             <div className="survey-block">
-              <span className="survey-label">Como calificarias tu experiencia de hoy?</span>
+              <span className="survey-label">¿Como calificarias tu experiencia de hoy?</span>
               <div className="survey-stars">
                 {[1, 2, 3, 4, 5].map((value) => (
                   <button
@@ -410,7 +462,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">Que compraste hoy?</span>
+              <span className="survey-label">¿Que compraste hoy?</span>
               <div className="survey-chips">
                 {PRODUCT_OPTIONS.map((option) => (
                   <button
@@ -431,7 +483,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">Por que nos elegiste hoy? Selecciona hasta 3.</span>
+              <span className="survey-label">¿Que te hizo decidirte por Sur Maderas? Selecciona hasta 3.</span>
               <div className="survey-checks">
                 {REASON_OPTIONS.map((option) => (
                   <label key={option.value}>
@@ -452,27 +504,27 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">Cual es el motor principal de tu compra hoy?</span>
+              <span className="survey-label">¿Cual es el motor principal de tu compra hoy?</span>
               <div className="survey-chips">
                 <button
                   type="button"
                   className={form.purchaseDriver === "emprendimiento" ? "active" : ""}
                   onClick={() => setForm((current) => ({ ...current, purchaseDriver: "emprendimiento" }))}
                 >
-                  Para mi emprendimiento
+                  Para mi emprendimiento/comercio
                 </button>
                 <button
                   type="button"
                   className={form.purchaseDriver === "personal" ? "active" : ""}
                   onClick={() => setForm((current) => ({ ...current, purchaseDriver: "personal" }))}
                 >
-                  Uso personal
+                  Para uso personal (Hobby, arreglo o renovacion personal)
                 </button>
               </div>
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">Volves a elegirnos para tu proximo proyecto?</span>
+              <span className="survey-label">¿Volves a elegirnos para tu proximo proyecto?</span>
               <div className="survey-chips">
                 {[
                   ["seguro", "Seguro"],
@@ -492,7 +544,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             </div>
 
             <label className="survey-field">
-              <span>Algo que podriamos mejorar? Opcional</span>
+              <span>¿Algo que podriamos mejorar? Opcional</span>
               <textarea name="improvement" value={form.improvement} onChange={handleChange} rows="4" />
             </label>
 

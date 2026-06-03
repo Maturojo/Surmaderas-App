@@ -11,7 +11,21 @@ const IVA_TO_TAX_ID = {
   exento: "CUIL",
 };
 
-const PRODUCT_OPTIONS = new Set(["madera", "tableros", "herrajes", "servicio_corte", "otro"]);
+const PRODUCT_OPTIONS = new Set([
+  "madera",
+  "tableros",
+  "herrajes",
+  "servicio_corte",
+  "otro",
+  "cortes_placas",
+  "listoneria",
+  "molduras",
+  "marcos_portarretratos",
+  "productos_muebles_estandar",
+  "proyecto_producto_medida",
+  "productos_varios",
+  "artistica",
+]);
 const REASON_OPTIONS = new Set([
   "lo_necesitaba_ya",
   "ya_los_conozco",
@@ -80,16 +94,106 @@ function escapeCsv(value) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-async function createCouponCode() {
-  for (let attempt = 0; attempt < 8; attempt += 1) {
-    const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
-    const code = `SM15-${randomPart}`;
-    const exists = await EncuestaCliente.exists({ couponCode: code });
+function escapeHtml(value) {
+  return String(value == null ? "" : value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
-    if (!exists) return code;
+function buildEncuestasExportRows(encuestas) {
+  const headers = [
+    "fecha",
+    "nombre",
+    "celular",
+    "mail",
+    "sucursal",
+    "iva",
+    "tipo_documento",
+    "documento",
+    "direccion",
+    "estrellas",
+    "productos",
+    "motivos",
+    "motor_compra",
+    "vuelve",
+    "mejora",
+    "cupon",
+    "cupon_usado",
+    "cupon_vencimiento",
+    "fecha_uso",
+    "usado_por",
+  ];
+
+  const rows = encuestas.map((item) => [
+    item.createdAt?.toISOString?.() || "",
+    item.fullName,
+    item.phone,
+    item.email,
+    item.branch || "",
+    item.ivaCondition,
+    item.taxIdType,
+    item.taxId,
+    item.address,
+    item.rating || "",
+    item.purchasedProducts?.join(" | ") || "",
+    item.choiceReasons?.join(" | ") || "",
+    item.purchaseDriver,
+    item.npsChoice,
+    item.improvement,
+    item.couponCode,
+    item.couponUsed ? "si" : "no",
+    item.couponExpiresAt?.toISOString?.() || "",
+    item.couponUsedAt?.toISOString?.() || "",
+    item.couponUsedBy || "",
+  ]);
+
+  return { headers, rows };
+}
+
+const COUPON_NUMBER_START = 111;
+const COUPON_NUMBER_END = 999;
+const COUPON_NUMBERS_PER_LETTER_BLOCK = COUPON_NUMBER_END - COUPON_NUMBER_START + 1;
+const COUPON_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const COUPON_CODE_REGEX = /^[A-Z]{3}\d{3}$/;
+
+function indexToLetters(index) {
+  const first = Math.floor(index / (COUPON_LETTERS.length * COUPON_LETTERS.length));
+  const second = Math.floor(index / COUPON_LETTERS.length) % COUPON_LETTERS.length;
+  const third = index % COUPON_LETTERS.length;
+
+  return `${COUPON_LETTERS[first]}${COUPON_LETTERS[second]}${COUPON_LETTERS[third]}`;
+}
+
+function sequenceToCouponCode(sequence) {
+  const letterBlock = Math.floor(sequence / COUPON_NUMBERS_PER_LETTER_BLOCK);
+  const number = COUPON_NUMBER_START + (sequence % COUPON_NUMBERS_PER_LETTER_BLOCK);
+  const letters = indexToLetters(letterBlock);
+
+  if (letters.includes("undefined")) return null;
+
+  return `${letters}${number}`;
+}
+
+async function createCouponCode() {
+  const existingCoupons = await EncuestaCliente.find({
+    couponCode: COUPON_CODE_REGEX,
+  })
+    .select("couponCode")
+    .lean();
+
+  const usedCodes = new Set(existingCoupons.map((coupon) => coupon.couponCode));
+  const maxSequence = COUPON_LETTERS.length ** 3 * COUPON_NUMBERS_PER_LETTER_BLOCK;
+
+  for (let sequence = 0; sequence < maxSequence; sequence += 1) {
+    const code = sequenceToCouponCode(sequence);
+    if (!code) break;
+
+    if (!usedCodes.has(code)) return code;
   }
 
-  return `SM15-${Date.now().toString(36).toUpperCase()}`;
+  throw new Error("No quedan codigos de cupon disponibles");
 }
 
 router.post("/", async (req, res) => {
@@ -229,51 +333,7 @@ router.delete("/", requireAuth, requireRole("admin"), async (_req, res) => {
 router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), async (_req, res) => {
   try {
     const encuestas = await EncuestaCliente.find({}).sort({ createdAt: -1 }).lean();
-    const headers = [
-      "fecha",
-      "nombre",
-      "celular",
-      "mail",
-      "sucursal",
-      "iva",
-      "tipo_documento",
-      "documento",
-      "direccion",
-      "estrellas",
-      "productos",
-      "motivos",
-      "motor_compra",
-      "vuelve",
-      "mejora",
-      "cupon",
-      "cupon_usado",
-      "cupon_vencimiento",
-      "fecha_uso",
-      "usado_por",
-    ];
-
-    const rows = encuestas.map((item) => [
-      item.createdAt?.toISOString?.() || "",
-      item.fullName,
-      item.phone,
-      item.email,
-      item.branch || "",
-      item.ivaCondition,
-      item.taxIdType,
-      item.taxId,
-      item.address,
-      item.rating || "",
-      item.purchasedProducts?.join(" | ") || "",
-      item.choiceReasons?.join(" | ") || "",
-      item.purchaseDriver,
-      item.npsChoice,
-      item.improvement,
-      item.couponCode,
-      item.couponUsed ? "si" : "no",
-      item.couponExpiresAt?.toISOString?.() || "",
-      item.couponUsedAt?.toISOString?.() || "",
-      item.couponUsedBy || "",
-    ]);
+    const { headers, rows } = buildEncuestasExportRows(encuestas);
 
     const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(",")).join("\n");
 
@@ -283,6 +343,27 @@ router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), asy
   } catch (error) {
     console.error("Error exportando encuestas:", error?.message || error);
     return res.status(500).json({ message: "No se pudo exportar el listado" });
+  }
+});
+
+router.get("/export/excel", requireAuth, requireRole("admin", "taller", "ventas"), async (_req, res) => {
+  try {
+    const encuestas = await EncuestaCliente.find({}).sort({ createdAt: -1 }).lean();
+    const { headers, rows } = buildEncuestasExportRows(encuestas);
+    const tableRows = [headers, ...rows]
+      .map((row, index) => {
+        const tag = index === 0 ? "th" : "td";
+        return `<tr>${row.map((cell) => `<${tag}>${escapeHtml(cell)}</${tag}>`).join("")}</tr>`;
+      })
+      .join("");
+    const excelHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body><table>${tableRows}</table></body></html>`;
+
+    res.setHeader("Content-Type", "application/vnd.ms-excel; charset=utf-8");
+    res.setHeader("Content-Disposition", "attachment; filename=encuestas-sur-maderas.xls");
+    return res.send(`\uFEFF${excelHtml}`);
+  } catch (error) {
+    console.error("Error exportando Excel de encuestas:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo exportar el Excel" });
   }
 });
 

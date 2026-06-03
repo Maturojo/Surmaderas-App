@@ -3,7 +3,7 @@ import { API_URL } from "../services/http";
 import { getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
-const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/";
+const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=12";
 
 const LABELS = {
   consumidor_final: "Consumidor Final",
@@ -15,13 +15,21 @@ const LABELS = {
   herrajes: "Herrajes",
   servicio_corte: "Servicio de corte",
   otro: "Otro",
+  cortes_placas: "Cortes a medida/placas",
+  listoneria: "Listoneria",
+  molduras: "Molduras",
+  marcos_portarretratos: "Marcos y/o portarretratos",
+  productos_muebles_estandar: "Productos/muebles estandar",
+  proyecto_producto_medida: "Proyecto/producto a medida",
+  productos_varios: "Productos varios (cajas, bandejas, baules)",
+  artistica: "Artistica",
   lo_necesitaba_ya: "Lo necesitaba ya",
   ya_los_conozco: "Ya los conozco / recomendaron",
   me_asesoraron_bien: "Me asesoraron bien",
   precio: "El precio",
   a_medida: "A medida",
-  emprendimiento: "Emprendimiento",
-  personal: "Uso personal",
+  emprendimiento: "Para mi emprendimiento/comercio",
+  personal: "Para uso personal (Hobby, arreglo o renovacion personal)",
   seguro: "Seguro",
   probablemente: "Probablemente",
   no_se: "No se",
@@ -148,6 +156,25 @@ export default function EncuestasCupones() {
     URL.revokeObjectURL(url);
   }
 
+  async function downloadExcel() {
+    const response = await fetch(`${API_URL}/api/encuestas/export/excel`, {
+      headers: authHeaders(),
+    });
+
+    if (!response.ok) {
+      setError("No se pudo descargar el Excel.");
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "encuestas-sur-maderas.xls";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleResetEncuestas() {
     const confirmed = window.confirm(
       "Esto borra todos los datos cargados y cupones del formulario. ¿Seguro que queres reiniciarlo?"
@@ -218,7 +245,7 @@ export default function EncuestasCupones() {
             <input
               value={couponCode}
               onChange={(event) => setCouponCode(event.target.value)}
-              placeholder="SM15-ABC123"
+              placeholder="AAA111"
               required
             />
           </label>
@@ -311,6 +338,9 @@ export default function EncuestasCupones() {
               Abrir formulario
             </a>
             <button className="config-usersSecondaryButton" type="button" onClick={downloadCsv}>
+              Descargar CSV
+            </button>
+            <button className="config-usersSecondaryButton" type="button" onClick={downloadExcel}>
               Descargar Excel
             </button>
             <button
