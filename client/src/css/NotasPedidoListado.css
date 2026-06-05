@@ -269,6 +269,18 @@
   font-size: 11px;
 }
 
+.npl-selectCol {
+  width: 46px;
+  text-align: center;
+}
+
+.npl-selectCol input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sm-accent);
+  cursor: pointer;
+}
+
 .npl-table tr:hover td {
   background: #fbf8f2;
 }
@@ -341,6 +353,26 @@
 .npl-actionsMenu {
   position: relative;
   display: inline-flex;
+}
+
+.npl-bulkBar {
+  max-width: 1180px;
+  margin: 0 auto 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--sm-line);
+  border-radius: 4px;
+  background: #fffdf9;
+  box-shadow: var(--sm-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.npl-bulkBar strong {
+  margin-right: auto;
+  color: #2d241c;
+  font-size: 14px;
 }
 
 /* Pager */
@@ -424,6 +456,12 @@
 }
 
 .npl-actions .npl-btnGhost:last-child {
+  background: #fff4f4;
+  border-color: rgba(181, 84, 84, 0.18);
+  color: #8b2d2d;
+}
+
+.npl-btnGhost--danger {
   background: #fff4f4;
   border-color: rgba(181, 84, 84, 0.18);
   color: #8b2d2d;

@@ -2417,3 +2417,35 @@
   min-width: 38px;
   padding: 0;
 }
+
+.ng-selectCol {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  text-align: center !important;
+}
+
+.ng-selectCol input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sm-accent);
+  cursor: pointer;
+}
+
+.ng-bulkBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--sm-line);
+  border-radius: 8px;
+  background: #fffdf9;
+  box-shadow: var(--sm-shadow);
+}
+
+.ng-bulkBar strong {
+  margin-right: auto;
+  color: #2d241c;
+  font-size: 14px;
+}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { eliminarNotaPedido, guardarCajaNota } from "../../services/notasPedido";
+import { eliminarNotaPedido, eliminarNotasPedido, guardarCajaNota } from "../../services/notasPedido";
 import {
   buildNotaPedidoPrintData,
   copyFileToClipboard,
@@ -46,6 +46,8 @@ import NotaDetalleModal from "./components/NotaDetalleModal";
 export default function NotasPedidoListadoView() {
   const navigate = useNavigate();
   const [flash, setFlash] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const {
     q,
     setQ,
@@ -67,12 +69,18 @@ export default function NotasPedidoListadoView() {
 
   const totalPendientes = data.total || 0;
   const visibles = data.items.length;
+  const selectedCount = selectedIds.size;
 
   useEffect(() => {
     if (!flash) return undefined;
     const t = window.setTimeout(() => setFlash(null), 2600);
     return () => window.clearTimeout(t);
   }, [flash]);
+
+  useEffect(() => {
+    const visibleIds = new Set((data.items || []).map((item) => item?._id).filter(Boolean));
+    setSelectedIds((current) => new Set([...current].filter((id) => visibleIds.has(id))));
+  }, [data.items]);
 
   async function handleGuardarCaja(nota, payload) {
     await guardarCajaNota(nota._id, payload);
@@ -121,6 +129,51 @@ export default function NotasPedidoListadoView() {
     });
   }
 
+  function handleToggleSelect(id, checked) {
+    if (!id) return;
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function handleToggleSelectAll(checked, ids) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      ids.forEach((id) => {
+        if (checked) next.add(id);
+        else next.delete(id);
+      });
+      return next;
+    });
+  }
+
+  async function handleEliminarSeleccionadas() {
+    const ids = [...selectedIds];
+    if (!ids.length || bulkDeleting) return;
+
+    const ok = window.confirm(`Se van a borrar ${ids.length} notas de pedido.`);
+    if (!ok) return;
+
+    setBulkDeleting(true);
+    try {
+      const result = await eliminarNotasPedido(ids);
+      setSelectedIds(new Set());
+      await cargar(page);
+      if (openId && ids.includes(openId)) cerrarDetalle();
+      setFlash({
+        kind: "info",
+        message: `Se borraron ${result?.deletedCount || ids.length} notas del listado.`,
+      });
+    } catch (e) {
+      setFlash({ kind: "info", message: e?.message || "No se pudieron borrar las notas seleccionadas." });
+    } finally {
+      setBulkDeleting(false);
+    }
+  }
+
   function handleEditarNota(nota) {
     if (!nota?._id) return;
     navigate(`/notas-pedido/editar/${nota._id}`);
@@ -156,9 +209,29 @@ export default function NotasPedidoListadoView() {
       {error ? <div className="npl-error">{error}</div> : null}
       {flash ? <div className={`npl-flash npl-flash--${flash.kind}`}>{flash.message}</div> : null}
 
+      {selectedCount ? (
+        <div className="npl-bulkBar">
+          <strong>{selectedCount} seleccionada{selectedCount === 1 ? "" : "s"}</strong>
+          <button className="npl-btnGhost" type="button" onClick={() => setSelectedIds(new Set())}>
+            Limpiar selección
+          </button>
+          <button
+            className="npl-btnGhost npl-btnGhost--danger"
+            type="button"
+            onClick={handleEliminarSeleccionadas}
+            disabled={bulkDeleting}
+          >
+            {bulkDeleting ? "Eliminando..." : "Borrar seleccionadas"}
+          </button>
+        </div>
+      ) : null}
+
       <NotasTable
         items={data.items}
         loading={loading}
+        selectedIds={selectedIds}
+        onToggleSelect={handleToggleSelect}
+        onToggleSelectAll={handleToggleSelectAll}
         onVerDetalle={abrirDetalle}
         onEditar={handleEditarNota}
         onEliminar={handleEliminarNota}

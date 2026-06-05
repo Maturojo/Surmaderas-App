@@ -18,8 +18,21 @@ function getEntregaLabel(value) {
   return String(value);
 }
 
-export default function NotasTable({ items, loading, onVerDetalle, onEditar, onEliminar, onEnviarCliente }) {
+export default function NotasTable({
+  items,
+  loading,
+  selectedIds = new Set(),
+  onToggleSelect,
+  onToggleSelectAll,
+  onVerDetalle,
+  onEditar,
+  onEliminar,
+  onEnviarCliente,
+}) {
   const [openMenuId, setOpenMenuId] = useState(null);
+  const selectableIds = (items || []).map((item) => item?._id).filter(Boolean);
+  const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selectedIds.has(id));
+  const someSelected = selectableIds.some((id) => selectedIds.has(id));
 
   function toggleMenu(id) {
     setOpenMenuId((current) => (current === id ? null : id));
@@ -30,6 +43,18 @@ export default function NotasTable({ items, loading, onVerDetalle, onEditar, onE
       <table className="npl-table">
         <thead>
           <tr>
+            <th className="npl-selectCol">
+              <input
+                type="checkbox"
+                aria-label="Seleccionar todas las notas visibles"
+                checked={allSelected}
+                ref={(node) => {
+                  if (node) node.indeterminate = someSelected && !allSelected;
+                }}
+                onChange={(event) => onToggleSelectAll?.(event.target.checked, selectableIds)}
+                disabled={loading || selectableIds.length === 0}
+              />
+            </th>
             <th>Numero</th>
             <th>Fecha</th>
             <th>Entrega</th>
@@ -44,15 +69,23 @@ export default function NotasTable({ items, loading, onVerDetalle, onEditar, onE
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={8} className="npl-empty">Cargando...</td>
+              <td colSpan={9} className="npl-empty">Cargando...</td>
             </tr>
           ) : !items?.length ? (
             <tr>
-              <td colSpan={8} className="npl-empty">Sin resultados</td>
+              <td colSpan={9} className="npl-empty">Sin resultados</td>
             </tr>
           ) : (
             items.map((n) => (
               <tr key={n._id} className="npl-row">
+                <td className="npl-selectCol">
+                  <input
+                    type="checkbox"
+                    aria-label={`Seleccionar nota ${n.numero || ""}`.trim()}
+                    checked={selectedIds.has(n._id)}
+                    onChange={(event) => onToggleSelect?.(n._id, event.target.checked)}
+                  />
+                </td>
                 <td>
                   <div className="npl-cellTitle">#{n.numero || "-"}</div>
                   <div className="npl-cellSub">Nota activa</div>

@@ -5,6 +5,7 @@ import {
   actualizarNotaPedido,
   obtenerNotaPedido,
   eliminarNotaPedido,
+  eliminarNotasPedido,
   guardarCajaNota,
   actualizarOperacionNota,
 } from "../controllers/notasPedido.controller.js";
@@ -14,6 +15,7 @@ const router = Router();
 
 router.get("/", requireAuth, listarNotasPedido);
 router.post("/", requireAuth, crearNotaPedido);
+router.delete("/bulk", requireAuth, eliminarNotasPedido);
 
 router.get("/:id", requireAuth, obtenerNotaPedido);
 router.patch("/:id", requireAuth, actualizarNotaPedido);

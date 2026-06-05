@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   actualizarOperacionNota,
   eliminarNotaPedido,
+  eliminarNotasPedido,
   guardarCajaNota,
   listarNotasPedido,
   listarProveedores,
@@ -244,6 +245,8 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
   const [terminadoFoto, setTerminadoFoto] = useState(null);
   const [terminadoLoading, setTerminadoLoading] = useState(false);
   const [savingAvisoId, setSavingAvisoId] = useState("");
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -450,6 +453,16 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     return { totalNotas, enTaller, enProveedor, finalizadas };
   }, [guardadas]);
 
+  const visibleIds = useMemo(() => guardadas.map((item) => item?._id).filter(Boolean), [guardadas]);
+  const selectedCount = selectedIds.size;
+  const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+  const someVisibleSelected = visibleIds.some((id) => selectedIds.has(id));
+
+  useEffect(() => {
+    const visible = new Set(visibleIds);
+    setSelectedIds((current) => new Set([...current].filter((id) => visible.has(id))));
+  }, [visibleIds]);
+
   const guardadasProveedor = useMemo(
     () => guardadas.filter((item) => item?.estadoOperativo === "Enviado a proveedor"),
     [guardadas]
@@ -457,7 +470,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
 
   const copy = VIEW_CONFIG[view] || VIEW_CONFIG.all;
   const mostrarAvisoCliente = view === "deposito";
-  const tableColSpan = mostrarAvisoCliente ? 11 : 10;
+  const tableColSpan = mostrarAvisoCliente ? 12 : 11;
 
   async function borrarNota(nota) {
     cerrarAccionesNota();
@@ -468,6 +481,66 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     if (openId === nota._id) cerrarDetalle();
     if (gestionNota?._id === nota._id) cerrarGestion();
     await load();
+  }
+
+  function toggleSeleccionNota(id, checked) {
+    if (!id) return;
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleSeleccionVisible(checked) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      visibleIds.forEach((id) => {
+        if (checked) next.add(id);
+        else next.delete(id);
+      });
+      return next;
+    });
+  }
+
+  async function borrarNotasSeleccionadas() {
+    const ids = [...selectedIds];
+    if (!ids.length || bulkDeleting) return;
+
+    const res = await Swal.fire({
+      icon: "warning",
+      title: "¿Eliminar notas seleccionadas?",
+      text: `Se van a borrar ${ids.length} notas de pedido permanentemente.`,
+      showCancelButton: true,
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!res.isConfirmed) return;
+
+    try {
+      setBulkDeleting(true);
+      const result = await eliminarNotasPedido(ids);
+      setSelectedIds(new Set());
+      if (openId && ids.includes(openId)) cerrarDetalle();
+      if (gestionNota?._id && ids.includes(gestionNota._id)) cerrarGestion();
+      await load();
+      await Swal.fire({
+        icon: "success",
+        title: "Notas eliminadas",
+        text: `Se borraron ${result?.deletedCount || ids.length} notas.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e?.message || "No se pudieron eliminar las notas seleccionadas.",
+      });
+    } finally {
+      setBulkDeleting(false);
+    }
   }
 
   async function guardarEstadoPago(nota, payload) {
@@ -920,6 +993,23 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         </div>
       ) : null}
 
+      {selectedCount ? (
+        <section className="ng-bulkBar">
+          <strong>{selectedCount} seleccionada{selectedCount === 1 ? "" : "s"}</strong>
+          <button className="ng-tableBtn" type="button" onClick={() => setSelectedIds(new Set())}>
+            Limpiar selección
+          </button>
+          <button
+            className="ng-tableBtn ng-tableBtn--danger"
+            type="button"
+            onClick={borrarNotasSeleccionadas}
+            disabled={bulkDeleting}
+          >
+            {bulkDeleting ? "Eliminando..." : "Borrar seleccionadas"}
+          </button>
+        </section>
+      ) : null}
+
       <section className="ng-tableCard">
         <div className="ng-tableHead">
           <div>
@@ -935,6 +1025,18 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
           <table className={`ng-table ${mostrarAvisoCliente ? "ng-table--deposito" : ""}`}>
             <thead>
             <tr>
+              <th className="ng-selectCol">
+                <input
+                  type="checkbox"
+                  aria-label="Seleccionar todas las notas visibles"
+                  checked={allVisibleSelected}
+                  ref={(node) => {
+                    if (node) node.indeterminate = someVisibleSelected && !allVisibleSelected;
+                  }}
+                  onChange={(event) => toggleSeleccionVisible(event.target.checked)}
+                  disabled={loading || visibleIds.length === 0}
+                />
+              </th>
               <th>Numero</th>
               <th>Fecha</th>
               <th>Entrega</th>
@@ -959,6 +1061,14 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                 const notaId = n?._id || n?.id || n?.numero;
                 return (
                 <tr key={notaId} className={mostrarAvisoCliente ? "ng-rowDeposito" : getEntregaUrgencyClass(n?.entrega)}>
+                  <td className="ng-selectCol" data-label="Seleccionar">
+                    <input
+                      type="checkbox"
+                      aria-label={`Seleccionar nota ${n?.numero || ""}`.trim()}
+                      checked={selectedIds.has(n._id)}
+                      onChange={(event) => toggleSeleccionNota(n._id, event.target.checked)}
+                    />
+                  </td>
                   <td data-label="Numero">
                     <div className="ng-cellTitle">#{n?.numero ?? "-"}</div>
                     <div className="ng-cellSub">Nota activa</div>

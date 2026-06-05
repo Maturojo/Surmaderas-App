@@ -1,6 +1,7 @@
 ﻿import NotaPedido from "../models/NotaPedido.js";
 
 import Producto from "../models/Producto.js";
+import mongoose from "mongoose";
 import { colorProveedorPorNombre } from "../utils/proveedorColor.js";
 
 function getClienteNombre(doc) {
@@ -348,6 +349,27 @@ export async function eliminarNotaPedido(req, res) {
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ message: e?.message || "Error eliminando nota" });
+  }
+}
+
+export async function eliminarNotasPedido(req, res) {
+  try {
+    const ids = Array.isArray(req.body?.ids)
+      ? Array.from(new Set(req.body.ids.map((id) => String(id || "").trim()).filter(Boolean)))
+      : [];
+
+    if (!ids.length) {
+      return res.status(400).json({ message: "Selecciona al menos una nota para eliminar" });
+    }
+
+    if (ids.some((id) => !mongoose.isValidObjectId(id))) {
+      return res.status(400).json({ message: "La seleccion contiene notas invalidas" });
+    }
+
+    const result = await NotaPedido.deleteMany({ _id: { $in: ids } });
+    res.json({ ok: true, deletedCount: result.deletedCount || 0 });
+  } catch (e) {
+    res.status(500).json({ message: e?.message || "Error eliminando notas" });
   }
 }
 

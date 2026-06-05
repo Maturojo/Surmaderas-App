@@ -74,6 +74,22 @@ export async function eliminarNotaPedido(id) {
   return data;
 }
 
+export async function eliminarNotasPedido(ids = []) {
+  const r = await apiFetch(`${API_URL}/api/notas-pedido/bulk`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify({ ids }),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || "Error eliminando notas");
+  return data;
+}
+
 export async function guardarCajaNota(id, payload) {
   const r = await apiFetch(`${API_URL}/api/notas-pedido/${id}/guardar-caja`, {
     method: "PATCH",
