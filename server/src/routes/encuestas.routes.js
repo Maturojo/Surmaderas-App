@@ -217,6 +217,21 @@ async function createCouponCode() {
   throw new Error("No quedan codigos de cupon disponibles");
 }
 
+async function syncDopplerSafe(encuesta) {
+  try {
+    const dopplerResult = await syncEncuestaToDoppler(encuesta);
+    if (!dopplerResult.skipped) {
+      encuesta.dopplerSyncedAt = new Date();
+      encuesta.dopplerSyncError = "";
+      await encuesta.save();
+    }
+  } catch (dopplerError) {
+    encuesta.dopplerSyncError = dopplerError?.message || "No se pudo sincronizar con Doppler";
+    await encuesta.save();
+    console.error("Error sincronizando Doppler:", encuesta.dopplerSyncError);
+  }
+}
+
 router.post("/", async (req, res) => {
   try {
     const fullName = normalizeText(req.body?.fullName);
@@ -309,18 +324,7 @@ router.post("/", async (req, res) => {
       couponExpiresAt: addDays(new Date(), 30),
     });
 
-    try {
-      const dopplerResult = await syncEncuestaToDoppler(encuesta);
-      if (!dopplerResult.skipped) {
-        encuesta.dopplerSyncedAt = new Date();
-        encuesta.dopplerSyncError = "";
-        await encuesta.save();
-      }
-    } catch (dopplerError) {
-      encuesta.dopplerSyncError = dopplerError?.message || "No se pudo sincronizar con Doppler";
-      await encuesta.save();
-      console.error("Error sincronizando Doppler:", encuesta.dopplerSyncError);
-    }
+    await syncDopplerSafe(encuesta);
 
     return res.status(201).json({
       message: "Formulario cargado correctamente",
@@ -484,6 +488,7 @@ router.post(
       coupon.couponUsedAt = new Date();
       coupon.couponUsedBy = req.user?.name || req.user?.username || "Usuario";
       await coupon.save();
+      await syncDopplerSafe(coupon);
 
       return res.json({
         message: "Cupon validado correctamente",
@@ -564,6 +569,7 @@ router.post("/sucursal/:branch/validar", async (req, res) => {
     coupon.couponUsedAt = new Date();
     coupon.couponUsedBy = "Sucursal";
     await coupon.save();
+    await syncDopplerSafe(coupon);
 
     return res.json({ message: "Cupón canjeado correctamente", coupon });
   } catch (error) {
