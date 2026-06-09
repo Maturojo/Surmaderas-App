@@ -77,8 +77,31 @@ export default function EncuestasCupones() {
   const [isValidating, setIsValidating] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [peopleSearch, setPeopleSearch] = useState("");
 
   const publicUrl = PUBLIC_FORM_URL;
+  const normalizedPeopleSearch = peopleSearch.trim().toLowerCase();
+  const filteredItems = useMemo(() => {
+    if (!normalizedPeopleSearch) return items;
+
+    return items.filter((item) => {
+      const searchable = [
+        item.fullName,
+        item.email,
+        item.phone,
+        item.phoneNormalized,
+        item.taxId,
+        item.couponCode,
+        item.branch,
+        item.birthDate,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchable.includes(normalizedPeopleSearch);
+    });
+  }, [items, normalizedPeopleSearch]);
 
   useEffect(() => {
     loadData();
@@ -393,14 +416,34 @@ export default function EncuestasCupones() {
       </div>
 
       <div className="config-usersCard survey-tableCard">
-        <div className="config-usersCardTitle">Datos cargados</div>
+        <div className="survey-tableHeader">
+          <div>
+            <div className="config-usersCardTitle">Datos cargados</div>
+            <span>
+              {normalizedPeopleSearch
+                ? `${filteredItems.length} de ${items.length} registros`
+                : `${items.length} registros`}
+            </span>
+          </div>
+          <label className="survey-personSearch">
+            <span>Buscar persona</span>
+            <input
+              value={peopleSearch}
+              onChange={(event) => setPeopleSearch(event.target.value)}
+              placeholder="Nombre, mail, celular o cupon"
+            />
+          </label>
+        </div>
         {error ? <div className="config-usersMessage error">{error}</div> : null}
         {isLoading ? <div className="config-usersEmpty">Cargando encuestas...</div> : null}
         {!isLoading && items.length === 0 ? (
           <div className="config-usersEmpty">Todavia no hay formularios cargados.</div>
         ) : null}
+        {!isLoading && items.length > 0 && filteredItems.length === 0 ? (
+          <div className="config-usersEmpty">No se encontraron personas con esa busqueda.</div>
+        ) : null}
 
-        {!isLoading && items.length > 0 ? (
+        {!isLoading && filteredItems.length > 0 ? (
           <div className="survey-tableWrap">
             <table className="survey-table">
               <thead>
@@ -417,7 +460,7 @@ export default function EncuestasCupones() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => {
+                {filteredItems.map((item) => {
                   const status = getCouponStatus(item);
                   return (
                   <tr key={item._id}>

@@ -1987,6 +1987,44 @@ textarea {
   color: var(--sm-muted);
 }
 
+.survey-tableHeader {
+  align-items: end;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.survey-tableHeader > div > span {
+  color: var(--sm-muted);
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.survey-personSearch {
+  display: grid;
+  gap: 6px;
+  max-width: 360px;
+  width: min(100%, 360px);
+}
+
+.survey-personSearch span {
+  color: #695a48;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.survey-personSearch input {
+  border: 1px solid var(--sm-dashboard-line);
+  border-radius: 10px;
+  font: inherit;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
 .survey-tableWrap {
   margin-top: 16px;
   overflow-x: auto;
