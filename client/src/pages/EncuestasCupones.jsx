@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { API_URL } from "../services/http";
-import { getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
+import { deleteEncuesta, getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
 const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=14";
@@ -76,6 +76,7 @@ export default function EncuestasCupones() {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
 
   const publicUrl = PUBLIC_FORM_URL;
 
@@ -208,6 +209,31 @@ export default function EncuestasCupones() {
       setError(resetError.message || "No se pudieron reiniciar los datos");
     } finally {
       setIsResetting(false);
+    }
+  }
+
+  async function handleDeleteEncuesta(item) {
+    if (!item?._id || deletingId) return;
+
+    const confirmed = window.confirm(
+      `Se va a borrar el registro de ${item.fullName || "este cliente"} y su cupon ${item.couponCode || ""}. ¿Seguro?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(item._id);
+      setError("");
+      await deleteEncuesta(item._id);
+      if (selectedCoupon?._id === item._id) {
+        setSelectedCoupon(null);
+        setValidation(null);
+      }
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError.message || "No se pudo borrar el registro");
+    } finally {
+      setDeletingId("");
     }
   }
 
@@ -387,6 +413,7 @@ export default function EncuestasCupones() {
                   <th>Experiencia</th>
                   <th>Compra</th>
                   <th>Cupon</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -415,6 +442,16 @@ export default function EncuestasCupones() {
                       <strong>{item.couponCode}</strong>
                       <span className={status.className}>{status.label}</span>
                       <span>Vence: {formatDate(item.couponExpiresAt)}</span>
+                    </td>
+                    <td>
+                      <button
+                        className="survey-deleteBtn"
+                        type="button"
+                        onClick={() => handleDeleteEncuesta(item)}
+                        disabled={deletingId === item._id}
+                      >
+                        {deletingId === item._id ? "Borrando..." : "Borrar"}
+                      </button>
                     </td>
                   </tr>
                 );

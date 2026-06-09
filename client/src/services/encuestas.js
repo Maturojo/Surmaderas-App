@@ -44,6 +44,20 @@ export async function resetEncuestas() {
   return data;
 }
 
+export async function deleteEncuesta(id) {
+  const response = await apiFetch(`${API_URL}/api/encuestas/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message || "No se pudo borrar el registro");
+  }
+
+  return data;
+}
+
 export async function validateCoupon(couponCode) {
   const response = await apiFetch(`${API_URL}/api/encuestas/cupones/validar`, {
     method: "POST",

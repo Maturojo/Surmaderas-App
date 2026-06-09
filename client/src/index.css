@@ -2034,6 +2034,25 @@ textarea {
   font-weight: 900;
 }
 
+.survey-deleteBtn {
+  border: 1px solid #efc6c6;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #9d2f2f;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.survey-deleteBtn:hover:not(:disabled) {
+  background: #ffe8e8;
+}
+
+.survey-deleteBtn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .monthly-sales {
   display: grid;
   gap: 16px;

@@ -382,6 +382,24 @@ router.delete("/", requireAuth, requireRole("admin"), async (_req, res) => {
   }
 });
 
+router.delete("/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const deleted = await EncuestaCliente.findByIdAndDelete(req.params.id).lean();
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Registro no encontrado" });
+    }
+
+    return res.json({
+      message: "Registro borrado correctamente",
+      deletedId: deleted._id,
+    });
+  } catch (error) {
+    console.error("Error borrando encuesta:", error?.message || error);
+    return res.status(500).json({ message: "No se pudo borrar el registro" });
+  }
+});
+
 router.get("/export", requireAuth, requireRole("admin", "taller", "ventas"), async (_req, res) => {
   try {
     const encuestas = await EncuestaCliente.find({}).sort({ createdAt: -1 }).lean();
