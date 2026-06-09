@@ -383,6 +383,13 @@
   overflow-wrap: anywhere;
 }
 
+.ng-noteSummaryTitle {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ng-clientCell {
   display: grid;
   gap: 4px;

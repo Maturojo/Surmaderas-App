@@ -1,4 +1,4 @@
-﻿import { getNotaClienteNombre, getNotaTotal } from "../../../utils/notaPedido";
+﻿import { getNotaClienteNombre, getNotaResumenPedido, getNotaTotal } from "../../../utils/notaPedido";
 
 import { useState } from "react";
 
@@ -55,7 +55,7 @@ export default function NotasTable({
                 disabled={loading || selectableIds.length === 0}
               />
             </th>
-            <th>Numero</th>
+            <th>Detalle</th>
             <th>Fecha</th>
             <th>Entrega</th>
             <th>Cliente</th>
@@ -87,8 +87,10 @@ export default function NotasTable({
                   />
                 </td>
                 <td>
-                  <div className="npl-cellTitle">#{n.numero || "-"}</div>
-                  <div className="npl-cellSub">Nota activa</div>
+                  <div className="npl-cellTitle npl-noteSummaryTitle" title={getNotaResumenPedido(n, 160)}>
+                    {getNotaResumenPedido(n)}
+                  </div>
+                  <div className="npl-cellSub">#{n.numero || "-"}</div>
                 </td>
                 <td>
                   <div className="npl-cellTitle">{fmtDate(n.fecha)}</div>

@@ -11,7 +11,7 @@ import {
   obtenerNotaPedido,
 } from "../services/notasPedido";
 import NotaDetalleModal from "../features/notasPedidoListado/components/NotaDetalleModal";
-import { getNotaClienteNombre, getNotaTotal } from "../utils/notaPedido";
+import { getNotaClienteNombre, getNotaResumenPedido, getNotaTotal } from "../utils/notaPedido";
 import {
   buildNotaPedidoPrintData,
   copyFileToClipboard,
@@ -430,6 +430,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
         if (!qq) return true;
         return (
           String(n?.numero || "").toLowerCase().includes(qq) ||
+          getNotaResumenPedido(n, 160).toLowerCase().includes(qq) ||
           getNotaClienteNombre(n).toLowerCase().includes(qq) ||
           String(n?.vendedor || "").toLowerCase().includes(qq) ||
           String(n?.entrega || "").toLowerCase().includes(qq) ||
@@ -1037,7 +1038,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                   disabled={loading || visibleIds.length === 0}
                 />
               </th>
-              <th>Numero</th>
+              <th>Detalle</th>
               <th>Fecha</th>
               <th>Entrega</th>
               <th>Cliente</th>
@@ -1069,9 +1070,11 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                       onChange={(event) => toggleSeleccionNota(n._id, event.target.checked)}
                     />
                   </td>
-                  <td data-label="Numero">
-                    <div className="ng-cellTitle">#{n?.numero ?? "-"}</div>
-                    <div className="ng-cellSub">Nota activa</div>
+                  <td data-label="Detalle">
+                    <div className="ng-cellTitle ng-noteSummaryTitle" title={getNotaResumenPedido(n, 160)}>
+                      {getNotaResumenPedido(n)}
+                    </div>
+                    <div className="ng-cellSub">#{n?.numero ?? "-"}</div>
                   </td>
                   <td data-label="Fecha">
                     <div className="ng-cellTitle">{fmtDate(n?.fecha)}</div>
@@ -1184,7 +1187,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
           <table className="ng-table">
             <thead>
               <tr>
-                <th>Numero</th>
+                <th>Detalle</th>
                 <th>Cliente</th>
                 <th>Entrega</th>
                 <th>Proveedor</th>
@@ -1206,8 +1209,10 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
                   return (
                   <tr key={`prov-${notaId}`} className={getEntregaUrgencyClass(n?.entrega)}>
                     <td>
-                      <div className="ng-cellTitle">#{n?.numero ?? "-"}</div>
-                      <div className="ng-cellSub">Nota activa</div>
+                      <div className="ng-cellTitle ng-noteSummaryTitle" title={getNotaResumenPedido(n, 160)}>
+                        {getNotaResumenPedido(n)}
+                      </div>
+                      <div className="ng-cellSub">#{n?.numero ?? "-"}</div>
                     </td>
                     <td>
                       <div className="ng-clientCell">
