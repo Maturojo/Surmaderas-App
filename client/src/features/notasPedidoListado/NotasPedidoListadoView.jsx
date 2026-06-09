@@ -82,10 +82,10 @@ export default function NotasPedidoListadoView() {
     setSelectedIds((current) => new Set([...current].filter((id) => visibleIds.has(id))));
   }, [data.items]);
 
-  async function handleGuardarCaja(nota, payload) {
+  async function handleGuardarCaja(nota, payload, options = {}) {
     await guardarCajaNota(nota._id, payload);
     await cargar(page);
-    cerrarDetalle();
+    if (!options.keepOpen) cerrarDetalle();
     const tipo = String(payload?.tipo || "").toLowerCase();
     const message =
       tipo === "pago"

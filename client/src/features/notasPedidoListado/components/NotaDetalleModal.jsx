@@ -425,20 +425,11 @@ export default function NotaDetalleModal({
     return lines.join("\n");
   }
 
-  function abrirComprobanteAntesDeSave(payload) {
-    setPendingCajaPayload(payload);
-    setComprobanteClienteOpen(true);
-  }
-
-  async function confirmarGuardarCaja() {
+  async function guardarCajaYMostrarComprobante(payload) {
     const notaActual = detalleRef.current;
-    try {
-      await onGuardarCaja?.(notaActual, pendingCajaPayload);
-      setComprobanteClienteOpen(false);
-      setPendingCajaPayload(null);
-    } catch (e) {
-      alert(e?.message || "Error guardando caja");
-    }
+    setPendingCajaPayload(payload);
+    await onGuardarCaja?.(notaActual, payload, { keepOpen: true });
+    setComprobanteClienteOpen(true);
   }
 
   const totalGuardado = getNotaTotal(detalle);
@@ -880,7 +871,7 @@ export default function NotaDetalleModal({
                   </div>
                   <div className="npl-totalBox">
                     <div className="npl-k">Fecha caja</div>
-                    <div className="npl-v">Se guarda al confirmar</div>
+                    <div className="npl-v">Se guarda al tocar Guardar caja</div>
                   </div>
                 </div>
 
@@ -1045,7 +1036,7 @@ export default function NotaDetalleModal({
                         if (payloadTipo === "pago") {
                           const okComprobante = await validarComprobanteAntesDeGuardar("pago", total);
                           if (!okComprobante) return;
-                          abrirComprobanteAntesDeSave(buildCajaPayload("pago", total));
+                          await guardarCajaYMostrarComprobante(buildCajaPayload("pago", total));
                           return;
                         }
 
@@ -1074,7 +1065,7 @@ export default function NotaDetalleModal({
                               if (!result.isConfirmed) return;
                               const okComprobante = await validarComprobanteAntesDeGuardar("seña", montoSenia);
                               if (!okComprobante) return;
-                              abrirComprobanteAntesDeSave(buildCajaPayload("seña", montoSenia));
+                              await guardarCajaYMostrarComprobante(buildCajaPayload("seña", montoSenia));
                             });
                             return;
                           }
@@ -1082,7 +1073,7 @@ export default function NotaDetalleModal({
 
                         const okComprobante = await validarComprobanteAntesDeGuardar(payloadTipo, Number(monto || 0));
                         if (!okComprobante) return;
-                        abrirComprobanteAntesDeSave(buildCajaPayload(payloadTipo, monto));
+                        await guardarCajaYMostrarComprobante(buildCajaPayload(payloadTipo, monto));
                       } catch (e) {
                         alert(e?.message || "Error guardando caja");
                       }
@@ -1171,7 +1162,7 @@ export default function NotaDetalleModal({
             <div className="npl-ccModalHeader">
               <div>
                 <div className="npl-modalTitle">Comprobante para cliente</div>
-                <div className="npl-modalSub">Envialo antes de confirmar el guardado</div>
+                <div className="npl-modalSub">Caja guardada. Ahora podés imprimirlo, copiarlo o enviarlo.</div>
               </div>
               <button className="npl-btnGhost" type="button" onClick={() => setComprobanteClienteOpen(false)}>
                 Volver
@@ -1217,12 +1208,6 @@ export default function NotaDetalleModal({
                 }}
               >
                 WhatsApp
-              </button>
-            </div>
-
-            <div className="npl-ccModalFooter">
-              <button className="npl-btn" type="button" onClick={confirmarGuardarCaja}>
-                Guardar caja
               </button>
             </div>
           </div>

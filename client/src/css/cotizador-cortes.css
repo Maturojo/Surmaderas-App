@@ -505,6 +505,17 @@
   font-size: 13px;
 }
 
+.cc-audioBtn {
+  border-color: #2d2117;
+  color: #2d2117;
+}
+
+.cc-audioBtn.is-recording {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
 .cc-reviewList {
   display: grid;
   gap: 10px;

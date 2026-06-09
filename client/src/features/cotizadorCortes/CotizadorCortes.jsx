@@ -97,6 +97,11 @@ MATERIAL_FAMILIAS.forEach((familia) => {
 
 const MATERIAL_FAMILIA_BY_KEY = Object.fromEntries(MATERIAL_FAMILIAS.map((familia) => [familia.key, familia]));
 
+function getSpeechRecognition() {
+  if (typeof window === "undefined") return null;
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
 function normalizeText(value) {
   return String(value || "")
     .normalize("NFD")
@@ -472,9 +477,19 @@ export default function CotizadorCortes() {
   const [textoMasivo, setTextoMasivo] = useState("");
   const [resultadoMasivo, setResultadoMasivo] = useState("");
   const [ocrStatus, setOcrStatus] = useState("");
+  const [audioStatus, setAudioStatus] = useState("");
+  const [escuchandoAudio, setEscuchandoAudio] = useState(false);
   const [leyendoImagen, setLeyendoImagen] = useState(false);
   const [cortesDetectados, setCortesDetectados] = useState([]);
+  const recognitionRef = useRef(null);
   const tableRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.abort?.();
+      recognitionRef.current = null;
+    };
+  }, []);
 
   const materialSeleccionado = useMemo(() => {
     if (!materialKey) return null;
@@ -521,8 +536,8 @@ export default function CotizadorCortes() {
     setCantidad("");
   }
 
-  function revisarTextoMasivo() {
-    const lineas = textoMasivo
+  function revisarTextoMasivo(textoOrigen = textoMasivo) {
+    const lineas = textoOrigen
       .split(/\r?\n/)
       .map((linea) => linea.trim())
       .filter(Boolean);
@@ -532,7 +547,7 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const { nuevos, errores } = parsearTextoCortes(textoMasivo, materialSeleccionado);
+    const { nuevos, errores } = parsearTextoCortes(textoOrigen, materialSeleccionado);
 
     setCortesDetectados(nuevos.map((corte) => ({ ...corte, tempId: corte.id })));
 
@@ -633,6 +648,72 @@ export default function CotizadorCortes() {
 
     setTextoMasivo((prev) => [prev.trim(), cleanText].filter(Boolean).join("\n"));
     setOcrStatus(mensaje);
+  }
+
+  function iniciarCargaPorAudio() {
+    const SpeechRecognition = getSpeechRecognition();
+    if (!SpeechRecognition) {
+      setAudioStatus("Tu navegador no permite dictado por voz. Probá con Chrome o Edge.");
+      return;
+    }
+
+    if (escuchandoAudio) {
+      recognitionRef.current?.stop?.();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "es-AR";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    let textoFinal = "";
+    let ultimoTexto = "";
+    setAudioStatus("Escuchando... dictá material, medidas y cantidad.");
+    setEscuchandoAudio(true);
+
+    recognition.onresult = (event) => {
+      let textoParcial = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const transcript = event.results[index][0]?.transcript || "";
+        if (event.results[index].isFinal) textoFinal += `${transcript}\n`;
+        else textoParcial += transcript;
+      }
+
+      const text = [textoFinal.trim(), textoParcial.trim()].filter(Boolean).join("\n");
+      if (text) {
+        ultimoTexto = text;
+        setTextoMasivo(text);
+        setAudioStatus(textoParcial ? `Escuchando: ${textoParcial}` : "Texto de audio detectado.");
+      }
+    };
+
+    recognition.onerror = (event) => {
+      const message = event?.error === "not-allowed"
+        ? "Permiso de micrófono denegado."
+        : "No se pudo escuchar el audio. Probá de nuevo.";
+      setAudioStatus(message);
+      setEscuchandoAudio(false);
+      recognitionRef.current = null;
+    };
+
+    recognition.onend = () => {
+      setEscuchandoAudio(false);
+      recognitionRef.current = null;
+      const cleanText = (textoFinal.trim() || ultimoTexto.trim());
+      if (cleanText) {
+        setTextoMasivo(cleanText);
+        revisarTextoMasivo(cleanText);
+        setAudioStatus("Audio interpretado. Revisá los cortes detectados antes de agregarlos.");
+      } else {
+        setAudioStatus((current) => (
+          current && !current.startsWith("Escuchando") ? current : "No se detectó texto en el audio."
+        ));
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   }
 
   async function leerImagenArchivo(file) {
@@ -1223,7 +1304,7 @@ export default function CotizadorCortes() {
             <span className="cc-stepLabel">Carga rapida por texto o imagen</span>
           </div>
           <p className="cc-nota">
-            Puede leer texto, imagenes pegadas o subidas, y documentos TXT/CSV/TSV. Para PDF o Word,
+            Puede leer audio, texto, imagenes pegadas o subidas, y documentos TXT/CSV/TSV. Para PDF o Word,
             copiá el texto al cuadro o pegá una captura.
           </p>
           <div className="cc-field">
@@ -1238,6 +1319,13 @@ export default function CotizadorCortes() {
             />
           </div>
           <div className="cc-bulkActions">
+            <button
+              type="button"
+              className={`cc-fileBtn cc-audioBtn${escuchandoAudio ? " is-recording" : ""}`}
+              onClick={iniciarCargaPorAudio}
+            >
+              {escuchandoAudio ? "Detener audio" : "Dictar cortes"}
+            </button>
             <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={revisarTextoMasivo}>
               Interpretar lista
             </button>
@@ -1249,10 +1337,11 @@ export default function CotizadorCortes() {
               Subir imagen/doc
             </label>
           </div>
-          {(resultadoMasivo || ocrStatus) && (
+          {(resultadoMasivo || ocrStatus || audioStatus) && (
             <div className="cc-importStatus">
               {resultadoMasivo && <span>{resultadoMasivo}</span>}
               {ocrStatus && <span>{ocrStatus}</span>}
+              {audioStatus && <span>{audioStatus}</span>}
             </div>
           )}
           {cortesDetectados.length > 0 && (
