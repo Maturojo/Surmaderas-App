@@ -223,18 +223,25 @@ router.post("/", async (req, res) => {
     const phoneNormalized = normalizePhone(req.body?.phone);
     const phone = formatPhoneForDisplay(req.body?.phone);
     const email = normalizeText(req.body?.email).toLowerCase();
+    const origin = normalizeText(req.body?.origin) === "web" ? "web" : "local";
+    const isWebOrigin = origin === "web";
     const branch = normalizeText(req.body?.branch);
-    const ivaCondition = normalizeText(req.body?.ivaCondition);
-    const address = normalizeText(req.body?.address);
+    const ivaCondition = isWebOrigin ? "consumidor_final" : normalizeText(req.body?.ivaCondition);
+    const address = isWebOrigin ? normalizeText(req.body?.address) || "Formulario web" : normalizeText(req.body?.address);
     const birthDate = normalizeText(req.body?.birthDate);
-    const taxId = normalizeText(req.body?.taxId).replace(/[^\d-]/g, "");
+    const taxIdPayload = normalizeText(req.body?.taxId).replace(/[^\d-]/g, "");
+    const taxId = isWebOrigin ? taxIdPayload || `WEB-${phoneNormalized}` : taxIdPayload;
     const taxIdType = IVA_TO_TAX_ID[ivaCondition];
 
-    if (!fullName || !phoneNormalized || !email || !ivaCondition || !taxId || !address || !branch || !birthDate) {
+    const missingRequiredWeb = isWebOrigin && (!fullName || !phoneNormalized || !email || !birthDate);
+    const missingRequiredFull =
+      !isWebOrigin && (!fullName || !phoneNormalized || !email || !ivaCondition || !taxId || !address || !branch || !birthDate);
+
+    if (missingRequiredWeb || missingRequiredFull) {
       return res.status(400).json({ message: "Completa todos los datos obligatorios" });
     }
 
-    if (!BRANCH_OPTIONS.has(branch)) {
+    if (!isWebOrigin && !BRANCH_OPTIONS.has(branch)) {
       return res.status(400).json({ message: "Selecciona una sucursal valida" });
     }
 
@@ -254,9 +261,9 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Ingresa una fecha de nacimiento valida" });
     }
 
-    const existing = await EncuestaCliente.findOne({
-      $or: [{ email }, { taxId }, { phoneNormalized }, { phone }],
-    }).lean();
+    const duplicateFilters = [{ email }, { phoneNormalized }, { phone }];
+    if (!isWebOrigin || taxIdPayload) duplicateFilters.push({ taxId });
+    const existing = await EncuestaCliente.findOne({ $or: duplicateFilters }).lean();
 
     if (existing) {
       const repeatedField =
@@ -286,6 +293,7 @@ router.post("/", async (req, res) => {
       taxId,
       address,
       birthDate,
+      origin,
       rating: ratingValue,
       purchasedProducts: normalizeArray(req.body?.purchasedProducts, PRODUCT_OPTIONS),
       choiceReasons,

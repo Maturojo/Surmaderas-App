@@ -16,6 +16,7 @@ const EncuestaClienteSchema = new mongoose.Schema(
     taxId: { type: String, required: true, trim: true },
     address: { type: String, required: true, trim: true },
     birthDate: { type: String, default: "", trim: true },
+    origin: { type: String, enum: ["local", "web"], default: "local", index: true },
     rating: { type: Number, min: 1, max: 5, default: null },
     purchasedProducts: [{ type: String, trim: true }],
     choiceReasons: [{ type: String, trim: true }],

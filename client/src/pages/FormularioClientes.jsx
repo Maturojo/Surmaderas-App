@@ -39,7 +39,7 @@ const GOOGLE_REVIEW_URL =
 const GOOGLE_REVIEW_TEXT =
   "\u00a1Gracias por tu tiempo! Como ultimo, tu opinion en Google nos seria de gran ayuda. Es un solo Click\ud83d\udc47\ud83c\udffc";
 
-const FORM_BUILD_VERSION = "donweb-v14";
+const FORM_BUILD_VERSION = "donweb-v15";
 const STAR_SYMBOL = "\u2605";
 
 const LOGO_URL = logoSurMaderas;
@@ -138,7 +138,10 @@ function toggleValue(list, value, maxItems = Infinity) {
   return [...list, value];
 }
 
-export default function FormularioClientes({ defaultBranch = "" }) {
+export default function FormularioClientes({ defaultBranch = "", defaultOrigin = "" }) {
+  const queryOrigin =
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("origin") : "";
+  const isWebOrigin = queryOrigin === "web" || defaultOrigin === "web";
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ ...INITIAL_FORM, branch: defaultBranch });
   const [coupon, setCoupon] = useState(null);
@@ -167,7 +170,12 @@ export default function FormularioClientes({ defaultBranch = "" }) {
   }
 
   function validateStepOne() {
-    if (!form.fullName || !form.branch || !form.phone || !form.email || !form.taxId || !form.address || !form.birthDate) {
+    const missingRequiredWeb = isWebOrigin && (!form.fullName || !form.phone || !form.email || !form.birthDate);
+    const missingRequiredFull =
+      !isWebOrigin &&
+      (!form.fullName || !form.branch || !form.phone || !form.email || !form.taxId || !form.address || !form.birthDate);
+
+    if (missingRequiredWeb || missingRequiredFull) {
       setError("Completa tus datos para activar el descuento.");
       return false;
     }
@@ -182,7 +190,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
       return false;
     }
 
-    if (!isTaxIdValid(selectedIva.taxIdType, form.taxId)) {
+    if (!isWebOrigin && !isTaxIdValid(selectedIva.taxIdType, form.taxId)) {
       setError(`Ingresa un ${selectedIva.taxIdType} valido.`);
       return false;
     }
@@ -198,7 +206,12 @@ export default function FormularioClientes({ defaultBranch = "" }) {
 
   function goToStepTwo(event) {
     event.preventDefault();
-    if (validateStepOne()) setStep(2);
+    if (!validateStepOne()) return;
+    if (isWebOrigin) {
+      handleSubmit(event);
+      return;
+    }
+    setStep(2);
   }
 
   async function handleSubmit(event) {
@@ -209,11 +222,12 @@ export default function FormularioClientes({ defaultBranch = "" }) {
       setError("");
       const data = await submitEncuesta({
         ...form,
+        origin: isWebOrigin ? "web" : "local",
         rating: form.rating || null,
       });
       setSubmittedRating(form.rating || 0);
       setCoupon(data.coupon);
-      setStep(3);
+      setStep(isWebOrigin ? 4 : 3);
     } catch (submitError) {
       setError(submitError.message || "No se pudo enviar el formulario.");
     } finally {
@@ -373,24 +387,26 @@ export default function FormularioClientes({ defaultBranch = "" }) {
         {step === 1 ? (
           <form onSubmit={goToStepTwo}>
             <div className="survey-kicker">Paso 1 de 4</div>
-            <h1>Completa tus datos y activa tu 15% OFF</h1>
+            <h1>{isWebOrigin ? "Activa tu 15% OFF" : "Completa tus datos y activa tu 15% OFF"}</h1>
 
             <label className="survey-field">
               <span>Nombre completo</span>
               <input name="fullName" value={form.fullName} onChange={handleChange} required />
             </label>
 
-            <label className="survey-field">
-              <span>Sucursal</span>
-              <select name="branch" value={form.branch} onChange={handleChange} required>
-                <option value="">Selecciona una sucursal</option>
-                {BRANCH_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {!isWebOrigin ? (
+              <label className="survey-field">
+                <span>Sucursal</span>
+                <select name="branch" value={form.branch} onChange={handleChange} required>
+                  <option value="">Selecciona una sucursal</option>
+                  {BRANCH_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
 
             <label className="survey-field">
               <span>Celular</span>
@@ -423,42 +439,46 @@ export default function FormularioClientes({ defaultBranch = "" }) {
               ) : null}
             </label>
 
-            <label className="survey-field">
-              <span>Condicion frente al IVA</span>
-              <select name="ivaCondition" value={form.ivaCondition} onChange={handleChange}>
-                {IVA_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {!isWebOrigin ? (
+              <>
+                <label className="survey-field">
+                  <span>Condicion frente al IVA</span>
+                  <select name="ivaCondition" value={form.ivaCondition} onChange={handleChange}>
+                    {IVA_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            <label className="survey-field">
-              <span>{selectedIva.taxIdType}</span>
-              <input
-                className={form.taxId ? (taxIdIsValid ? "is-valid" : "is-invalid") : ""}
-                name="taxId"
-                value={form.taxId}
-                onChange={handleChange}
-                inputMode="numeric"
-                required
-              />
-              {form.taxId && !taxIdIsValid ? (
-                <small className="survey-fieldHint error">Revisa la cantidad de digitos.</small>
-              ) : null}
-            </label>
+                <label className="survey-field">
+                  <span>{selectedIva.taxIdType}</span>
+                  <input
+                    className={form.taxId ? (taxIdIsValid ? "is-valid" : "is-invalid") : ""}
+                    name="taxId"
+                    value={form.taxId}
+                    onChange={handleChange}
+                    inputMode="numeric"
+                    required
+                  />
+                  {form.taxId && !taxIdIsValid ? (
+                    <small className="survey-fieldHint error">Revisa la cantidad de digitos.</small>
+                  ) : null}
+                </label>
 
-            <label className="survey-field">
-              <span>Direccion</span>
-              <input
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                placeholder="Calle y altura"
-                required
-              />
-            </label>
+                <label className="survey-field">
+                  <span>Direccion</span>
+                  <input
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    placeholder="Calle y altura"
+                    required
+                  />
+                </label>
+              </>
+            ) : null}
 
             <label className="survey-field">
               <span>Fecha de nacimiento</span>
@@ -479,7 +499,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
             {error ? <div className="survey-message error">{error}</div> : null}
 
             <button type="submit" className="survey-primary">
-              Continuar - Casi listo
+              {isWebOrigin ? (isSubmitting ? "Activando..." : "Activar mi 15%") : "Continuar - Casi listo"}
             </button>
           </form>
         ) : (
