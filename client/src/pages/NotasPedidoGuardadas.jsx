@@ -544,10 +544,12 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     }
   }
 
-  async function guardarEstadoPago(nota, payload) {
-    await guardarCajaNota(nota._id, payload);
+  async function guardarEstadoPago(nota, payload, options = {}) {
+    const notaActualizada = await guardarCajaNota(nota._id, payload);
     await load();
-    await abrirEditarPago(nota);
+    if (!options.keepOpen) await abrirEditarPago(nota);
+    else setDetalle(notaActualizada);
+    return notaActualizada;
   }
 
   async function marcarListoParaRetirar(nota) {

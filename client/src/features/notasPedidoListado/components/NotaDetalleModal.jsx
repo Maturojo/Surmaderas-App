@@ -325,6 +325,7 @@ export default function NotaDetalleModal({
   const [lightboxSrc, setLightboxSrc] = useState(null);
   const [comprobanteClienteOpen, setComprobanteClienteOpen] = useState(false);
   const [pendingCajaPayload, setPendingCajaPayload] = useState(null);
+  const [detalleLocal, setDetalleLocal] = useState(null);
   const [comprobanteClienteFile, setComprobanteClienteFile] = useState(null);
   const [comprobanteClienteUrl, setComprobanteClienteUrl] = useState(null);
   const [comprobanteClienteLoading, setComprobanteClienteLoading] = useState(false);
@@ -334,8 +335,10 @@ export default function NotaDetalleModal({
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState("");
 
-  const detalleRef = useRef(detalle);
-  useEffect(() => { detalleRef.current = detalle; }, [detalle]);
+  const detalleActual = detalleLocal || detalle;
+  const detalleRef = useRef(detalleActual);
+  useEffect(() => { detalleRef.current = detalleActual; }, [detalleActual]);
+  useEffect(() => { setDetalleLocal(null); }, [detalle?._id]);
 
   useEffect(() => {
     if (!detalle) return;
@@ -364,17 +367,25 @@ export default function NotaDetalleModal({
 
   // Fusiona el payload pendiente en la nota para mostrar la seña/saldo en el comprobante
   function buildNotaConPendingCaja() {
-    if (!detalle || !pendingCajaPayload) return detalle;
+    const base = detalleActual;
+    if (!base || !pendingCajaPayload) return base;
     return {
-      ...detalle,
-      estado: pendingCajaPayload.tipo === "pago" ? "pagada" : pendingCajaPayload.tipo === "seña" ? "señada" : detalle.estado,
+      ...base,
+      estado: pendingCajaPayload.tipo === "pago" ? "pagada" : pendingCajaPayload.tipo === "seña" ? "señada" : base.estado,
       caja: {
-        ...(detalle.caja || {}),
+        ...(base.caja || {}),
+        guardada: true,
         tipo: pendingCajaPayload.tipo || "",
         monto: Number(pendingCajaPayload.monto || 0),
         subtotal: Number(pendingCajaPayload.subtotal || 0),
         descuento: Number(pendingCajaPayload.descuento || 0),
         total: Number(pendingCajaPayload.total || 0),
+        adelanto: Number(pendingCajaPayload.adelanto || 0),
+        resta: Number(pendingCajaPayload.resta || 0),
+        metodo: pendingCajaPayload.metodo || "",
+        nota: pendingCajaPayload.nota || "",
+        comprobantes: Array.isArray(pendingCajaPayload.comprobantes) ? pendingCajaPayload.comprobantes : [],
+        comprobante: pendingCajaPayload.comprobante || pendingCajaPayload.comprobantes?.[0] || null,
       },
     };
   }
@@ -382,7 +393,7 @@ export default function NotaDetalleModal({
   // Genera la imagen del comprobante para cliente cuando se abre el modal de confirmación
   useEffect(() => {
     let cancelled = false;
-    if (!comprobanteClienteOpen || !detalle) return;
+    if (!comprobanteClienteOpen || !detalleActual) return;
     setComprobanteClienteLoading(true);
     setComprobanteClienteFile(null);
     setComprobanteClienteUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
@@ -395,7 +406,7 @@ export default function NotaDetalleModal({
       .catch(() => {})
       .finally(() => { if (!cancelled) setComprobanteClienteLoading(false); });
     return () => { cancelled = true; };
-  }, [comprobanteClienteOpen, detalle, pendingCajaPayload]);
+  }, [comprobanteClienteOpen, detalleActual, pendingCajaPayload]);
 
   function normalizarWhatsappLocal(telefono = "") {
     const digits = String(telefono || "").replace(/\D/g, "");
@@ -428,12 +439,13 @@ export default function NotaDetalleModal({
   async function guardarCajaYMostrarComprobante(payload) {
     const notaActual = detalleRef.current;
     setPendingCajaPayload(payload);
-    await onGuardarCaja?.(notaActual, payload, { keepOpen: true });
+    const notaActualizada = await onGuardarCaja?.(notaActual, payload, { keepOpen: true });
+    setDetalleLocal(notaActualizada || buildNotaConPendingCaja());
     setComprobanteClienteOpen(true);
   }
 
-  const totalGuardado = getNotaTotal(detalle);
-  const subtotal = Number(detalle?.caja?.subtotal || detalle?.totales?.subtotal || totalGuardado);
+  const totalGuardado = getNotaTotal(detalleActual);
+  const subtotal = Number(detalleActual?.caja?.subtotal || detalleActual?.totales?.subtotal || totalGuardado);
   const descuentoSoloPagoTotal = subtotal < 100000;
   const descuentoBloqueado = descuentoSoloPagoTotal && tipo !== "pago";
   const descuentoMonto = Math.min(
@@ -450,11 +462,11 @@ export default function NotaDetalleModal({
   const total = Math.max(0, roundMoney(subtotal - descuentoMonto));
   const adelanto = tipo === "seña" ? Math.min(total, Math.max(0, parseMoney(monto))) : 0;
   const resta = tipo === "pago" ? 0 : Math.max(0, roundMoney(total - adelanto));
-  const comprobantesGuardados = normalizeComprobantesCaja(detalle?.caja);
+  const comprobantesGuardados = normalizeComprobantesCaja(detalleActual?.caja);
   const puedeComprobante = tipo === "pago" || tipo === "seña" || comprobantesGuardados.length > 0;
-  const comprobanteArchivoId = `comprobante-archivo-${detalle?._id || "nota"}`;
-  const comprobanteCamaraId = `comprobante-camara-${detalle?._id || "nota"}`;
-  const comprobanteVideoId = `comprobante-video-${detalle?._id || "nota"}`;
+  const comprobanteArchivoId = `comprobante-archivo-${detalleActual?._id || "nota"}`;
+  const comprobanteCamaraId = `comprobante-camara-${detalleActual?._id || "nota"}`;
+  const comprobanteVideoId = `comprobante-video-${detalleActual?._id || "nota"}`;
 
   useEffect(() => {
     if (tipo === "pago") {
@@ -467,7 +479,7 @@ export default function NotaDetalleModal({
     return () => cerrarCamara();
   }, [open]);
 
-  const previewData = useMemo(() => (detalle ? buildNotaPedidoPrintData(detalle) : null), [detalle]);
+  const previewData = useMemo(() => (detalleActual ? buildNotaPedidoPrintData(detalleActual) : null), [detalleActual]);
   const previewDoc = useMemo(() => {
     if (!previewData) return "";
     return buildNotaPedidoPrintHtml(previewData);
@@ -790,7 +802,7 @@ export default function NotaDetalleModal({
         <div className="npl-modalHeader npl-modalHeader--nice">
           <div>
             <div className="npl-modalTitle">Vista previa de pedido</div>
-            <div className="npl-modalSub">{detalle?.numero ? `Pedido ${detalle.numero}` : "Pedido"}</div>
+            <div className="npl-modalSub">{detalleActual?.numero ? `Pedido ${detalleActual.numero}` : "Pedido"}</div>
           </div>
 
           <button className="npl-btnGhost" onClick={onClose}>Cerrar</button>
@@ -803,7 +815,7 @@ export default function NotaDetalleModal({
           <div className="npl-body">
             <div className="npl-printSheet npl-printSheet--landscape">
               <iframe
-                title={detalle?.numero ? `Vista previa ${detalle.numero}` : "Vista previa de nota"}
+                title={detalleActual?.numero ? `Vista previa ${detalleActual.numero}` : "Vista previa de nota"}
                 srcDoc={previewDoc}
                 className="npl-sharedPreviewFrame"
                 style={{
@@ -939,7 +951,7 @@ export default function NotaDetalleModal({
                                 <span>
                                   {leyendoComprobante
                                     ? "Leyendo monto automáticamente..."
-                                    : detalle?.caja?.guardada
+                                    : detalleActual?.caja?.guardada
                                       ? "Guardado con la caja."
                                       : "Listo para guardar con la caja."}
                                 </span>
@@ -1004,7 +1016,7 @@ export default function NotaDetalleModal({
 
                   <button
                     className="npl-btn"
-                    disabled={detalle?.caja?.guardada === true && !permitirEditarCajaGuardada}
+                    disabled={detalleActual?.caja?.guardada === true && !permitirEditarCajaGuardada}
                     onClick={async () => {
                       try {
                         let payloadTipo = tipo;
@@ -1079,7 +1091,7 @@ export default function NotaDetalleModal({
                       }
                     }}
                   >
-                    {detalle?.caja?.guardada ? "Guardar cambios de caja" : "Guardar caja"}
+                    {detalleActual?.caja?.guardada ? "Guardar cambios de caja" : "Guardar caja"}
                   </button>
                 </div>
               </div>
@@ -1090,7 +1102,7 @@ export default function NotaDetalleModal({
                     const img = it.imagen || it.data?.imagen;
                     return img?.dataUrl || (typeof img === "string" ? img : null);
                   }
-                  const itemsConImg = (detalle?.items || []).filter(it => getImgSrc(it));
+                  const itemsConImg = (detalleActual?.items || []).filter(it => getImgSrc(it));
                   if (!itemsConImg.length) return null;
                   return (
                     <div className="npl-soloComprobanteBox npl-noPrint">
@@ -1201,9 +1213,9 @@ export default function NotaDetalleModal({
                 className="npl-btnGhost"
                 type="button"
                 onClick={() => {
-                  const tel = normalizarWhatsappLocal(detalle?.cliente?.telefono);
+                  const tel = normalizarWhatsappLocal(detalleActual?.cliente?.telefono);
                   if (!tel) { Swal.fire({ icon: "warning", title: "Sin teléfono", text: "La nota no tiene teléfono para enviar." }); return; }
-                  openWhatsappText(tel, construirMensajeClienteLocal(detalle, pendingCajaPayload));
+                  openWhatsappText(tel, construirMensajeClienteLocal(detalleActual, pendingCajaPayload));
                   if (comprobanteClienteFile) copyFileToClipboard(comprobanteClienteFile).catch(() => {});
                 }}
               >

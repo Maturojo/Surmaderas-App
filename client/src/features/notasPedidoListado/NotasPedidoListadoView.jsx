@@ -83,7 +83,7 @@ export default function NotasPedidoListadoView() {
   }, [data.items]);
 
   async function handleGuardarCaja(nota, payload, options = {}) {
-    await guardarCajaNota(nota._id, payload);
+    const notaActualizada = await guardarCajaNota(nota._id, payload);
     await cargar(page);
     if (!options.keepOpen) cerrarDetalle();
     const tipo = String(payload?.tipo || "").toLowerCase();
@@ -97,6 +97,7 @@ export default function NotasPedidoListadoView() {
       kind: "success",
       message,
     });
+    return notaActualizada;
   }
 
   async function handleEnviarCliente(nota) {
