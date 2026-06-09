@@ -1,6 +1,7 @@
 import { Router } from "express";
 import EncuestaCliente from "../models/EncuestaCliente.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
+import { syncEncuestaToDoppler } from "../services/doppler.js";
 
 const router = Router();
 
@@ -37,6 +38,24 @@ const BRANCH_OPTIONS = new Set(["luro", "independencia"]);
 
 function normalizeText(value) {
   return String(value || "").trim();
+}
+
+function isValidBirthDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const today = new Date();
+  const oldest = new Date();
+  oldest.setFullYear(today.getFullYear() - 120);
+
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day &&
+    date <= today &&
+    date >= oldest
+  );
 }
 
 function addDays(date, days) {
@@ -113,6 +132,7 @@ function buildEncuestasExportRows(encuestas) {
     "tipo_documento",
     "documento",
     "direccion",
+    "fecha_nacimiento",
     "estrellas",
     "productos",
     "motivos",
@@ -136,6 +156,7 @@ function buildEncuestasExportRows(encuestas) {
     item.taxIdType,
     item.taxId,
     item.address,
+    item.birthDate || "",
     item.rating || "",
     item.purchasedProducts?.join(" | ") || "",
     item.choiceReasons?.join(" | ") || "",
@@ -205,10 +226,11 @@ router.post("/", async (req, res) => {
     const branch = normalizeText(req.body?.branch);
     const ivaCondition = normalizeText(req.body?.ivaCondition);
     const address = normalizeText(req.body?.address);
+    const birthDate = normalizeText(req.body?.birthDate);
     const taxId = normalizeText(req.body?.taxId).replace(/[^\d-]/g, "");
     const taxIdType = IVA_TO_TAX_ID[ivaCondition];
 
-    if (!fullName || !phoneNormalized || !email || !ivaCondition || !taxId || !address || !branch) {
+    if (!fullName || !phoneNormalized || !email || !ivaCondition || !taxId || !address || !branch || !birthDate) {
       return res.status(400).json({ message: "Completa todos los datos obligatorios" });
     }
 
@@ -226,6 +248,10 @@ router.post("/", async (req, res) => {
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ message: "Ingresa un mail valido" });
+    }
+
+    if (!isValidBirthDate(birthDate)) {
+      return res.status(400).json({ message: "Ingresa una fecha de nacimiento valida" });
     }
 
     const existing = await EncuestaCliente.findOne({
@@ -259,6 +285,7 @@ router.post("/", async (req, res) => {
       taxIdType,
       taxId,
       address,
+      birthDate,
       rating: ratingValue,
       purchasedProducts: normalizeArray(req.body?.purchasedProducts, PRODUCT_OPTIONS),
       choiceReasons,
@@ -273,6 +300,19 @@ router.post("/", async (req, res) => {
       couponDiscount: 15,
       couponExpiresAt: addDays(new Date(), 30),
     });
+
+    try {
+      const dopplerResult = await syncEncuestaToDoppler(encuesta);
+      if (!dopplerResult.skipped) {
+        encuesta.dopplerSyncedAt = new Date();
+        encuesta.dopplerSyncError = "";
+        await encuesta.save();
+      }
+    } catch (dopplerError) {
+      encuesta.dopplerSyncError = dopplerError?.message || "No se pudo sincronizar con Doppler";
+      await encuesta.save();
+      console.error("Error sincronizando Doppler:", encuesta.dopplerSyncError);
+    }
 
     return res.status(201).json({
       message: "Formulario cargado correctamente",

@@ -3,7 +3,7 @@ import { API_URL } from "../services/http";
 import { getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
-const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=13";
+const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=14";
 
 const LABELS = {
   consumidor_final: "Consumidor Final",
@@ -47,6 +47,13 @@ function formatDate(value) {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function formatBirthDate(value) {
+  if (!value) return "-";
+  const [year, month, day] = String(value).split("-");
+  if (!year || !month || !day) return "-";
+  return `${day}/${month}/${year}`;
 }
 
 function isExpired(item) {
@@ -297,6 +304,10 @@ export default function EncuestasCupones() {
                   <strong>{selectedCoupon.address}</strong>
                 </div>
                 <div>
+                  <span>Nacimiento</span>
+                  <strong>{formatBirthDate(selectedCoupon.birthDate)}</strong>
+                </div>
+                <div>
                   <span>Experiencia</span>
                   <strong>{selectedCoupon.rating ? `${selectedCoupon.rating}/5` : "-"}</strong>
                 </div>
@@ -387,6 +398,7 @@ export default function EncuestasCupones() {
                     <td>
                       <strong>{item.fullName}</strong>
                       <span>{item.taxIdType} {item.taxId}</span>
+                      <span>Nac: {formatBirthDate(item.birthDate)}</span>
                     </td>
                     <td>
                       <strong>{item.phone}</strong>

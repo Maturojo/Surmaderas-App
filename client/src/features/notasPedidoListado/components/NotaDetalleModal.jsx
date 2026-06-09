@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
+import "../../../css/NotasPedidoListado.css";
 
 import Swal from "sweetalert2";
 import { createWorker } from "tesseract.js";

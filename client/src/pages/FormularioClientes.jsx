@@ -39,7 +39,7 @@ const GOOGLE_REVIEW_URL =
 const GOOGLE_REVIEW_TEXT =
   "\u00a1Gracias por tu tiempo! Como ultimo, tu opinion en Google nos seria de gran ayuda. Es un solo Click\ud83d\udc47\ud83c\udffc";
 
-const FORM_BUILD_VERSION = "donweb-v13";
+const FORM_BUILD_VERSION = "donweb-v14";
 const STAR_SYMBOL = "\u2605";
 
 const LOGO_URL = logoSurMaderas;
@@ -52,6 +52,7 @@ const INITIAL_FORM = {
   ivaCondition: "consumidor_final",
   taxId: "",
   address: "",
+  birthDate: "",
   rating: 0,
   purchasedProducts: [],
   choiceReasons: [],
@@ -102,6 +103,24 @@ function isTaxIdValid(type, value) {
   return digits.length === 11;
 }
 
+function isBirthDateValid(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const today = new Date();
+  const oldest = new Date();
+  oldest.setFullYear(today.getFullYear() - 120);
+
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day &&
+    date <= today &&
+    date >= oldest
+  );
+}
+
 function formatDate(value) {
   if (!value) return "";
   return new Intl.DateTimeFormat("es-AR", { dateStyle: "short" }).format(new Date(value));
@@ -134,6 +153,8 @@ export default function FormularioClientes({ defaultBranch = "" }) {
   const phoneIsValid = normalizePhone(form.phone).length === 11;
   const emailIsValid = !form.email || isEmailValid(form.email);
   const taxIdIsValid = !form.taxId || isTaxIdValid(selectedIva.taxIdType, form.taxId);
+  const birthDateIsValid = !form.birthDate || isBirthDateValid(form.birthDate);
+  const maxBirthDate = new Date().toISOString().slice(0, 10);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -146,7 +167,7 @@ export default function FormularioClientes({ defaultBranch = "" }) {
   }
 
   function validateStepOne() {
-    if (!form.fullName || !form.branch || !form.phone || !form.email || !form.taxId || !form.address) {
+    if (!form.fullName || !form.branch || !form.phone || !form.email || !form.taxId || !form.address || !form.birthDate) {
       setError("Completa tus datos para activar el descuento.");
       return false;
     }
@@ -163,6 +184,11 @@ export default function FormularioClientes({ defaultBranch = "" }) {
 
     if (!isTaxIdValid(selectedIva.taxIdType, form.taxId)) {
       setError(`Ingresa un ${selectedIva.taxIdType} valido.`);
+      return false;
+    }
+
+    if (!isBirthDateValid(form.birthDate)) {
+      setError("Ingresa una fecha de nacimiento valida.");
       return false;
     }
 
@@ -432,6 +458,22 @@ export default function FormularioClientes({ defaultBranch = "" }) {
                 placeholder="Calle y altura"
                 required
               />
+            </label>
+
+            <label className="survey-field">
+              <span>Fecha de nacimiento</span>
+              <input
+                className={form.birthDate ? (birthDateIsValid ? "is-valid" : "is-invalid") : ""}
+                name="birthDate"
+                type="date"
+                value={form.birthDate}
+                onChange={handleChange}
+                max={maxBirthDate}
+                required
+              />
+              {form.birthDate && !birthDateIsValid ? (
+                <small className="survey-fieldHint error">Ingresa una fecha valida.</small>
+              ) : null}
             </label>
 
             {error ? <div className="survey-message error">{error}</div> : null}

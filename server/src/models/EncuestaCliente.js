@@ -15,6 +15,7 @@ const EncuestaClienteSchema = new mongoose.Schema(
     taxIdType: { type: String, required: true, enum: ["DNI", "CUIL", "CUIT"] },
     taxId: { type: String, required: true, trim: true },
     address: { type: String, required: true, trim: true },
+    birthDate: { type: String, default: "", trim: true },
     rating: { type: Number, min: 1, max: 5, default: null },
     purchasedProducts: [{ type: String, trim: true }],
     choiceReasons: [{ type: String, trim: true }],
@@ -37,6 +38,8 @@ const EncuestaClienteSchema = new mongoose.Schema(
     couponUsedBy: { type: String, default: "" },
     welcomeNotificationSentAt: { type: Date, default: null },
     reminderNotificationSentAt: { type: Date, default: null },
+    dopplerSyncedAt: { type: Date, default: null },
+    dopplerSyncError: { type: String, default: "", trim: true },
   },
   { timestamps: true }
 );
