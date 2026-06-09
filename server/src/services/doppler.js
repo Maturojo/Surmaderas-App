@@ -29,18 +29,27 @@ function addDopplerField(fields, name, value) {
   fields.push({ name, value: text });
 }
 
+function splitFullName(fullName = "") {
+  const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] || "",
+    lastName: parts.slice(1).join(" "),
+  };
+}
+
 function buildDopplerSubscriber(encuesta) {
   const fields = [];
+  const { firstName, lastName } = splitFullName(encuesta.fullName);
 
-  addDopplerField(fields, "Nombre", encuesta.fullName);
+  addDopplerField(fields, "FIRSTNAME", firstName);
+  addDopplerField(fields, "LASTNAME", lastName);
   addDopplerField(fields, "CELULAR", encuesta.phone || encuesta.phoneNormalized);
   addDopplerField(fields, "SUCURSAL", encuesta.branch);
-  addDopplerField(fields, "CUPON", encuesta.couponCode);
-  addDopplerField(fields, "CUPON_USADO", encuesta.couponUsed ? "si" : "no");
+  addDopplerField(fields, "NUMERODECUPON", encuesta.couponCode);
+  addDopplerField(fields, "CUPONUTILIZADO", encuesta.couponUsed ? "si" : "no");
   addDopplerField(fields, "VENCIMIENTO", formatDateOnly(encuesta.couponExpiresAt));
-  addDopplerField(fields, "PRODUCTOS", encuesta.purchasedProducts);
-  addDopplerField(fields, "VUELVE", encuesta.npsChoice);
-  addDopplerField(fields, "Cumpleaños", formatDateOnly(encuesta.birthDate));
+  addDopplerField(fields, "PRODUCTO", encuesta.purchasedProducts);
+  addDopplerField(fields, "BIRTHDAY", formatDateOnly(encuesta.birthDate));
 
   return {
     email: encuesta.email,
