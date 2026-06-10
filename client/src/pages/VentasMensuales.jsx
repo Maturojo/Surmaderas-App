@@ -1,6 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   createVentaMensual,
   createVentasTransferencia,
   deleteVentaMensual,
@@ -38,6 +51,7 @@ const SALE_TYPE_OPTIONS = [
 ];
 
 const SPECIAL_CLIENTS = ["ELVIA ROSSI", "MANOLO"];
+const CHART_COLORS = ["#5f7d6c", "#bb9658", "#2f5f74", "#9d5c45", "#6e7f55", "#8b6f47"];
 
 const INITIAL_FORM = {
   id: "",
@@ -73,6 +87,17 @@ const TABS = [
 
 function currentMonth() {
   return new Date().toISOString().slice(0, 7);
+}
+
+function shiftMonth(month, offset) {
+  const [year, monthIndex] = month.split("-").map(Number);
+  return new Date(year, monthIndex - 1 + offset, 1).toISOString().slice(0, 7);
+}
+
+function formatMonthLabel(month) {
+  return new Intl.DateTimeFormat("es-AR", { month: "short", year: "2-digit" })
+    .format(new Date(`${month}-01T12:00:00`))
+    .replace(".", "");
 }
 
 function formatMoney(value) {
@@ -192,12 +217,54 @@ function getDailyTotals(items) {
   return [...map.values()].sort((a, b) => b.key.localeCompare(a.key));
 }
 
+function getSaleTypeTotals(items) {
+  const base = {
+    normal: { key: "normal", name: "Ventas 10%", total: 0, commission: 0, count: 0 },
+    especial: { key: "especial", name: "Ventas 5%", total: 0, commission: 0, count: 0 },
+  };
+
+  items.forEach((item) => {
+    const key = item.saleType === "especial" ? "especial" : "normal";
+    base[key].total += item.total || 0;
+    base[key].commission += item.commission || 0;
+    base[key].count += 1;
+  });
+
+  return [base.normal, base.especial];
+}
+
+function getCategoryTotals(items) {
+  const map = new Map();
+  items.forEach((item) => {
+    const key = item.category || "Sin categoria";
+    const current = map.get(key) || { label: key, name: key, total: 0, commission: 0, count: 0 };
+    current.total += item.total || 0;
+    current.commission += item.commission || 0;
+    current.count += 1;
+    map.set(key, current);
+  });
+  return [...map.values()].sort((a, b) => b.total - a.total).slice(0, 8);
+}
+
+function getPaymentTotals(items) {
+  return PAYMENT_OPTIONS.map((option) => {
+    const matching = items.filter((item) => item.paymentStatus === option.value);
+    return {
+      key: option.value,
+      name: option.label,
+      total: matching.reduce((sum, item) => sum + (item.total || 0), 0),
+      count: matching.length,
+    };
+  });
+}
+
 export default function VentasMensuales({ section = "lista" }) {
   const navigate = useNavigate();
   const [month, setMonth] = useState(currentMonth());
   const [items, setItems] = useState([]);
   const [transfers, setTransfers] = useState([]);
   const [transferTotal, setTransferTotal] = useState(0);
+  const [monthlyHistory, setMonthlyHistory] = useState([]);
   const [transferDate, setTransferDate] = useState(new Date().toISOString().slice(0, 10));
   const [summary, setSummary] = useState(null);
   const [goal, setGoal] = useState({ salesGoal: "", commissionGoal: "" });
@@ -221,6 +288,13 @@ export default function VentasMensuales({ section = "lista" }) {
   const todayKey = toLocalDateKey(new Date());
   const weeklyTotals = useMemo(() => getWeeklyTotals(items, month), [items, month]);
   const dailyTotals = useMemo(() => getDailyTotals(items), [items]);
+  const dailyChart = useMemo(
+    () => [...dailyTotals].reverse().map((day) => ({ ...day, name: formatDate(day.key) })),
+    [dailyTotals]
+  );
+  const saleTypeTotals = useMemo(() => getSaleTypeTotals(items), [items]);
+  const categoryTotals = useMemo(() => getCategoryTotals(items), [items]);
+  const paymentTotals = useMemo(() => getPaymentTotals(items), [items]);
   const dailySales = useMemo(() => items.filter((item) => isSameInputDate(item.date, todayKey)), [items, todayKey]);
   const dailySalesTotal = useMemo(() => dailySales.reduce((sum, item) => sum + (item.total || 0), 0), [dailySales]);
   const dailySalesCommission = useMemo(() => dailySales.reduce((sum, item) => sum + (item.commission || 0), 0), [dailySales]);
@@ -273,6 +347,27 @@ export default function VentasMensuales({ section = "lista" }) {
     }
   }, []);
 
+  const loadMonthlyHistory = useCallback(async () => {
+    try {
+      const months = Array.from({ length: 6 }, (_, index) => shiftMonth(month, index - 5));
+      const results = await Promise.all(
+        months.map(async (historyMonth) => {
+          const data = await getVentasMensuales(historyMonth);
+          return {
+            month: historyMonth,
+            name: formatMonthLabel(historyMonth),
+            total: data.summary?.salesTotal || 0,
+            commission: data.summary?.commissionTotal || 0,
+            count: data.items?.length || 0,
+          };
+        })
+      );
+      setMonthlyHistory(results);
+    } catch {
+      setMonthlyHistory([]);
+    }
+  }, [month]);
+
   useEffect(() => {
     loadMonth();
   }, [loadMonth]);
@@ -280,6 +375,10 @@ export default function VentasMensuales({ section = "lista" }) {
   useEffect(() => {
     loadSettings();
   }, [loadSettings]);
+
+  useEffect(() => {
+    loadMonthlyHistory();
+  }, [loadMonthlyHistory]);
 
   useEffect(() => {
     if (transferDate.slice(0, 7) !== month) {
@@ -505,6 +604,157 @@ export default function VentasMensuales({ section = "lista" }) {
             <strong>{formatMoney(stat.value)}</strong>
           </article>
         ))}
+      </div>
+    );
+  }
+
+  function renderSalesCharts() {
+    return (
+      <div className="monthly-salesCharts">
+        <article className="stats-panel">
+          <div className="stats-panelTitle">Ventas 10% y 5%</div>
+          <div className="monthly-salesChart">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={saleTypeTotals}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                <Tooltip formatter={(value) => formatMoney(value)} />
+                <Legend />
+                <Bar dataKey="total" name="Vendido" fill="#5f7d6c" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="commission" name="Comision" fill="#bb9658" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+
+        <article className="stats-panel">
+          <div className="stats-panelTitle">Participacion por tipo</div>
+          <div className="monthly-salesChart">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={saleTypeTotals} dataKey="total" nameKey="name" outerRadius={92} label>
+                  {saleTypeTotals.map((entry, index) => (
+                    <Cell key={entry.key} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatMoney(value)} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+
+        <article className="stats-panel monthly-salesChartCard--wide">
+          <div className="stats-panelTitle">Ventas por dia</div>
+          <div className="monthly-salesChart">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dailyChart}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                <Tooltip formatter={(value) => formatMoney(value)} />
+                <Legend />
+                <Bar dataKey="total" name="Vendido" fill="#2f5f74" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="commission" name="Comision" fill="#9d5c45" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+      </div>
+    );
+  }
+
+  function renderConfigurationOverview() {
+    const bestCategory = categoryTotals[0];
+    const normalTotal = saleTypeTotals.find((item) => item.key === "normal");
+    const specialTotal = saleTypeTotals.find((item) => item.key === "especial");
+
+    return (
+      <div className="monthly-salesAnalytics">
+        <div className="monthly-salesGoalGrid">
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Vendido este mes</span>
+            <strong>{formatMoney(summary?.salesTotal)}</strong>
+            <p>{items.length} ventas cargadas en {formatMonthLabel(month)}</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Ventas 10%</span>
+            <strong>{formatMoney(normalTotal?.total)}</strong>
+            <p>{normalTotal?.count || 0} ventas - comision {formatMoney(normalTotal?.commission)}</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Ventas 5%</span>
+            <strong>{formatMoney(specialTotal?.total)}</strong>
+            <p>{specialTotal?.count || 0} ventas - comision {formatMoney(specialTotal?.commission)}</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Pendiente de cobro</span>
+            <strong>{formatMoney(summary?.pendingTotal)}</strong>
+            <p>Ventas marcadas como pendientes</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Transferencias</span>
+            <strong>{formatMoney(transferTotal)}</strong>
+            <p>{transfers.length} movimientos cargados</p>
+          </article>
+          <article className="config-usersCard monthly-salesGoalCard">
+            <span>Categoria principal</span>
+            <strong>{bestCategory?.label || "Sin datos"}</strong>
+            <p>{bestCategory ? `${formatMoney(bestCategory.total)} en ${bestCategory.count} ventas` : "Sin ventas cargadas"}</p>
+          </article>
+        </div>
+
+        <div className="monthly-salesCharts">
+          <article className="stats-panel monthly-salesChartCard--wide">
+            <div className="stats-panelTitle">Cuanto se vendio por mes</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyHistory}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Legend />
+                  <Bar dataKey="total" name="Vendido" fill="#5f7d6c" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="commission" name="Comision" fill="#bb9658" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </article>
+
+          <article className="stats-panel">
+            <div className="stats-panelTitle">Ventas por categoria</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={categoryTotals} dataKey="total" nameKey="name" outerRadius={92} label>
+                    {categoryTotals.map((entry, index) => (
+                      <Cell key={entry.label} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </article>
+
+          <article className="stats-panel">
+            <div className="stats-panelTitle">Estado de cobro</div>
+            <div className="monthly-salesChart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={paymentTotals}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <Tooltip formatter={(value) => formatMoney(value)} />
+                  <Bar dataKey="total" name="Total" fill="#2f5f74" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </article>
+        </div>
       </div>
     );
   }
@@ -834,6 +1084,7 @@ export default function VentasMensuales({ section = "lista" }) {
       {section === "lista" ? (
         <>
           {renderStats()}
+          {renderSalesCharts()}
           {renderDailySales()}
           <div className="monthly-salesGrid monthly-salesGrid--list">
             {renderSalesTable()}
@@ -848,6 +1099,7 @@ export default function VentasMensuales({ section = "lista" }) {
       {section === "objetivos" ? (
         <>
           {renderStats()}
+          {renderConfigurationOverview()}
           {renderObjectives()}
         </>
       ) : null}
