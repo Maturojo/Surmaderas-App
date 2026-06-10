@@ -177,7 +177,7 @@ export default function NotasPedidoListadoView() {
 
   function handleEditarNota(nota) {
     if (!nota?._id) return;
-    navigate(`/notas-pedido/editar/${nota._id}`);
+    navigate(`/notas-pedido/editar/${nota._id}`, { state: { returnTo: "/notas-pedido/listado" } });
   }
 
   return (

@@ -464,7 +464,7 @@ export default function NotasPedidoView() {
         showConfirmButton: false,
       });
 
-      if (isEditing) navigate("/notas-pedido/listado");
+      if (isEditing) navigate(location.state?.returnTo || "/notas-pedido/listado");
     } catch (e) {
       await Swal.fire({
         icon: "error",

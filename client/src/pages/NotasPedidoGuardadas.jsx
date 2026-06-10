@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   actualizarOperacionNota,
   eliminarNotaPedido,
@@ -213,6 +213,7 @@ const VIEW_CONFIG = {
 
 export default function NotasPedidoGuardadas({ view = "all" }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -813,7 +814,7 @@ export default function NotasPedidoGuardadas({ view = "all" }) {
     const id = nota?._id || nota?.id;
     if (!id) return;
     cerrarAccionesNota();
-    navigate(`/notas-pedido/editar/${id}`);
+    navigate(`/notas-pedido/editar/${id}`, { state: { returnTo: location.pathname } });
   }
 
   function cerrarPromptProveedor() {

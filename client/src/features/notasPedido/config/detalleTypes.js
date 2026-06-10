@@ -4,16 +4,19 @@ export function buildDescripcionFromItem(item) {
   const tipo = item?.tipo || DEFAULT_TIPO;
   const d = item?.data || {};
 
-  // Prioridad: si el usuario escribio descripcion manual, usala.
+  // En productos, la descripcion seleccionada es el dato principal.
   const manual = (item?.descripcion || "").trim();
-  if (manual) return manual;
 
   if (tipo === "producto") {
+    if (manual) return manual;
     // Si no hay descripcion manual, usa busqueda o data.nombre
     return String(item?.busqueda || d?.nombre || "").trim();
   }
 
   if (tipo === "corte") {
+    const hasStructuredData = d.material || d.largoMm || d.anchoMm || d.cortes || d.obs;
+    if (!hasStructuredData && manual) return manual;
+
     const mat = d.material || "Material";
     const largo = d.largoMm ? `${d.largoMm}cm` : "";
     const ancho = d.anchoMm ? `${d.anchoMm}cm` : "";
@@ -24,6 +27,9 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "marco") {
+    const hasStructuredData = d.perfil || d.anchoMm || d.altoMm || d.obs || (Array.isArray(d.resumenLineas) && d.resumenLineas.length > 0);
+    if (!hasStructuredData && manual) return manual;
+
     if (Array.isArray(d.resumenLineas) && d.resumenLineas.length > 0) {
       const resumen = d.resumenLineas
         .filter((linea) => linea?.label && linea?.value)
@@ -42,6 +48,9 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "calado") {
+    const hasStructuredData = d.material || d.diseno || d.largoCm || d.anchoCm || d.medidas || d.obs;
+    if (!hasStructuredData && manual) return manual;
+
     const mat = d.material || "Material";
     const diseno = d.diseno || "";
     const largo = d.largoCm ? `${d.largoCm}cm` : "";
@@ -52,6 +61,9 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "mueble") {
+    const hasStructuredData = d.nombre || d.medidas || d.material || d.obs;
+    if (!hasStructuredData && manual) return manual;
+
     const nombre = d.nombre || "Mueble";
     const medidas = d.medidas || "";
     const mat = d.material || "";
@@ -60,6 +72,9 @@ export function buildDescripcionFromItem(item) {
   }
 
   if (tipo === "prestamo") {
+    const hasStructuredData = d.descripcion || d.fechaDevolucion || d.obs;
+    if (!hasStructuredData && manual) return manual;
+
     const desc = d.descripcion || "Prestamo";
     const dev = d.fechaDevolucion ? ` (Dev: ${d.fechaDevolucion})` : "";
     const obs = d.obs ? ` - ${d.obs}` : "";
