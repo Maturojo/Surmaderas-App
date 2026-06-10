@@ -20,12 +20,34 @@ const PRODUCT_OPTIONS = [
   { value: "artistica", label: "Artistica" },
 ];
 
-const REASON_OPTIONS = [
-  { value: "lo_necesitaba_ya", label: "Lo necesitaba ya" },
-  { value: "ya_los_conozco", label: "Ya los conozco / me recomendaron" },
-  { value: "me_asesoraron_bien", label: "Me asesoraron bien" },
-  { value: "precio", label: "El precio" },
-  { value: "a_medida", label: "Pueden hacerlo a medida" },
+const CUSTOMER_TYPE_OPTIONS = [
+  { value: "particular", label: "Particular" },
+  { value: "carpintero", label: "Carpintero" },
+  { value: "constructor", label: "Constructor" },
+  { value: "arquitecto_disenador", label: "Arquitecto/Disenador" },
+  { value: "emprendedor_comerciante", label: "Emprendedor o comerciante" },
+];
+
+const FIRST_PURCHASE_OPTIONS = [
+  { value: "primera", label: "Si, es la primera" },
+  { value: "ya_compre", label: "Ya compre antes" },
+  { value: "compro_seguido", label: "Compro seguido" },
+];
+
+const PROJECT_TYPE_OPTIONS = [
+  { value: "mueble", label: "Mueble" },
+  { value: "reforma_hogar", label: "Reforma del hogar" },
+  { value: "obra", label: "Obra" },
+  { value: "reventa", label: "Reventa" },
+];
+
+const REFERRAL_SOURCE_OPTIONS = [
+  { value: "instagram", label: "Instagram" },
+  { value: "facebook", label: "Facebook" },
+  { value: "google", label: "Google" },
+  { value: "recomendacion", label: "Recomendacion" },
+  { value: "pasaba_local", label: "Pasaba por el local" },
+  { value: "ya_era_cliente", label: "Ya era cliente" },
 ];
 
 const BRANCH_OPTIONS = [
@@ -54,8 +76,11 @@ const INITIAL_FORM = {
   address: "",
   birthDate: "",
   rating: 0,
+  customerType: "",
+  firstPurchase: "",
   purchasedProducts: [],
   choiceReasons: [],
+  referralSource: "",
   purchaseDriver: "",
   npsChoice: "",
   improvement: "",
@@ -505,27 +530,42 @@ export default function FormularioClientes({ defaultBranch = "", defaultOrigin =
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="survey-kicker">Paso 2 de 4</div>
-            <h1>Solo 4 preguntas rapidas</h1>
+            <h1>Solo 6 preguntas rapidas</h1>
 
             <div className="survey-block">
-              <span className="survey-label">Como calificarias tu experiencia de hoy?</span>
-              <div className="survey-stars">
-                {[1, 2, 3, 4, 5].map((value) => (
+              <span className="survey-label">¿Sos cliente particular o del rubro?</span>
+              <div className="survey-chips">
+                {CUSTOMER_TYPE_OPTIONS.map((option) => (
                   <button
-                    key={value}
+                    key={option.value}
                     type="button"
-                    className={form.rating >= value ? "active" : ""}
-                    onClick={() => setForm((current) => ({ ...current, rating: value }))}
-                    aria-label={`${value} estrellas`}
+                    className={form.customerType === option.value ? "active" : ""}
+                    onClick={() => setForm((current) => ({ ...current, customerType: option.value }))}
                   >
-                    {STAR_SYMBOL}
+                    {option.label}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">¿Que compraste hoy?</span>
+              <span className="survey-label">¿Es tu primera compra en Sur Maderas?</span>
+              <div className="survey-chips">
+                {FIRST_PURCHASE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={form.firstPurchase === option.value ? "active" : ""}
+                    onClick={() => setForm((current) => ({ ...current, firstPurchase: option.value }))}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="survey-block">
+              <span className="survey-label">¿Qué te interesa principalmente?</span>
               <div className="survey-chips">
                 {PRODUCT_OPTIONS.map((option) => (
                   <button
@@ -546,48 +586,39 @@ export default function FormularioClientes({ defaultBranch = "", defaultOrigin =
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">¿Que te hizo decidirte por Sur Maderas? Selecciona hasta 3.</span>
-              <div className="survey-checks">
-                {REASON_OPTIONS.map((option) => (
-                  <label key={option.value}>
-                    <input
-                      type="checkbox"
-                      checked={form.choiceReasons.includes(option.value)}
-                      onChange={() =>
-                        setForm((current) => ({
-                          ...current,
-                          choiceReasons: toggleValue(current.choiceReasons, option.value, 3),
-                        }))
-                      }
-                    />
-                    <span>{option.label}</span>
-                  </label>
+              <span className="survey-label">¿Para qué es tu próximo proyecto?</span>
+              <div className="survey-chips">
+                {PROJECT_TYPE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={form.purchaseDriver === option.value ? "active" : ""}
+                    onClick={() => setForm((current) => ({ ...current, purchaseDriver: option.value }))}
+                  >
+                    {option.label}
+                  </button>
                 ))}
               </div>
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">¿Cual es el motor principal de tu compra hoy?</span>
+              <span className="survey-label">¿Cómo nos conociste?</span>
               <div className="survey-chips">
-                <button
-                  type="button"
-                  className={form.purchaseDriver === "emprendimiento" ? "active" : ""}
-                  onClick={() => setForm((current) => ({ ...current, purchaseDriver: "emprendimiento" }))}
-                >
-                  Para mi emprendimiento/comercio
-                </button>
-                <button
-                  type="button"
-                  className={form.purchaseDriver === "personal" ? "active" : ""}
-                  onClick={() => setForm((current) => ({ ...current, purchaseDriver: "personal" }))}
-                >
-                  Para uso personal (Hobby, arreglo o renovacion personal)
-                </button>
+                {REFERRAL_SOURCE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={form.referralSource === option.value ? "active" : ""}
+                    onClick={() => setForm((current) => ({ ...current, referralSource: option.value }))}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
             </div>
 
             <div className="survey-block">
-              <span className="survey-label">¿Volves a elegirnos para tu proximo proyecto?</span>
+              <span className="survey-label">¿Volvés a elegirnos para tu próximo proyecto?</span>
               <div className="survey-chips">
                 {[
                   ["seguro", "Seguro"],
@@ -605,11 +636,6 @@ export default function FormularioClientes({ defaultBranch = "", defaultOrigin =
                 ))}
               </div>
             </div>
-
-            <label className="survey-field">
-              <span>¿Algo que podriamos mejorar? Opcional</span>
-              <textarea name="improvement" value={form.improvement} onChange={handleChange} rows="4" />
-            </label>
 
             {error ? <div className="survey-message error">{error}</div> : null}
 

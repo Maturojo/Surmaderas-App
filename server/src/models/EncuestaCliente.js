@@ -18,11 +18,26 @@ const EncuestaClienteSchema = new mongoose.Schema(
     birthDate: { type: String, default: "", trim: true },
     origin: { type: String, enum: ["local", "web"], default: "local", index: true },
     rating: { type: Number, min: 1, max: 5, default: null },
+    customerType: {
+      type: String,
+      enum: ["particular", "carpintero", "constructor", "arquitecto_disenador", "emprendedor_comerciante", ""],
+      default: "",
+    },
+    firstPurchase: {
+      type: String,
+      enum: ["primera", "ya_compre", "compro_seguido", ""],
+      default: "",
+    },
     purchasedProducts: [{ type: String, trim: true }],
     choiceReasons: [{ type: String, trim: true }],
+    referralSource: {
+      type: String,
+      enum: ["instagram", "facebook", "google", "recomendacion", "pasaba_local", "ya_era_cliente", ""],
+      default: "",
+    },
     purchaseDriver: {
       type: String,
-      enum: ["emprendimiento", "personal", ""],
+      enum: ["mueble", "reforma_hogar", "obra", "reventa", ""],
       default: "",
     },
     npsChoice: {

@@ -50,6 +50,9 @@ function buildDopplerSubscriber(encuesta) {
   addDopplerField(fields, "VENCIMIENTO", formatDateOnly(encuesta.couponExpiresAt));
   addDopplerField(fields, "PRODUCTO", encuesta.purchasedProducts);
   addDopplerField(fields, "BIRTHDAY", formatDateOnly(encuesta.birthDate));
+  addDopplerField(fields, "TIPOAUDIENCIA", encuesta.customerType);
+  addDopplerField(fields, "MOTOR_COMPRA", encuesta.purchaseDriver);
+  addDopplerField(fields, "PROBABILIDADDECOMPRA", encuesta.npsChoice);
 
   return {
     email: encuesta.email,
@@ -57,14 +60,14 @@ function buildDopplerSubscriber(encuesta) {
   };
 }
 
-export async function syncEncuestaToDoppler(encuesta) {
-  const config = getDopplerConfig();
+function buildDopplerCouponUsedSubscriber(encuesta) {
+  return {
+    email: encuesta.email,
+    fields: [{ name: "CUPONUTILIZADO", value: "si" }],
+  };
+}
 
-  if (!isDopplerConfigured(config)) {
-    return { skipped: true, reason: "Doppler no configurado" };
-  }
-
-  const subscriber = buildDopplerSubscriber(encuesta);
+async function sendDopplerImport(config, method, subscriber) {
   const fields = (subscriber.fields || []).map((field) => field.name);
   const accountEmail = encodeURIComponent(config.accountEmail);
   const listId = encodeURIComponent(config.listId);
@@ -74,7 +77,7 @@ export async function syncEncuestaToDoppler(encuesta) {
 
   try {
     const response = await fetch(url, {
-      method: "POST",
+      method,
       headers: {
         Authorization: `token ${config.apiKey}`,
         "Content-Type": "application/json",
@@ -96,5 +99,30 @@ export async function syncEncuestaToDoppler(encuesta) {
     return { skipped: false, data };
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+export async function syncEncuestaToDoppler(encuesta) {
+  const config = getDopplerConfig();
+
+  if (!isDopplerConfigured(config)) {
+    return { skipped: true, reason: "Doppler no configurado" };
+  }
+
+  return sendDopplerImport(config, "POST", buildDopplerSubscriber(encuesta));
+}
+
+export async function updateCouponUsedInDoppler(encuesta) {
+  const config = getDopplerConfig();
+
+  if (!isDopplerConfigured(config)) {
+    return { skipped: true, reason: "Doppler no configurado" };
+  }
+
+  try {
+    return await sendDopplerImport(config, "PATCH", buildDopplerCouponUsedSubscriber(encuesta));
+  } catch (patchError) {
+    const fallback = await sendDopplerImport(config, "POST", buildDopplerSubscriber(encuesta));
+    return { ...fallback, fallbackFromPatch: true, patchError: patchError?.message || "" };
   }
 }

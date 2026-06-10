@@ -1,7 +1,7 @@
 import { Router } from "express";
 import EncuestaCliente from "../models/EncuestaCliente.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
-import { syncEncuestaToDoppler } from "../services/doppler.js";
+import { syncEncuestaToDoppler, updateCouponUsedInDoppler } from "../services/doppler.js";
 
 const router = Router();
 
@@ -27,13 +27,24 @@ const PRODUCT_OPTIONS = new Set([
   "productos_varios",
   "artistica",
 ]);
-const REASON_OPTIONS = new Set([
-  "lo_necesitaba_ya",
-  "ya_los_conozco",
-  "me_asesoraron_bien",
-  "precio",
-  "a_medida",
+const CUSTOMER_TYPE_OPTIONS = new Set([
+  "particular",
+  "carpintero",
+  "constructor",
+  "arquitecto_disenador",
+  "emprendedor_comerciante",
 ]);
+const FIRST_PURCHASE_OPTIONS = new Set(["primera", "ya_compre", "compro_seguido"]);
+const PROJECT_TYPE_OPTIONS = new Set(["mueble", "reforma_hogar", "obra", "reventa"]);
+const REFERRAL_SOURCE_OPTIONS = new Set([
+  "instagram",
+  "facebook",
+  "google",
+  "recomendacion",
+  "pasaba_local",
+  "ya_era_cliente",
+]);
+const PROBABILITY_OPTIONS = new Set(["seguro", "probablemente", "no_se"]);
 const BRANCH_OPTIONS = new Set(["luro", "independencia"]);
 
 function normalizeText(value) {
@@ -134,10 +145,12 @@ function buildEncuestasExportRows(encuestas) {
     "direccion",
     "fecha_nacimiento",
     "estrellas",
-    "productos",
-    "motivos",
-    "motor_compra",
-    "vuelve",
+    "tipo_cliente",
+    "primera_compra",
+    "interes_principal",
+    "proximo_proyecto",
+    "como_conocio",
+    "probabilidad_compra",
     "mejora",
     "cupon",
     "cupon_usado",
@@ -158,10 +171,12 @@ function buildEncuestasExportRows(encuestas) {
     item.address,
     item.birthDate || "",
     item.rating || "",
+    item.customerType || "",
+    item.firstPurchase || "",
     item.purchasedProducts?.join(" | ") || "",
-    item.choiceReasons?.join(" | ") || "",
-    item.purchaseDriver,
-    item.npsChoice,
+    item.purchaseDriver || "",
+    item.referralSource || item.choiceReasons?.join(" | ") || "",
+    item.npsChoice || "",
     item.improvement,
     item.couponCode,
     item.couponUsed ? "si" : "no",
@@ -217,9 +232,11 @@ async function createCouponCode() {
   throw new Error("No quedan codigos de cupon disponibles");
 }
 
-async function syncDopplerSafe(encuesta) {
+async function syncDopplerSafe(encuesta, { couponUsedOnly = false } = {}) {
   try {
-    const dopplerResult = await syncEncuestaToDoppler(encuesta);
+    const dopplerResult = couponUsedOnly
+      ? await updateCouponUsedInDoppler(encuesta)
+      : await syncEncuestaToDoppler(encuesta);
     if (!dopplerResult.skipped) {
       encuesta.dopplerSyncedAt = new Date();
       encuesta.dopplerSyncError = "";
@@ -295,7 +312,11 @@ router.post("/", async (req, res) => {
 
     const rating = Number(req.body?.rating);
     const ratingValue = Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : null;
-    const choiceReasons = normalizeArray(req.body?.choiceReasons, REASON_OPTIONS, 3);
+    const customerType = normalizeText(req.body?.customerType);
+    const firstPurchase = normalizeText(req.body?.firstPurchase);
+    const purchaseDriver = normalizeText(req.body?.purchaseDriver);
+    const referralSource = normalizeText(req.body?.referralSource);
+    const npsChoice = normalizeText(req.body?.npsChoice);
 
     const encuesta = await EncuestaCliente.create({
       fullName,
@@ -310,14 +331,12 @@ router.post("/", async (req, res) => {
       birthDate,
       origin,
       rating: ratingValue,
+      customerType: CUSTOMER_TYPE_OPTIONS.has(customerType) ? customerType : "",
+      firstPurchase: FIRST_PURCHASE_OPTIONS.has(firstPurchase) ? firstPurchase : "",
       purchasedProducts: normalizeArray(req.body?.purchasedProducts, PRODUCT_OPTIONS),
-      choiceReasons,
-      purchaseDriver: ["emprendimiento", "personal"].includes(req.body?.purchaseDriver)
-        ? req.body.purchaseDriver
-        : "",
-      npsChoice: ["seguro", "probablemente", "no_se"].includes(req.body?.npsChoice)
-        ? req.body.npsChoice
-        : "",
+      referralSource: REFERRAL_SOURCE_OPTIONS.has(referralSource) ? referralSource : "",
+      purchaseDriver: PROJECT_TYPE_OPTIONS.has(purchaseDriver) ? purchaseDriver : "",
+      npsChoice: PROBABILITY_OPTIONS.has(npsChoice) ? npsChoice : "",
       improvement: normalizeText(req.body?.improvement),
       couponCode: await createCouponCode(),
       couponDiscount: 15,
@@ -506,7 +525,7 @@ router.post(
       coupon.couponUsedAt = new Date();
       coupon.couponUsedBy = req.user?.name || req.user?.username || "Usuario";
       await coupon.save();
-      await syncDopplerSafe(coupon);
+      await syncDopplerSafe(coupon, { couponUsedOnly: true });
 
       return res.json({
         message: "Cupon validado correctamente",
@@ -587,7 +606,7 @@ router.post("/sucursal/:branch/validar", async (req, res) => {
     coupon.couponUsedAt = new Date();
     coupon.couponUsedBy = "Sucursal";
     await coupon.save();
-    await syncDopplerSafe(coupon);
+    await syncDopplerSafe(coupon, { couponUsedOnly: true });
 
     return res.json({ message: "Cupón canjeado correctamente", coupon });
   } catch (error) {

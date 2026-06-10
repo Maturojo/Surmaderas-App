@@ -3,7 +3,7 @@ import { API_URL } from "../services/http";
 import { deleteEncuesta, getEncuestas, lookupCoupon, resetEncuestas, validateCoupon } from "../services/encuestas";
 import { authHeaders } from "../services/http";
 
-const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=14";
+const PUBLIC_FORM_URL = "https://surmaderas.com.ar/formulario/?v=15";
 
 const LABELS = {
   consumidor_final: "Consumidor Final",
@@ -23,13 +23,24 @@ const LABELS = {
   proyecto_producto_medida: "Proyecto/producto a medida",
   productos_varios: "Productos varios (cajas, bandejas, baules)",
   artistica: "Artistica",
-  lo_necesitaba_ya: "Lo necesitaba ya",
-  ya_los_conozco: "Ya los conozco / recomendaron",
-  me_asesoraron_bien: "Me asesoraron bien",
-  precio: "El precio",
-  a_medida: "A medida",
-  emprendimiento: "Para mi emprendimiento/comercio",
-  personal: "Para uso personal (Hobby, arreglo o renovacion personal)",
+  particular: "Particular",
+  carpintero: "Carpintero",
+  constructor: "Constructor",
+  arquitecto_disenador: "Arquitecto/Disenador",
+  emprendedor_comerciante: "Emprendedor o comerciante",
+  primera: "Si, es la primera",
+  ya_compre: "Ya compre antes",
+  compro_seguido: "Compro seguido",
+  mueble: "Mueble",
+  reforma_hogar: "Reforma del hogar",
+  obra: "Obra",
+  reventa: "Reventa",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  google: "Google",
+  recomendacion: "Recomendacion",
+  pasaba_local: "Pasaba por el local",
+  ya_era_cliente: "Ya era cliente",
   seguro: "Seguro",
   probablemente: "Probablemente",
   no_se: "No se",
@@ -94,6 +105,12 @@ export default function EncuestasCupones() {
         item.couponCode,
         item.branch,
         item.birthDate,
+        item.customerType,
+        item.firstPurchase,
+        item.purchaseDriver,
+        item.referralSource,
+        item.npsChoice,
+        ...(item.purchasedProducts || []),
       ]
         .filter(Boolean)
         .join(" ")
@@ -479,7 +496,9 @@ export default function EncuestasCupones() {
                     <td>{item.rating ? `${item.rating}/5` : "-"}</td>
                     <td>
                       <strong>{(item.purchasedProducts || []).map(label).join(", ") || "-"}</strong>
-                      <span>{(item.choiceReasons || []).map(label).join(", ")}</span>
+                      <span>{label(item.customerType)} - {label(item.firstPurchase)}</span>
+                      <span>{label(item.purchaseDriver)} - {label(item.referralSource)}</span>
+                      <span>{label(item.npsChoice)}</span>
                     </td>
                     <td>
                       <strong>{item.couponCode}</strong>
