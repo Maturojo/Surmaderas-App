@@ -1,9 +1,10 @@
-import { lazy, Suspense } from "react";
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { Suspense } from "react";
+import { Navigate, createBrowserRouter, useRouteError } from "react-router-dom";
 
 import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { getDefaultHomeByRole, getUserRole } from "../services/auth";
+import { lazyWithReload as lazy } from "./lazyWithReload";
 
 const WaConversations = lazy(() => import("../pages/WaConversations"));
 const WaFAQs = lazy(() => import("../pages/WaFAQs"));
@@ -49,6 +50,29 @@ function lazyPage(element) {
   return <Suspense fallback={<div className="route-loading">Cargando modulo...</div>}>{element}</Suspense>;
 }
 
+function AppRouteError() {
+  const error = useRouteError();
+  const message = String(error?.message || "");
+  const isChunkError = /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk|ChunkLoadError/i.test(message);
+
+  return (
+    <div className="route-error">
+      <div className="route-errorPanel">
+        <span className="route-errorKicker">Sur Maderas</span>
+        <h1>{isChunkError ? "Actualizando la app" : "No se pudo cargar esta pantalla"}</h1>
+        <p>
+          {isChunkError
+            ? "Habia una version anterior abierta. Recarga para traer la ultima version publicada."
+            : "La pantalla tuvo un problema al abrirse. Recarga y volve a intentarlo."}
+        </p>
+        <button type="button" onClick={() => window.location.reload()}>
+          Recargar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export const router = createBrowserRouter([
   { path: "/login", element: lazyPage(<Login />) },
   { path: "/formulario", element: lazyPage(<FormularioClientes />) },
@@ -65,6 +89,7 @@ export const router = createBrowserRouter([
         <AppLayout />
       </ProtectedRoute>
     ),
+    errorElement: <AppRouteError />,
     children: [
       { index: true, element: <Navigate to={getDefaultHomeByRole(getUserRole())} replace /> },
       {

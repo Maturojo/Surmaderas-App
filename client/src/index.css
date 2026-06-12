@@ -533,6 +533,63 @@ textarea {
   font-weight: 900;
 }
 
+.route-error {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--sm-bg);
+}
+
+.route-errorPanel {
+  width: min(100%, 440px);
+  padding: 28px;
+  border: 1px solid var(--sm-line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--sm-shadow);
+}
+
+.route-errorKicker {
+  display: block;
+  margin-bottom: 10px;
+  color: #896846;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.route-errorPanel h1 {
+  margin: 0 0 10px;
+  color: #2d2117;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.route-errorPanel p {
+  margin: 0 0 20px;
+  color: #65584b;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.route-errorPanel button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--sm-accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.route-errorPanel button:hover {
+  background: var(--sm-accent-dark);
+}
+
 .login-shell {
   min-height: 100vh;
   padding: 28px;
