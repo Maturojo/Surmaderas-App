@@ -108,6 +108,16 @@ function formatMoney(value) {
   }).format(Number(value || 0));
 }
 
+function formatChartMoneyAxis(value) {
+  const amount = Number(value || 0);
+  if (Math.abs(amount) >= 1000000) {
+    const millions = amount / 1000000;
+    const label = Number.isInteger(millions) ? String(millions) : millions.toFixed(1).replace(".", ",");
+    return `$${label} Mill`;
+  }
+  return `$${Math.round(amount / 1000)}k`;
+}
+
 function formatMoneyInput(value) {
   const amount = typeof value === "number" ? value : parseAmount(value);
   if (!amount) return "";
@@ -618,7 +628,7 @@ export default function VentasMensuales({ section = "lista" }) {
               <BarChart data={saleTypeTotals}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                <YAxis tickFormatter={formatChartMoneyAxis} width={72} />
                 <Tooltip formatter={(value) => formatMoney(value)} />
                 <Legend />
                 <Bar dataKey="total" name="Vendido" fill="#5f7d6c" radius={[8, 8, 0, 0]} />
@@ -652,7 +662,7 @@ export default function VentasMensuales({ section = "lista" }) {
               <BarChart data={dailyChart}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                <YAxis tickFormatter={formatChartMoneyAxis} width={72} />
                 <Tooltip formatter={(value) => formatMoney(value)} />
                 <Legend />
                 <Bar dataKey="total" name="Vendido" fill="#2f5f74" radius={[8, 8, 0, 0]} />
@@ -713,7 +723,7 @@ export default function VentasMensuales({ section = "lista" }) {
                 <BarChart data={monthlyHistory}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <YAxis tickFormatter={formatChartMoneyAxis} width={72} />
                   <Tooltip formatter={(value) => formatMoney(value)} />
                   <Legend />
                   <Bar dataKey="total" name="Vendido" fill="#5f7d6c" radius={[8, 8, 0, 0]} />
@@ -747,7 +757,7 @@ export default function VentasMensuales({ section = "lista" }) {
                 <BarChart data={paymentTotals}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} width={58} />
+                  <YAxis tickFormatter={formatChartMoneyAxis} width={72} />
                   <Tooltip formatter={(value) => formatMoney(value)} />
                   <Bar dataKey="total" name="Total" fill="#2f5f74" radius={[8, 8, 0, 0]} />
                 </BarChart>
