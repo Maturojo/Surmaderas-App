@@ -537,7 +537,8 @@ export default function CotizadorCortes() {
   }
 
   function revisarTextoMasivo(textoOrigen = textoMasivo) {
-    const lineas = textoOrigen
+    const textoARevisar = typeof textoOrigen === "string" ? textoOrigen : textoMasivo;
+    const lineas = textoARevisar
       .split(/\r?\n/)
       .map((linea) => linea.trim())
       .filter(Boolean);
@@ -547,7 +548,7 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const { nuevos, errores } = parsearTextoCortes(textoOrigen, materialSeleccionado);
+    const { nuevos, errores } = parsearTextoCortes(textoARevisar, materialSeleccionado);
 
     setCortesDetectados(nuevos.map((corte) => ({ ...corte, tempId: corte.id })));
 
@@ -1326,7 +1327,7 @@ export default function CotizadorCortes() {
             >
               {escuchandoAudio ? "Detener audio" : "Dictar cortes"}
             </button>
-            <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={revisarTextoMasivo}>
+            <button type="button" className="cc-btnCalc cc-btnCalc--inline" onClick={() => revisarTextoMasivo()}>
               Interpretar lista
             </button>
             <button type="button" className="cc-fileBtn" onClick={pegarDesdePortapapeles} disabled={leyendoImagen}>
