@@ -3,7 +3,7 @@ import { jsPDF } from "jspdf";
 import "../../css/cotizador-cortes.css";
 import { trackModuleUsage } from "../../services/estadisticas";
 
-const MATERIALES = [
+export const MATERIALES = [
   {
     grupo: "Fibro Fácil (MDF)",
     items: [

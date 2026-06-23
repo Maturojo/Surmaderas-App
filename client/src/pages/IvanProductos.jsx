@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
+import { MATERIALES as COTIZADOR_MATERIALES } from "../features/cotizadorCortes/CotizadorCortes";
+import { LISTONES as COTIZADOR_LISTONES } from "../features/cotizadorListones/CotizadorListones";
 import { borrarIvanProducto, guardarIvanProducto, listarIvanProductos } from "../services/ivan";
 import "../css/ivan.css";
 
-const EMPTY_MATERIAL = { tipo: "material", nombre: "", cantidad: "", unidad: "u", costoUnitario: "" };
+const MATERIAL_OPTIONS = COTIZADOR_MATERIALES.flatMap((grupo) =>
+  grupo.items.map((item) => ({ value: item.nombre, label: item.nombre, group: grupo.grupo }))
+);
+
+const LISTON_OPTIONS = COTIZADOR_LISTONES.map((item) => ({
+  value: item.nombre,
+  label: `${item.codigo} - ${item.nombre} (${item.seccion})`,
+}));
+
+const EMPTY_MATERIAL = { tipo: "material", nombre: "", cantidad: "", unidad: "m2", costoUnitario: "" };
 const EMPTY_FORM = {
   codigo: "",
   nombre: "",
@@ -75,11 +86,17 @@ export default function IvanProductos() {
     setForm((current) => ({ ...current, [name]: value }));
   }
 
-  function updateMaterial(index, name, value) {
-    setForm((current) => ({
-      ...current,
-      materiales: current.materiales.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, [name]: value } : item
+function updateMaterial(index, name, value) {
+  setForm((current) => ({
+    ...current,
+    materiales: current.materiales.map((item, itemIndex) =>
+        itemIndex === index
+          ? {
+              ...item,
+              [name]: value,
+              ...(name === "tipo" ? { nombre: "", unidad: value === "material" ? "m2" : "varilla" } : {}),
+            }
+          : item
       ),
     }));
   }
@@ -145,8 +162,9 @@ export default function IvanProductos() {
         stock: toNumber(form.stock),
         materiales: form.materiales.map((item) => ({
           ...item,
+          unidad: item.tipo === "material" ? "m2" : "varilla",
           cantidad: toNumber(item.cantidad),
-          costoUnitario: toNumber(item.costoUnitario),
+          costoUnitario: 0,
         })),
       };
       await guardarIvanProducto(payload, editingId);
@@ -211,7 +229,7 @@ export default function IvanProductos() {
           <div className="ivan-materialsHead">
             <div>
               <strong>Materiales y listones</strong>
-              <small>Costo calculado: {formatMoney(costoMateriales)}</small>
+              <small>Los materiales se cargan en m2 y los listones por varilla de 3 m.</small>
             </div>
             <button type="button" className="config-usersSecondaryButton" onClick={addMaterial}>Agregar item</button>
           </div>
@@ -223,10 +241,26 @@ export default function IvanProductos() {
                   <option value="material">Material</option>
                   <option value="liston">Liston</option>
                 </select>
-                <input placeholder="Nombre" value={item.nombre} onChange={(e) => updateMaterial(index, "nombre", e.target.value)} />
-                <input placeholder="Cantidad" value={item.cantidad} onChange={(e) => updateMaterial(index, "cantidad", e.target.value)} inputMode="decimal" />
-                <input placeholder="Unidad" value={item.unidad} onChange={(e) => updateMaterial(index, "unidad", e.target.value)} />
-                <input placeholder="Costo unit." value={item.costoUnitario} onChange={(e) => updateMaterial(index, "costoUnitario", e.target.value)} inputMode="decimal" />
+                <select value={item.nombre} onChange={(e) => updateMaterial(index, "nombre", e.target.value)}>
+                  <option value="">{item.tipo === "material" ? "Elegir material" : "Elegir liston"}</option>
+                  {(item.tipo === "liston" ? LISTON_OPTIONS : MATERIAL_OPTIONS).map((option) => (
+                    <option key={`${item.tipo}-${option.value}`} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  placeholder={item.tipo === "material" ? "Cantidad m2" : "Cantidad varillas"}
+                  value={item.cantidad}
+                  onChange={(e) => updateMaterial(index, "cantidad", e.target.value)}
+                  inputMode="decimal"
+                />
+                <input
+                  className="ivan-unitInput"
+                  readOnly
+                  value={item.tipo === "material" ? "m2" : "varilla"}
+                  onChange={(e) => updateMaterial(index, "unidad", e.target.value)}
+                />
                 <button type="button" className="config-usersDangerButton" onClick={() => removeMaterial(index)}>Quitar</button>
               </div>
             ))}

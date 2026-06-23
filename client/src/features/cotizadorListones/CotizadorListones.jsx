@@ -6,7 +6,7 @@ import { trackModuleUsage } from "../../services/estadisticas";
 const LARGO_VARILLA_CM = 300;
 const MIN_SOBRANTE_CM = 0.001;
 
-const LISTONES = [
+export const LISTONES = [
   { codigo: "30105", nombre: "LISTON 1/2 X 1/2", precioMetro: 403, seccion: "13 x 13 mm" },
   { codigo: "30106", nombre: "LISTON 1/2 X 3/4", precioMetro: 591, seccion: "19 x 13 mm" },
   { codigo: "30107", nombre: "LISTON 1/2 X 1", precioMetro: 667, seccion: "25 x 13 mm" },
