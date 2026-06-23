@@ -37,6 +37,8 @@ const EncuestasCupones = lazy(() => import("../pages/EncuestasCupones.jsx"));
 const VentasMensuales = lazy(() => import("../pages/VentasMensuales.jsx"));
 const MercadoLibre = lazy(() => import("../pages/MercadoLibre.jsx"));
 const Estadisticas = lazy(() => import("../pages/Estadisticas.jsx"));
+const IvanRemitos = lazy(() => import("../pages/IvanRemitos.jsx"));
+const IvanProductos = lazy(() => import("../pages/IvanProductos.jsx"));
 
 const NotasPedidoGuardadas = lazy(() => import("../pages/NotasPedidoGuardadas"));
 const NotasPedidoPendientes = lazy(() => import("../pages/NotasPedidoPendientes"));
@@ -97,6 +99,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["admin", "taller", "ventas"]}>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ivan/remitos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ivan"]}>
+            <IvanRemitos />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ivan/productos",
+        element: (
+          <ProtectedRoute allowedRoles={["admin", "ivan"]}>
+            <IvanProductos />
           </ProtectedRoute>
         ),
       },

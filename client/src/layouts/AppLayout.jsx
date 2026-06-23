@@ -68,6 +68,15 @@ const NAV_ITEMS = [
   },
   { key: "generador-3d", label: "Generador 3D", to: "/generador-3d", icon: "cube" },
   {
+    key: "ivan",
+    label: "Produccion IVAN",
+    icon: "products",
+    children: [
+      { label: "Generador de remitos", to: "/ivan/remitos" },
+      { label: "Carga de productos", to: "/ivan/productos" },
+    ],
+  },
+  {
     key: "negocio-online",
     label: "Negocio Online",
     icon: "online",
@@ -137,6 +146,8 @@ const CAJA_ALLOWED_PATHS = new Set([
   "/notas-pedido/pendientes",
   "/notas-pedido/deposito",
 ]);
+
+const IVAN_ALLOWED_PATHS = new Set(["/ivan/remitos", "/ivan/productos"]);
 
 const MODULE_ORDER_STORAGE_KEY = "surmaderas-module-order";
 
@@ -313,6 +324,7 @@ export default function AppLayout() {
   const baseNavItems = useMemo(() => {
     const visibleByCustomModules = (item) => {
       if (userRole === "caja") return item.key === "pedidos";
+      if (userRole === "ivan") return item.key === "ivan";
       if (!hasCustomModules) return true;
       if (customModules.includes(item.key)) return true;
       if (item.key === "estadisticas" && customModules.includes("ventas")) return true;
@@ -358,6 +370,23 @@ export default function AppLayout() {
         }
 
         return CAJA_ALLOWED_PATHS.has(item.to) ? item : null;
+      }
+
+      if (userRole === "ivan") {
+        if (item.children) {
+          const children = item.children
+            .map((child) => {
+              if (child.children) {
+                const nestedChildren = child.children.filter((nested) => IVAN_ALLOWED_PATHS.has(nested.to));
+                return nestedChildren.length > 0 ? { ...child, children: nestedChildren } : null;
+              }
+              return IVAN_ALLOWED_PATHS.has(child.to) ? child : null;
+            })
+            .filter(Boolean);
+          return children.length > 0 ? { ...item, children } : null;
+        }
+
+        return IVAN_ALLOWED_PATHS.has(item.to) ? item : null;
       }
 
       if (userRole !== "ventas") return item;
@@ -769,7 +798,7 @@ export default function AppLayout() {
         </div>
       </main>
 
-      {userRole !== "ventas" ? (
+      {userRole !== "ventas" && userRole !== "ivan" ? (
         <ChatInternoWidget unreadCount={chatUnreadCount} onUnreadChange={setChatUnreadCount} />
       ) : null}
     </div>

@@ -1,0 +1,294 @@
+.ivan-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ivan-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.ivan-summary,
+.ivan-card,
+.ivan-metric {
+  background: #fff;
+  border: 1px solid var(--sm-line, #e7ded3);
+  border-radius: 8px;
+}
+
+.ivan-summary {
+  min-width: 150px;
+  padding: 18px;
+}
+
+.ivan-summary span,
+.ivan-metric span {
+  display: block;
+  color: #8a7d70;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ivan-summary strong,
+.ivan-metric strong {
+  display: block;
+  margin-top: 6px;
+  color: #202020;
+  font-size: 28px;
+}
+
+.ivan-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+  gap: 18px;
+}
+
+.ivan-card {
+  padding: 18px;
+}
+
+.ivan-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ivan-formGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ivan-imageRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  gap: 14px;
+  align-items: end;
+}
+
+.ivan-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid var(--sm-line, #e7ded3);
+  border-radius: 8px;
+}
+
+.ivan-preview.is-empty,
+.ivan-thumbEmpty {
+  display: grid;
+  place-items: center;
+  background: #f6f1eb;
+  color: #8a7d70;
+  font-size: 12px;
+}
+
+.ivan-materialsHead,
+.ivan-listHead,
+.ivan-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.ivan-materialsHead small {
+  display: block;
+  margin-top: 4px;
+  color: #8a7d70;
+}
+
+.ivan-materials,
+.ivan-remitoItems,
+.ivan-productList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ivan-materialRow {
+  display: grid;
+  grid-template-columns: 110px minmax(140px, 1fr) 90px 80px 110px auto;
+  gap: 8px;
+}
+
+.ivan-remitoRow {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 90px minmax(170px, 1.5fr) 90px 80px auto;
+  gap: 8px;
+}
+
+.ivan-materialRow input,
+.ivan-materialRow select,
+.ivan-remitoRow input,
+.ivan-remitoRow select,
+.ivan-search {
+  min-width: 0;
+  border: 1px solid var(--sm-line, #e7ded3);
+  border-radius: 6px;
+  padding: 10px 11px;
+  font: inherit;
+}
+
+.ivan-metric {
+  padding: 11px 13px;
+}
+
+.ivan-productItem {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--sm-line, #e7ded3);
+  border-radius: 8px;
+}
+
+.ivan-productItem img,
+.ivan-thumbEmpty {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.ivan-productItem span,
+.ivan-productItem small {
+  display: block;
+  margin-top: 3px;
+  color: #756b61;
+  font-size: 12px;
+}
+
+.ivan-itemActions {
+  display: flex;
+  gap: 8px;
+}
+
+.ivan-remitoNumber {
+  width: 64px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #f6f1eb;
+  font-weight: 800;
+  color: #563b25;
+}
+
+.ivan-printRemito {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .ivan-grid,
+  .ivan-formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ivan-materialRow,
+  .ivan-remitoRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .app-sidebar,
+  .app-mobileHeader,
+  .ivan-noPrint {
+    display: none !important;
+  }
+
+  .app-shell,
+  .app-main,
+  .app-mainInner {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .ivan-page {
+    display: block;
+  }
+
+  .ivan-printRemito {
+    display: block;
+    color: #111;
+    font-family: Arial, sans-serif;
+    padding: 18mm;
+  }
+
+  .ivan-printHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #111;
+    padding-bottom: 12px;
+  }
+
+  .ivan-printHead img {
+    width: 150px;
+    height: auto;
+  }
+
+  .ivan-printHead h2 {
+    margin: 12px 0 0;
+    font-size: 26px;
+    text-transform: uppercase;
+  }
+
+  .ivan-printHead strong {
+    font-size: 24px;
+  }
+
+  .ivan-printMeta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+
+  .ivan-printTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+
+  .ivan-printTable th,
+  .ivan-printTable td {
+    border: 1px solid #222;
+    padding: 9px;
+    text-align: left;
+  }
+
+  .ivan-printTable th {
+    background: #eee;
+  }
+
+  .ivan-printNotes {
+    margin-top: 18px;
+    min-height: 40px;
+  }
+
+  .ivan-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+    margin-top: 70px;
+  }
+
+  .ivan-signatures span {
+    border-top: 1px solid #111;
+    padding-top: 8px;
+    text-align: center;
+  }
+}

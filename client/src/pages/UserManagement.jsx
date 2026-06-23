@@ -53,6 +53,14 @@ const ALL_MODULES = [
   },
   { key: "generador-3d", label: "Generador 3D" },
   {
+    key: "ivan",
+    label: "Produccion IVAN",
+    children: [
+      { label: "Generador de remitos", path: "/ivan/remitos" },
+      { label: "Carga de productos", path: "/ivan/productos" },
+    ],
+  },
+  {
     key: "negocio-online",
     label: "Negocio Online",
     children: [
@@ -100,6 +108,7 @@ const ROLES = [
   { value: "ventas", label: "Ventas" },
   { value: "caja", label: "Caja" },
   { value: "taller", label: "Taller" },
+  { value: "ivan", label: "IVAN" },
   { value: "admin", label: "Admin" },
 ];
 

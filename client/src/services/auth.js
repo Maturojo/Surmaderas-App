@@ -28,6 +28,7 @@ export function getUserRole() {
 }
 
 export function getDefaultHomeByRole(role = getUserRole()) {
+  if (role === "ivan") return "/ivan/remitos";
   if (role === "caja") return "/notas-pedido/listado";
   return role === "ventas" ? "/dashboard" : "/dashboard";
 }
@@ -47,6 +48,7 @@ const SUBMODULE_GROUPS = {
     "/presupuestos/proveedores",
   ],
   ventas: ["/ventas/lista", "/ventas/nueva", "/ventas/objetivos", "/ventas/transferencias"],
+  ivan: ["/ivan/remitos", "/ivan/productos"],
   proveedores: ["/proveedores", "/pedidos-proveedor"],
   "negocio-online": [
     "/whatsapp/control",
@@ -78,6 +80,7 @@ export function canAccessCurrentPath(pathname) {
   const auth = getAuth();
   const role = auth?.user?.role || "";
   if (role === "admin") return true;
+  if (role === "ivan") return pathname === "/ivan/remitos" || pathname === "/ivan/productos";
 
   const allowedSubmodules = auth?.user?.allowedSubmodules;
   if (!Array.isArray(allowedSubmodules) || allowedSubmodules.length === 0) return true;
