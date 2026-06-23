@@ -463,39 +463,82 @@
 
   .ivan-printRemito {
     display: block;
-    color: #111;
+    color: #171411;
     font-family: Arial, sans-serif;
-    padding: 18mm;
+    padding: 14mm;
   }
 
   .ivan-printHead {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    border-bottom: 2px solid #111;
-    padding-bottom: 12px;
-  }
-
-  .ivan-printHead img {
-    width: 150px;
-    height: auto;
+    gap: 24px;
+    padding: 18px 20px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #18130f 0%, #6d432f 100%);
+    color: #fff;
   }
 
   .ivan-printHead h2 {
-    margin: 12px 0 0;
-    font-size: 26px;
+    margin: 5px 0 4px;
+    font-size: 36px;
+    line-height: 1;
     text-transform: uppercase;
+    letter-spacing: 0;
+  }
+
+  .ivan-printHead span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e9d4c3;
+  }
+
+  .ivan-printHead p {
+    margin: 0;
+    max-width: 420px;
+    font-size: 12px;
+    color: #f4e9df;
   }
 
   .ivan-printHead strong {
-    font-size: 24px;
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 22px;
+    letter-spacing: 0.04em;
   }
 
   .ivan-printMeta {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px 20px;
+    gap: 10px;
     margin: 18px 0;
+  }
+
+  .ivan-printMeta div {
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid #ddd5cd;
+    border-radius: 10px;
+    background: #faf7f3;
+  }
+
+  .ivan-printMeta span {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7c6e62;
+  }
+
+  .ivan-printMeta strong {
     font-size: 14px;
   }
 
@@ -507,18 +550,32 @@
 
   .ivan-printTable th,
   .ivan-printTable td {
-    border: 1px solid #222;
-    padding: 9px;
+    border: 1px solid #ddd5cd;
+    padding: 10px;
     text-align: left;
+    font-size: 13px;
   }
 
   .ivan-printTable th {
-    background: #eee;
+    background: #171411;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ivan-printTable tbody tr:nth-child(even) td {
+    background: #fbf8f4;
   }
 
   .ivan-printNotes {
     margin-top: 18px;
-    min-height: 40px;
+    min-height: 46px;
+    padding: 12px;
+    border: 1px solid #ddd5cd;
+    border-radius: 10px;
+    background: #faf7f3;
+    font-size: 13px;
   }
 
   .ivan-signatures {

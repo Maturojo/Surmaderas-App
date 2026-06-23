@@ -195,16 +195,17 @@ export default function IvanRemitos() {
         <div className="ivan-printRemito">
           <div className="ivan-printHead">
             <div>
-              <img src="/logo-sur-maderas.png" alt="Sur Maderas" />
+              <span>Comprobante de entrega</span>
               <h2>Remito</h2>
+              <p>Documento generico para control de salida y recepcion de mercaderia.</p>
             </div>
-            <strong>R{String(createdRemito.numero).padStart(5, "0")}</strong>
+            <strong>R-{String(createdRemito.numero).padStart(5, "0")}</strong>
           </div>
           <div className="ivan-printMeta">
-            <span>Fecha: {fmtDate(createdRemito.fecha)}</span>
-            <span>Destinatario: {createdRemito.destinatario}</span>
-            <span>Direccion: {createdRemito.direccion || "-"}</span>
-            <span>Transporte: {createdRemito.transporte || "-"}</span>
+            <div><span>Fecha</span><strong>{fmtDate(createdRemito.fecha)}</strong></div>
+            <div><span>Destinatario</span><strong>{createdRemito.destinatario}</strong></div>
+            <div><span>Direccion</span><strong>{createdRemito.direccion || "-"}</strong></div>
+            <div><span>Transporte</span><strong>{createdRemito.transporte || "-"}</strong></div>
           </div>
           <table className="ivan-printTable">
             <thead><tr><th>Codigo</th><th>Descripcion</th><th>Cantidad</th><th>Unidad</th></tr></thead>
