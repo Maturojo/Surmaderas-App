@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { crearIvanRemito, listarIvanProductos, listarIvanRemitos } from "../services/ivan";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { borrarIvanRemito, crearIvanRemito, listarIvanProductos, listarIvanRemitos } from "../services/ivan";
 import "../css/ivan.css";
 
 const EMPTY_ITEM = { productoId: "", codigo: "", nombre: "", cantidad: "1", unidad: "u", detalle: "" };
@@ -22,9 +22,11 @@ export default function IvanRemitos() {
   const [productos, setProductos] = useState([]);
   const [remitos, setRemitos] = useState([]);
   const [createdRemito, setCreatedRemito] = useState(null);
+  const [pendingPrint, setPendingPrint] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const printAreaRef = useRef(null);
 
   const totalItems = useMemo(
     () => form.items.reduce((sum, item) => sum + Number(item.cantidad || 0), 0),
@@ -43,6 +45,19 @@ export default function IvanRemitos() {
   useEffect(() => {
     loadData().catch((loadError) => setError(loadError.message || "No se pudieron cargar los datos"));
   }, []);
+
+  useEffect(() => {
+    if (!pendingPrint || !createdRemito) return;
+
+    const timeoutId = window.setTimeout(() => {
+      if (printAreaRef.current) {
+        window.print();
+      }
+      setPendingPrint(false);
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [pendingPrint, createdRemito]);
 
   function updateField(name, value) {
     setForm((current) => ({ ...current, [name]: value }));
@@ -105,7 +120,7 @@ export default function IvanRemitos() {
       setMessage("Remito creado correctamente");
       setError("");
       await loadData();
-      window.setTimeout(() => window.print(), 150);
+      setPendingPrint(true);
     } catch (saveError) {
       setError(saveError.message || "No se pudo crear el remito");
       setMessage("");
@@ -116,7 +131,26 @@ export default function IvanRemitos() {
 
   function printRemito(remito) {
     setCreatedRemito(remito);
-    window.setTimeout(() => window.print(), 150);
+    setPendingPrint(true);
+  }
+
+  async function deleteRemito(remito) {
+    const remitoId = remito._id || remito.id;
+    const remitoNumber = `R-${String(remito.numero).padStart(5, "0")}`;
+    if (!window.confirm(`Borrar el remito ${remitoNumber}?`)) return;
+
+    try {
+      await borrarIvanRemito(remitoId);
+      setRemitos((current) => current.filter((item) => String(item._id || item.id) !== String(remitoId)));
+      setMessage("Remito borrado correctamente");
+      setError("");
+      if (String(createdRemito?._id || createdRemito?.id) === String(remitoId)) {
+        setCreatedRemito(null);
+      }
+    } catch (deleteError) {
+      setError(deleteError.message || "No se pudo borrar el remito");
+      setMessage("");
+    }
   }
 
   return (
@@ -184,7 +218,10 @@ export default function IvanRemitos() {
                   <strong>{remito.destinatario}</strong>
                   <span>{fmtDate(remito.fecha)} - {remito.items?.length || 0} items</span>
                 </div>
-                <button type="button" className="config-usersEditButton" onClick={() => printRemito(remito)}>Imprimir</button>
+                <div className="ivan-itemActions">
+                  <button type="button" className="config-usersEditButton" onClick={() => printRemito(remito)}>Imprimir</button>
+                  <button type="button" className="config-usersDangerButton" onClick={() => deleteRemito(remito)}>Borrar</button>
+                </div>
               </article>
             ))}
           </div>
@@ -192,7 +229,21 @@ export default function IvanRemitos() {
       </div>
 
       {createdRemito ? (
-        <div className="ivan-printRemito">
+        <div className="ivan-card ivan-generatedRemito ivan-noPrint">
+          <div>
+            <div className="config-usersCardTitle">Remito listo</div>
+            <p>
+              R-{String(createdRemito.numero).padStart(5, "0")} - {createdRemito.destinatario || "Sin destinatario"}
+            </p>
+          </div>
+          <button type="button" className="config-usersSubmit" onClick={() => setPendingPrint(true)}>
+            Imprimir remito
+          </button>
+        </div>
+      ) : null}
+
+      {createdRemito ? (
+        <div className="ivan-printRemito" ref={printAreaRef}>
           <div className="ivan-printHead">
             <div>
               <span>Comprobante de entrega</span>

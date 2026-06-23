@@ -306,6 +306,23 @@
   max-width: 220px;
 }
 
+.ivan-generatedRemito {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.ivan-generatedRemito p {
+  margin: 6px 0 0;
+  color: #756b61;
+}
+
+.ivan-generatedRemito .config-usersSubmit {
+  width: auto;
+  min-width: 170px;
+}
+
 .ivan-printRemito {
   display: none;
 }
@@ -374,6 +391,15 @@
 
   .ivan-listHead {
     align-items: stretch;
+  }
+
+  .ivan-generatedRemito {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ivan-generatedRemito .config-usersSubmit {
+    width: 100%;
   }
 
   .ivan-search {

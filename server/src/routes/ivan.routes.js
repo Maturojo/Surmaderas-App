@@ -162,4 +162,14 @@ router.post("/remitos", async (req, res) => {
   }
 });
 
+router.delete("/remitos/:id", async (req, res) => {
+  try {
+    const result = await IvanRemito.deleteOne({ _id: req.params.id });
+    if (!result.deletedCount) return res.status(404).json({ message: "Remito no encontrado" });
+    return res.json({ ok: true, id: req.params.id });
+  } catch (error) {
+    return res.status(500).json({ message: error?.message || "No se pudo borrar el remito" });
+  }
+});
+
 export default router;

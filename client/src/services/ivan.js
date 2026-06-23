@@ -54,3 +54,11 @@ export async function crearIvanRemito(payload) {
   });
   return readJsonResponse(response, "No se pudo crear el remito");
 }
+
+export async function borrarIvanRemito(id) {
+  const response = await apiFetch(`${API_URL}/api/ivan/remitos/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+  });
+  return readJsonResponse(response, "No se pudo borrar el remito");
+}
