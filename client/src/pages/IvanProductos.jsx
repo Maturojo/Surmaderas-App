@@ -262,7 +262,7 @@ export default function IvanProductos() {
                 {product.imagen ? <img src={product.imagen} alt={product.nombre} /> : <div className="ivan-thumbEmpty" />}
                 <div>
                   <strong>{product.nombre}</strong>
-                  <span>{product.codigo || "Sin codigo"} · {formatMoney(product.valor)} · costo {formatMoney(product.costo)}</span>
+                  <span>{product.codigo || "Sin codigo"} - {formatMoney(product.valor)} - costo {formatMoney(product.costo)}</span>
                   <small>{product.materiales?.length || 0} materiales/listones</small>
                 </div>
                 <div className="ivan-itemActions">

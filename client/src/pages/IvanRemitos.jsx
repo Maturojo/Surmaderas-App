@@ -182,7 +182,7 @@ export default function IvanRemitos() {
                 <div className="ivan-remitoNumber">R{String(remito.numero).padStart(5, "0")}</div>
                 <div>
                   <strong>{remito.destinatario}</strong>
-                  <span>{fmtDate(remito.fecha)} · {remito.items?.length || 0} items</span>
+                  <span>{fmtDate(remito.fecha)} - {remito.items?.length || 0} items</span>
                 </div>
                 <button type="button" className="config-usersEditButton" onClick={() => printRemito(remito)}>Imprimir</button>
               </article>
