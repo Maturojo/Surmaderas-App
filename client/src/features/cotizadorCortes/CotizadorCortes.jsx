@@ -127,11 +127,24 @@ function parseNumero(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function calcularCorte(material, largoCm, anchoCm, cantidadValue) {
+const FORMA_RECTANGULO = "rectangulo";
+const FORMA_CIRCULO = "circulo";
+
+function esCorteCircular(corte) {
+  return corte?.forma === FORMA_CIRCULO;
+}
+
+function formatMedidaCorte(corte) {
+  if (esCorteCircular(corte)) return `Diametro ${corte.largo} cm`;
+  return `${corte.largo} x ${corte.ancho} cm`;
+}
+
+function calcularCorte(material, largoCm, anchoCm, cantidadValue, forma = FORMA_RECTANGULO) {
   const precioM2 = material.precioM2;
   const minCosto = (10 * 10 * precioM2) / 10000;
   const area = (largoCm / 100) * (anchoCm / 100);
-  const costoUnd = Math.max(area * precioM2, minCosto);
+  const multiplicadorForma = forma === FORMA_CIRCULO ? 2 : 1;
+  const costoUnd = Math.max(area * precioM2, minCosto) * multiplicadorForma;
   const subtotal = costoUnd * cantidadValue;
   return { costoUnd, subtotal };
 }
@@ -247,7 +260,51 @@ function extraerCantidad(linea, dimensionMatch) {
   return Math.max(1, parseNumero(value) || 1);
 }
 
+function lineaEsCirculo(linea) {
+  return /\b(circulo|circular|redondo|redonda|diametro|diam)\b/i.test(normalizeText(linea));
+}
+
+function parsearLineaCirculo(linea, materialFallback, espesorFallback = 0) {
+  if (!lineaEsCirculo(linea)) return null;
+
+  const diametroMatch = linea.match(/(?:diam(?:etro)?|d)\s*[:=]?\s*(\d+(?:[.,]\d+)?)\s*(cm|mm)?/i)
+    || linea.match(/(?:circulos?|redondos?|redondas?)\s*(?:de)?\s*(\d+(?:[.,]\d+)?)\s*(cm|mm)?/i)
+    || linea.match(/(\d+(?:[.,]\d+)?)\s*(cm|mm)?\s*(?:de)?\s*(?:diam(?:etro)?|circulos?|redondos?|redondas?)/i);
+
+  if (!diametroMatch) return { error: "No se encontro el diametro del circulo." };
+
+  let diametroCm = parseNumero(diametroMatch[1]);
+  const unidad = String(diametroMatch[2] || "").toLowerCase();
+  if (unidad === "mm" || /\bmm\b/i.test(diametroMatch[0])) diametroCm /= 10;
+
+  const cantidadMatch = linea.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?|circulos?|redondos?|redondas?)\b/i)
+    || linea.match(/(?:cant(?:idad)?|cantidad|unidades|unidad|uds?|u)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/i);
+  const cantidadValue = Math.max(1, parseNumero(cantidadMatch?.[1]) || 1);
+  const material = buscarMaterialEnTexto(linea, materialFallback, espesorFallback);
+
+  if (!material) return { error: "No se encontro material y no hay material seleccionado." };
+  if (diametroCm <= 0 || cantidadValue <= 0) return { error: "Diametro o cantidad invalidos." };
+
+  const { costoUnd, subtotal } = calcularCorte(material, diametroCm, diametroCm, cantidadValue, FORMA_CIRCULO);
+  return {
+    corte: {
+      id: nextId++,
+      cantidad: cantidadValue,
+      material: material.nombre,
+      largo: diametroCm,
+      ancho: diametroCm,
+      forma: FORMA_CIRCULO,
+      costoUnd,
+      subtotal,
+      origen: "texto",
+    },
+  };
+}
+
 function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
+  const circulo = parsearLineaCirculo(linea, materialFallback, espesorFallback);
+  if (circulo) return circulo;
+
   const tripleCantidadSimple = linea.match(/^\s*(\d+(?:[.,]\d+)?)\s*(?:u|ud|uds|unidades?|cortes?|piezas?)?\s*(?:x|X|\*|por)\s*(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|\*|por)\s*(\d+(?:[.,]\d+)?)(?:\s*(cm|mm))?/);
   if (tripleCantidadSimple) {
     const cantidadValue = Math.max(1, parseNumero(tripleCantidadSimple[1]) || 1);
@@ -271,6 +328,7 @@ function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
         material: material.nombre,
         largo: largoCm,
         ancho: anchoCm,
+        forma: FORMA_RECTANGULO,
         costoUnd,
         subtotal,
         origen: "texto",
@@ -315,6 +373,7 @@ function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
       material: material.nombre,
       largo: largoCm,
       ancho: anchoCm,
+      forma: FORMA_RECTANGULO,
       costoUnd,
       subtotal,
       origen: "texto",
@@ -323,6 +382,7 @@ function parsearLineaCorte(linea, materialFallback, espesorFallback = 0) {
 }
 
 function lineaTieneMedida(linea) {
+  if (lineaEsCirculo(linea)) return true;
   return /(\d+(?:[.,]\d+)?)\s*(?:cm|mm)?\s*(?:x|X|Ã—|\*|por)\s*(\d+(?:[.,]\d+)?)/.test(linea);
 }
 
@@ -462,6 +522,7 @@ export default function CotizadorCortes() {
   }, []);
 
   const [materialKey, setMaterialKey] = useState("");
+  const [forma, setForma] = useState(FORMA_RECTANGULO);
   const [largo, setLargo] = useState("");
   const [ancho, setAncho] = useState("");
   const [cantidad, setCantidad] = useState("");
@@ -472,7 +533,7 @@ export default function CotizadorCortes() {
   const [cortes, setCortes] = useState([]);
   const [seleccionados, setSeleccionados] = useState(new Set());
   const [editandoCorteId, setEditandoCorteId] = useState(null);
-  const [corteEditado, setCorteEditado] = useState({ material: "", largo: "", ancho: "", cantidad: "" });
+  const [corteEditado, setCorteEditado] = useState({ material: "", largo: "", ancho: "", cantidad: "", forma: FORMA_RECTANGULO });
   const [costoActual, setCostoActual] = useState(null);
   const [textoMasivo, setTextoMasivo] = useState("");
   const [resultadoMasivo, setResultadoMasivo] = useState("");
@@ -516,7 +577,7 @@ export default function CotizadorCortes() {
 
   function calcular() {
     const l = parseFloat(largo);
-    const a = parseFloat(ancho);
+    const a = forma === FORMA_CIRCULO ? l : parseFloat(ancho);
     const q = parseFloat(cantidad);
 
     if (!materialSeleccionado || isNaN(l) || isNaN(a) || isNaN(q) || q <= 0) {
@@ -524,12 +585,12 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const { costoUnd, subtotal } = calcularCorte(materialSeleccionado, l, a, q);
+    const { costoUnd, subtotal } = calcularCorte(materialSeleccionado, l, a, q, forma);
 
     setCostoActual(subtotal);
     setCortes((prev) => [
       ...prev,
-      { id: nextId++, cantidad: q, material: materialSeleccionado.nombre, largo: l, ancho: a, costoUnd, subtotal },
+      { id: nextId++, cantidad: q, material: materialSeleccionado.nombre, largo: l, ancho: a, forma, costoUnd, subtotal },
     ]);
     setLargo("");
     setAncho("");
@@ -581,7 +642,8 @@ export default function CotizadorCortes() {
     for (const corte of cortesDetectados) {
       const material = getMaterialByName(corte.material);
       const l = parseNumero(corte.largo);
-      const a = parseNumero(corte.ancho);
+      const formaCorte = corte.forma || FORMA_RECTANGULO;
+      const a = formaCorte === FORMA_CIRCULO ? l : parseNumero(corte.ancho);
       const q = parseNumero(corte.cantidad);
 
       if (!material || l <= 0 || a <= 0 || q <= 0) {
@@ -589,13 +651,14 @@ export default function CotizadorCortes() {
         return;
       }
 
-      const { costoUnd, subtotal } = calcularCorte(material, l, a, q);
+      const { costoUnd, subtotal } = calcularCorte(material, l, a, q, formaCorte);
       nuevos.push({
         id: nextId++,
         cantidad: q,
         material: material.nombre,
         largo: l,
         ancho: a,
+        forma: formaCorte,
         costoUnd,
         subtotal,
         origen: "revisado",
@@ -840,18 +903,19 @@ export default function CotizadorCortes() {
       largo: String(corte.largo || ""),
       ancho: String(corte.ancho || ""),
       cantidad: String(corte.cantidad || ""),
+      forma: corte.forma || FORMA_RECTANGULO,
     });
   }
 
   function cancelarEdicionCorte() {
     setEditandoCorteId(null);
-    setCorteEditado({ material: "", largo: "", ancho: "", cantidad: "" });
+    setCorteEditado({ material: "", largo: "", ancho: "", cantidad: "", forma: FORMA_RECTANGULO });
   }
 
   function guardarEdicionCorte() {
     const material = getMaterialByName(corteEditado.material);
     const l = parseNumero(corteEditado.largo);
-    const a = parseNumero(corteEditado.ancho);
+    const a = corteEditado.forma === FORMA_CIRCULO ? l : parseNumero(corteEditado.ancho);
     const q = parseNumero(corteEditado.cantidad);
 
     if (!material || l <= 0 || a <= 0 || q <= 0) {
@@ -859,10 +923,10 @@ export default function CotizadorCortes() {
       return;
     }
 
-    const { costoUnd, subtotal } = calcularCorte(material, l, a, q);
+    const { costoUnd, subtotal } = calcularCorte(material, l, a, q, corteEditado.forma);
     setCortes((prev) => prev.map((corte) => (
       corte.id === editandoCorteId
-        ? { ...corte, material: material.nombre, largo: l, ancho: a, cantidad: q, costoUnd, subtotal }
+        ? { ...corte, material: material.nombre, largo: l, ancho: a, cantidad: q, forma: corteEditado.forma, costoUnd, subtotal }
         : corte
     )));
     setCostoActual(subtotal);
@@ -888,7 +952,7 @@ export default function CotizadorCortes() {
       ...cortes.flatMap((c, index) => [
         `Corte ${index + 1}`,
         `Material: ${c.material}`,
-        `Medida: ${c.largo} x ${c.ancho} cm`,
+        `Medida: ${formatMedidaCorte(c)}`,
         `Cantidad: ${c.cantidad}`,
         `$ / unidad: $ ${formatARS(c.costoUnd)}`,
         `Subtotal: $ ${formatARS(c.subtotal)}`,
@@ -984,7 +1048,7 @@ export default function CotizadorCortes() {
       const cells = [
         String(c.cantidad),
         c.material,
-        `${c.largo} x ${c.ancho} cm`,
+        formatMedidaCorte(c),
         `$ ${formatARS(c.costoUnd)}`,
         `$ ${formatARS(c.subtotal)}`,
       ];
@@ -1142,7 +1206,7 @@ export default function CotizadorCortes() {
       ctx.font = "700 22px Arial";
       ctx.textAlign = "center";
       ctx.fillText(String(c.cantidad), columns[0].x + columns[0].w / 2, y + 36);
-      ctx.fillText(`${c.largo} x ${c.ancho} cm`, columns[2].x + columns[2].w / 2, y + 36);
+      ctx.fillText(formatMedidaCorte(c), columns[2].x + columns[2].w / 2, y + 36);
       ctx.font = "400 26px Arial";
       ctx.fillText("[  ]", columns[3].x + columns[3].w / 2, y + 38);
 
@@ -1205,7 +1269,7 @@ export default function CotizadorCortes() {
     }
     let msg = "📦 *Cotización de cortes — Sur Maderas*%0A";
     cortes.forEach((c, i) => {
-      msg += `%0A🔹 *Corte ${i + 1}*%0AMaterial: ${c.material}%0AMedida: ${c.largo} x ${c.ancho} cm%0ACantidad: ${c.cantidad}%0ASubtotal: $${formatARS(c.subtotal)}%0A`;
+      msg += `%0A🔹 *Corte ${i + 1}*%0AMaterial: ${c.material}%0AMedida: ${formatMedidaCorte(c)}%0ACantidad: ${c.cantidad}%0ASubtotal: $${formatARS(c.subtotal)}%0A`;
     });
     msg += `%0A💰 *Total: $${formatARS(total)}*`;
     window.open(`https://wa.me/5492234383262?text=${msg}`, "_blank");
@@ -1269,15 +1333,36 @@ export default function CotizadorCortes() {
             <span className="cc-stepLabel">Ingresá las medidas</span>
           </div>
           <p className="cc-nota">Usá punto para decimales (ej: 50.5)</p>
+          <div className="cc-segmented" role="group" aria-label="Tipo de corte">
+            <button
+              type="button"
+              className={forma === FORMA_RECTANGULO ? "is-active" : ""}
+              onClick={() => setForma(FORMA_RECTANGULO)}
+            >
+              Rectangulo
+            </button>
+            <button
+              type="button"
+              className={forma === FORMA_CIRCULO ? "is-active" : ""}
+              onClick={() => setForma(FORMA_CIRCULO)}
+            >
+              Circulo
+            </button>
+          </div>
+          {forma === FORMA_CIRCULO && (
+            <p className="cc-nota">Para circulos se calcula diametro x diametro y al resultado se le aplica x2.</p>
+          )}
           <div className="cc-grid">
             <div className="cc-field">
-              <label className="cc-fieldLabel">Largo (cm)</label>
-              <input type="number" className="cc-input" placeholder="ej: 240" value={largo} onChange={(e) => setLargo(e.target.value)} />
+              <label className="cc-fieldLabel">{forma === FORMA_CIRCULO ? "Diametro (cm)" : "Largo (cm)"}</label>
+              <input type="number" className="cc-input" placeholder={forma === FORMA_CIRCULO ? "ej: 32" : "ej: 240"} value={largo} onChange={(e) => setLargo(e.target.value)} />
             </div>
-            <div className="cc-field">
-              <label className="cc-fieldLabel">Ancho (cm)</label>
-              <input type="number" className="cc-input" placeholder="ej: 60" value={ancho} onChange={(e) => setAncho(e.target.value)} />
-            </div>
+            {forma !== FORMA_CIRCULO && (
+              <div className="cc-field">
+                <label className="cc-fieldLabel">Ancho (cm)</label>
+                <input type="number" className="cc-input" placeholder="ej: 60" value={ancho} onChange={(e) => setAncho(e.target.value)} />
+              </div>
+            )}
             <div className="cc-field">
               <label className="cc-fieldLabel">Cantidad</label>
               <input type="number" className="cc-input" placeholder="ej: 2" value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
@@ -1360,10 +1445,11 @@ export default function CotizadorCortes() {
                 {cortesDetectados.map((corte, index) => {
                   const material = getMaterialByName(corte.material);
                   const l = parseNumero(corte.largo);
-                  const a = parseNumero(corte.ancho);
+                  const formaCorte = corte.forma || FORMA_RECTANGULO;
+                  const a = formaCorte === FORMA_CIRCULO ? l : parseNumero(corte.ancho);
                   const q = parseNumero(corte.cantidad);
                   const subtotalPreview = material && l > 0 && a > 0 && q > 0
-                    ? calcularCorte(material, l, a, q).subtotal
+                    ? calcularCorte(material, l, a, q, formaCorte).subtotal
                     : 0;
 
                   return (
@@ -1386,7 +1472,18 @@ export default function CotizadorCortes() {
                         </select>
                       </label>
                       <label className="cc-reviewField">
-                        <span>Largo cm</span>
+                        <span>Forma</span>
+                        <select
+                          className="cc-select"
+                          value={formaCorte}
+                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { forma: e.target.value })}
+                        >
+                          <option value={FORMA_RECTANGULO}>Rectangulo</option>
+                          <option value={FORMA_CIRCULO}>Circulo</option>
+                        </select>
+                      </label>
+                      <label className="cc-reviewField">
+                        <span>{formaCorte === FORMA_CIRCULO ? "Diametro cm" : "Largo cm"}</span>
                         <input
                           type="number"
                           className="cc-input"
@@ -1394,15 +1491,17 @@ export default function CotizadorCortes() {
                           onChange={(e) => actualizarCorteDetectado(corte.tempId, { largo: e.target.value })}
                         />
                       </label>
-                      <label className="cc-reviewField">
-                        <span>Ancho cm</span>
-                        <input
-                          type="number"
-                          className="cc-input"
-                          value={corte.ancho}
-                          onChange={(e) => actualizarCorteDetectado(corte.tempId, { ancho: e.target.value })}
-                        />
-                      </label>
+                      {formaCorte !== FORMA_CIRCULO && (
+                        <label className="cc-reviewField">
+                          <span>Ancho cm</span>
+                          <input
+                            type="number"
+                            className="cc-input"
+                            value={corte.ancho}
+                            onChange={(e) => actualizarCorteDetectado(corte.tempId, { ancho: e.target.value })}
+                          />
+                        </label>
+                      )}
                       <label className="cc-reviewField">
                         <span>Cant.</span>
                         <input
@@ -1468,10 +1567,11 @@ export default function CotizadorCortes() {
                     const isEditing = editandoCorteId === c.id;
                     const materialEditado = getMaterialByName(corteEditado.material);
                     const largoEditado = parseNumero(corteEditado.largo);
-                    const anchoEditado = parseNumero(corteEditado.ancho);
+                    const formaEditada = corteEditado.forma || FORMA_RECTANGULO;
+                    const anchoEditado = formaEditada === FORMA_CIRCULO ? largoEditado : parseNumero(corteEditado.ancho);
                     const cantidadEditada = parseNumero(corteEditado.cantidad);
                     const preview = isEditing && materialEditado && largoEditado > 0 && anchoEditado > 0 && cantidadEditada > 0
-                      ? calcularCorte(materialEditado, largoEditado, anchoEditado, cantidadEditada)
+                      ? calcularCorte(materialEditado, largoEditado, anchoEditado, cantidadEditada, formaEditada)
                       : null;
 
                     return (
@@ -1510,20 +1610,32 @@ export default function CotizadorCortes() {
                               </select>
                             </td>
                             <td>
-                              <div className="cc-measureEdit">
+                              <div className={formaEditada === FORMA_CIRCULO ? "cc-measureEdit cc-measureEdit--circle" : "cc-measureEdit"}>
+                                <select
+                                  className="cc-tableSelect"
+                                  value={formaEditada}
+                                  onChange={(e) => setCorteEditado((actual) => ({ ...actual, forma: e.target.value }))}
+                                >
+                                  <option value={FORMA_RECTANGULO}>Rectangulo</option>
+                                  <option value={FORMA_CIRCULO}>Circulo</option>
+                                </select>
                                 <input
                                   type="number"
                                   className="cc-tableInput"
                                   value={corteEditado.largo}
                                   onChange={(e) => setCorteEditado((actual) => ({ ...actual, largo: e.target.value }))}
                                 />
-                                <span>x</span>
-                                <input
-                                  type="number"
-                                  className="cc-tableInput"
-                                  value={corteEditado.ancho}
-                                  onChange={(e) => setCorteEditado((actual) => ({ ...actual, ancho: e.target.value }))}
-                                />
+                                {formaEditada !== FORMA_CIRCULO && (
+                                  <>
+                                    <span>x</span>
+                                    <input
+                                      type="number"
+                                      className="cc-tableInput"
+                                      value={corteEditado.ancho}
+                                      onChange={(e) => setCorteEditado((actual) => ({ ...actual, ancho: e.target.value }))}
+                                    />
+                                  </>
+                                )}
                               </div>
                             </td>
                             <td>$ {formatARS(preview?.costoUnd || 0)}</td>
@@ -1539,7 +1651,7 @@ export default function CotizadorCortes() {
                           <>
                             <td>{c.cantidad}</td>
                             <td>{c.material}</td>
-                            <td>{c.largo} x {c.ancho} cm</td>
+                            <td>{formatMedidaCorte(c)}</td>
                             <td>$ {formatARS(c.costoUnd)}</td>
                             <td>$ {formatARS(c.subtotal)}</td>
                             <td className="cc-noprint">
