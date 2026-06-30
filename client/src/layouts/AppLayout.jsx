@@ -14,15 +14,55 @@ function HamburgerIcon({ open }) {
 }
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "Dashboard", to: "/dashboard", icon: "dashboard" },
-  { key: "calendario", label: "Calendario", to: "/calendario", icon: "calendar" },
-  { key: "estadisticas", label: "Estadisticas", to: "/estadisticas", icon: "stats" },
+  {
+    key: "venta-online",
+    label: "Venta online",
+    icon: "online",
+    children: [
+      {
+        label: "WhatsApp",
+        children: [
+          { label: "Control manual", to: "/whatsapp/control" },
+          { label: "Conversaciones", to: "/whatsapp" },
+          { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
+          { label: "Broadcast", to: "/whatsapp/broadcast" },
+          { label: "FAQs del bot", to: "/whatsapp/faqs" },
+          { label: "Respuestas rapidas", to: "/whatsapp/quick-replies" },
+          { label: "Estadisticas", to: "/whatsapp/stats" },
+          { label: "Configuracion", to: "/whatsapp/settings" },
+        ],
+      },
+      {
+        label: "Ventas",
+        children: [
+          { label: "Ventas del mes", to: "/ventas/lista" },
+          { label: "Nueva venta", to: "/ventas/nueva" },
+          { label: "Objetivos y configuracion", to: "/ventas/objetivos" },
+          { label: "Transferencias", to: "/ventas/transferencias" },
+        ],
+      },
+      { label: "Estadisticas", to: "/estadisticas" },
+      {
+        label: "Mercado Libre",
+        children: [
+          { label: "Dashboard", to: "/mercado-libre" },
+          { label: "Productos", to: "/mercado-libre/productos" },
+          { label: "Publicaciones", to: "/mercado-libre/publicaciones" },
+          { label: "Pedidos", to: "/mercado-libre/pedidos" },
+          { label: "Preguntas", to: "/mercado-libre/preguntas" },
+          { label: "Pendientes", to: "/mercado-libre/pendientes" },
+          { label: "Precios", to: "/mercado-libre/precios" },
+        ],
+      },
+    ],
+  },
   {
     key: "pedidos",
     label: "Pedidos",
     icon: "notes",
     children: [
       { label: "Generador de pedidos", to: "/notas-pedido" },
+      { label: "Calendario", to: "/calendario" },
       { label: "Pedidos en caja", to: "/notas-pedido/listado" },
       { label: "Pedidos para pasar", to: "/notas-pedido/guardadas" },
       { label: "Pedidos en taller", to: "/notas-pedido/pendientes" },
@@ -38,25 +78,39 @@ const NAV_ITEMS = [
       { label: "Cargar", to: "/presupuestos/cargar" },
       { label: "Guardadas", to: "/presupuestos/guardadas" },
       { label: "Proveedores especiales", to: "/presupuestos/proveedores" },
+      { label: "Generador 3D", to: "/generador-3d" },
     ],
   },
-  { key: "marcos", label: "Cotizador de marcos", to: "/marcos", icon: "frame" },
-  { key: "cotizador-cortes", label: "Cotizador de cortes", to: "/cotizador-cortes", icon: "scissors" },
-  { key: "cotizador-listones", label: "Cotizador de listones", to: "/cotizador-listones", icon: "layers" },
-  { key: "productos", label: "Productos", to: "/productos", icon: "products" },
-  { key: "placas", label: "Placas", to: "/placas", icon: "layers" },
-  { key: "encuestas", label: "Encuestas", to: "/encuestas", icon: "survey" },
   {
-    key: "ventas",
-    label: "Ventas",
-    icon: "sales",
+    key: "cotizador",
+    label: "Cotizador",
+    icon: "scissors",
     children: [
-      { label: "Ventas del mes", to: "/ventas/lista" },
-      { label: "Nueva venta", to: "/ventas/nueva" },
-      { label: "Objetivos y configuracion", to: "/ventas/objetivos" },
-      { label: "Transferencias", to: "/ventas/transferencias" },
+      { label: "De cortes", to: "/cotizador-cortes" },
+      { label: "De listones", to: "/cotizador-listones" },
+      { label: "De marcos", to: "/marcos" },
     ],
   },
+  {
+    key: "precios",
+    label: "Precios",
+    icon: "products",
+    children: [
+      { label: "Productos estandar", to: "/productos" },
+      { label: "Placas", to: "/placas" },
+    ],
+  },
+  {
+    key: "configuracion",
+    label: "Configuracion",
+    icon: "settings",
+    children: [
+      { label: "Usuarios", to: "/configuracion/usuarios" },
+      { label: "Turnero", to: "/configuracion/turnero" },
+      { label: "Estadisticas", to: "/estadisticas" },
+    ],
+  },
+  { key: "encuestas", label: "Encuestas", to: "/encuestas", icon: "survey" },
   {
     key: "proveedores",
     label: "Proveedores",
@@ -66,7 +120,6 @@ const NAV_ITEMS = [
       { label: "Pedidos", to: "/pedidos-proveedor" },
     ],
   },
-  { key: "generador-3d", label: "Generador 3D", to: "/generador-3d", icon: "cube" },
   {
     key: "ivan",
     label: "Produccion IVAN",
@@ -74,38 +127,6 @@ const NAV_ITEMS = [
     children: [
       { label: "Generador de remitos", to: "/ivan/remitos" },
       { label: "Carga de productos", to: "/ivan/productos" },
-    ],
-  },
-  {
-    key: "negocio-online",
-    label: "Negocio Online",
-    icon: "online",
-    children: [
-      {
-        label: "WhatsApp",
-        children: [
-          { label: "Control manual", to: "/whatsapp/control" },
-          { label: "Conversaciones", to: "/whatsapp" },
-          { label: "Presupuestos WA", to: "/whatsapp/presupuestos" },
-          { label: "Broadcast", to: "/whatsapp/broadcast" },
-          { label: "FAQs del bot", to: "/whatsapp/faqs" },
-          { label: "Respuestas rápidas", to: "/whatsapp/quick-replies" },
-          { label: "Estadísticas", to: "/whatsapp/stats" },
-          { label: "Configuración", to: "/whatsapp/settings" },
-        ],
-      },
-      {
-        label: "Mercado Libre",
-        children: [
-          { label: "Dashboard", to: "/mercado-libre" },
-          { label: "Productos", to: "/mercado-libre/productos" },
-          { label: "Publicaciones", to: "/mercado-libre/publicaciones" },
-          { label: "Pedidos", to: "/mercado-libre/pedidos" },
-          { label: "Preguntas", to: "/mercado-libre/preguntas" },
-          { label: "Pendientes", to: "/mercado-libre/pendientes" },
-          { label: "Precios", to: "/mercado-libre/precios" },
-        ],
-      },
     ],
   },
 ];
@@ -325,10 +346,22 @@ export default function AppLayout() {
     const visibleByCustomModules = (item) => {
       if (userRole === "caja") return item.key === "pedidos";
       if (userRole === "ivan") return item.key === "ivan";
+      if (item.key === "configuracion" && userRole === "admin") return true;
       if (!hasCustomModules) return true;
       if (customModules.includes(item.key)) return true;
-      if (item.key === "estadisticas" && customModules.includes("ventas")) return true;
-      if (item.key === "negocio-online" && customModules.includes("whatsapp")) return true;
+      if (item.key === "venta-online") {
+        return ["negocio-online", "whatsapp", "ventas", "mercado-libre", "estadisticas"].some((key) =>
+          customModules.includes(key)
+        );
+      }
+      if (item.key === "cotizador") {
+        return ["marcos", "cotizador-cortes", "cotizador-listones"].some((key) => customModules.includes(key));
+      }
+      if (item.key === "precios") {
+        return ["productos", "placas"].some((key) => customModules.includes(key));
+      }
+      if (item.key === "pedidos" && customModules.includes("calendario")) return true;
+      if (item.key === "presupuestos" && customModules.includes("generador-3d")) return true;
       return false;
     };
 
@@ -355,6 +388,8 @@ export default function AppLayout() {
     };
 
     const visibleByRole = (item) => {
+      if (item.key === "configuracion" && userRole !== "admin") return null;
+
       if (userRole === "caja") {
         if (item.children) {
           const children = item.children
@@ -415,22 +450,7 @@ export default function AppLayout() {
       .filter(Boolean);
   }, [customModules, customSubmodules, hasCustomModules, hasCustomSubmodules, userRole]);
 
-  const unorderedNavItems = [
-    ...baseNavItems,
-    ...(userRole === "admin"
-      ? [
-          {
-            key: "configuracion",
-            label: "Configuracion",
-            icon: "settings",
-            children: [
-              { label: "Usuarios", to: "/configuracion/usuarios" },
-              { label: "Turnero", to: "/configuracion/turnero" },
-            ],
-          },
-        ]
-      : []),
-  ];
+  const unorderedNavItems = baseNavItems;
 
   const navItems = useMemo(() => {
     const orderIndex = new Map(moduleOrder.map((key, index) => [key, index]));
