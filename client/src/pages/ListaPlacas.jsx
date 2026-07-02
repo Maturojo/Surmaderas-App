@@ -3,7 +3,7 @@ import { PLACAS_ACTUALIZACION, PLACAS_DATA } from "../data/placasData";
 import { generarListaPlacasPdf } from "../utils/placasPdf";
 import "../css/lista-placas.css";
 
-const PLACAS_STORAGE_KEY = "surmaderas-placas-config-v1";
+const PLACAS_STORAGE_KEY = "surmaderas-placas-config-v2";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("es-AR", {
